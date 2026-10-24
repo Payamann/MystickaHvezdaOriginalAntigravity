@@ -401,7 +401,10 @@ const missingActivationPaths = [
     ...extractObjectPaths(activationSourceBlock, 'sourceMap')
 ]
     .filter(({ routePath }) => routePath.startsWith('/'))
-    .filter(({ routePath }) => !fs.existsSync(path.join(rootDir, routePath.slice(1))))
+    .filter(({ routePath }) => {
+        const pathname = routePath.split(/[?#]/, 1)[0];
+        return !fs.existsSync(path.join(rootDir, pathname.slice(1)));
+    })
     .map(({ group, key, routePath }) => `${group}.${key}: ${routePath}`)
     .sort();
 const missingOnboardingPaths = [

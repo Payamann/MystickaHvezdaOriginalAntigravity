@@ -1,5 +1,13 @@
 /* Extracted from lunace.html inline <style> block. */
-.page-lunace { --color-mystic-gold: #bd9b65; }
+/* The legacy pulse animates filter and overrides the atlas's muted moon colour. */
+body[data-atlas-polish="lunace"] .moon-display {
+    animation: none;
+}
+
+body[data-atlas-polish="lunace"] .lunar-countdown-symbol {
+    filter: grayscale(1) sepia(0.55);
+}
+
 .lunar-hero {
 
             padding: 5rem 0 2rem;
@@ -27,13 +35,12 @@
 
 
         .moon-display {
-
-            font-size: 10rem;
-
+            width: clamp(112px, 16vw, 152px);
+            aspect-ratio: 1;
+            display: grid;
+            place-items: center;
+            margin-inline: auto;
             line-height: 1;
-
-            animation: moonPulse 4s ease-in-out infinite;
-
             filter: drop-shadow(0 0 30px rgba(212, 175, 55, 0.4));
 
         }
@@ -116,7 +123,7 @@
 
             height: 100%;
 
-            background: linear-gradient(90deg, #bd9b65, #d0b17c);
+            background: linear-gradient(90deg, #d4af37, #f5d776);
 
             border-radius: 50px;
 
@@ -164,11 +171,11 @@
 
         .phase-card {
 
-            background: #102638;
+            background: rgba(10, 10, 26, 0.8);
 
-            border: 1px solid rgba(189, 155, 101, 0.34);
+            border: 1px solid rgba(212, 175, 55, 0.2);
 
-            border-radius: 5px;
+            border-radius: 20px;
 
             padding: 3rem;
 
@@ -176,7 +183,7 @@
 
             margin: 0 auto 2rem;
 
-            backdrop-filter: none;
+            backdrop-filter: blur(10px);
 
         }
 
@@ -252,15 +259,15 @@
 
         .lunar-practice-card:hover,
         .lunar-practice-card:focus-visible {
-            border-color: rgba(189, 155, 101, 0.52);
-            background: rgba(189, 155, 101, 0.08);
+            border-color: rgba(212, 175, 55, 0.52);
+            background: rgba(212, 175, 55, 0.08);
             transform: translateY(-2px);
             outline: none;
         }
 
         .lunar-practice-card--primary {
-            border-color: rgba(189, 155, 101, 0.55);
-            background: linear-gradient(135deg, rgba(189,155,101,0.1), rgba(16,38,56,0.95));
+            border-color: rgba(212, 175, 55, 0.55);
+            background: linear-gradient(135deg, rgba(212,175,55,0.14), rgba(120,170,255,0.08));
         }
 
         .lunar-practice-card span {
@@ -308,11 +315,11 @@
 
             font-size: 0.9rem;
 
-            border: 1px solid rgba(189, 155, 101, 0.3);
+            border: 1px solid rgba(212, 175, 55, 0.3);
 
-            background: rgba(189, 155, 101, 0.08);
+            background: rgba(212, 175, 55, 0.08);
 
-            color: #bd9b65;
+            color: #d4af37;
 
         }
 
@@ -356,7 +363,7 @@
 
             border-color: var(--color-mystic-gold);
 
-            background: rgba(189, 155, 101, 0.08);
+            background: rgba(212, 175, 55, 0.08);
 
         }
 
@@ -366,20 +373,18 @@
 
             transform: translateY(-3px);
 
-            border-color: rgba(189, 155, 101, 0.5);
+            border-color: rgba(212, 175, 55, 0.5);
 
         }
 
 
 
         .cycle-emoji {
-
-            font-size: 2.5rem;
-
-            display: block;
-
-            margin-bottom: 0.5rem;
-
+            display: grid;
+            place-items: center;
+            width: 52px;
+            height: 52px;
+            margin: 0 auto 0.5rem;
         }
 
 
@@ -480,14 +485,6 @@
 
         @media (max-width: 600px) {
 
-            .moon-display {
-
-                font-size: 7rem;
-
-            }
-
-
-
             .phase-name {
 
                 font-size: 1.8rem;
@@ -515,27 +512,29 @@
 /* Migrated from lunace.html static style attributes. */
 html body .mh-inline-dede459c64 { max-width: 600px; margin: 0 auto 2rem; }
 html body .mh-inline-d826c20c41 { width: 0%; }
-html body .mh-inline-565de43b2c { background:#102638;border:1px solid rgba(189,155,101,0.34);border-radius:5px;padding:1.5rem;text-align:center; }
+html body .mh-inline-565de43b2c { background:rgba(10,10,26,0.7);border:1px solid rgba(212,175,55,0.2);border-radius:16px;padding:1.5rem;text-align:center; }
 html body .mh-inline-d07104dab6 { font-family:'Cinzel',serif;color:#ebc066;font-size:1.4rem;font-weight:600; }
 html body .mh-inline-4b13259c5e { font-size:0.8rem;color:rgba(255,255,255,0.4);margin-top:0.25rem; }
 html body .mh-inline-2e40daa533 { color:rgba(255,255,255,0.6); }
 html body .mh-inline-46cc32ebed { color:#ebc066; }
 html body .mh-inline-9e06f2c6dc { padding-top: 0; }
 html body .mh-inline-f8094c3d80 { white-space:nowrap;flex-shrink:0; }
-html body .mh-inline-27753b61e7 { background: linear-gradient(145deg, #102638, #0b1929); border: 1px solid rgba(189,155,101,0.34); border-radius: 5px; padding: clamp(1.5rem, 4vw, 3rem); text-align: center; max-width: 800px; margin: 0 auto 3rem; }
+html body .mh-inline-27753b61e7 { padding: 3rem; text-align: center; max-width: 800px; margin: 0 auto 3rem; }
+body.atlas-page .atlas-lunar-next-step { background:#102638; border:1px solid #bd9b6555; border-radius:6px; }
 html body .mh-inline-27ef801a9c { font-size: 1.1rem; }
 
 /* Migrated from lunace.html remaining static style attributes. */
 html body .mh-inline-5e4075d76a { max-width:700px;margin:2rem auto 0;display:grid;grid-template-columns:1fr 1fr;gap:1rem; }
 html body .mh-inline-aa10f4832e { font-size:1.8rem;margin-bottom:0.3rem; }
 html body .mh-inline-60dd39b693 { font-size:0.75rem;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:2px;margin-bottom:0.5rem; }
-html body .mh-inline-4cf588778a { margin-top:0.75rem;border-top:1px solid rgba(189,155,101,0.16);padding-top:0.65rem;display:flex;flex-direction:column;gap:0.3rem; }
+html body .mh-inline-4cf588778a { margin-top:0.75rem;border-top:1px solid rgba(212,175,55,0.1);padding-top:0.65rem;display:flex;flex-direction:column;gap:0.3rem; }
 html body .mh-inline-e81d7578c8 { font-size:0.75rem;color:rgba(255,255,255,0.35); }
 html body .mh-inline-f5c37c93a5 { color:rgba(255,255,255,0.5); }
 html body .mh-inline-f697697fcd { font-size:0.75rem;color:rgba(255,255,255,0.5);font-style:italic; }
-html body .mh-inline-5180d3dcc2 { background: #102638; border: 1px solid rgba(189,155,101,0.34); border-radius: 5px; padding: 2rem; text-align: center; max-width: 800px; margin: 0 auto 2rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem; }
+html body .mh-inline-5180d3dcc2 { padding: 2rem; text-align: center; max-width: 800px; margin: 0 auto 2rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem; }
+body.atlas-page .atlas-lunar-ritual { background:#102638; border:1px solid #bd9b6555; border-radius:6px; }
 html body .mh-inline-96a3ecece8 { text-align:left; }
-html body .mh-inline-3f4a341640 { font-size:0.75rem;text-transform:uppercase;letter-spacing:2px;color:#bd9b65;margin-bottom:0.4rem; }
+html body .mh-inline-3f4a341640 { font-size:0.75rem;text-transform:uppercase;letter-spacing:2px;color:#d4af37;margin-bottom:0.4rem; }
 html body .mh-inline-098b66c834 { margin:0 0 0.4rem;font-family:'Cinzel',serif;font-size:1.25rem; }
 html body .mh-inline-f1c160186c { margin:0;color:rgba(255,255,255,0.6);font-size:0.9rem; }
 html body .mh-inline-3b6c2f9634 { margin-top:0; font-family:'Cinzel',serif; }

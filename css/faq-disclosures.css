@@ -1,0 +1,61 @@
+/* Shared native disclosure styling for concise FAQ sections. */
+.faq-disclosure {
+    display: block;
+    min-width: 0;
+    margin: 0;
+    border: 1px solid rgba(189, 155, 101, 0.28);
+    border-radius: 6px;
+    background: #102638;
+}
+
+.faq-disclosure.card {
+    padding: 0;
+}
+
+.faq-disclosure > summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 1.1rem;
+    color: #e9e3d7;
+    cursor: pointer;
+    list-style: none;
+}
+
+.faq-disclosure > summary::-webkit-details-marker {
+    display: none;
+}
+
+.faq-disclosure > summary::after {
+    flex: 0 0 auto;
+    color: #d0b17c;
+    content: "+";
+    font-size: 1.35rem;
+    line-height: 1;
+}
+
+.faq-disclosure[open] > summary::after {
+    content: "−";
+}
+
+.faq-disclosure > summary h3 {
+    margin: 0;
+    color: #f3d98b;
+    font-size: 1rem;
+    line-height: 1.4;
+}
+
+.faq-disclosure > summary:focus-visible {
+    border-radius: 5px;
+    outline: 2px solid #d0b17c;
+    outline-offset: 3px;
+}
+
+.faq-disclosure > p {
+    margin: 0;
+    padding: 0 1.1rem 1.1rem;
+    color: #c3c9cb;
+    font-size: 0.92rem;
+    line-height: 1.65;
+}

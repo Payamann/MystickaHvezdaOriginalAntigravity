@@ -909,7 +909,7 @@ function highlightPricingCard(card) {
     if (!card) return false;
 
     card.classList.add('pricing-card--recommended');
-    card.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' });
+    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
     return true;
 }
 
@@ -946,7 +946,7 @@ function highlightOneTimeProducts() {
 
     addon.classList.add('pricing-addon--recommended');
     entryProduct?.classList.add('pricing-addon__product--recommended');
-    addon.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' });
+    addon.scrollIntoView({ behavior: 'smooth', block: 'center' });
     return true;
 }
 

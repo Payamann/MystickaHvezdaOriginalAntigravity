@@ -10,114 +10,6 @@
     const POST_AUTH_REDIRECT_PENDING_KEY = 'post_auth_redirect_pending';
     const SIGNUP_INTENT_KEY = 'mh_signup_intent';
     const PASSWORD_MIN_LENGTH = 8;
-    let modalReturnFocus = null;
-    let modalAuthRequestPending = false;
-    function getTodayIsoDatePrague() {
-        const parts = new Intl.DateTimeFormat('en-CA', {
-            timeZone: 'Europe/Prague',
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit'
-        }).formatToParts(new Date());
-        const dateParts = Object.fromEntries(parts.map(({ type, value }) => [type, value]));
-        return `${dateParts.year}-${dateParts.month}-${dateParts.day}`;
-    }
-    function setBirthDateMaximum(root = document) {
-        const inputs = root.querySelectorAll(
-            'input[type="date"][autocomplete="bday"], input[type="date"][name="birth_date"], input[type="date"][name="birthDate"]'
-        );
-        inputs.forEach(input => {
-            input.max = getTodayIsoDatePrague();
-            if (input.dataset.birthDateMaxSync === 'true') return;
-            input.dataset.birthDateMaxSync = 'true';
-            input.addEventListener('focus', () => {
-                input.max = getTodayIsoDatePrague();
-            });
-        });
-    }
-    function authShellCopy() {
-        const language = document.documentElement?.lang?.slice(0, 2);
-        return {
-            sk: { logout: 'Odhlásiť sa', login: 'Prihlásiť sa' },
-            pl: { logout: 'Wyloguj się', login: 'Zaloguj się' }
-        }[language] || { logout: 'Odhlásit se', login: 'Přihlásit se' };
-    }
-    function authCopy() {
-        return window.Templates?.authCopy?.() || {
-            loginTitle: 'Přihlášení',
-            registerTitle: 'Registrace',
-            resetTitle: 'Obnovení hesla',
-            submitLogin: 'Přihlásit se',
-            submitRegister: 'Zaregistrovat',
-            submitReset: 'Odeslat odkaz',
-            toggleLogin: 'Nemáte účet? Zaregistrujte se',
-            toggleRegister: 'Již máte účet? Přihlaste se',
-            toggleReset: 'Zpět na přihlášení',
-            errorTitle: 'Chyba',
-            registrationErrorTitle: 'Chyba registrace',
-            loginErrorTitle: 'Chyba přihlášení',
-            consentRequiredTitle: 'Souhlas je potřeba',
-            consentRequired: 'Pro vytvoření účtu přijmi obchodní podmínky a potvrď seznámení se zásadami soukromí.',
-            passwordMin: 'Heslo musí mít alespoň {length} znaků.',
-            passwordTooLong: 'Heslo může mít nejvýše 128 znaků.',
-            passwordCommon: 'Toto heslo je příliš časté. Zvol jiné.',
-            passwordMismatch: 'Hesla se neshodují.',
-            registrationRecovery: 'Účet už možná existuje. Přihlas se nebo si obnov heslo.',
-            registrationRateLimited: 'Z tohoto připojení proběhlo příliš mnoho registrací. Zkus to znovu později.',
-            loginRateLimited: 'Příliš mnoho neúspěšných pokusů o přihlášení. Zkus to znovu později.',
-            resetRateLimited: 'Odeslalo se příliš mnoho žádostí o obnovení hesla. Zkus to znovu později.',
-            resetSending: 'Odesílá se žádost…',
-            resetSent: 'Pokud je účet s tímto e-mailem vedený, může na něj přijít odkaz k obnovení hesla. Zkontroluj i spam; pokud odkaz nedorazí, můžeš žádost zopakovat.',
-            resetFailed: 'Žádost se nepodařilo odeslat. E-mail zůstává ve formuláři, zkus to znovu.',
-            connectionInterrupted: 'Spojení se přerušilo. Zkontroluj připojení a zkus to znovu.',
-            registrationNetworkError: 'Registraci se teď nepodařilo dokončit. Zkus to znovu za chvíli.',
-            loginNetworkError: 'Přihlášení se teď nepodařilo. Zkus to znovu za chvíli.',
-            authFinalizationError: 'Server požadavek přijal, ale stránce se nepodařilo dokončit další krok. Obnov stránku a zkontroluj e-mail nebo stav účtu.',
-            registrationFailed: 'Registrace se nepodařila. Zkontroluj zadané údaje a zkus to znovu.',
-            loginFailed: 'Přihlášení se nepodařilo. Zkontroluj e-mail a heslo.',
-            verificationTitle: 'Ověření e-mailu',
-            verificationMessage: 'Pro dokončení registrace potvrď svou e-mailovou adresu.',
-            welcomeTitle: 'Vítej!',
-            registrationSuccess: 'Registrace proběhla úspěšně.',
-            loginSuccessTitle: 'Vítej zpět',
-            loginSuccess: 'Přihlášení proběhlo úspěšně.',
-            verifiedTitle: 'Ověřeno!',
-            verifiedMessage: 'Tvůj e-mail byl úspěšně ověřen. Nyní se můžeš přihlásit.',
-            invalidLink: 'Odkaz je neplatný nebo vypršel.',
-            expiredLink: 'Odkaz pro ověření vypršel. Zkus to znovu.'
-        };
-    }
-    function localizedAuthError(error, code, status, mode) {
-        const copy = authCopy();
-        const language = document.documentElement?.lang?.slice(0, 2);
-        const isCzech = language !== 'sk' && language !== 'pl';
-        if (isCzech && error) return error;
-
-        const knownErrors = {
-            LEGAL_CONSENT_REQUIRED: copy.consentRequired,
-            REGISTRATION_RECOVERY_REQUIRED: copy.registrationRecovery,
-            REGISTRATION_RATE_LIMITED: copy.registrationRateLimited,
-            LOGIN_RATE_LIMITED: copy.loginRateLimited,
-            PASSWORD_RESET_RATE_LIMITED: copy.resetRateLimited
-        };
-        if (code && knownErrors[code]) return knownErrors[code];
-
-        const message = String(error || '');
-        if (/hesla se neshoduj/i.test(message)) return copy.passwordMismatch;
-        if (/heslo musí mít alespoň/i.test(message)) {
-            return copy.passwordMin.replace('{length}', PASSWORD_MIN_LENGTH);
-        }
-        if (/heslo je příliš dlouhé|maximálně 128 znaků/i.test(message)) return copy.passwordTooLong;
-        if (/toto heslo je příliš časté/i.test(message)) return copy.passwordCommon;
-        if (status === 429) {
-            return mode === 'register' ? copy.registrationRateLimited : copy.loginRateLimited;
-        }
-        if (mode === 'login' && status === 400) return copy.loginFailed;
-        if (status >= 500) {
-            return mode === 'register' ? copy.registrationNetworkError : copy.loginNetworkError;
-        }
-        return mode === 'register' ? copy.registrationFailed : copy.loginFailed;
-    }
     const CHECKOUT_METADATA_PARAM_KEYS = [
         'entry_source',
         'entry_feature',
@@ -131,46 +23,6 @@
 
     function setHidden(element, hidden) {
         if (element) element.hidden = hidden;
-    }
-
-    function setRegistrationPasswordPolicy(enabled) {
-        const password = document.getElementById('auth-modal-password');
-        const confirmation = document.getElementById('auth-modal-password-confirm');
-        const policy = document.getElementById('auth-password-policy');
-        setHidden(policy, !enabled);
-
-        if (password) {
-            password.autocomplete = enabled ? 'new-password' : 'current-password';
-            if (enabled) {
-                password.maxLength = 128;
-                password.setAttribute('aria-describedby', 'auth-password-policy');
-            } else {
-                password.removeAttribute('minlength');
-                password.removeAttribute('maxlength');
-                password.removeAttribute('aria-describedby');
-            }
-        }
-
-        if (confirmation) {
-            confirmation.autocomplete = 'new-password';
-            if (enabled) {
-                confirmation.minLength = PASSWORD_MIN_LENGTH;
-                confirmation.maxLength = 128;
-            } else {
-                confirmation.removeAttribute('minlength');
-                confirmation.removeAttribute('maxlength');
-                confirmation.value = '';
-            }
-        }
-    }
-
-    function setAuthModalStatus(message = '', type = 'info') {
-        const status = document.getElementById('auth-modal-status');
-        if (!status) return;
-        status.hidden = !message;
-        status.textContent = message;
-        status.setAttribute('role', type === 'error' ? 'alert' : 'status');
-        status.classList.toggle('auth-modal__status--error', type === 'error');
     }
 
     function setGdprRequirement(required) {
@@ -188,30 +40,13 @@
 
     function setAuthButtonPremiumLabel(button, isPremium) {
         if (!button) return;
-        button.textContent = authShellCopy().logout;
+        button.textContent = 'Odhlásit';
         if (!isPremium) return;
 
         const badge = document.createElement('span');
         badge.className = 'auth-premium-label';
-        badge.textContent = '(Premium)';
+        badge.textContent = '(Členství)';
         button.append(' ', badge);
-    }
-
-    function getSafeLocalRedirect(value, fallback = null) {
-        if (typeof value !== 'string') return fallback;
-        const redirect = value.trim();
-        if (!redirect || !redirect.startsWith('/') || redirect.startsWith('//')
-            || redirect.includes('\\') || /[\u0000-\u001F\u007F]/.test(redirect)) {
-            return fallback;
-        }
-
-        try {
-            const target = new URL(redirect, window.location.origin);
-            if (target.origin !== window.location.origin) return fallback;
-            return `${target.pathname}${target.search}${target.hash}`;
-        } catch {
-            return fallback;
-        }
     }
 
     function hasStandaloneAuthHref(button) {
@@ -310,28 +145,20 @@
         }
     }
 
-    function hasSameCachedIdentity(auth, expectedUserId) {
-        if ((auth?.user?.id || null) !== expectedUserId) return false;
-        const cachedUser = readCachedUser();
-        return !cachedUser || (cachedUser.id || null) === expectedUserId;
-    }
-
-    function hasSameLoggedInSession(auth, expectedUserId) {
-        return auth?.isLoggedIn?.() === true && hasSameCachedIdentity(auth, expectedUserId);
-    }
-
     const Auth = {
         // Token is stored in HttpOnly cookie (secure, XSS-proof)
         // JS cannot read it - that's the point. Use the server-set login
         // indicator cookie as the source of truth and treat auth_user as cache.
         user: readCachedUser(),
+        modalReturnFocusElement: null,
+        modalAddedBodyScrollLockClass: false,
+        modalBackgroundInertState: null,
 
         isStandaloneAuthPage() {
             return document.body?.classList.contains('page-login') || window.location.pathname.endsWith('/prihlaseni.html') || window.location.pathname.endsWith('prihlaseni.html');
         },
 
         init() {
-            setBirthDateMaximum();
             this.updateUI();
             this.setupListeners();
             this.handleRedirect();
@@ -347,21 +174,21 @@
             try {
                 // Session refresh now relies on HttpOnly cookies
 
-                const requestedUserId = this.user?.id || null;
-                const oldStatus = this.user?.subscription_status;
+                const ownerSnapshot = this.user;
+                const oldStatus = ownerSnapshot?.subscription_status;
                 const user = await this.getProfile();
+                // A local save or account switch owns newer state than this request.
+                if (this.user !== ownerSnapshot || !this.isLoggedIn()) return;
 
-                if (!user
-                    || !hasSameLoggedInSession(this, requestedUserId)
-                    || (requestedUserId && user.id !== requestedUserId)) return;
+                if (user) {
+                    this.user = user;
+                    localStorage.setItem('auth_user', JSON.stringify(user));
+                    this.updateUI();
 
-                this.user = user;
-                localStorage.setItem('auth_user', JSON.stringify(user));
-                this.updateUI();
-
-                // Only emit if status changed to avoid infinite reload loops
-                if (oldStatus !== user.subscription_status) {
-                    document.dispatchEvent(new Event('auth:refreshed'));
+                    // Only emit if status changed to avoid infinite reload loops
+                    if (oldStatus !== user.subscription_status) {
+                        document.dispatchEvent(new Event('auth:refreshed'));
+                    }
                 }
             } catch (e) {
                 console.warn('Session refresh failed:', e);
@@ -373,11 +200,8 @@
         },
 
         async _refreshToken() {
-            const requestedUserId = this.user?.id || null;
-            if (!hasSameLoggedInSession(this, requestedUserId)) return;
             try {
                 const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
-                if (!hasSameLoggedInSession(this, requestedUserId)) return;
                 const res = await fetch(`${API_URL}/auth/refresh-token`, {
                     method: 'POST',
                     credentials: 'include',
@@ -386,16 +210,13 @@
                         ...(csrfToken && { 'X-CSRF-Token': csrfToken })
                     }
                 });
-                if (!hasSameLoggedInSession(this, requestedUserId)) return;
                 if (res.ok) {
                     const data = await res.json();
-                    if (!hasSameLoggedInSession(this, requestedUserId)
-                        || (requestedUserId && data.user?.id !== requestedUserId)) return;
                     this.user = data.user;
                     localStorage.setItem('auth_user', JSON.stringify(data.user));
                 } else if (res.status === 401 || res.status === 403) {
                     // Token invalid/expired, force logout
-                    await this.logout(requestedUserId);
+                    this.logout();
                 }
             } catch (e) {
                 // Network error, retry on next interval
@@ -404,22 +225,16 @@
         },
 
         handleRedirect() {
+            // The dedicated recovery page owns its token and focus lifecycle.
+            if (this.isStandaloneAuthPage() && new URLSearchParams(window.location.search).get('reset') === 'true') return;
             const hash = window.location.hash;
             // ... (rest of handleRedirect logic)
-
-            // The standalone reset form reads Supabase recovery tokens from the URL hash.
-            // Do not consume them as an email-verification callback or open the login modal.
-            if (this.isStandaloneAuthPage()
-                && new URLSearchParams(window.location.search).get('reset') === 'true') {
-                return;
-            }
 
             // Handle Success
             if (hash && hash.includes('access_token')) {
                 history.replaceState(null, null, ' ');
                 setTimeout(() => {
-                    const copy = authCopy();
-                    this.showToast(copy.verifiedTitle, copy.verifiedMessage, 'success');
+                    this.showToast('Ověřeno', 'E-mail je potvrzený. Teď se můžeš přihlásit.', 'success');
                     this.openModal('login');
                 }, 500);
             }
@@ -429,15 +244,14 @@
                 console.warn('Auth Error in URL:', hash);
 
                 // Extract error description if possible
-                const copy = authCopy();
-                let msg = copy.invalidLink;
+                let msg = 'Odkaz je neplatný nebo vypršel.';
                 if (hash.includes('otp_expired')) {
-                    msg = copy.expiredLink;
+                    msg = 'Odkaz pro ověření vypršel. Prosím, zkuste to znovu.';
                 }
 
                 history.replaceState(null, null, ' '); // Clear URL
                 setTimeout(() => {
-                    this.showToast('Chyba ověření', msg, 'error');
+                    this.showToast('Chyba ověření ❌', msg, 'error');
                 }, 500);
             }
         },
@@ -448,7 +262,6 @@
             const modalHtml = window.Templates ? window.Templates.renderAuthModal() : '';
             if (modalHtml) {
                 document.body.insertAdjacentHTML('beforeend', modalHtml);
-                setBirthDateMaximum(document.getElementById('auth-modal') || document);
             } else {
                 console.error('Templates library not loaded!');
             }
@@ -462,16 +275,60 @@
             modal.addEventListener('click', (e) => {
                 if (e.target === modal) this.closeModal();
             });
-            modal.addEventListener('keydown', event => {
+            modal.addEventListener('keydown', (event) => {
                 if (modal.hidden) return;
-                if (event.key === 'Escape') { event.preventDefault(); this.closeModal(); return; }
+                if (event.key === 'Escape') {
+                    event.preventDefault();
+                    this.closeModal();
+                    return;
+                }
                 if (event.key !== 'Tab') return;
-                const focusable = [...modal.querySelectorAll('a[href], button, input, select, textarea, [tabindex="0"]')].filter(element => !element.disabled && !element.closest('[hidden]') && element.getClientRects().length);
-                if (!focusable.length) return;
-                const first = focusable[0], last = focusable.at(-1);
-                if (event.shiftKey && (document.activeElement === first || !modal.contains(document.activeElement))) { event.preventDefault(); last.focus(); }
-                else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+
+                const focusable = this.getModalFocusableElements(modal);
+                if (!focusable.length) {
+                    event.preventDefault();
+                    modal.focus({ preventScroll: true });
+                    return;
+                }
+
+                const first = focusable[0];
+                const last = focusable[focusable.length - 1];
+                if (!modal.contains(document.activeElement)) {
+                    event.preventDefault();
+                    (event.shiftKey ? last : first).focus();
+                } else if (event.shiftKey && document.activeElement === first) {
+                    event.preventDefault();
+                    last.focus();
+                } else if (!event.shiftKey && document.activeElement === last) {
+                    event.preventDefault();
+                    first.focus();
+                }
             });
+        },
+
+        getModalFocusableElements(modal) {
+            if (!modal) return [];
+            return [...modal.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])')]
+                .filter((element) => !element.closest('[hidden]')
+                    && element.getAttribute('aria-hidden') !== 'true'
+                    && element.getClientRects().length > 0);
+        },
+
+        setModalBackgroundInert(modal, inert) {
+            if (inert) {
+                this.modalBackgroundInertState = [...document.body.children]
+                    .filter((element) => element !== modal)
+                    .map((element) => ({ element, wasInert: element.inert }));
+                this.modalBackgroundInertState.forEach(({ element }) => {
+                    element.inert = true;
+                });
+                return;
+            }
+
+            this.modalBackgroundInertState?.forEach(({ element, wasInert }) => {
+                if (element.isConnected) element.inert = wasInert;
+            });
+            this.modalBackgroundInertState = null;
         },
 
         isLoggedIn() {
@@ -502,7 +359,6 @@
         },
 
         async register(email, password, additionalData = {}) {
-            let successfulResponseReceived = false;
             try {
                 const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
                 const res = await fetch(`${API_URL}/auth/register`, {
@@ -514,12 +370,11 @@
                     },
                     body: JSON.stringify({ email, password, ...additionalData })
                 });
-                successfulResponseReceived = res.ok;
                 const data = await res.json();
                 if (!res.ok) {
                     return {
                         success: false,
-                        error: localizedAuthError(data.error, data.code, res.status, 'register'),
+                        error: data.error || 'Registrace se nepodařila.',
                         code: data.code || 'REGISTRATION_FAILED',
                         retryAfter: Number.parseInt(res.headers.get('retry-after') || '', 10) || null
                     };
@@ -537,7 +392,11 @@
                                 feature: standaloneContext.feature || null,
                                 metadata: standaloneContext.metadata || {},
                                 billing_interval: standaloneContext.billing_interval || null,
-                                redirect: getSafeLocalRedirect(standaloneContext.redirect, '/cenik.html'),
+                                redirect: typeof standaloneContext.redirect === 'string'
+                                    && standaloneContext.redirect.startsWith('/')
+                                    && !standaloneContext.redirect.startsWith('//')
+                                    ? standaloneContext.redirect
+                                    : '/cenik.html',
                                 authMode: standaloneContext.mode || 'register'
                             }
                             : null;
@@ -561,24 +420,16 @@
                         entry_source: authSource,
                         entry_feature: authFeature
                     });
-                    const copy = authCopy();
-                    this.showToast(copy.verificationTitle, copy.verificationMessage, 'success');
+                    this.showToast('Ověření e-mailu', 'Potvrď svůj e-mail a dokonči registraci. 📧', 'success');
                     this.closeModal(); // Close modal but don't login yet
                     return { success: true, verificationRequired: true, analyticsTracked };
                 }
 
                 this.loginSuccess(data, { mode: 'register' });
-                const copy = authCopy();
-                this.showToast(copy.welcomeTitle, copy.registrationSuccess, 'success');
+                this.showToast('Registrace hotová', 'Účet je připravený.', 'success');
                 return { success: true, analyticsTracked: true };
-            } catch {
-                const copy = authCopy();
-                return {
-                    success: false,
-                    error: successfulResponseReceived ? copy.authFinalizationError : copy.registrationNetworkError,
-                    code: successfulResponseReceived ? 'AUTH_CLIENT_FINALIZATION_FAILED' : 'REGISTRATION_NETWORK_ERROR',
-                    retryAfter: null
-                };
+            } catch (e) {
+                return { success: false, error: e.message, code: 'REGISTRATION_NETWORK_ERROR', retryAfter: null };
             }
         },
 
@@ -589,12 +440,6 @@
                 container.className = 'toast-container';
                 document.body.appendChild(container);
             }
-
-            // Keep the shared toast stack as a live region before adding each message.
-            // This also covers pages that provide a static .toast-container in their HTML.
-            container.setAttribute('role', 'status');
-            container.setAttribute('aria-live', 'polite');
-            container.setAttribute('aria-atomic', 'false');
 
             const toast = document.createElement('div');
             toast.className = `toast toast--${type}`;
@@ -628,7 +473,6 @@
         },
 
         async login(email, password) {
-            let successfulResponseReceived = false;
             try {
                 const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
                 const res = await fetch(`${API_URL}/auth/login`, {
@@ -640,25 +484,61 @@
                     },
                     body: JSON.stringify({ email, password })
                 });
-                successfulResponseReceived = res.ok;
-                const data = await res.json();
+
+                let data = null;
+                try {
+                    data = await res.json();
+                } catch (parseError) {
+                    console.warn('[AUTH] Login API returned a non-JSON response', {
+                        status: res.status,
+                        errorType: parseError?.name || 'ParseError'
+                    });
+                    const retryAfter = Number.parseInt(res.headers.get('retry-after') || '', 10) || null;
+                    const error = res.status === 429
+                        ? 'Příliš mnoho pokusů o přihlášení. Chvíli počkej a zkus to znovu.'
+                        : res.status >= 500
+                            ? 'Přihlášení je teď dočasně nedostupné. Zkus to prosím za chvíli znovu.'
+                            : 'Přihlášení se nepodařilo ověřit. Zkus to prosím znovu.';
+                    return {
+                        success: false,
+                        error,
+                        code: res.status === 429 ? 'LOGIN_RATE_LIMITED' : res.status >= 500 ? 'LOGIN_SERVICE_UNAVAILABLE' : 'LOGIN_INVALID_RESPONSE',
+                        retryAfter
+                    };
+                }
+
                 if (!res.ok) {
                     return {
                         success: false,
-                        error: localizedAuthError(data.error, data.code, res.status, 'login'),
-                        code: data.code || 'LOGIN_FAILED',
+                        error: data?.error || (res.status === 429
+                            ? 'Příliš mnoho pokusů o přihlášení. Chvíli počkej a zkus to znovu.'
+                            : res.status >= 500
+                                ? 'Přihlášení je teď dočasně nedostupné. Zkus to prosím za chvíli znovu.'
+                                : 'Přihlášení se nepodařilo. Zkontroluj e-mail a heslo a zkus to znovu.'),
+                        code: data?.code || 'LOGIN_FAILED',
                         retryAfter: Number.parseInt(res.headers.get('retry-after') || '', 10) || null
+                    };
+                }
+
+                if (!data || typeof data !== 'object' || Array.isArray(data)
+                    || !data.user || typeof data.user !== 'object' || Array.isArray(data.user)) {
+                    console.warn('[AUTH] Login API returned an unexpected JSON shape', { status: res.status });
+                    return {
+                        success: false,
+                        error: 'Přihlášení se nepodařilo ověřit. Zkus to prosím znovu.',
+                        code: 'LOGIN_INVALID_RESPONSE',
+                        retryAfter: null
                     };
                 }
 
                 this.loginSuccess(data, { mode: 'login' });
                 return { success: true, analyticsTracked: true };
-            } catch {
-                const copy = authCopy();
+            } catch (e) {
+                console.warn('[AUTH] Login request could not be completed', { errorType: e?.name || 'NetworkError' });
                 return {
                     success: false,
-                    error: successfulResponseReceived ? copy.authFinalizationError : copy.loginNetworkError,
-                    code: successfulResponseReceived ? 'AUTH_CLIENT_FINALIZATION_FAILED' : 'LOGIN_NETWORK_ERROR',
+                    error: 'Při přihlášení se nepodařilo spojit se serverem. Zkontroluj připojení a zkus to znovu.',
+                    code: 'LOGIN_NETWORK_ERROR',
                     retryAfter: null
                 };
             }
@@ -715,8 +595,11 @@
                         feature: standaloneContext.feature || null,
                         metadata: standaloneContext.metadata || {},
                         billing_interval: standaloneContext.billing_interval || null,
-                        redirect: getSafeLocalRedirect(standaloneContext.redirect, '/cenik.html') !== '/profil.html'
-                            ? getSafeLocalRedirect(standaloneContext.redirect, '/cenik.html')
+                        redirect: typeof standaloneContext.redirect === 'string'
+                            && standaloneContext.redirect.startsWith('/')
+                            && !standaloneContext.redirect.startsWith('//')
+                            && standaloneContext.redirect !== '/profil.html'
+                            ? standaloneContext.redirect
                             : '/cenik.html',
                         authMode: standaloneContext.mode || options.mode || 'register'
                     }
@@ -786,7 +669,11 @@
                 return false;
             }
 
-            const safeRedirect = getSafeLocalRedirect(context.redirect);
+            const safeRedirect = typeof context.redirect === 'string'
+                && context.redirect.startsWith('/')
+                && !context.redirect.startsWith('//')
+                ? context.redirect
+                : null;
 
             try {
                 const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
@@ -852,168 +739,168 @@
             const featureMap = {
                 partnerska_detail: {
                     path: '/partnerska-shoda.html',
-                    title: 'Vítejte v Mystické Hvězdě',
-                    message: 'Začněte partnerskou shodou. První výsledek vám rychle ukáže osobní hodnotu.'
+                    title: 'Vítej v Mystické Hvězdě',
+                    message: 'Pokračuj k partnerské shodě a prozkoumej, jak se vaše horoskopy doplňují.'
                 },
                 synastry: {
                     path: '/partnerska-shoda.html',
-                    title: 'Vítejte v Mystické Hvězdě',
-                    message: 'Začněte partnerskou shodou. První výsledek vám rychle ukáže osobní hodnotu.'
+                    title: 'Vítej v Mystické Hvězdě',
+                    message: 'Pokračuj k partnerské shodě a prozkoumej, jak se vaše horoskopy doplňují.'
                 },
                 natalni_interpretace: {
                     path: '/natalni-karta.html',
-                    title: 'Vítejte v Mystické Hvězdě',
-                    message: 'Natální karta je jeden z nejsilnějších prvních momentů. Začněte právě tady.'
+                    title: 'Vítej v Mystické Hvězdě',
+                    message: 'Pokračuj k natální kartě a připrav si údaje potřebné pro její výpočet.'
                 },
                 numerologie_vyklad: {
                     path: '/numerologie.html',
-                    title: 'Vítejte v Mystické Hvězdě',
-                    message: 'V numerologii nejrychleji uvidíte, jak osobní umí být vaše první vedení.'
+                    title: 'Vítej v Mystické Hvězdě',
+                    message: 'Pokračuj k numerologii a podívej se na rozbor svého data narození.'
                 },
                 annual_horoscope: {
                     path: '/osobni-mapa.html',
-                    title: 'Vítejte v Mystické Hvězdě',
-                    message: 'Roční horoskop už nenabízíme. Pokračujte k hlubší Osobní mapě.'
+                    title: 'Vítej v Mystické Hvězdě',
+                    message: 'Roční horoskop už nenabízíme. Tady si můžeš prohlédnout aktuální nabídku Osobní mapy.'
                 },
                 personal_map: {
                     path: '/osobni-mapa.html',
-                    title: 'Vítejte v Mystické Hvězdě',
-                    message: 'Pokračujte k osobní mapě a hlubšímu rozboru vlastního směru.'
+                    title: 'Vítej v Mystické Hvězdě',
+                    message: 'Pokračuj k Osobní mapě a prohlédni si, co její výklad obsahuje.'
                 },
                 tarot: {
                     path: '/tarot.html',
-                    title: 'Vítejte v Mystické Hvězdě',
-                    message: 'Vyzkoušejte hned první tarotový výklad. Je to nejrychlejší cesta k první hodnotě.'
+                    title: 'Vítej v Mystické Hvězdě',
+                    message: 'Vyber si rozklad a polož otázku, kterou chceš prozkoumat.'
                 },
                 tarot_yes_no: {
                     path: '/tarot-ano-ne.html',
-                    title: 'Vítejte v Mystické Hvězdě',
-                    message: 'Začněte jednou konkrétní otázkou ano/ne a uložte odpověď do Deníku výkladů.'
+                    title: 'Vítej v Mystické Hvězdě',
+                    message: 'Polož jednu konkrétní otázku ano/ne a podívej se, co ti karta nabídne k zamyšlení.'
                 },
                 tarot_love: {
                     path: '/tarot-laska.html',
-                    title: 'Vítejte v Mystické Hvězdě',
-                    message: 'Vraťte se k tématu vztahu a pokračujte prvním výkladem tarotu na lásku.'
+                    title: 'Vítej v Mystické Hvězdě',
+                    message: 'Otevři tarot na lásku a zaměř se na otázku, kterou teď řešíš.'
                 },
                 dream_dictionary: {
                     path: '/snar.html',
-                    title: 'Vítejte v Mystické Hvězdě',
-                    message: 'Vraťte se k symbolu ze svého snu a pokračujte jeho osobním významem.'
+                    title: 'Vítej v Mystické Hvězdě',
+                    message: 'Vrať se k symbolu ze svého snu a prozkoumej, co pro tebe může znamenat.'
                 },
                 tarot_multi_card: {
                     path: '/tarot.html',
-                    title: 'Vítejte v Mystické Hvězdě',
-                    message: 'Navážete rovnou vícekartovým tarotem a prvním hlubším vhledem.'
+                    title: 'Vítej v Mystické Hvězdě',
+                    message: 'Vyber si rozklad z více karet a prohlédni si, jak se jejich významy doplňují.'
                 },
                 tarot_daily_card_profile_save: {
                     path: '/tarot-karta-dne.html',
                     title: 'Karta je připravená k uložení',
-                    message: 'Vracíme vás ke kartě dne, aby se mohla uložit do profilu bez ztráty kontextu.'
+                    message: 'Vrať se ke kartě dne a ulož si ji do profilu, ať ji později snadno najdeš.'
                 },
                 horoskopy: {
                     path: '/horoskopy.html',
-                    title: 'Vítejte v Mystické Hvězdě',
-                    message: 'Začněte osobním horoskopem a získejte rychlý první vhled.'
+                    title: 'Vítej v Mystické Hvězdě',
+                    message: 'Vyber si znamení a přečti si dnešní horoskop.'
                 },
                 astrocartography: {
                     path: '/astro-mapa.html',
-                    title: 'Vítejte v Mystické Hvězdě',
-                    message: 'Začněte astro mapou a podívejte se, která místa s vámi rezonují.'
+                    title: 'Vítej v Mystické Hvězdě',
+                    message: 'Pokračuj k astro mapě a prozkoumej místa, která tě zajímají.'
                 },
                 premium_membership: {
                     path: '/cenik.html',
-                    title: 'Registrace je hotová',
-                    message: 'Můžeš si prohlédnout členství a jeho podmínky.'
+                    title: 'Členství Mystické Hvězdy',
+                    message: 'Prohlédni si obsah členství, cenu i podmínky.'
                 },
                 subscription_management: {
-                    path: '/profil.html',
-                    title: 'Registrace je hotová',
-                    message: 'Správu předplatného najdete v profilu. Odtud můžete pokračovat k dalšímu kroku kolem plánu.'
+                    path: '/profil.html#tab-settings',
+                    title: 'Nastavení členství',
+                    message: 'V nastavení profilu můžeš zkontrolovat své členství a správu plateb.'
                 },
                 vip_membership: {
                     path: '/cenik.html',
-                    title: 'Registrace je hotová',
-                    message: 'Můžeš pokračovat ke členství s Keltským křížem a dalšími výklady.'
+                    title: 'Členství Mystické Hvězdy',
+                    message: 'Prohlédni si aktuální nabídku členství a jeho podmínky.'
                 },
                 daily_guidance: {
                     path: '/horoskopy.html',
-                    title: 'Vítejte v Mystické Hvězdě',
-                    message: 'Začněte dnešním osobním horoskopem. Je to nejrychlejší cesta k první hodnotě.'
+                    title: 'Vítej v Mystické Hvězdě',
+                    message: 'Vyber si své znamení a otevři dnešní horoskop.'
                 },
                 daily_angel_card: {
                     path: '/andelske-karty.html',
-                    title: 'Vítejte v Mystické Hvězdě',
-                    message: 'Vracíme vás k dennímu symbolu z homepage, aby první vhled navázal na to, kvůli čemu jste přišli.'
+                    title: 'Vítej v Mystické Hvězdě',
+                    message: 'Vrať se k denní kartě a prozkoumej její význam.'
                 },
                 andelske_karty_hluboky_vhled: {
                     path: '/andelske-karty.html',
-                    title: 'Vítejte v Mystické Hvězdě',
-                    message: 'Pokračujte v andělských kartách a otevřete hlubší vhled bez ztráty kontextu.'
+                    title: 'Vítej v Mystické Hvězdě',
+                    message: 'Prohlédni si andělské karty a vyber si výklad, který tě zajímá.'
                 },
                 weekly_horoscope: {
-                    path: '/horoskopy.html',
-                    title: 'Vítejte v Mystické Hvězdě',
-                    message: 'Začněte osobním horoskopem a získejte rychlý první vhled.'
+                    path: '/tydenni-horoskop.html',
+                    title: 'Vítej v Mystické Hvězdě',
+                    message: 'Tady najdeš týdenní výhled. Vyber si znamení; plný obsah je součástí členství.'
                 },
                 monthly_horoscope: {
-                    path: '/horoskopy.html',
-                    title: 'Vítejte v Mystické Hvězdě',
-                    message: 'Začněte osobním horoskopem a získejte rychlý první vhled.'
+                    path: '/mesicni-horoskop.html',
+                    title: 'Vítej v Mystické Hvězdě',
+                    message: 'Tady najdeš měsíční výhled. Vyber si znamení; plný obsah je součástí členství.'
                 },
                 lunar_calendar: {
                     path: '/lunace.html',
-                    title: 'Vítejte v Mystické Hvězdě',
-                    message: 'Začněte lunárním kalendářem a vezměte si z aktuální fáze měsíce konkrétní krok.'
+                    title: 'Vítej v Mystické Hvězdě',
+                    message: 'Prohlédni si lunární kalendář a vyber si fázi, kterou chceš sledovat.'
                 },
                 zodiac_signs: {
                     path: '/horoskop/',
-                    title: 'Vítejte v Mystické Hvězdě',
-                    message: 'Začněte přehledem znamení a rychle se vraťte k horoskopu, který odpovídá vašemu tématu.'
+                    title: 'Vítej v Mystické Hvězdě',
+                    message: 'Vyber si znamení a otevři jeho horoskop.'
                 },
                 ritual_memory: {
                     path: '/profil.html',
-                    title: 'Paměť rituálu je připravená',
-                    message: 'Profil bude držet výklady, reflexe a opakující se témata v jednom návratovém místě.'
+                    title: 'Co se ti opakuje',
+                    message: 'Po prvním uloženém výkladu nebo reflexi si tady můžeš všimnout opakujících se témat.'
                 },
                 profile_history: {
                     path: '/profil.html',
-                    title: 'Historie výkladů je připravená',
-                    message: 'Ukládejte výklady a zpětnou vazbu, aby se další kroky mohly lépe zaměřit.'
+                    title: 'Historie výkladů',
+                    message: 'V profilu najdeš výklady, které sis uložil, a můžeš se k nim vracet.'
                 },
                 another_reading: {
                     path: '/tarot.html',
-                    title: 'Navážeme dalším výkladem',
-                    message: 'Pokračujte výkladem, který naváže na téma, které jste právě označili.'
+                    title: 'Další tarotový výklad',
+                    message: 'Vyber si další výklad podle otázky, kterou chceš prozkoumat.'
                 },
                 mentor: {
                     path: '/mentor.html',
-                    title: 'Vítejte v Mystické Hvězdě',
-                    message: 'Položte hned první otázku Hvězdnému Průvodci a získejte osobní kontakt s produktem.'
+                    title: 'Vítej v Mystické Hvězdě',
+                    message: 'Polož Hvězdnému Průvodci otázku, kterou právě řešíš.'
                 },
                 hvezdny_mentor: {
                     path: '/mentor.html',
-                    title: 'Vítejte v Mystické Hvězdě',
-                    message: 'Položte hned první otázku Hvězdnému Průvodci a získejte osobní kontakt s produktem.'
+                    title: 'Vítej v Mystické Hvězdě',
+                    message: 'Polož Hvězdnému Průvodci otázku, kterou právě řešíš.'
                 },
                 runy_hluboky_vyklad: {
                     path: '/runy.html',
-                    title: 'Vítejte v Mystické Hvězdě',
-                    message: 'Runy jsou silný první krok, pokud chcete okamžitý osobní výklad.'
+                    title: 'Vítej v Mystické Hvězdě',
+                    message: 'Pokračuj k runám a prozkoumej výklad ke své otázce.'
                 },
                 shamanske_kolo_plne_cteni: {
                     path: '/shamansko-kolo.html',
-                    title: 'Vítejte v Mystické Hvězdě',
-                    message: 'Šamanské kolo vás rychle navede ke konkrétnímu symbolickému směru.'
+                    title: 'Vítej v Mystické Hvězdě',
+                    message: 'Otevři šamanské kolo a prozkoumej symbolický výklad ke svému tématu.'
                 },
                 minuly_zivot: {
                     path: '/minuly-zivot.html',
-                    title: 'Vítejte v Mystické Hvězdě',
-                    message: 'Minulý život berte jako symbolický rámec pro sebereflexi a první osobní téma.'
+                    title: 'Vítej v Mystické Hvězdě',
+                    message: 'Symbolický výklad minulého života můžeš vzít jako podnět k sebereflexi.'
                 },
                 kristalova_koule: {
                     path: '/kristalova-koule.html',
-                    title: 'Vítejte v Mystické Hvězdě',
-                    message: 'Křišťálová koule pomůže formulovat první otázku a vzít si krátký osobní vhled.'
+                    title: 'Vítej v Mystické Hvězdě',
+                    message: 'Polož otázku a prozkoumej symbolický vhled z křišťálové koule.'
                 }
             };
 
@@ -1031,8 +918,8 @@
                 past_life: featureMap.minuly_zivot,
                 rituals: {
                     path: '/ritualy/',
-                    title: 'Vítejte v Mystické Hvězdě',
-                    message: 'Začněte lunárním rituálem a vezměte si první praktický krok.'
+                    title: 'Vítej v Mystické Hvězdě',
+                    message: 'Prohlédni si lunární rituály a vyber si ten, který se hodí k tvému záměru.'
                 },
                 runes_deep_reading: featureMap.runy_hluboky_vyklad,
                 synastry: featureMap.partnerska_detail,
@@ -1042,33 +929,33 @@
             const sourceMap = {
                 homepage_hero: {
                     path: '/tarot-ano-ne.html',
-                    title: 'Vítejte v Mystické Hvězdě',
-                    message: 'Začněte jednou konkrétní otázkou ano/ne a získejte první odpověď hned.'
+                    title: 'Vítej v Mystické Hvězdě',
+                    message: 'Polož jednu konkrétní otázku ano/ne a otevři tarotový výklad.'
                 },
                 pricing_free_cta: {
                     path: '/horoskopy.html',
-                    title: 'Registrace je hotová',
-                    message: 'Začněte denním horoskopem. Je to nejrychlejší první hodnota po vytvoření účtu.'
+                    title: 'Vítej v Mystické Hvězdě',
+                    message: 'Vyber si znamení a přečti si dnešní horoskop.'
                 },
                 homepage_pricing_free_cta: {
                     path: '/horoskopy.html',
-                    title: 'Registrace je hotová',
-                    message: 'Začněte denním horoskopem a hned uvidíte, co účet zdarma umí.'
+                    title: 'Vítej v Mystické Hvězdě',
+                    message: 'Vyber si znamení a otevři dnešní horoskop.'
                 },
                 tarot_daily_card_profile_save: {
                     path: '/tarot-karta-dne.html',
                     title: 'Karta je připravená k uložení',
-                    message: 'Vracíme vás ke kartě dne, aby se mohla uložit do profilu bez ztráty kontextu.'
+                    message: 'Vrať se ke kartě dne a ulož si ji do profilu, ať ji později snadno najdeš.'
                 },
                 newsletter_form: {
                     path: '/horoskopy.html',
-                    title: 'Registrace je hotová',
-                    message: 'Když už jste uvnitř, vezměte si hned první hodnotu přes osobní horoskop.'
+                    title: 'Vítej v Mystické Hvězdě',
+                    message: 'Vyber si znamení a přečti si dnešní horoskop.'
                 },
                 newsletter_popup: {
                     path: '/horoskopy.html',
-                    title: 'Registrace je hotová',
-                    message: 'Navážete na odběr rovnou denním horoskopem a první osobní hodnotou.'
+                    title: 'Vítej v Mystické Hvězdě',
+                    message: 'Vyber si znamení a otevři dnešní horoskop.'
                 }
             };
 
@@ -1082,8 +969,8 @@
             if (manifestActivation?.path) {
                 return {
                     path: manifestActivation.path,
-                    title: copyConfig?.title || 'Vítejte v Mystické Hvězdě',
-                    message: copyConfig?.message || 'Začněte prvním osobním výkladem, který naváže na důvod registrace.'
+                    title: copyConfig?.title || 'Vítej v Mystické Hvězdě',
+                    message: copyConfig?.message || 'Vyber si výklad podle otázky, kterou chceš prozkoumat.'
                 };
             }
 
@@ -1095,7 +982,7 @@
 
             sessionStorage.setItem(POST_AUTH_ACTIVATION_KEY, JSON.stringify({
                 path: context.path,
-                title: context.title || 'Vítejte',
+                title: context.title || 'Vítej',
                 message: context.message || '',
                 source: context.source || null,
                 feature: context.feature || null
@@ -1148,7 +1035,10 @@
                 if (!raw) return;
 
                 const activation = JSON.parse(raw);
-                if (!activation?.path || window.location.pathname !== activation.path) {
+                const activationPath = activation?.path
+                    ? new URL(activation.path, window.location.origin).pathname
+                    : '';
+                if (!activationPath || window.location.pathname !== activationPath) {
                     return;
                 }
 
@@ -1156,8 +1046,8 @@
 
                 if (activation.title || activation.message) {
                     this.showToast(
-                        activation.title || 'Vítejte',
-                        activation.message || 'Začněte prvním osobním výkladem.',
+                        activation.title || 'Vítej',
+                        activation.message || 'Vyber si výklad podle otázky, kterou chceš prozkoumat.',
                         'success'
                     );
                 }
@@ -1177,7 +1067,9 @@
             const context = this.getStandaloneAuthContext();
             if (!context) return null;
 
-            const safeRedirect = getSafeLocalRedirect(context.redirect, '/profil.html');
+            const safeRedirect = typeof context.redirect === 'string' && context.redirect.startsWith('/') && !context.redirect.startsWith('//')
+                ? context.redirect
+                : '/profil.html';
             const buildOnboardingRedirect = () => {
                 const onboardingUrl = new URL('/onboarding.html', window.location.origin);
                 if (context.source) onboardingUrl.searchParams.set('source', context.source);
@@ -1223,10 +1115,7 @@
 
         getPendingCheckoutContext() {
             try {
-                const parsed = JSON.parse(sessionStorage.getItem(PENDING_CONTEXT_KEY) || '{}');
-                if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return {};
-                const planId = parsed.planId || this.getPendingCheckoutPlan();
-                return planId ? this.sanitizeCheckoutContextForStorage(planId, parsed) : {};
+                return JSON.parse(sessionStorage.getItem(PENDING_CONTEXT_KEY) || '{}');
             } catch {
                 return {};
             }
@@ -1239,7 +1128,11 @@
                 setCheckoutMetadataValue(metadata, key, rawMetadata[key]);
             });
 
-            const redirect = getSafeLocalRedirect(context.redirect, '/cenik.html');
+            const redirect = typeof context.redirect === 'string'
+                && context.redirect.startsWith('/')
+                && !context.redirect.startsWith('//')
+                ? context.redirect
+                : '/cenik.html';
             const storedContext = {
                 planId: sanitizeCheckoutMetadataValue(planId, 80),
                 source: sanitizeCheckoutMetadataValue(context.source, 120) || 'auth_pending_plan',
@@ -1290,7 +1183,7 @@
 
                 return {
                     planId: parsed.planId,
-                    context: this.sanitizeCheckoutContextForStorage(parsed.planId, parsed.context)
+                    context: parsed.context
                 };
             } catch {
                 localStorage.removeItem(POST_VERIFICATION_CHECKOUT_KEY);
@@ -1472,7 +1365,9 @@
             if (!planId) return;
 
             if (!this.isLoggedIn()) {
-                const redirectTarget = getSafeLocalRedirect(context.redirect, '/cenik.html');
+                const redirectTarget = typeof context.redirect === 'string' && context.redirect.startsWith('/') && !context.redirect.startsWith('//')
+                    ? context.redirect
+                    : '/cenik.html';
                 const authMode = context.authMode === 'login' ? 'login' : 'register';
                 const checkoutContext = {
                     ...context,
@@ -1500,7 +1395,9 @@
         },
 
         buildCheckoutRecoveryUrl(planId, context = {}, reason = 'session_failed') {
-            const target = getSafeLocalRedirect(context.redirect, '/cenik.html');
+            const target = typeof context.redirect === 'string' && context.redirect.startsWith('/') && !context.redirect.startsWith('//')
+                ? context.redirect
+                : '/cenik.html';
             const url = new URL(target, window.location.origin);
             const metadata = context.metadata && typeof context.metadata === 'object' && !Array.isArray(context.metadata)
                 ? context.metadata
@@ -1536,11 +1433,9 @@
             return `${url.pathname}${url.search}${url.hash}`;
         },
 
-        async logout(expectedUserId = this.user?.id || null) {
-            if (!hasSameLoggedInSession(this, expectedUserId)) return;
+        async logout() {
             // Call server logout endpoint to clear HttpOnly cookie
             const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
-            if (!hasSameLoggedInSession(this, expectedUserId)) return;
             await fetch(`${API_URL}/auth/logout`, {
                 method: 'POST',
                 credentials: 'include',
@@ -1550,7 +1445,6 @@
                 }
             }).catch(e => console.warn('Logout API call failed:', e));
 
-            if (!hasSameCachedIdentity(this, expectedUserId)) return;
             // Clear local state
             this.user = null;
             localStorage.removeItem('auth_user');
@@ -1596,7 +1490,7 @@
 
                 // Mobile
                 if (mobileAuthBtn) {
-                    mobileAuthBtn.textContent = authShellCopy().logout;
+                    mobileAuthBtn.textContent = 'Odhlásit se';
                 }
                 setHidden(mobileRegBtn, true);
                 setHidden(mobileProfileLink, false);
@@ -1606,7 +1500,7 @@
                     regBtn.href = '/prihlaseni.html?mode=register&source=header_register&feature=account';
                 }
                 if (authBtn) {
-                    authBtn.textContent = authShellCopy().login;
+                    authBtn.textContent = 'Přihlásit';
                     authBtn.href = '/prihlaseni.html?source=header_login';
                 }
                 setHidden(regBtn, false);
@@ -1617,7 +1511,7 @@
                     mobileRegBtn.href = '/prihlaseni.html?mode=register&source=mobile_menu&feature=account';
                 }
                 if (mobileAuthBtn) {
-                    mobileAuthBtn.textContent = authShellCopy().login;
+                    mobileAuthBtn.textContent = 'Přihlásit se';
                     mobileAuthBtn.href = '/prihlaseni.html?source=mobile_menu_login';
                 }
                 setHidden(mobileRegBtn, false);
@@ -1699,100 +1593,53 @@
                     e.preventDefault();
                     const form = e.target;
                     const btn = document.getElementById('auth-submit');
-                    if (btn?.disabled || modalAuthRequestPending) return;
 
                     // Password reset mode
                     if (btn && btn.dataset.mode === 'reset') {
                         const resetEmail = form.reset_email?.value || form.email.value;
-                        if (resetEmail) {
-                            const emailField = document.getElementById('auth-modal-email');
-                            const emailWasDisabled = emailField?.disabled === true;
-                            modalAuthRequestPending = true;
-                            form.setAttribute('aria-busy', 'true');
-                            if (emailField) emailField.disabled = true;
-                            try {
-                                await this.resetPassword(resetEmail);
-                            } finally {
-                                modalAuthRequestPending = false;
-                                form.removeAttribute('aria-busy');
-                                if (emailField) emailField.disabled = emailWasDisabled;
-                            }
-                        }
+                        if (resetEmail) await this.resetPassword(resetEmail);
                         return;
                     }
 
                     const email = form.email.value;
                     const password = form.password.value;
-                    const isRegister = btn?.dataset.mode === 'register';
+                    const isRegister = btn && btn.textContent === 'Zaregistrovat';
 
                     if (isRegister) {
-                        const copy = authCopy();
                         const confirmPassword = form.confirm_password?.value;
                         const birthDate = form.birth_date?.value;
                         const legalConsent = form.gdpr_consent?.checked === true;
 
                         if (password.length < PASSWORD_MIN_LENGTH) {
-                            const message = copy.passwordMin.replace('{length}', PASSWORD_MIN_LENGTH);
-                            setAuthModalStatus(message, 'error');
-                            this.showToast(copy.errorTitle, message, 'error');
+                            this.showToast('Chyba', `Heslo musí mít alespoň ${PASSWORD_MIN_LENGTH} znaků.`, 'error');
                             return;
                         }
                         if (password !== confirmPassword) {
-                            setAuthModalStatus(copy.passwordMismatch, 'error');
-                            this.showToast(copy.errorTitle, copy.passwordMismatch, 'error');
+                            this.showToast('Chyba', 'Hesla se neshodují.', 'error');
                             return;
                         }
                         if (!legalConsent) {
-                            setAuthModalStatus(copy.consentRequired, 'error');
                             this.showToast(
-                                copy.consentRequiredTitle,
-                                copy.consentRequired,
+                                'Souhlas je potřeba',
+                                'Pro vytvoření účtu přijměte obchodní podmínky a potvrďte seznámení se zásadami soukromí.',
                                 'error'
                             );
                             form.gdpr_consent?.focus();
                             return;
                         }
-                    }
-
-                    // Lock synchronously before the first await so a second
-                    // click/submit cannot race another auth request.
-                    modalAuthRequestPending = true;
-                    setAuthModalStatus('');
-                    if (btn) btn.disabled = true;
-                    form.setAttribute('aria-busy', 'true');
-                    const fields = Array.from(form.querySelectorAll('input, select, textarea'));
-                    const fieldDisabledStates = fields.map((field) => field.disabled);
-                    fields.forEach((field) => { field.disabled = true; });
-                    try {
-                        if (isRegister) {
-                            const copy = authCopy();
-                            const res = await this.register(email, password, {
-                                first_name: form.first_name?.value || undefined,
-                                birth_date: form.birth_date?.value || undefined,
-                                birth_place: form.birth_place?.value || undefined,
-                                password_confirm: form.confirm_password?.value,
-                                gdpr_consent: true,
-                                terms_consent: true
-                            });
-                            if (!res.success) {
-                                setAuthModalStatus(res.error, 'error');
-                                this.showToast(copy.registrationErrorTitle, res.error, 'error');
-                            }
-                        } else {
-                            const res = await this.login(email, password);
-                            const copy = authCopy();
-                            if (!res.success) {
-                                setAuthModalStatus(res.error, 'error');
-                                this.showToast(copy.loginErrorTitle, res.error, 'error');
-                            } else {
-                                this.showToast(copy.loginSuccessTitle, copy.loginSuccess, 'success');
-                            }
-                        }
-                    } finally {
-                        modalAuthRequestPending = false;
-                        form.removeAttribute('aria-busy');
-                        fields.forEach((field, index) => { field.disabled = fieldDisabledStates[index]; });
-                        if (btn?.isConnected) btn.disabled = false;
+                        const res = await this.register(email, password, {
+                            first_name: form.first_name?.value || undefined,
+                            birth_date: birthDate,
+                            birth_place: form.birth_place?.value || undefined,
+                            password_confirm: confirmPassword,
+                            gdpr_consent: legalConsent,
+                            terms_consent: legalConsent
+                        });
+                        if (!res.success) this.showToast('Chyba registrace', res.error, 'error');
+                    } else {
+                        const res = await this.login(email, password);
+                        if (!res.success) this.showToast('Chyba přihlášení', res.error, 'error');
+                        else this.showToast('Vítej zpět', 'Přihlášení proběhlo úspěšně.', 'success');
                     }
                 }
             });
@@ -1816,7 +1663,6 @@
         },
 
         openForgotPassword() {
-            const copy = authCopy();
             const title = document.getElementById('auth-title');
             const btn = document.getElementById('auth-submit');
             const toggleBtn = document.getElementById('auth-mode-toggle');
@@ -1825,28 +1671,16 @@
             const resetFields = document.getElementById('reset-password-fields');
             const registerFields = document.getElementById('register-fields');
 
-            if (title) title.textContent = copy.resetTitle;
-            if (btn) { btn.textContent = copy.submitReset; btn.dataset.mode = 'reset'; }
-            if (toggleBtn) toggleBtn.textContent = copy.toggleReset;
+            if (title) title.textContent = 'Obnovení hesla';
+            if (btn) { btn.textContent = 'Odeslat odkaz'; btn.dataset.mode = 'reset'; }
+            if (toggleBtn) toggleBtn.textContent = 'Zpět na přihlášení';
             setHidden(pwField, true);
             setHidden(forgotLink, true);
             setHidden(resetFields, false);
             setHidden(registerFields, true);
-            setHidden(document.getElementById('confirm-password-field-wrapper'), true);
-            setRegistrationPasswordPolicy(false);
-            setHidden(document.getElementById('gdpr-consent-wrapper'), true);
-            setGdprRequirement(false);
-            const password = document.getElementById('auth-modal-password');
-            if (password) password.disabled = true;
-            setAuthModalStatus('');
-            document.getElementById('auth-modal-email')?.focus();
         },
 
         async resetPassword(email) {
-            const copy = authCopy();
-            const button = document.getElementById('auth-submit');
-            if (button) button.disabled = true;
-            setAuthModalStatus(copy.resetSending);
             try {
                 const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
                 const res = await fetch(`${API_URL}/auth/forgot-password`, {
@@ -1859,21 +1693,18 @@
                     body: JSON.stringify({ email })
                 });
                 if (res.ok) {
-                    setAuthModalStatus(copy.resetSent);
+                    this.showToast('E-mail odeslán', 'Odkaz pro obnovení hesla najdeš ve své e-mailové schránce.', 'success');
+                    this.closeModal();
                 } else {
-                    setAuthModalStatus(res.status === 429 ? copy.resetRateLimited : copy.resetFailed, 'error');
+                    this.showToast('Chyba', 'E-mail se nepodařilo odeslat. Zkus to znovu.', 'error');
                 }
-            } catch {
-                setAuthModalStatus(copy.connectionInterrupted, 'error');
-            } finally {
-                if (button) button.disabled = false;
+            } catch (e) {
+                this.showToast('Chyba připojení', 'Ověř připojení k internetu.', 'error');
             }
         },
 
 
         toggleMode() {
-            if (modalAuthRequestPending) return;
-            const copy = authCopy();
             const title = document.getElementById('auth-title');
             const btn = document.getElementById('auth-submit');
             const toggleBtn = document.getElementById('auth-mode-toggle');
@@ -1882,57 +1713,46 @@
 
             // If in reset mode, go back to login
             if (btn.dataset.mode === 'reset') {
-                const password = document.getElementById('auth-modal-password');
-                if (password) password.disabled = false;
-                setAuthModalStatus('');
-                btn.dataset.mode = 'login';
+                delete btn.dataset.mode;
                 const pwField = document.getElementById('password-field-wrapper');
                 const forgotLink = document.getElementById('forgot-password-link');
                 const resetFields = document.getElementById('reset-password-fields');
                 const registerFields = document.getElementById('register-fields');
                 const confirmPwField = document.getElementById('confirm-password-field-wrapper');
                 const gdprWrapper = document.getElementById('gdpr-consent-wrapper');
-                title.textContent = copy.loginTitle;
-                btn.textContent = copy.submitLogin;
-                toggleBtn.textContent = copy.toggleLogin;
+                title.textContent = 'Přihlášení';
+                btn.textContent = 'Přihlásit se';
+                toggleBtn.textContent = 'Nemáš účet? Zaregistruj se';
                 setHidden(pwField, false);
                 setHidden(forgotLink, false);
                 setHidden(resetFields, true);
                 setHidden(registerFields, true);
                 setHidden(confirmPwField, true);
-                setRegistrationPasswordPolicy(false);
                 setHidden(gdprWrapper, true);
                 setGdprRequirement(false);
                 return;
             }
 
-            // A login error belongs to the current form mode. Do not leave it
-            // visible after switching to registration, or vice versa.
-            setAuthModalStatus('');
-            const isLogin = btn.dataset.mode !== 'register';
+            const isLogin = btn.textContent === 'Přihlásit se';
 
             const fields = document.getElementById('register-fields');
             const confirmPwField = document.getElementById('confirm-password-field-wrapper');
             const gdprWrapper = document.getElementById('gdpr-consent-wrapper');
 
             if (isLogin) {
-                btn.dataset.mode = 'register';
-                title.textContent = copy.registerTitle;
-                btn.textContent = copy.submitRegister;
-                toggleBtn.textContent = copy.toggleRegister;
+                title.textContent = 'Registrace';
+                btn.textContent = 'Zaregistrovat';
+                toggleBtn.textContent = 'Už máš účet? Přihlas se';
                 setHidden(fields, false);
                 setHidden(confirmPwField, false);
-                setRegistrationPasswordPolicy(true);
                 setHidden(gdprWrapper, false);
                 setGdprRequirement(true);
             } else {
-                btn.dataset.mode = 'login';
-                title.textContent = copy.loginTitle;
-                btn.textContent = copy.submitLogin;
-                toggleBtn.textContent = copy.toggleLogin;
+                title.textContent = 'Přihlášení';
+                btn.textContent = 'Přihlásit se';
+                toggleBtn.textContent = 'Nemáš účet? Zaregistruj se';
                 setHidden(fields, true);
                 setHidden(confirmPwField, true);
-                setRegistrationPasswordPolicy(false);
                 setHidden(gdprWrapper, true);
                 setGdprRequirement(false);
             }
@@ -1940,65 +1760,79 @@
 
 
         openModal(mode = 'login') {
-            const copy = authCopy();
             // Auto-inject if missing
             if (!document.getElementById('auth-modal')) this.injectModal();
-            setBirthDateMaximum(document.getElementById('auth-modal') || document);
             this.bindModalListeners();
 
             const modal = document.getElementById('auth-modal');
             if (modal) {
-                if (modal.hidden) modalReturnFocus = document.activeElement;
-                modal.hidden = false;
-
-                // Set correct mode
                 const title = document.getElementById('auth-title');
                 const btn = document.getElementById('auth-submit');
                 const toggleBtn = document.getElementById('auth-mode-toggle');
-
                 if (!title || !btn || !toggleBtn) return;
-                const nextMode = mode === 'register' ? 'register' : 'login';
-                btn.dataset.mode = nextMode;
-                const password = document.getElementById('auth-modal-password');
-                if (password) password.disabled = false;
-                setHidden(document.getElementById('password-field-wrapper'), false);
-                setHidden(document.getElementById('forgot-password-link'), false);
-                setHidden(document.getElementById('reset-password-fields'), true);
-                setAuthModalStatus('');
+
+                const wasHidden = modal.hidden;
+                if (wasHidden) {
+                    this.modalReturnFocusElement = document.activeElement instanceof HTMLElement
+                        ? document.activeElement
+                        : null;
+                    this.modalAddedBodyScrollLockClass = !document.body.classList.contains('auth-modal-open');
+                }
+                modal.hidden = false;
+
+                // Set correct mode
+                if (wasHidden) {
+                    this.setModalBackgroundInert(modal, true);
+                    document.body.classList.add('auth-modal-open');
+                }
 
                 const fields = document.getElementById('register-fields');
                 const confirmPwField = document.getElementById('confirm-password-field-wrapper');
                 const gdprWrapper = document.getElementById('gdpr-consent-wrapper');
-                setRegistrationPasswordPolicy(nextMode === 'register');
 
-                if (nextMode === 'register') {
-                    title.textContent = copy.registerTitle;
-                    btn.textContent = copy.submitRegister;
-                    toggleBtn.textContent = copy.toggleRegister;
+                if (mode === 'register') {
+                    title.textContent = 'Registrace';
+                    btn.textContent = 'Zaregistrovat';
+                    toggleBtn.textContent = 'Už máš účet? Přihlas se';
                     setHidden(fields, false);
                     setHidden(confirmPwField, false);
                     setHidden(gdprWrapper, false);
                     setGdprRequirement(true);
                 } else {
-                    title.textContent = copy.loginTitle;
-                    btn.textContent = copy.submitLogin;
-                    toggleBtn.textContent = copy.toggleLogin;
+                    title.textContent = 'Přihlášení';
+                    btn.textContent = 'Přihlásit se';
+                    toggleBtn.textContent = 'Nemáš účet? Zaregistruj se';
                     setHidden(fields, true);
                     setHidden(confirmPwField, true);
                     setHidden(gdprWrapper, true);
                     setGdprRequirement(false);
                 }
-                document.getElementById('auth-modal-email')?.focus({ preventScroll: true });
+
+                const firstInput = this.getModalFocusableElements(modal)
+                    .find((element) => element.matches('input:not([type="hidden"])'));
+                window.requestAnimationFrame(() => {
+                    if (modal.hidden) return;
+                    (firstInput || modal).focus({ preventScroll: true });
+                });
             }
         },
 
         closeModal() {
             const modal = document.getElementById('auth-modal');
             if (!modal || modal.hidden) return;
+
             modal.hidden = true;
-            modal.querySelectorAll('input[type="password"]').forEach(input => { input.value = ''; });
-            if (modalReturnFocus?.isConnected) modalReturnFocus.focus({ preventScroll: true });
-            modalReturnFocus = null;
+            this.setModalBackgroundInert(modal, false);
+            if (this.modalAddedBodyScrollLockClass) {
+                document.body.classList.remove('auth-modal-open');
+            }
+            this.modalAddedBodyScrollLockClass = false;
+
+            const returnFocus = this.modalReturnFocusElement;
+            this.modalReturnFocusElement = null;
+            if (returnFocus?.isConnected) {
+                window.requestAnimationFrame(() => returnFocus.focus({ preventScroll: true }));
+            }
         },
 
         // API Wrapper for protected calls
@@ -2008,9 +1842,7 @@
                 throw new Error('Auth Required');
             }
 
-            const requestedUserId = this.user?.id || null;
             const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
-            if (!hasSameLoggedInSession(this, requestedUserId)) throw new Error('Auth session changed');
             const res = await fetch(`${API_URL}/${endpoint}`, {
                 method: 'POST',
                 credentials: 'include', // Send auth_token cookie
@@ -2022,13 +1854,12 @@
                 body: JSON.stringify(body)
             });
 
-            if (!hasSameLoggedInSession(this, requestedUserId)) throw new Error('Auth session changed');
             if (res.status === 401) {
-                await this.logout(requestedUserId);
+                this.logout();
                 throw new Error('Session expired');
             }
             if (res.status === 402 || res.status === 403) {
-                this.showToast('Premium vyžadováno', 'Tato funkce vyžaduje Premium účet.', 'info');
+                this.showToast('Je potřeba členství', 'Tato funkce je součástí členství Mystické Hvězdy.', 'info');
                 throw new Error('Premium Required');
             }
 
@@ -2036,33 +1867,20 @@
         },
 
 
-        async saveReading(type, data, expectedOwnerId = this.user?.id) {
+        async saveReading(type, data) {
             if (!this.isLoggedIn()) return null;
-            const ownerId = expectedOwnerId;
-            if (typeof ownerId !== 'string' || !ownerId || this.user?.id !== ownerId) return null;
-            const isSameOwner = () => {
-                if (!this.isLoggedIn() || this.user?.id !== ownerId) return false;
-                const cachedUser = readCachedUser();
-                return !cachedUser || cachedUser.id === ownerId;
-            };
 
             try {
                 const headers = { 'Content-Type': 'application/json' };
                 const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
-                if (!isSameOwner()) return null;
                 if (csrfToken) headers['X-CSRF-Token'] = csrfToken;
 
                 const res = await fetch(`${API_URL}/user/readings`, {
                     method: 'POST',
                     credentials: 'include', // Send auth_token cookie
                     headers,
-                    body: JSON.stringify({ type, data, expectedUserId: ownerId })
+                    body: JSON.stringify({ type, data })
                 });
-
-                // A successful response may arrive after another account has
-                // signed in. Do not expose the old account's result in the new
-                // account's UI or attach value events to the new session.
-                if (!isSameOwner()) return null;
 
                 if (!res.ok) {
                     const err = await res.json();
@@ -2070,7 +1888,6 @@
                     return null;
                 } else {
                     const savedData = await res.json();
-                    if (!isSameOwner()) return null;
                     const savedReading = savedData.reading || savedData;
                     this.trackEventSafely('feature_reading_saved', {
                         feature: type,
@@ -2110,31 +1927,22 @@
             }
         },
 
-        async saveReadingFeedback(readingId, feedback = {}, expectedOwnerId = this.user?.id) {
-            const ownerId = expectedOwnerId;
-            if (!this.isLoggedIn() || !readingId || typeof ownerId !== 'string' || !ownerId || this.user?.id !== ownerId) return null;
-            const isSameOwner = () => {
-                if (!this.isLoggedIn() || this.user?.id !== ownerId) return false;
-                const cachedUser = readCachedUser();
-                return !cachedUser || cachedUser.id === ownerId;
-            };
+        async saveReadingFeedback(readingId, feedback = {}) {
+            if (!this.isLoggedIn() || !readingId) return null;
 
             try {
                 const headers = { 'Content-Type': 'application/json' };
                 const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
-                if (!isSameOwner()) return null;
                 if (csrfToken) headers['X-CSRF-Token'] = csrfToken;
 
                 const res = await fetch(`${API_URL}/user/readings/${encodeURIComponent(readingId)}/feedback`, {
                     method: 'PATCH',
                     credentials: 'include',
                     headers,
-                    body: JSON.stringify({ ...feedback, expectedUserId: ownerId })
+                    body: JSON.stringify(feedback)
                 });
 
-                if (!isSameOwner()) return null;
                 const result = await res.json().catch(() => ({}));
-                if (!isSameOwner()) return null;
                 if (!res.ok) {
                     console.warn('Failed to save reading feedback:', result);
                     return null;
@@ -2157,19 +1965,18 @@
 
         async getProfile() {
             if (!this.isLoggedIn()) return null;
-            const requestedUserId = this.user?.id || null;
+            const ownerId = this.user?.id;
             try {
                 const res = await fetch(`${API_URL}/auth/profile`, {
                     credentials: 'include', // Send auth_token cookie
                     headers: { 'Content-Type': 'application/json' }
                 });
+                if (this.user?.id !== ownerId || !this.isLoggedIn()) return null;
                 if (res.status === 401 || res.status === 403) {
-                    if (hasSameCachedIdentity(this, requestedUserId)) this.clearStaleSession();
+                    this.clearStaleSession();
                     return null;
                 }
                 const data = await res.json();
-                if (!hasSameLoggedInSession(this, requestedUserId)
-                    || (requestedUserId && data.user?.id !== requestedUserId)) return null;
                 if (data.success) return data.user;
                 return null;
             } catch (e) {
@@ -2282,34 +2089,18 @@
         Auth.updateUI();
     });
 
-    // Keep shared tabs aligned with the account that most recently signed in.
+    // Cross-tab logout: Sync logout across browser tabs/windows
+    // When auth_user is removed from localStorage in another tab, log out here too
     window.addEventListener('storage', (event) => {
         if (event.key === 'auth_user') {
-            if (event.newValue === null) {
-                const hadUser = Boolean(Auth.user?.id);
+            // Check if the key was removed (logout in another tab)
+            if (event.newValue === null && Auth.isLoggedIn()) {
+                if (window.MH_DEBUG) console.debug('Logout detected in another tab, logging out here...');
                 Auth.user = null;
                 Auth.updateUI();
-                if (hadUser) {
-                    Auth.showToast('Odhlášení z jiného okna', 'Přihlášení v tomto okně se obnovilo podle změny účtu.', 'info');
-                }
-            } else {
-                let nextUser;
-                try {
-                    nextUser = JSON.parse(event.newValue);
-                } catch {
-                    return;
-                }
-
-                if (!nextUser || typeof nextUser.id !== 'string' || !nextUser.id || !Auth.isLoggedIn()) return;
-
-                const previousUser = Auth.user;
-                const accountChanged = previousUser?.id !== nextUser.id;
-                const userDataChanged = JSON.stringify(previousUser || null) !== JSON.stringify(nextUser);
-                Auth.user = nextUser;
-                if (accountChanged || userDataChanged) Auth.updateUI();
-                if (accountChanged && previousUser?.id) {
-                    Auth.showToast('Účet byl změněn v jiném okně', 'Aktivní účet se přepnul a profil se obnoví podle nového přihlášení.', 'info');
-                }
+                // Optionally show a message
+                Auth.showToast('Odhlášení z jiného okna', 'V jiném okně prohlížeče proběhlo odhlášení.', 'info');
+                // Don't reload - just update UI so user can login again if needed
             }
         }
 

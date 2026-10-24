@@ -3,39 +3,27 @@
  * Uses the server AI API for mystical, contextual oracle responses.
  */
 
-import { showFallbackNotice } from './utils/reading-display.js';
-
 let questionHistory = [];
 const COOLDOWN_SECONDS = 10;
-function readStorage(key) {
-    try { return localStorage.getItem(key); } catch { return null; }
-}
-function writeStorage(key, value) {
-    try { localStorage.setItem(key, value); } catch { /* Server remains authoritative for access limits. */ }
-}
+const CRYSTAL_DAILY_LIMIT = 3;
 const CRYSTAL_UI_COPY = {
     cs: {
-        cooldown: seconds => `Další otázka za ${seconds} s`,
-        loading: 'Připravuje se odpověď…',
+        cooldown: seconds => `Koule čerpá energii (${seconds}s)`,
         ask: 'Zeptat se koule',
-        questionRequired: 'Napiš otázku, na kterou chceš hledat nový úhel pohledu.',
         limitTitle: 'Limit dosažen',
         anonymousLimit: 'Dnešní ukázky zdarma jsou vyčerpané. Další odpovědi jsou součástí členství a podléhají provozním limitům.',
         questionTooLongTitle: 'Příliš dlouhá',
-        questionTooLong: 'Zkrať otázku na nejvýš 200 znaků.',
+        questionTooLong: 'Otázka je příliš dlouhá. Prosím, zkraťte ji.',
         favorite: 'Přidat do oblíbených',
         registrationTitle: 'První otázka zdarma využita',
         registrationMessage: 'Zaregistruj se zdarma a ptej se dál — účet zdarma dává 3 otázky denně.',
         memberLimit: 'Ve členství můžeš pokračovat v rámci provozních limitů.',
-        silent: 'Odpověď se teď nepodařilo připravit. Otázka zůstala ve formuláři; zkus to prosím znovu za chvíli.',
-        disconnected: 'Spojení se přerušilo. Otázka zůstává ve formuláři, můžeš to zkusit znovu.',
-        saveFailed: 'Odpověď je dostupná tady, uložení do profilu se nepodařilo.'
+        silent: 'Hvězdy mlčí...',
+        disconnected: 'Spojení přerušeno.'
     },
     sk: {
-        cooldown: seconds => `Ďalšia otázka o ${seconds} s`,
-        loading: 'Pripravuje sa odpoveď…',
+        cooldown: seconds => `Guľa čerpá energiu (${seconds}s)`,
         ask: 'Opýtať sa gule',
-        questionRequired: 'Napíš otázku, pri ktorej chceš hľadať nový uhol pohľadu.',
         limitTitle: 'Limit dosiahnutý',
         anonymousLimit: 'Dnešné ukážky zadarmo sú vyčerpané. Ďalšie odpovede sú súčasťou členstva a podliehajú prevádzkovým limitom.',
         questionTooLongTitle: 'Príliš dlhá otázka',
@@ -44,26 +32,22 @@ const CRYSTAL_UI_COPY = {
         registrationTitle: 'Prvá otázka zadarmo využitá',
         registrationMessage: 'Zaregistruj sa zadarmo a pýtaj sa ďalej — bezplatný účet ponúka 3 otázky denne.',
         memberLimit: 'V členstve môžeš pokračovať v rámci prevádzkových limitov.',
-        silent: 'Odpoveď sa teraz nepodarilo pripraviť. Otázka zostala vo formulári; skús to, prosím, o chvíľu znova.',
-        disconnected: 'Spojenie sa prerušilo. Otázka zostáva vo formulári, môžeš to skúsiť znova.',
-        saveFailed: 'Odpoveď je dostupná tu, uloženie do profilu sa nepodarilo.'
+        silent: 'Hviezdy mlčia...',
+        disconnected: 'Spojenie bolo prerušené.'
     },
     pl: {
-        cooldown: seconds => `Kolejne pytanie za ${seconds} s`,
-        loading: 'Przygotowywanie odpowiedzi…',
+        cooldown: seconds => 'Kula odzyskuje energię (' + seconds + ' s)',
         ask: 'Zapytaj kulę',
-        questionRequired: 'Wpisz pytanie, przy którym chcesz poszukać nowego spojrzenia.',
-        limitTitle: 'Limit wykorzystany',
-        anonymousLimit: 'Bezpłatne odpowiedzi na dziś zostały wykorzystane. Dalszy dostęp w ramach członkostwa podlega limitom korzystania.',
-        questionTooLongTitle: 'Zbyt długie pytanie',
-        questionTooLong: 'Skróć pytanie do maksymalnie 200 znaków.',
+        limitTitle: 'Limit został osiągnięty',
+        anonymousLimit: 'Dzisiejsze bezpłatne odpowiedzi zostały wykorzystane. Kolejne są dostępne w członkostwie i podlegają limitom operacyjnym.',
+        questionTooLongTitle: 'Pytanie jest za długie',
+        questionTooLong: 'Pytanie jest za długie. Skróć je i spróbuj ponownie.',
         favorite: 'Dodaj do ulubionych',
-        registrationTitle: 'Pierwsze bezpłatne pytanie wykorzystane',
-        registrationMessage: 'Załóż bezpłatne konto, aby skorzystać z 3 pytań dziennie.',
-        memberLimit: 'W ramach członkostwa możesz kontynuować do limitu korzystania.',
-        silent: 'Nie udało się teraz przygotować odpowiedzi. Pytanie pozostało w formularzu; spróbuj ponownie za chwilę.',
-        disconnected: 'Połączenie zostało przerwane. Pytanie pozostaje w formularzu, możesz spróbować ponownie.',
-        saveFailed: 'Odpowiedź jest dostępna tutaj, ale nie udało się zapisać jej w profilu.'
+        registrationTitle: 'Wykorzystano pierwsze bezpłatne pytanie',
+        registrationMessage: 'Utwórz bezpłatne konto i pytaj dalej — konto pozwala zadać 3 pytania dziennie.',
+        memberLimit: 'W ramach członkostwa możesz korzystać z usługi zgodnie z limitami operacyjnymi.',
+        silent: 'Kula nie odpowiada w tej chwili. Spróbuj ponownie za moment.',
+        disconnected: 'Połączenie zostało przerwane.'
     }
 };
 
@@ -72,8 +56,8 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function initCrystalBall() {
-    const requestedLocale = document.documentElement.lang.toLowerCase().slice(0, 2);
-    const locale = Object.hasOwn(CRYSTAL_UI_COPY, requestedLocale) ? requestedLocale : 'cs';
+    const pageLanguage = document.documentElement.lang.toLowerCase();
+    const locale = pageLanguage.startsWith('pl') ? 'pl' : (pageLanguage.startsWith('sk') ? 'sk' : 'cs');
     const copy = CRYSTAL_UI_COPY[locale];
     const ballContainer = document.getElementById('crystal-ball');
     // Note: 'answer' ID is now below the ball in the HTML update
@@ -85,96 +69,9 @@ function initCrystalBall() {
     const bannerUpgradeBtn = document.getElementById('crystal-banner-upgrade');
 
     if (!ballContainer) return;
-    if (questionInput) {
-        questionInput.maxLength = 200;
-        if (!questionInput.labels?.length) questionInput.setAttribute('aria-label', { cs: 'Tvoje otázka', sk: 'Tvoja otázka', pl: 'Twoje pytanie' }[locale]);
-    }
-    const questionError = document.getElementById('question-error');
-    function clearQuestionError() {
-        questionInput?.setAttribute('aria-invalid', 'false');
-        if (questionError) {
-            questionError.hidden = true;
-            questionError.textContent = '';
-        }
-    }
-    function showQuestionError() {
-        questionInput?.setAttribute('aria-invalid', 'true');
-        if (questionError) {
-            questionError.textContent = copy.questionRequired;
-            questionError.hidden = false;
-        }
-        questionInput?.focus();
-    }
 
     let isThinking = false;
     let cooldownTimer = null;
-    let oracleRequestGeneration = 0;
-    let oracleAbortController = null;
-    let activeOracleSession = null;
-    let displayedOracleSession = null;
-
-    function captureOracleSession() {
-        const isLoggedIn = Boolean(window.Auth?.isLoggedIn?.());
-        return {
-            isLoggedIn,
-            userId: isLoggedIn ? window.Auth?.user?.id : null
-        };
-    }
-
-    function hasSameOracleSession(session) {
-        const current = captureOracleSession();
-        if (current.isLoggedIn !== session?.isLoggedIn) return false;
-        if (!current.isLoggedIn) return true;
-
-        return typeof session.userId === 'string'
-            && session.userId.length > 0
-            && current.userId === session.userId;
-    }
-
-    function clearOracleResult() {
-        displayedOracleSession = null;
-        questionHistory = [];
-        if (questionInput) questionInput.value = '';
-        ballContainer.classList.remove('shaking');
-        if (answerContainer) {
-            answerContainer.classList.remove('visible');
-            answerContainer.querySelectorAll('.favorite-reading-action, [data-reading-save-error]').forEach(element => element.remove());
-        }
-        showFallbackNotice(answerContainer, false);
-        if (answerText) answerText.textContent = '';
-        setResetVisible(false);
-        window.currentCrystalReadingId = null;
-    }
-
-    function invalidateOracleSessionChange() {
-        const activeSessionChanged = activeOracleSession && !hasSameOracleSession(activeOracleSession);
-        const displayedSessionChanged = displayedOracleSession && !hasSameOracleSession(displayedOracleSession);
-        if (!activeSessionChanged && !displayedSessionChanged) return;
-
-        if (activeSessionChanged) {
-            oracleRequestGeneration += 1;
-            oracleAbortController?.abort();
-            oracleAbortController = null;
-            activeOracleSession = null;
-            isThinking = false;
-            askBtn?.removeAttribute('aria-busy');
-            updateCooldownUI();
-        }
-
-        clearOracleResult();
-    }
-
-    function isCurrentOracleRequest(requestGeneration, session) {
-        if (requestGeneration !== oracleRequestGeneration) return false;
-        if (hasSameOracleSession(session)) return true;
-        invalidateOracleSessionChange();
-        return false;
-    }
-
-    document.addEventListener('auth:changed', invalidateOracleSessionChange);
-    window.addEventListener('storage', (event) => {
-        if (event.key === 'auth_user') invalidateOracleSessionChange();
-    });
 
     function buildCrystalCheckoutUrl(source) {
         const pricingUrl = new URL('/cenik.html', window.location.origin);
@@ -184,6 +81,28 @@ function initCrystalBall() {
         pricingUrl.searchParams.set('entry_source', source);
         pricingUrl.searchParams.set('entry_feature', 'kristalova_koule');
         return `${pricingUrl.pathname}${pricingUrl.search}`;
+    }
+
+    function getDailyUsageKey() {
+        return `mh_daily_crystal_${new Date().toDateString()}`;
+    }
+
+    function getLocalDailyUsage() {
+        const parsed = Number.parseInt(localStorage.getItem(getDailyUsageKey()) || '0', 10);
+        return Number.isFinite(parsed) ? Math.max(0, parsed) : 0;
+    }
+
+    function updateFreemiumCounter() {
+        const countEl = document.getElementById('freemium-count');
+        if (!countEl) return;
+
+        const remaining = Math.max(0, CRYSTAL_DAILY_LIMIT - getLocalDailyUsage());
+        countEl.textContent = `${remaining} / ${CRYSTAL_DAILY_LIMIT}`;
+    }
+
+    function incrementLocalDailyUsage() {
+        localStorage.setItem(getDailyUsageKey(), String(getLocalDailyUsage() + 1));
+        updateFreemiumCounter();
     }
 
     function startCrystalCheckout(source, authMode = 'register') {
@@ -223,7 +142,7 @@ function initCrystalBall() {
 
     // Check availability based on last usage
     function getRemainingCooldown() {
-        const lastUsage = readStorage('crystalBall_lastUsage');
+        const lastUsage = localStorage.getItem('crystalBall_lastUsage');
         if (!lastUsage) return 0;
 
         const elapsed = (Date.now() - parseInt(lastUsage)) / 1000;
@@ -232,11 +151,6 @@ function initCrystalBall() {
 
     // Update UI based on cooldown
     function updateCooldownUI() {
-        if (questionInput) questionInput.disabled = isThinking;
-        if (isThinking) {
-            if (askBtn) { askBtn.disabled = true; askBtn.textContent = copy.loading; }
-            return;
-        }
         const remaining = getRemainingCooldown();
         if (remaining > 0) {
             if (askBtn) {
@@ -261,22 +175,22 @@ function initCrystalBall() {
 
     // Initial check
     updateCooldownUI();
+    updateFreemiumCounter();
 
     // Function to ask the oracle
     async function askOracle(question) {
-        const requestSession = captureOracleSession();
-        const isLoggedIn = requestSession.isLoggedIn;
-        const readingOwnerId = requestSession.userId;
+        const isLoggedIn = Boolean(window.Auth?.isLoggedIn?.());
 
-        if (isThinking) return;
-        if (!question.trim()) {
-            showQuestionError();
+        if (!isLoggedIn && getLocalDailyUsage() >= CRYSTAL_DAILY_LIMIT) {
+            window.Auth?.showToast?.(copy.limitTitle, copy.anonymousLimit, 'info');
+            startCrystalCheckout('crystal_ball_limit_gate', 'register');
             return;
         }
-        clearQuestionError();
 
         const remaining = getRemainingCooldown();
         if (remaining > 0) return; // Prevent spam
+
+        if (isThinking || !question.trim()) return;
 
         if (question.length > 200) {
             window.Auth?.showToast?.(copy.questionTooLongTitle, copy.questionTooLong, 'info');
@@ -284,58 +198,49 @@ function initCrystalBall() {
         }
 
         isThinking = true;
-        const requestGeneration = ++oracleRequestGeneration;
-        activeOracleSession = requestSession;
-        displayedOracleSession = null;
-        const requestAbortController = new AbortController();
-        oracleAbortController?.abort();
-        oracleAbortController = requestAbortController;
-        updateCooldownUI();
-        askBtn?.setAttribute('aria-busy', 'true');
 
         // Reset state
         if (answerContainer) answerContainer.classList.remove('visible');
-        answerContainer?.querySelectorAll('.favorite-reading-action, [data-reading-save-error]').forEach(element => element.remove());
-        showFallbackNotice(answerContainer, false);
         if (answerText) answerText.textContent = '';
         setResetVisible(false);
 
         // Animation
-        if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) ballContainer.classList.add('shaking');
+        ballContainer.classList.add('shaking');
+        if (navigator.vibrate) navigator.vibrate(200);
 
         try {
             const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
-            if (!isCurrentOracleRequest(requestGeneration, requestSession)) return;
             const response = await fetch(`${window.API_CONFIG?.BASE_URL || '/api'}/crystal-ball`, {
                 method: 'POST',
                 credentials: 'include',
-                signal: requestAbortController.signal,
                 headers: {
                     'Content-Type': 'application/json',
                     ...(csrfToken && { 'X-CSRF-Token': csrfToken })
                 },
                 body: JSON.stringify({
                     question: question.trim(),
-                    lang: locale,
-                    history: questionHistory.slice(-5)
+                    history: questionHistory.slice(-5),
+                    lang: locale
                 })
             });
 
-            if (!isCurrentOracleRequest(requestGeneration, requestSession)) return;
             const data = await response.json();
-            if (!isCurrentOracleRequest(requestGeneration, requestSession)) return;
 
             ballContainer.classList.remove('shaking');
 
             // Record usage time for cooldown
+            localStorage.setItem('crystalBall_lastUsage', Date.now().toString());
+            updateCooldownUI();
+
             if (data.success) {
-                displayedOracleSession = requestSession;
-                writeStorage('crystalBall_lastUsage', Date.now().toString());
                 questionHistory.push(question.trim());
+                if (!isLoggedIn) {
+                    incrementLocalDailyUsage();
+                } else {
+                    updateFreemiumCounter();
+                }
                 if (answerContainer) answerContainer.classList.add('visible');
-                showFallbackNotice(answerContainer, data.fallback);
                 if (answerText) await typewriterEffect(answerText, data.response);
-                if (!isCurrentOracleRequest(requestGeneration, requestSession)) return;
                 window.MH_ANALYTICS?.trackAction?.('crystal_ball_answer_viewed', {
                     feature: 'kristalova_koule',
                     source: new URLSearchParams(window.location.search).get('source') || 'crystal_ball_question',
@@ -345,13 +250,10 @@ function initCrystalBall() {
 
                 // Save to history if logged in
                 if (isLoggedIn && window.Auth?.saveReading) {
-                    if (!isCurrentOracleRequest(requestGeneration, requestSession)) return;
                     const saveResult = await window.Auth.saveReading('crystal-ball', {
                         question: question.trim(),
-                        answer: data.response,
-                        fallback: !!data.fallback
-                    }, readingOwnerId).catch(() => null);
-                    if (!isCurrentOracleRequest(requestGeneration, requestSession)) return;
+                        answer: data.response
+                    });
 
                     // Store reading ID and add favorite button
                     if (saveResult && saveResult.id) {
@@ -362,22 +264,15 @@ function initCrystalBall() {
                         favoriteBtn.className = 'text-center favorite-reading-action';
                         favoriteBtn.innerHTML = `
                             <button id="favorite-crystal-btn" class="btn btn--glass favorite-reading-action__button">
-                                <svg class="mh-symbol" width="24" height="24" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><use href="/img/icons/mh-symbols.svg#bookmark"></use></svg> ${copy.favorite}
+                                <span class="favorite-icon">⭐</span> ${copy.favorite}
                             </button>
                         `;
                         answerContainer.appendChild(favoriteBtn);
 
                         // Attach listener
                         document.getElementById('favorite-crystal-btn').addEventListener('click', async () => {
-                            await window.toggleFavorite?.(saveResult.id, 'favorite-crystal-btn');
+                            await window.toggleFavorite(window.currentCrystalReadingId, 'favorite-crystal-btn');
                         });
-                    } else {
-                        const notice = document.createElement('p');
-                        notice.dataset.readingSaveError = 'true';
-                        notice.className = 'result-context-notice';
-                        notice.setAttribute('role', 'status');
-                        notice.textContent = copy.saveFailed;
-                        answerContainer?.append(notice);
                     }
                 }
             } else {
@@ -388,48 +283,52 @@ function initCrystalBall() {
                     window.MH_ANALYTICS?.trackCTA?.('crystal_ball_register_gate', { feature: 'kristalova_koule' });
                     const backTo = encodeURIComponent(window.location.pathname);
                     setTimeout(() => {
-                        if (requestGeneration !== oracleRequestGeneration || !hasSameOracleSession(requestSession)) return;
                         window.location.href = `/prihlaseni.html?mode=register&source=crystal_ball_register_gate&feature=kristalova_koule&redirect=${backTo}`;
                     }, 1600);
-                } else if (response.status === 402 && data.code === 'LIMIT_REACHED') {
+                } else if (response.status === 402 || response.status === 403 || (data.error && data.error.toLowerCase().includes('limit'))) {
                     if (answerContainer) answerContainer.classList.remove('visible');
                     window.Auth?.showToast?.(copy.limitTitle, copy.memberLimit, 'info');
                     startCrystalCheckout('crystal_ball_limit_gate', 'register');
                 } else {
-                    displayedOracleSession = requestSession;
                     if (answerContainer) answerContainer.classList.add('visible');
                     if (answerText) answerText.textContent = copy.silent;
                 }
             }
 
         } catch (error) {
-            if (error?.name === 'AbortError' || !isCurrentOracleRequest(requestGeneration, requestSession)) return;
             console.error('Oracle Error:', error);
             ballContainer.classList.remove('shaking');
-            displayedOracleSession = requestSession;
             if (answerContainer) answerContainer.classList.add('visible');
             if (answerText) answerText.textContent = copy.disconnected;
-        } finally {
-            if (requestGeneration === oracleRequestGeneration) {
-                ballContainer.classList.remove('shaking');
-                setResetVisible(true);
-                isThinking = false;
-                activeOracleSession = null;
-                askBtn?.removeAttribute('aria-busy');
-                updateCooldownUI();
-            }
-            if (oracleAbortController === requestAbortController) oracleAbortController = null;
         }
+
+        // Show reset btn
+        setTimeout(() => {
+            setResetVisible(true);
+            isThinking = false;
+        }, 500);
     }
 
     async function typewriterEffect(element, text) {
-        // A whole answer remains easy to read and available without animation.
-        element.textContent = String(text || '');
+        element.textContent = '';
+        const chars = text.split('');
+        for (let i = 0; i < chars.length; i++) {
+            element.textContent += chars[i];
+            await new Promise(resolve => setTimeout(resolve, 30));
+        }
     }
 
     // Events
     ballContainer.addEventListener('click', () => {
-        if (questionInput) askOracle(questionInput.value);
+        if (getRemainingCooldown() > 0) return; // Ignore clicks during cooldown
+
+        if (questionInput && questionInput.value.trim()) {
+            askOracle(questionInput.value);
+        } else {
+            questionInput.focus();
+            questionInput.classList.add('shake-input'); // Visual cue (needs CSS)
+            setTimeout(() => questionInput.classList.remove('shake-input'), 500);
+        }
     });
 
     if (askBtn) {
@@ -439,18 +338,6 @@ function initCrystalBall() {
     }
 
     if (questionInput) {
-        questionInput.addEventListener('input', () => {
-            clearQuestionError();
-            if (answerContainer?.classList.contains('visible')) {
-                displayedOracleSession = null;
-                answerContainer.classList.remove('visible');
-                answerContainer.querySelectorAll('.favorite-reading-action, [data-reading-save-error]').forEach(element => element.remove());
-                showFallbackNotice(answerContainer, false);
-                if (answerText) answerText.textContent = '';
-                setResetVisible(false);
-                window.currentCrystalReadingId = null;
-            }
-        });
         questionInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') askOracle(questionInput.value);
         });
@@ -458,28 +345,16 @@ function initCrystalBall() {
 
     if (resetBtn) {
         resetBtn.addEventListener('click', () => {
-            oracleRequestGeneration += 1;
-            oracleAbortController?.abort();
-            oracleAbortController = null;
-            isThinking = false;
-            activeOracleSession = null;
-            displayedOracleSession = null;
-            questionHistory = [];
-            ballContainer.classList.remove('shaking');
-            askBtn?.removeAttribute('aria-busy');
             if (answerContainer) {
                 answerContainer.classList.remove('visible');
-                answerContainer.querySelectorAll('.favorite-reading-action, [data-reading-save-error]').forEach(el => el.remove());
+                // Remove accumulated favorite buttons
+                answerContainer.querySelectorAll('.favorite-reading-action').forEach(el => el.remove());
             }
-            showFallbackNotice(answerContainer, false);
-            if (answerText) answerText.textContent = '';
             if (questionInput) {
                 questionInput.value = '';
-                clearQuestionError();
                 questionInput.focus();
             }
             setResetVisible(false);
-            updateCooldownUI();
         });
     }
 }

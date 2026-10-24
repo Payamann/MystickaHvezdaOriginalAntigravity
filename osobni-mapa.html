@@ -21,10 +21,10 @@
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="img/icon-192.webp">
 
-    <link rel="stylesheet" href="css/site.min.css?v=20261018-release-candidate">
+    <link rel="stylesheet" href="css/site.min.css?v=20261023-release-todo">
     <link rel="stylesheet" href="css/pages/osobni-mapa.css?v=20261012-atlas-map">
     <script defer src="https://js.stripe.com/v3/"></script>
-    <script src="https://cdn.jsdelivr.net/npm/lucide@1.13.0/dist/umd/lucide.min.js" integrity="sha384-EHKCF1r0kkLgXLXtUe79iQzyUeZou+h3FZLoZWdcIAyctVNKMHqqy5wqYWQFUq6k" crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/lucide@1.13.0/dist/umd/lucide.min.js" integrity="sha384-EHKCF1r0kkLgXLXtUe79iQzyUeZou+h3FZLoZWdcIAyctVNKMHqqy5wqYWQFUq6k" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="/js/dist/analytics-init.js" defer></script>
 
     <script type="application/ld+json">
@@ -56,7 +56,7 @@
                     {
                         "@type": "Question",
                         "name": "Co je součástí 20 stran?",
-                        "acceptedAnswer": { "@type": "Answer", "text": "PDF obsahuje obálku, úvodní zrcadlo, osobní hvězdný podpis, tvoje silné stránky, hlavní téma, vztahy, komunikaci a hranice, práci a peníze, tělo a energii, vnitřní růst, stín a dar, pět orientačních bodů v rámci celého období, konkrétní kroky, rituál, otázky k zápisu, prostor na poznámky a závěrečné poselství." }
+                        "acceptedAnswer": { "@type": "Answer", "text": "PDF obsahuje obálku, úvodní zrcadlo, osobní hvězdný podpis, tvoje silné stránky, hlavní téma, vztahy, komunikaci a hranice, práci a peníze, tělo a energii, vnitřní růst, stín a dar, orientační milníky osobního roku, konkrétní kroky, rituál, otázky k zápisu, prostor na poznámky a závěrečné poselství." }
                     },
                     {
                         "@type": "Question",
@@ -70,8 +70,8 @@
                     },
                     {
                         "@type": "Question",
-                        "name": "Jak dostanu PDF?",
-                        "acceptedAnswer": { "@type": "Answer", "text": "Po potvrzení platby se výklad automaticky připraví a PDF pošleme na e-mail. Pokud ho nenajdeš, zkontroluj spam a hromadnou poštu; pak nám napiš přes Kontakt." }
+                        "name": "Jak rychle PDF dorazí?",
+                        "acceptedAnswer": { "@type": "Answer", "text": "Po zaplacení se výklad připraví a dorazí do e-mailu obvykle během 10 až 20 minut." }
                     },
                     {
                         "@type": "Question",
@@ -89,13 +89,13 @@
 <meta property="og:image:alt" content="Osobní mapa na příštích 12 měsíců | Mystická Hvězda">
 <meta name="twitter:image:alt" content="Osobní mapa na příštích 12 měsíců | Mystická Hvězda">
 
-    <link rel="stylesheet" href="/css/atlas-web.css?v=20261020-03-horoscope-day-switcher-atlas">
-    <link rel="stylesheet" href="/css/atlas-remaining.css?v=20261020-01-remaining-surface-polish">
+    <link rel="stylesheet" href="/css/atlas-web.css?v=20261023-release-todo">
+    <link rel="stylesheet" href="/css/atlas-remaining.css?v=20261023-release-todo">
+<link rel="stylesheet" href="/css/atlas-polish-v1.css?v=20261009">
 </head>
 
-<body class="page-personal-map atlas-page atlas-remaining-page">
+<body class="page-personal-map atlas-page atlas-remaining-page" data-atlas-polish="osobni-mapa">
     <a href="#main-content" class="skip-link">Přeskočit na obsah</a>
-    <div class="personal-map-stars" aria-hidden="true"></div>
     <div id="header-placeholder"></div>
 
     <main id="main-content" tabindex="-1">
@@ -110,11 +110,11 @@
             <div class="pm-status__inner pm-status__inner--success">
                 <i data-lucide="sparkles" aria-hidden="true"></i>
                 <h2>Platba proběhla úspěšně</h2>
-                <p>Tvoje Osobní mapa se připravuje a PDF pošleme na e-mail. Pokud zprávu nenajdeš, zkontroluj hromadnou poštu a spam. Když tam nebude, <a href="/kontakt.html?source=personal_map_delivery">napiš nám</a>.</p>
+                <p>Tvoje Osobní mapa se právě připravuje. PDF pošleme na e-mail během několika minut. Pokud nedorazí do 20 minut, zkontroluj složku hromadná pošta nebo spam.</p>
                 <div class="pm-status__actions">
                     <a class="pm-button pm-button--primary" href="/cenik.html?source=personal_map_success&feature=premium_membership&plan=pruvodce" data-success-upsell>
                         <i data-lucide="sparkles" aria-hidden="true"></i>
-                        Prohlédnout členství
+                        Pokračovat s Průvodcem
                     </a>
                     <button class="pm-button pm-button--ghost" type="button" data-scroll-target="preview">
                         <i data-lucide="eye" aria-hidden="true"></i>
@@ -146,7 +146,7 @@
             <div class="pm-hero__content">
                 <span class="pm-eyebrow">Tvůj směr od dneška na 12 měsíců</span>
                 <h1 id="pm-title">Osobní mapa <span>na 12 měsíců</span></h1>
-                <p class="pm-hero__lead">Jedna osobní otázka a prostor podívat se na ni v souvislostech. Mapa nabídne témata k zamyšlení, orientační body a malé kroky, ke kterým se můžeš během roku vracet.</p>
+                <p class="pm-hero__lead">Jedna osobní otázka a prostor podívat se na ni v souvislostech. Mapa nabídne témata k zamyšlení, orientační milníky a malé kroky, ke kterým se můžeš během roku vracet.</p>
                 <p class="pm-hero__sublead">20stránkové PDF se vytvoří automaticky podle tvého data narození, znamení a situace, kterou právě řešíš. Období vždy začíná dnem objednávky a trvá celých 12 měsíců.</p>
 
                 <div class="pm-hero__actions">
@@ -169,7 +169,7 @@
 
             <div class="pm-hero__visual" aria-label="Náhled Osobní mapy">
                 <div class="pm-preview-stack">
-                    <img class="pm-preview-stack__page pm-preview-stack__page--front" src="img/personal-map/preview-cover-arch-v2.webp" srcset="img/personal-map/preview-cover-arch-v2-380.webp 380w, img/personal-map/preview-cover-arch-v2-570.webp 570w, img/personal-map/preview-cover-arch-v2.webp 760w" sizes="(max-width: 370px) calc(100vw - 40px), 330px" alt="Modelová obálka PDF s malovaným kamenným obloukem, krajinou a kompasem" width="760" height="1075" loading="eager" fetchpriority="high">
+                    <img class="pm-preview-stack__page pm-preview-stack__page--front" src="img/personal-map/preview-cover-arch-v2.webp" alt="Modelová obálka PDF s malovaným kamenným obloukem, krajinou a kompasem" width="760" height="1075" loading="eager" fetchpriority="high">
                 </div>
             </div>
         </section>
@@ -183,7 +183,7 @@
             <div>
                 <span>Výstup</span>
                 <strong>20 stran PDF</strong>
-                <small>automaticky do e-mailu</small>
+                <small>do e-mailu obvykle během 10 až 20 minut</small>
             </div>
             <div>
                 <span>Cena</span>
@@ -243,15 +243,15 @@
 
             <div class="pm-gallery">
                 <figure>
-                    <img src="img/personal-map/preview-cover-arch-v2.webp" srcset="img/personal-map/preview-cover-arch-v2-380.webp 380w, img/personal-map/preview-cover-arch-v2-570.webp 570w, img/personal-map/preview-cover-arch-v2.webp 760w" sizes="(max-width: 468px) calc(100vw - 48px), (max-width: 820px) 420px, (max-width: 1080px) 31vw, 390px" alt="Modelová obálka PDF Osobní mapa na 12 měsíců" width="760" height="1075" loading="lazy">
+                    <img src="img/personal-map/preview-cover-arch-v2.webp" alt="Modelová obálka PDF Osobní mapa na 12 měsíců" width="760" height="1075" loading="lazy">
                     <figcaption>Modelová obálka</figcaption>
                 </figure>
                 <figure>
-                    <img src="img/personal-map/preview-signature-atlas.webp" srcset="img/personal-map/preview-signature-atlas-380.webp 380w, img/personal-map/preview-signature-atlas-570.webp 570w, img/personal-map/preview-signature-atlas.webp 760w" sizes="(max-width: 468px) calc(100vw - 48px), (max-width: 820px) 420px, (max-width: 1080px) 31vw, 390px" alt="Stránka s osobním hvězdným podpisem" width="760" height="1075" loading="lazy">
+                    <img src="img/personal-map/preview-signature-atlas.webp" alt="Stránka s osobním hvězdným podpisem" width="760" height="1075" loading="lazy">
                     <figcaption>Hvězdný podpis</figcaption>
                 </figure>
                 <figure>
-                    <img src="img/personal-map/preview-actions-atlas.webp" srcset="img/personal-map/preview-actions-atlas-380.webp 380w, img/personal-map/preview-actions-atlas-570.webp 570w, img/personal-map/preview-actions-atlas.webp 760w" sizes="(max-width: 468px) calc(100vw - 48px), (max-width: 820px) 420px, (max-width: 1080px) 31vw, 390px" alt="Stránka s konkrétními kroky pro běžný život" width="760" height="1075" loading="lazy">
+                    <img src="img/personal-map/preview-actions-atlas.webp" alt="Stránka s konkrétními kroky pro běžný život" width="760" height="1075" loading="lazy">
                     <figcaption>Konkrétní kroky</figcaption>
                 </figure>
             </div>
@@ -288,8 +288,8 @@
                 </article>
                 <article>
                     <span>15</span>
-                    <h3>Pět bodů v průběhu období</h3>
-                    <p>Pět zastavení k zamyšlení v různých částech celých 12 měsíců.</p>
+                    <h3>Milníky osobního roku</h3>
+                    <p>Pět orientačních bodů: kdy zpozornět, nezrychlovat nebo udělat jasnější krok.</p>
                 </article>
                 <article>
                     <span>16-20</span>
@@ -311,10 +311,10 @@
             <div class="pm-sample__copy">
                 <span class="pm-eyebrow">Modelová otázka k zamyšlení</span>
                 <h2>Jedna otázka, více souvislostí.</h2>
-                <p>Co potřebuju sdělit jasněji a podle čeho poznám skutečnou změnu?</p>
+                <p>„U jedné opakující se situace si můžeš položit otázku: co potřebuju sdělit jasněji a podle čeho poznám skutečnou změnu? Odpověď nemusí přijít hned. Máš místo ji zapsat a později se k ní vrátit.“</p>
             </div>
             <div class="pm-sample__image">
-                <img src="img/personal-map/preview-contact-sheet-arch-v2.webp" srcset="img/personal-map/preview-contact-sheet-arch-v2-416.webp 416w, img/personal-map/preview-contact-sheet-arch-v2-624.webp 624w, img/personal-map/preview-contact-sheet-arch-v2.webp 832w" sizes="(max-width: 1080px) calc(100vw - 48px), 620px" alt="Přehled všech 20 stran modelového PDF" width="832" height="1497" loading="lazy">
+                <img src="img/personal-map/preview-contact-sheet-arch-v2.webp" alt="Přehled všech 20 stran modelového PDF" width="832" height="1497" loading="lazy">
             </div>
         </section>
 
@@ -337,7 +337,7 @@
                 <div>
                     <span>03</span>
                     <h3>PDF přijde do e-mailu</h3>
-                    <p>Po zaplacení mapu automaticky připravíme a PDF pošleme na e-mail. Pokud zprávu nenajdeš, objednávku dohledáme.</p>
+                    <p>Obvykle během 10 až 20 minut. Kdyby nedorazilo, objednávku dohledáme.</p>
                 </div>
             </div>
         </section>
@@ -347,7 +347,7 @@
                 <i data-lucide="shield-check" aria-hidden="true"></i>
                 <div>
                     <span class="pm-eyebrow">Soukromí a bezpečí</span>
-                    <h2>Zadání a doručení.</h2>
+                <h2>Zadání a doručení.</h2>
                     <p>To, co napíšeš do formuláře, slouží k přípravě tvé mapy a doručení PDF na e-mail. Nezobrazuje se veřejně, není součástí profilu a údaje o kartě se na našem webu neukládají.</p>
                 </div>
             </div>
@@ -367,7 +367,7 @@
                     <li><i data-lucide="check" aria-hidden="true"></i> 20 stran osobního PDF na celých 12 měsíců</li>
                     <li><i data-lucide="check" aria-hidden="true"></i> podle data narození, znamení a tvé konkrétní otázky</li>
                     <li><i data-lucide="check" aria-hidden="true"></i> hlavní téma, orientační milníky a praktické kroky</li>
-                    <li><i data-lucide="check" aria-hidden="true"></i> automaticky vytvořené PDF doručené e-mailem, bez předplatného</li>
+                    <li><i data-lucide="check" aria-hidden="true"></i> e-mailem obvykle do 20 minut, bez předplatného</li>
                 </ul>
             </div>
 
@@ -431,7 +431,7 @@
                 <div class="pm-form__trust" aria-label="Jistoty před platbou">
                     <div>
                         <i data-lucide="mail-check" aria-hidden="true"></i>
-                        <span>PDF vytvoříme automaticky a pošleme e-mailem. Když ho nenajdeš, dohledáme objednávku.</span>
+                        <span>PDF obvykle dorazí do 10 až 20 minut. Když ne, dohledáme objednávku přes e-mail.</span>
                     </div>
                     <div>
                         <i data-lucide="shield-check" aria-hidden="true"></i>
@@ -457,7 +457,7 @@
                 </details>
                 <details>
                     <summary>Co přesně je na těch 20 stranách?</summary>
-                    <p>Osobní zadání, úvodní zrcadlo, hvězdný podpis, hlavní téma, vztahy, práce, energie, růst, pět orientačních bodů, konkrétní kroky, rituál, otázky k zápisu a závěr.</p>
+                    <p>Osobní zadání, úvodní zrcadlo, hvězdný podpis, hlavní téma, vztahy, práce, energie, růst, orientační milníky, konkrétní kroky, rituál, otázky k zápisu a závěr.</p>
                 </details>
                 <details>
                     <summary>Co když mapu koupím na konci roku?</summary>
@@ -477,11 +477,11 @@
                 </details>
                 <details>
                     <summary>Kdy PDF přijde?</summary>
-                    <p>Po potvrzení platby se výklad automaticky připraví a PDF pošleme na e-mail. Pokud ho nenajdeš, zkontroluj hromadnou poštu a spam; pak nám napiš přes <a href="/kontakt.html?source=personal_map_delivery_faq">Kontakt</a>.</p>
+                    <p>Obvykle během 10 až 20 minut po zaplacení. Pokud nepřijde, zkontroluj hromadnou poštu nebo spam.</p>
                 </details>
                 <details>
                     <summary>Co když mi výklad nesedne?</summary>
-                    <p>Ber ho jako podnět k zamyšlení, ne jako jistotu ani rozsudek. Když ti některá část nesedí, nemusíš ji přijmout. Označ si to, co ti dává smysl, a k mapě se vrať jen tehdy, když ti to bude užitečné. Pokud PDF nedorazí nebo je technicky poškozené, napiš nám.</p>
+                    <p>Ber ho jako zrcadlo, ne jako rozsudek. U některých vět možná hned víš, o čem jsou. Jiné si sednou až později, až se něco v životě zopakuje. Pokud by byl problém technický nebo by PDF nedorazilo, napiš nám.</p>
                 </details>
             </div>
         </section>
@@ -492,9 +492,9 @@
     <script src="js/dist/analytics.js?v=6" defer></script>
     <script src="js/dist/api-config.js?v=5" defer></script>
     <script src="js/dist/auth-client.js?v=20261020-02-register-password-policy" defer></script>
-    <script src="js/dist/templates.js?v=20261021-celtic-footer-star-svg" defer></script>
-    <script src="js/dist/components.js?v=20261021-footer-support-locale" defer></script>
-    <script type="module" src="js/dist/main.js?v=20261018-status-icons"></script>
-    <script src="js/dist/osobni-mapa.js?v=20261021-personal-map-flow-safety" defer></script>
+    <script src="js/dist/templates.js?v=14" defer></script>
+    <script src="js/dist/components.js?v=20260522-premium-gate-cache" defer></script>
+    <script type="module" src="js/dist/main.js?v=12"></script>
+    <script src="js/dist/osobni-mapa.js?v=20261023-reliability" defer></script>
 </body>
 </html>

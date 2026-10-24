@@ -95,39 +95,13 @@ try {
     await browser.close();
 }
 
-const responsiveAssets = [
-    { fileName: 'preview-cover-arch-v2.webp', widths: [380, 570] },
-    { fileName: 'preview-signature-atlas.webp', widths: [380, 570] },
-    { fileName: 'preview-actions-atlas.webp', widths: [380, 570] },
-    { fileName: 'preview-contact-sheet-arch-v2.webp', widths: [416, 624] }
-];
-
-for (const { fileName, widths } of responsiveAssets) {
-    const source = await fs.readFile(path.join(outputDir, fileName));
-    for (const width of widths) {
-        const responsiveFileName = fileName.replace(/\.webp$/, `-${width}.webp`);
-        await sharp(source)
-            .resize({ width, withoutEnlargement: true })
-            .webp({ quality: width <= 480 ? 82 : 86, effort: 6 })
-            .toFile(path.join(outputDir, responsiveFileName));
-    }
-}
-
 console.log(JSON.stringify({
     pdf: pdfPath,
     assets: [
         'preview-cover-arch-v2.webp',
-        'preview-cover-arch-v2-380.webp',
-        'preview-cover-arch-v2-570.webp',
         'preview-signature-atlas.webp',
-        'preview-signature-atlas-380.webp',
-        'preview-signature-atlas-570.webp',
         'preview-mantra-atlas.webp',
         'preview-actions-atlas.webp',
-        'preview-actions-atlas-380.webp',
-        'preview-actions-atlas-570.webp',
-        'preview-contact-sheet-arch-v2.webp',
-        'preview-contact-sheet-arch-v2-416.webp',
-        'preview-contact-sheet-arch-v2-624.webp'
+        'preview-contact-sheet-arch-v2.webp'
     ].map((fileName) => path.join(outputDir, fileName))
 }, null, 2));

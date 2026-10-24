@@ -244,18 +244,53 @@ function buildMockClaudeResponse(systemPrompt = '') {
 
     if (systemPrompt.includes('"prediction"') && systemPrompt.includes('"affirmation"')) {
         const requestedSentenceCount = Number(systemPrompt.match(/přesně\s+(\d+)\s+vět/iu)?.[1] || 3);
-        const predictionSentences = [
-            'Dnešní energie ti pomáhá rozpoznat, co je opravdu důležité.',
-            'Všimni si, kde můžeš jednat klidněji a s větší jistotou.',
-            'Vyber jeden konkrétní krok a udělej ho ještě dnes.',
-            'Ve vztazích pojmenuj svou potřebu otevřeně a laskavě.',
-            'V práci dokonči prioritu, která přinese viditelný posun.',
-            'Pro svou energii střídej soustředění s krátkým odpočinkem.',
-            'Na závěr si zapiš, co chceš přenést do dalšího období.'
-        ];
+        const locale = /Text piš slovensky\b/iu.test(systemPrompt)
+            ? 'sk'
+            : /Text piš polsky\b/iu.test(systemPrompt)
+                ? 'pl'
+                : 'cs';
+        const localizedExamples = {
+            cs: {
+                predictionSentences: [
+                    'Dnešní energie ti pomáhá rozpoznat, co je opravdu důležité.',
+                    'Všimni si, kde můžeš jednat klidněji a s větší jistotou.',
+                    'Vyber jeden konkrétní krok a udělej ho ještě dnes.',
+                    'Ve vztazích pojmenuj svou potřebu otevřeně a laskavě.',
+                    'V práci dokonči prioritu, která přinese viditelný posun.',
+                    'Pro svou energii střídej soustředění s krátkým odpočinkem.',
+                    'Na závěr si zapiš, co chceš přenést do dalšího období.'
+                ],
+                affirmation: 'Dnes postupuji klidně, jasně a důvěřuji vlastnímu vnitřnímu vedení.'
+            },
+            sk: {
+                predictionSentences: [
+                    'Dnešná energia ti pomáha rozpoznať, čo je naozaj dôležité.',
+                    'Všimni si, kde môžeš konať pokojnejšie a s väčšou istotou.',
+                    'Vyber si jeden konkrétny krok a urob ho ešte dnes.',
+                    'Vo vzťahoch pomenuj svoju potrebu otvorene a láskavo.',
+                    'V práci dokonči prioritu, ktorá prinesie viditeľný posun.',
+                    'Striedaj sústredenie s krátkym oddychom, aby ti zostala energia.',
+                    'Na záver si zapíš, čo chceš preniesť do ďalšieho obdobia.'
+                ],
+                affirmation: 'Dnes konám pokojne a jasne a dôverujem vlastnému vnútornému vedeniu.'
+            },
+            pl: {
+                predictionSentences: [
+                    'Dzisiejsza energia pomaga ci rozpoznać, co jest naprawdę ważne.',
+                    'Zauważ, gdzie możesz działać spokojniej i z większą pewnością.',
+                    'Wybierz jeden konkretny krok i zrób go jeszcze dziś.',
+                    'W relacjach nazwij swoją potrzebę otwarcie i życzliwie.',
+                    'W pracy dokończ priorytet, który przyniesie widoczny postęp.',
+                    'Przeplataj skupienie krótkim odpoczynkiem, by zachować energię.',
+                    'Na koniec zapisz, co chcesz zabrać ze sobą w kolejny etap.'
+                ],
+                affirmation: 'Działam dziś spokojnie i jasno, ufając własnemu wewnętrznemu kompasowi.'
+            }
+        };
+        const { predictionSentences, affirmation } = localizedExamples[locale];
         return JSON.stringify({
             prediction: predictionSentences.slice(0, requestedSentenceCount).join(' '),
-            affirmation: 'Dnes postupuji klidně, jasně a důvěřuji vlastnímu vnitřnímu vedení.',
+            affirmation,
             luckyNumbers: [3, 7, 12, 21]
         });
     }

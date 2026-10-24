@@ -129,7 +129,7 @@ export const requirePremium = async (req, res, next) => {
 
     if (!req.user || !req.user.isPremium) {
         return res.status(403).json({ 
-            error: 'Tato funkce vyžaduje Premium předplatné.',
+            error: 'Tato funkce je součástí členství Mystické Hvězdy.',
             requireUpgrade: true 
         });
     }
@@ -192,7 +192,7 @@ export const requireFeature = (featureName) => async (req, res, next) => {
         return res.status(403).json({
             error: isExclusive
                 ? 'Tato funkce je součástí členství Mystické Hvězdy.'
-                : 'Tato funkce vyžaduje Premium předplatné.',
+                : 'Tato funkce je součástí členství Mystické Hvězdy.',
             requireUpgrade: true,
             requiredPlan,
             feature: featureName

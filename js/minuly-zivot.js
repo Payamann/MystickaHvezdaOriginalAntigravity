@@ -1,33 +1,9 @@
-import { showFallbackNotice } from './utils/reading-display.js';
-import { getPragueDateKey } from './utils/prague-date.js';
-
 (function () {
     'use strict';
 
     var selectedGender = '';
     var PAST_LIFE_BANNER_SOURCE = 'past_life_banner_upgrade';
     var PAST_LIFE_REGISTER_SOURCE = 'past_life_register_gate';
-    var PENDING_CONTEXT_KEY = 'pendingPastLifeContext';
-    var pastLifeRequestPending = false;
-    var pastLifeGeneration = 0;
-    var pastLifeRequestController = null;
-    var activePastLifeSession = null;
-    var displayedPastLifeSession = null;
-    var observedPastLifeSession = null;
-    var pastLifeSessionInitialized = Boolean(window.Auth);
-    var pastLifeRequestStatusTimer = null;
-
-    function capturePastLifeSession() {
-        var isLoggedIn = Boolean(window.Auth?.isLoggedIn?.());
-        return { isLoggedIn: isLoggedIn, userId: isLoggedIn ? window.Auth?.user?.id : null };
-    }
-
-    function hasSamePastLifeSession(session) {
-        var current = capturePastLifeSession();
-        if (current.isLoggedIn !== session?.isLoggedIn) return false;
-        if (!current.isLoggedIn) return true;
-        return typeof session.userId === 'string' && session.userId.length > 0 && current.userId === session.userId;
-    }
 
     function apiBase() {
         return (window.API_CONFIG && window.API_CONFIG.BASE_URL) || '/api';
@@ -45,188 +21,13 @@ import { getPragueDateKey } from './utils/prague-date.js';
         element.classList.toggle('mh-inline-flex-visible', visible);
     }
 
-    function showError(msg, invalidControl) {
+    function showError(msg) {
         var el = document.getElementById('pl-error');
         el.textContent = msg;
         setBlockVisible(el, true);
-        if (invalidControl) {
-            invalidControl.setAttribute('aria-invalid', 'true');
-            invalidControl.setAttribute('aria-describedby', 'pl-error');
-            invalidControl.focus();
-        }
     }
     function hideError() {
         setBlockVisible(document.getElementById('pl-error'), false);
-    }
-
-    function clearPastLifeSessionResult() {
-        var result = document.getElementById('pl-result');
-        result?.classList.remove('visible');
-        ['res-era', 'res-identity', 'res-karmic', 'res-gifts', 'res-patterns', 'res-mission', 'res-message'].forEach(function(id) {
-            var element = document.getElementById(id);
-            if (element) element.textContent = '';
-        });
-        result?.querySelectorAll('[data-reading-save-error]').forEach(function(notice) { notice.remove(); });
-        showFallbackNotice(result, false);
-        document.getElementById('favorite-past-life-action')?.remove();
-        document.getElementById('share-image')?.remove();
-        ['share-fb', 'share-x'].forEach(function(id) {
-            document.getElementById(id)?.setAttribute('href', '#');
-        });
-        ['share-copy', 'share-native'].forEach(function(id) {
-            var button = document.getElementById(id);
-            if (button) button.onclick = null;
-        });
-    }
-
-    function invalidatePastLifeSessionChange() {
-        var current = capturePastLifeSession();
-        if (!pastLifeSessionInitialized) {
-            observedPastLifeSession = current;
-            pastLifeSessionInitialized = true;
-            return;
-        }
-
-        var observedChanged = observedPastLifeSession && !hasSamePastLifeSession(observedPastLifeSession);
-        var activeChanged = activePastLifeSession && !hasSamePastLifeSession(activePastLifeSession);
-        var displayedChanged = displayedPastLifeSession && !hasSamePastLifeSession(displayedPastLifeSession);
-        observedPastLifeSession = current;
-        if (!observedChanged && !activeChanged && !displayedChanged) return;
-
-        pastLifeGeneration += 1;
-        pastLifeRequestController?.abort();
-        pastLifeRequestController = null;
-        activePastLifeSession = null;
-        displayedPastLifeSession = null;
-        pastLifeRequestPending = false;
-        window.clearTimeout(pastLifeRequestStatusTimer);
-        pastLifeRequestStatusTimer = null;
-        clearPendingContext();
-
-        var form = document.getElementById('pl-form-wrap');
-        if (form) {
-            form.removeAttribute('aria-busy');
-            var submitButton = document.getElementById('pl-submit');
-            if (submitButton) submitButton.disabled = false;
-            ['pl-name', 'pl-birth', 'pl-place'].forEach(function(id) {
-                var field = document.getElementById(id);
-                if (field) field.value = '';
-            });
-            selectedGender = '';
-            var genderInput = document.getElementById('pl-gender');
-            if (genderInput) genderInput.value = '';
-            document.querySelectorAll('.gender-btn').forEach(function(button) {
-                button.classList.remove('selected');
-                button.setAttribute('aria-pressed', 'false');
-            });
-        }
-
-        document.getElementById('past-life-preview-gate')?.remove();
-        clearValidationState();
-        var errorMessage = document.getElementById('pl-error');
-        if (errorMessage) errorMessage.textContent = '';
-        var contextStatus = document.getElementById('pl-context-status');
-        if (contextStatus) {
-            contextStatus.textContent = '';
-            contextStatus.hidden = true;
-        }
-        setBlockVisible(document.getElementById('pl-loading'), false);
-        setBlockVisible(document.getElementById('form-section'), true);
-        clearPastLifeSessionResult();
-    }
-
-    function isCurrentPastLifeRequest(generation, session) {
-        if (generation !== pastLifeGeneration) return false;
-        if (hasSamePastLifeSession(session)) return true;
-        invalidatePastLifeSessionChange();
-        return false;
-    }
-
-    document.addEventListener('auth:changed', invalidatePastLifeSessionChange);
-    window.addEventListener('storage', function(event) {
-        if (event.key === 'auth_user') invalidatePastLifeSessionChange();
-    });
-    observedPastLifeSession = capturePastLifeSession();
-
-    function clearValidationState() {
-        ['pl-name', 'pl-birth', 'pl-gender-options'].forEach(function(id) {
-            var element = document.getElementById(id);
-            element?.removeAttribute('aria-invalid');
-            element?.removeAttribute('aria-describedby');
-        });
-        document.querySelectorAll('.gender-btn').forEach(function(button) {
-            button.removeAttribute('aria-invalid');
-            button.removeAttribute('aria-describedby');
-        });
-        hideError();
-    }
-
-    function savePendingContext(payload) {
-        try {
-            sessionStorage.setItem(PENDING_CONTEXT_KEY, JSON.stringify({
-                version: 1,
-                savedAt: Date.now(),
-                payload: payload
-            }));
-            return true;
-        } catch (error) {
-            console.warn('Past life form context could not be stored:', error.message);
-            return false;
-        }
-    }
-
-    function clearPendingContext() {
-        try {
-            sessionStorage.removeItem(PENDING_CONTEXT_KEY);
-        } catch (error) {
-            console.warn('Past life form context could not be cleared:', error.message);
-        }
-    }
-
-    function invalidatePastLifePreview() {
-        clearPendingContext();
-        document.getElementById('past-life-preview-gate')?.remove();
-    }
-
-    function restorePendingContext() {
-        var stored;
-        try {
-            stored = sessionStorage.getItem(PENDING_CONTEXT_KEY);
-            if (!stored) return;
-            clearPendingContext();
-        } catch (error) {
-            console.warn('Past life form context could not be restored:', error.message);
-            return;
-        }
-
-        try {
-            var parsed = JSON.parse(stored);
-            var payload = parsed?.version === 1 ? parsed.payload : parsed;
-            if (parsed?.version === 1 && (!Number.isFinite(parsed.savedAt)
-                || Date.now() - parsed.savedAt > 24 * 60 * 60 * 1000
-                || parsed.savedAt > Date.now() + 60_000)) return;
-            if (!payload || typeof payload !== 'object'
-                || typeof payload.name !== 'string' || payload.name.trim().length < 2
-                || typeof payload.birthDate !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(payload.birthDate)
-                || !['muz', 'zena', 'neutral'].includes(payload.gender)) return;
-
-            document.getElementById('pl-name').value = payload.name.slice(0, 80);
-            document.getElementById('pl-birth').value = payload.birthDate;
-            document.getElementById('pl-place').value = typeof payload.place === 'string' ? payload.place.slice(0, 100) : '';
-            selectedGender = payload.gender;
-            document.getElementById('pl-gender').value = selectedGender;
-            document.querySelectorAll('.gender-btn').forEach(function(button) {
-                var selected = button.dataset.gender === selectedGender;
-                button.classList.toggle('selected', selected);
-                button.setAttribute('aria-pressed', String(selected));
-            });
-
-            var status = document.getElementById('pl-context-status');
-            status.textContent = 'Obnovili jsme údaje z rozepsaného výkladu. Před pokračováním je prosím zkontroluj.';
-            setBlockVisible(status, true);
-        } catch (error) {
-            console.warn('Past life form context is invalid:', error.message);
-        }
     }
 
     function escapeHtml(value) {
@@ -331,8 +132,8 @@ import { getPragueDateKey } from './utils/prague-date.js';
 
         existing.innerHTML = `
             <div class="past-life-preview-gate__badge">Náhled před odemčením</div>
-            <h3 id="past-life-preview-heading" tabindex="-1">Náhled symbolického výkladu pro ${escapeHtml(firstName)}</h3>
-            <p>Plný výklad zatím nevznikl; tohle je místní ukázka jeho struktury. Údaje z formuláře se k vytvoření celého symbolického výkladu odešlou až po odemčení.</p>
+            <h3>Výklad pro ${escapeHtml(firstName)} je připravený k odemčení</h3>
+            <p>Neodeslali jsme datum narození na prémiový výklad. Tohle je jen lokální náhled struktury, abys věděl, co přesně se otevře po pokračování.</p>
             <div class="past-life-preview-gate__sample">
                 <span>Možná stopa: ${escapeHtml(preview.archetype)}</span>
                 <span>Forma výkladu: ${escapeHtml(preview.energy)}</span>
@@ -353,7 +154,7 @@ import { getPragueDateKey } from './utils/prague-date.js';
         });
 
         existing.querySelector('.past-life-preview-gate__cta')?.addEventListener('click', function() {
-            savePendingContext(payload);
+            sessionStorage.setItem('pendingPastLifeContext', JSON.stringify(payload));
             startPastLifeCheckout(source, window.Auth?.isLoggedIn?.() ? 'login' : 'register');
         });
 
@@ -362,13 +163,11 @@ import { getPragueDateKey } from './utils/prague-date.js';
                 source: source,
                 feature: 'minuly_zivot'
             });
-            clearPendingContext();
             existing.remove();
             document.getElementById('pl-name')?.focus();
         });
 
-        existing.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'nearest' });
-        existing.querySelector('#past-life-preview-heading')?.focus({ preventScroll: true });
+        existing.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
     function appendPastLifeFavoriteAction(container, readingId) {
@@ -381,7 +180,7 @@ import { getPragueDateKey } from './utils/prague-date.js';
         action.className = 'text-center favorite-reading-action mt-md';
         action.innerHTML = `
             <button id="favorite-past-life-btn" class="btn btn--glass favorite-reading-action__button">
-                <svg class="mh-symbol mh-symbol--inline favorite-icon" viewBox="0 0 48 48" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#star"></use></svg> Přidat do oblíbených
+                <span class="favorite-icon">☆</span> Přidat do oblíbených
             </button>
         `;
         container.appendChild(action);
@@ -393,35 +192,9 @@ import { getPragueDateKey } from './utils/prague-date.js';
         });
     }
 
-    function showPastLifeSaveFailure(container) {
-        if (!container) return;
-        container.querySelector('[data-reading-save-error]')?.remove();
-        var notice = document.createElement('p');
-        notice.dataset.readingSaveError = 'true';
-        notice.className = 'result-context-notice';
-        notice.setAttribute('role', 'status');
-        notice.textContent = 'Výklad zůstává zobrazený, ale nepodařilo se ho uložit do profilu.';
-        var shareBar = container.querySelector('.share-bar');
-        if (shareBar) shareBar.before(notice);
-        else container.appendChild(notice);
-    }
-
     function init() {
         var upgradeBtn = document.getElementById('past-life-upgrade-btn');
         var registerBtn = document.getElementById('past-life-register-btn');
-        var form = document.getElementById('pl-form-wrap');
-        var submitButton = document.getElementById('pl-submit');
-        var birthInput = document.getElementById('pl-birth');
-        function syncBirthDateMaximum() {
-            if (!birthInput) return '';
-            var today = getPragueDateKey();
-            birthInput.max = today;
-            return today;
-        }
-        syncBirthDateMaximum();
-        birthInput?.addEventListener('focus', syncBirthDateMaximum);
-
-        restorePendingContext();
 
         if (upgradeBtn) {
             upgradeBtn.addEventListener('click', function(event) {
@@ -440,121 +213,45 @@ import { getPragueDateKey } from './utils/prague-date.js';
         // Gender buttons
         document.querySelectorAll('.gender-btn').forEach(function(btn) {
             btn.addEventListener('click', function() {
-                invalidatePastLifePreview();
-                clearValidationState();
-                document.querySelectorAll('.gender-btn').forEach(function(b) {
-                    b.classList.remove('selected');
-                    b.setAttribute('aria-pressed', 'false');
-                });
+                document.querySelectorAll('.gender-btn').forEach(function(b) { b.classList.remove('selected'); });
                 btn.classList.add('selected');
-                btn.setAttribute('aria-pressed', 'true');
                 selectedGender = btn.dataset.gender;
                 document.getElementById('pl-gender').value = selectedGender;
             });
         });
 
-        ['pl-name', 'pl-birth', 'pl-place'].forEach(function(id) {
-            var field = document.getElementById(id);
-            field?.addEventListener('input', function() {
-                invalidatePastLifePreview();
-                clearValidationState();
-            });
-            field?.addEventListener('change', invalidatePastLifePreview);
-        });
-
-        // Submit by button or Enter; retain the visitor's fields if validation or the API fails.
-        form.addEventListener('submit', async function(event) {
-            event.preventDefault();
-            if (pastLifeRequestPending) return;
-            clearValidationState();
+        // Submit
+        document.getElementById('pl-submit').addEventListener('click', async function() {
+            hideError();
             var payload = buildPastLifePayload();
             var name = payload.name;
             var birth = payload.birthDate;
             var place = payload.place;
             var gender = payload.gender;
 
-            if (!name || name.length < 2) { showError('Zadej své jméno.', document.getElementById('pl-name')); return; }
-            if (!birth) { showError('Zadej datum narození.', document.getElementById('pl-birth')); return; }
-            var earliestAllowedBirthDate = birthInput?.min || '1900-01-01';
-            if (birth < earliestAllowedBirthDate) {
-                showError('Datum narození musí být 1. 1. 1900 nebo pozdější.', birthInput);
-                return;
-            }
-            var latestAllowedBirthDate = syncBirthDateMaximum();
-            if (birth > latestAllowedBirthDate) {
-                showError('Datum narození nemůže být v budoucnosti.', birthInput);
-                return;
-            }
-            if (!gender) {
-                var firstGenderButton = document.querySelector('.gender-btn');
-                var genderGroup = document.getElementById('pl-gender-options');
-                genderGroup.setAttribute('aria-invalid', 'true');
-                genderGroup.setAttribute('aria-describedby', 'pl-error');
-                showError('Vyber formu výkladu.', firstGenderButton);
-                return;
-            }
+            if (!name || name.length < 2) { showError('Zadejte své jméno.'); return; }
+            if (!birth) { showError('Zadejte datum narození.'); return; }
+            if (!gender) { showError('Vyberte formu výkladu.'); return; }
 
             if (!hasPremiumAccess()) {
-                savePendingContext(payload);
+                sessionStorage.setItem('pendingPastLifeContext', JSON.stringify(payload));
                 showPastLifeUpgradePreview(payload, window.Auth?.isLoggedIn?.() ? 'past_life_free_submit_gate' : 'past_life_submit_gate');
                 return;
             }
 
-            pastLifeRequestPending = true;
-            var generation = ++pastLifeGeneration;
-            var readingSession = capturePastLifeSession();
-            var readingOwnerId = readingSession.isLoggedIn ? readingSession.userId : null;
-            if (readingSession.isLoggedIn && (typeof readingOwnerId !== 'string' || !readingOwnerId)) {
-                pastLifeRequestPending = false;
-                showError('Nepodařilo se ověřit přihlášený účet. Obnov stránku a zkus to znovu.');
-                return;
-            }
-            var requestController = new AbortController();
-            pastLifeRequestController = requestController;
-            activePastLifeSession = readingSession;
-            displayedPastLifeSession = null;
-            var loadingMessage = document.querySelector('#pl-loading p');
-            var requestStatusTimer = window.setTimeout(function() {
-                if (pastLifeRequestPending && loadingMessage) {
-                    loadingMessage.textContent = 'Výklad se tvoří déle než obvykle. Požadavek stále zpracováváme — nevytvářej ho prosím znovu.';
-                }
-            }, 60000);
-            pastLifeRequestStatusTimer = requestStatusTimer;
-            clearPendingContext();
-            form.setAttribute('aria-busy', 'true');
-            submitButton.disabled = true;
             // Show loading
             setBlockVisible(document.getElementById('form-section'), false);
             setBlockVisible(document.getElementById('pl-loading'), true);
-            if (loadingMessage) loadingMessage.textContent = 'Skládám symbolický příběh duše…';
             document.getElementById('pl-result').classList.remove('visible');
-            document.getElementById('pl-loading').focus();
 
-            var csrfRequestTimedOut = false;
             try {
                 // Get CSRF token
-                var csrfTimer = window.setTimeout(function() {
-                    csrfRequestTimedOut = true;
-                    requestController.abort();
-                }, 15000);
-                var csrfData;
-                try {
-                    var csrfRes = await fetch(apiBase() + '/csrf-token', {
-                        credentials: 'include',
-                        signal: requestController.signal
-                    });
-                    if (!csrfRes.ok) throw new Error('CSRF token request failed');
-                    csrfData = await csrfRes.json();
-                } finally {
-                    window.clearTimeout(csrfTimer);
-                }
-                if (!isCurrentPastLifeRequest(generation, readingSession)) return;
-                if (!csrfData?.csrfToken) throw new Error('CSRF token is missing');
+                var csrfRes = await fetch(apiBase() + '/csrf-token', { credentials: 'include' });
+                var csrfData = await csrfRes.json();
 
                 var res = await fetch(apiBase() + '/past-life', {
                     method: 'POST',
                     credentials: 'include',
-                    signal: requestController.signal,
                     headers: {
                         'Content-Type': 'application/json',
                         'X-CSRF-Token': csrfData.csrfToken || ''
@@ -563,20 +260,17 @@ import { getPragueDateKey } from './utils/prague-date.js';
                 });
 
                 var data = await res.json();
-                if (!isCurrentPastLifeRequest(generation, readingSession)) return;
 
                 setBlockVisible(document.getElementById('pl-loading'), false);
 
                 if (!res.ok || !data.success) {
                     setBlockVisible(document.getElementById('form-section'), true);
-                    showError(data.error || 'Chyba serveru. Zkus to prosím znovu.');
-                    document.getElementById('pl-name').focus();
+                    showError(data.error || 'Chyba serveru. Zkuste to prosím znovu.');
                     return;
                 }
 
                 // Fill result
                 var r = data.result;
-                showFallbackNotice(document.getElementById('pl-result'), data.fallback);
                 document.getElementById('res-era').textContent = r.era || '';
                 document.getElementById('res-identity').textContent = r.identity || '';
                 document.getElementById('res-karmic').textContent = r.karmic_lesson || '';
@@ -587,84 +281,50 @@ import { getPragueDateKey } from './utils/prague-date.js';
 
                 setupShare(name, r);
 
-                var result = document.getElementById('pl-result');
-                displayedPastLifeSession = readingSession;
-                result.classList.add('visible');
-                document.getElementById('pl-result-heading').focus();
-                window.scrollTo({ top: result.offsetTop - 80, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
-
                 if (window.Auth?.saveReading) {
                     try {
-                        var savePromise = window.Auth.saveReading('past-life', {
+                        var saveResult = await window.Auth.saveReading('past-life', {
                             name: name,
                             birthDate: birth,
                             gender: gender,
                             place: place,
                             result: r,
                             fallback: !!data.fallback
-                        }, readingOwnerId);
-                        Promise.resolve(savePromise).then(function(saveResult) {
-                            if (!isCurrentPastLifeRequest(generation, readingSession)) return;
-                            if (saveResult?.id) appendPastLifeFavoriteAction(result, saveResult.id);
-                            else showPastLifeSaveFailure(result);
-                        }).catch(function(saveError) {
-                            if (!isCurrentPastLifeRequest(generation, readingSession)) return;
-                            console.warn('Past life save failed:', saveError.message);
-                            showPastLifeSaveFailure(result);
                         });
+
+                        if (saveResult?.id) {
+                            appendPastLifeFavoriteAction(document.getElementById('pl-result'), saveResult.id);
+                        }
                     } catch (saveError) {
-                        if (!isCurrentPastLifeRequest(generation, readingSession)) return;
                         console.warn('Past life save failed:', saveError.message);
-                        showPastLifeSaveFailure(result);
                     }
                 }
 
+                document.getElementById('pl-result').classList.add('visible');
+                window.scrollTo({ top: document.getElementById('pl-result').offsetTop - 80, behavior: 'smooth' });
+
             } catch (e) {
-                if (!isCurrentPastLifeRequest(generation, readingSession)) return;
                 setBlockVisible(document.getElementById('pl-loading'), false);
                 setBlockVisible(document.getElementById('form-section'), true);
-                showError(csrfRequestTimedOut
-                    ? 'Zabezpečené spojení neodpovědělo včas. Výklad jsme neodeslali; údaje zůstaly ve formuláři a můžeš to zkusit znovu.'
-                    : 'Chyba připojení. Údaje zůstaly ve formuláři, zkus to prosím znovu.');
-                document.getElementById('pl-name').focus();
-            } finally {
-                window.clearTimeout(requestStatusTimer);
-                if (pastLifeRequestStatusTimer === requestStatusTimer) pastLifeRequestStatusTimer = null;
-                if (generation === pastLifeGeneration) {
-                    pastLifeRequestPending = false;
-                    if (activePastLifeSession === readingSession) activePastLifeSession = null;
-                    if (pastLifeRequestController === requestController) pastLifeRequestController = null;
-                    form.removeAttribute('aria-busy');
-                    submitButton.disabled = false;
-                }
+                showError('Chyba připojení. Zkuste to prosím znovu.');
             }
         });
 
         // Reset
         document.getElementById('pl-reset').addEventListener('click', function() {
-            pastLifeGeneration += 1;
-            pastLifeRequestController?.abort();
-            pastLifeRequestController = null;
-            activePastLifeSession = null;
-            displayedPastLifeSession = null;
-            pastLifeRequestPending = false;
-            window.clearTimeout(pastLifeRequestStatusTimer);
-            pastLifeRequestStatusTimer = null;
             document.getElementById('pl-result').classList.remove('visible');
             setBlockVisible(document.getElementById('form-section'), true);
-            var nameField = document.getElementById('pl-name');
-            nameField?.focus({ preventScroll: true });
-            nameField?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         });
     }
 
     function setupShare(name, r) {
         var pageUrl = 'https://www.mystickahvezda.cz/minuly-zivot.html';
         var firstName = name.split(' ')[0];
-        var shareText = firstName + ' má symbolický vhled minulého života: ' +
+        var shareText = '\uD83D\uDD2E ' + firstName + ' má symbolický vhled minulého života: ' +
             (r.era ? 'V \u00E9\u0159e \u201E' + r.era + '\u201C ' : '') +
             (r.identity ? r.identity.substring(0, 60) + (r.identity.length > 60 ? '\u2026' : '') + '. ' : '') +
-            'Vytvo\u0159 si vlastn\u00ED sebereflexn\u00ED v\u00FDklad.';
+            'Vytvo\u0159 si vlastn\u00ED sebereflexn\u00ED v\u00FDklad \u2935\uFE0F';
 
         // Facebook
         var fbBtn = document.getElementById('share-fb');
@@ -709,26 +369,24 @@ import { getPragueDateKey } from './utils/prague-date.js';
         setupImageShare(firstName, r);
     }
 
-    function drawPastLifeResultCard(firstName, r) {
+    async function drawPastLifeResultCard(firstName, r) {
         var shareImage = window.MH_SHARE_IMAGE;
         var canvas = shareImage.createCanvas();
         var ctx = canvas.getContext('2d');
         var centerX = canvas.width / 2;
-        var seed = String(r.era || '').length * 17 + String(r.identity || '').length;
-
-        shareImage.drawBrandBackground(ctx, canvas, seed);
+        await shareImage.drawBrandBackground(ctx, canvas);
 
         ctx.fillStyle = '#d0b17c';
         ctx.font = '700 52px Cinzel, Georgia, serif';
         ctx.fillText('MINUL\u00DD \u017DIVOT', centerX, 240);
 
-        ctx.fillStyle = '#c0c8ca';
+        ctx.fillStyle = 'rgba(255,255,255,0.72)';
         ctx.font = '500 32px Inter, Arial, sans-serif';
-        ctx.fillText(firstName ? 'Symbolick\u00FD vhled pro ' + firstName : 'Symbolick\u00FD vhled', centerX, 300);
+        ctx.fillText(firstName ? 'Symbolick\u00FD vhled pro ' + firstName : 'Symbolick\u00FD vhled', centerX, 300, 900);
 
         var y = 410;
         if (r.era) {
-            ctx.fillStyle = '#e9e3d7';
+            ctx.fillStyle = '#fff7d6';
             ctx.font = '700 46px Cinzel, Georgia, serif';
             y = shareImage.drawCenteredLines(ctx, shareImage.wrapText(ctx, r.era, 840), centerX, y, 56, 2, 840) + 30;
         }
@@ -739,13 +397,13 @@ import { getPragueDateKey } from './utils/prague-date.js';
             y = shareImage.drawCenteredLines(ctx, shareImage.wrapText(ctx, r.identity, 840), centerX, y, 47, 5, 840) + 26;
         }
 
-        ctx.fillStyle = 'rgba(208,177,124,0.86)';
+        ctx.fillStyle = 'rgba(189,155,101,0.86)';
         ctx.fillRect(170, y, 740, 3);
         y += 60;
 
         var closing = r.message || r.mission || r.karmic_lesson || '';
         if (closing) {
-            ctx.fillStyle = '#e9e3d7';
+            ctx.fillStyle = 'rgba(255,255,255,0.82)';
             ctx.font = '500 32px Inter, Arial, sans-serif';
             shareImage.drawCenteredLines(ctx, shareImage.wrapText(ctx, closing, 840), centerX, y, 43, 5, 840);
         }
@@ -770,15 +428,15 @@ import { getPragueDateKey } from './utils/prague-date.js';
             imageBtn.className = 'share-btn share-btn--copy';
             buttonsBar.appendChild(imageBtn);
         }
-        imageBtn.textContent = 'Ulo\u017Eit obr\u00E1zek';
+        imageBtn.textContent = '\u2728 Ulo\u017Eit obr\u00E1zek';
 
         imageBtn.onclick = function () {
             imageBtn.disabled = true;
             imageBtn.textContent = 'P\u0159ipravuji obr\u00E1zek...';
 
             Promise.resolve()
-                .then(function () {
-                    var canvas = drawPastLifeResultCard(firstName, r);
+                .then(async function () {
+                    var canvas = await drawPastLifeResultCard(firstName, r);
                     return window.MH_SHARE_IMAGE.shareOrDownload({
                         canvas: canvas,
                         fileName: 'minuly-zivot.png',
@@ -797,7 +455,7 @@ import { getPragueDateKey } from './utils/prague-date.js';
                 })
                 .then(function () {
                     imageBtn.disabled = false;
-                    imageBtn.textContent = 'Ulo\u017Eit obr\u00E1zek';
+                    imageBtn.textContent = '\u2728 Ulo\u017Eit obr\u00E1zek';
                 });
         };
     }

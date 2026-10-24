@@ -623,8 +623,8 @@ body.page-pricing .card--pricing:hover {
 body.page-pricing .card--pricing-primary {
     border-color: rgba(212, 175, 55, 0.52);
     background:
-        radial-gradient(circle at 88% 4%, rgba(189, 155, 101, 0.13), transparent 18rem),
-        linear-gradient(145deg, rgba(16, 38, 56, 0.98), rgba(11, 25, 41, 0.98));
+        radial-gradient(circle at 88% 4%, rgba(212, 175, 55, 0.17), transparent 18rem),
+        linear-gradient(145deg, rgba(40, 24, 63, 0.92), rgba(9, 9, 26, 0.94));
     box-shadow: 0 22px 56px rgba(0, 0, 0, 0.3), 0 0 34px rgba(212, 175, 55, 0.08);
 }
 

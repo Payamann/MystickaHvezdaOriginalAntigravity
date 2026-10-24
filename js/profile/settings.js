@@ -89,7 +89,10 @@ export function resetProfileAvatarSave() {
 
 function refreshProfileBirthDateMaximum() {
     const birthdateEl = document.getElementById('settings-birthdate');
-    if (birthdateEl) birthdateEl.max = getTodayIsoDate();
+    const today = getTodayIsoDate();
+    // Reassigning max on a focused native date input can scroll the page
+    // during pointerdown and move the save button before mouseup.
+    if (birthdateEl && birthdateEl.max !== today) birthdateEl.max = today;
 }
 
 function bindProfileBirthDateMaximumRefresh() {
@@ -185,6 +188,23 @@ export function initSettingsForm() {
     const user = window.Auth?.user;
     if (!user) return;
 
+    const draftForm = document.querySelector?.('.settings-form');
+    if (draftForm) {
+        if (!draftForm.dataset.profileDraftBound) {
+            draftForm.dataset.profileDraftBound = 'true';
+            draftForm.addEventListener('input', () => {
+                draftForm.dataset.profileDraftDirty = 'true';
+                draftForm.dataset.profileDraftRevision = String(Number(draftForm.dataset.profileDraftRevision || 0) + 1);
+            });
+        }
+        if (draftForm.dataset.profileDraftOwner === user.id && draftForm.dataset.profileDraftDirty === 'true') {
+            bindProfileBirthDateMaximumRefresh();
+            return;
+        }
+        draftForm.dataset.profileDraftOwner = user.id;
+        draftForm.dataset.profileDraftDirty = 'false';
+    }
+
     const nameEl = document.getElementById('settings-name');
     const emailEl = document.getElementById('settings-email');
     const birthtimeEl = document.getElementById('settings-birthtime');
@@ -209,6 +229,7 @@ export async function saveSettings() {
     refreshProfileBirthDateMaximum();
     const btn = document.getElementById('save-settings-btn');
     const settingsForm = document.querySelector('.settings-form');
+    const draftRevision = settingsForm?.dataset?.profileDraftRevision;
     const formUx = window.MH_FORM_UX || {};
 
     formUx.clearFormSummary?.(settingsForm);
@@ -273,6 +294,7 @@ export async function saveSettings() {
             cached[key] = profileData.user && Object.hasOwn(profileData.user, key) ? profileData.user[key] : profileBody[key];
         });
         storeCurrentUser(cached);
+        if (settingsForm?.dataset && settingsForm.dataset.profileDraftRevision === draftRevision) settingsForm.dataset.profileDraftDirty = 'false';
 
         document.dispatchEvent(new CustomEvent('profile:updated', { detail: { user: cached } }));
         window.Auth?.showToast?.('Uloženo', 'Tvoje údaje jsou uložené.', 'success');
@@ -488,8 +510,12 @@ function renderSubscriptionCard(sub, ownerId = window.Auth?.user?.id) {
         ? statusLabels[sub.status]
         : { text: 'Neznámý stav', class: 'badge--secondary' };
     const isPremium = normalizedPlanType !== 'free';
-    const canManagePayments = sub.canManagePayments === true;
-    const hasBillingSubscription = typeof sub.hasBillingSubscription === 'boolean' ? sub.hasBillingSubscription : null;
+    // Keep the profile compatible with both the current TODO billing manifest
+    // and the older response field names used by the reliability port.
+    const canManagePayments = sub.canManageBilling === true || sub.canManagePayments === true;
+    const hasBillingSubscription = typeof sub.hasStripeSubscription === 'boolean'
+        ? sub.hasStripeSubscription
+        : typeof sub.hasBillingSubscription === 'boolean' ? sub.hasBillingSubscription : null;
     const rawPeriodEnd = sub.currentPeriodEnd ? new Date(sub.currentPeriodEnd) : null;
     const periodEnd = rawPeriodEnd && !Number.isNaN(rawPeriodEnd.getTime()) ? rawPeriodEnd : null;
     const periodEndStr = periodEnd ? periodEnd.toLocaleDateString('cs-CZ', {
@@ -551,7 +577,7 @@ function renderSubscriptionCard(sub, ownerId = window.Auth?.user?.id) {
         } else if (sub.canCancel && sub.status !== 'cancel_pending') {
             html += '<button id="sub-cancel-btn" type="button" class="btn btn--sm btn--glass">Zrušit předplatné</button>';
         }
-        if (sub.status === 'cancel_pending' && hasBillingSubscription) {
+        if ((sub.canReactivate === true || sub.status === 'cancel_pending') && hasBillingSubscription) {
             html += '<button id="sub-reactivate-btn" type="button" class="btn btn--sm btn--primary">Obnovit předplatné</button>';
         }
     }

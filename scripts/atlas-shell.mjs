@@ -1,5 +1,6 @@
+import { polishMainPage } from './atlas-main-polish.mjs';
 // Shell-only conversion shared by explicitly scoped visual batches.
-export function atlasShell(html, pageClass, stylesheet, stylesheetVersion = (stylesheet === 'atlas-content.css' ? '2' : stylesheet === 'atlas-remaining.css' ? '20261020-01-remaining-surface-polish' : stylesheet === 'atlas-astro.css' ? '20261020-01-western-zodiac-image-cards' : '1')) {
+export function atlasShell(html, pageClass, stylesheet) {
   let result = html.replace(/<body([^>]*)>/i, (_, attrs) => {
     const classes = new Set([...attrs.matchAll(/class="([^"]*)"/gi)].flatMap(match => match[1].split(/\s+/)).filter(Boolean));
     classes.add('atlas-page');
@@ -10,5 +11,5 @@ export function atlasShell(html, pageClass, stylesheet, stylesheetVersion = (sty
   result = result.replace(/(<meta name="theme-color" content=")[^"]+/, '$1#0b1929');
   // Normalize both order and URLs, including pages already partially migrated.
   result = result.replace(/\s*<link[^>]*href="[^"]*\/(?:atlas-web|atlas-blog|atlas-content|atlas-tools|atlas-astro|atlas-angels|atlas-remaining)\.css[^\"]*"[^>]*>/g, '');
-  return result.replace('</head>', `\n    <link rel="stylesheet" href="/css/atlas-web.css?v=20261020-03-horoscope-day-switcher-atlas">\n    <link rel="stylesheet" href="/css/${stylesheet}?v=${stylesheetVersion}">\n</head>`);
+  return polishMainPage(result.replace('</head>', `\n    <link rel="stylesheet" href="/css/atlas-web.css?v=20261023-release-todo">\n    <link rel="stylesheet" href="/css/${stylesheet}?v=1">\n</head>`));
 }

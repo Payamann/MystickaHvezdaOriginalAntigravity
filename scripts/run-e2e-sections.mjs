@@ -70,6 +70,18 @@ const sections = [
     },
 ];
 
+// Keep the all-sections runner exhaustive as focused regression specs are added.
+// Temporary captures are local review artifacts, not persistent test cases.
+const assignedSpecs = new Set(sections.flatMap(section => section.files));
+const extraSpecs = fs.readdirSync(path.join(process.cwd(), 'tests', 'e2e'), { recursive: true })
+    .filter(file => file.endsWith('.spec.js') && !file.endsWith('.temp.spec.js'))
+    .map(file => 'tests/e2e/' + file.replaceAll('\\', '/'))
+    .filter(file => !assignedSpecs.has(file))
+    .sort();
+if (extraSpecs.length) {
+    sections.push({ name: 'regression', label: 'Focused regression coverage', defaultWorkers: 2, files: extraSpecs });
+}
+
 const args = process.argv.slice(2);
 let project = 'chromium';
 let selectedSection = null;

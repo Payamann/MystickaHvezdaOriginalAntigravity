@@ -44,6 +44,7 @@ export function initReadingFilters() {
     const select = document.getElementById('readings-filter');
     if (!select) return;
     select.innerHTML = READING_FILTERS.map(filter => `<option value="${filter.value}">${filter.label}</option>`).join('');
+    select.value = currentFilter;
 }
 
 export function updateFavoriteSummary(wasFavorite, isFavorite) {

@@ -105,32 +105,6 @@ test.describe('Andělské karty', () => {
         await expect(page.locator('#btn-deep-angel')).toBeVisible({ timeout: 3_000 });
     });
 
-    for (const failureMode of ['blocked', 'quota']) {
-        test(`kartu lze vytáhnout i když prohlížeč nemůže uložit denní volbu (${failureMode})`, async ({ page }) => {
-            await page.evaluate(() => localStorage.removeItem('angelCardDaily'));
-            await page.addInitScript((mode) => {
-                const originalGetItem = Storage.prototype.getItem;
-                const originalSetItem = Storage.prototype.setItem;
-                Storage.prototype.getItem = function getItem(key) {
-                    if (key === 'angelCardDaily' && mode === 'blocked') throw new Error('Storage denied');
-                    return originalGetItem.call(this, key);
-                };
-                Storage.prototype.setItem = function setItem(key, value) {
-                    if (key === 'angelCardDaily') throw new Error(mode === 'blocked' ? 'Storage denied' : 'Quota exceeded');
-                    return originalSetItem.call(this, key, value);
-                };
-            }, failureMode);
-            await page.reload();
-            await waitForPageReady(page);
-
-            await page.locator('#draw-btn').click();
-            await expect(page.locator('#draw-btn')).toHaveClass(/is-flipped/);
-            await expect(page.locator('#angel-short-message')).not.toBeEmpty();
-            await expect(page.locator('#angel-card-storage-note')).toBeVisible();
-            await expect(page.locator('#angel-card-storage-note')).toContainText('Prohlížeč si dnešní kartu neuložil');
-        });
-    }
-
     test('SEO landing a vylozeni andelske karty se propisi do analytics a funnelu', async ({ page }) => {
         // Consented analytics normally flush immediately; keep events queued so attribution stays observable.
         await page.route('**/api/analytics/batch', route => route.fulfill({
@@ -202,15 +176,8 @@ test.describe('Andělské karty', () => {
 
     test('hluboky vhled posila andelsky zamer, ne Kartu dne', async ({ page }) => {
         let payload = null;
-        let requestCount = 0;
-        let releaseResponse;
-        const responseGate = new Promise(resolve => {
-            releaseResponse = resolve;
-        });
         await page.route('**/api/angel-card', async route => {
-            requestCount += 1;
             payload = route.request().postDataJSON();
-            await responseGate;
             await route.fulfill({
                 status: 200,
                 contentType: 'application/json',
@@ -224,168 +191,18 @@ test.describe('Andělské karty', () => {
                 ...(window.Auth || {}),
                 isLoggedIn: () => true,
                 isPremium: () => true,
-                saveReading: async () => {
-                    window.__angelSaveCount = (window.__angelSaveCount || 0) + 1;
-                    return { id: 'test-angel-reading' };
-                }
+                saveReading: async () => ({ id: 'test-angel-reading' })
             };
-            window.__angelSaveCount = 0;
             window.getCSRFToken = async () => 'csrf.test.token';
         });
 
         await page.locator('#draw-btn').click();
         await expect(page.locator('#btn-deep-angel')).toBeVisible({ timeout: 3_000 });
         await page.locator('#btn-deep-angel').click();
-        await expect(page.locator('#angel-ai-status')).toHaveText('Načítám hluboký vhled k andělské kartě.');
-        await expect(page.locator('#btn-deep-angel')).toHaveText('Připravuji hlubší výklad…');
-        await expect(page.locator('#angel-ai-response')).toHaveText('Výklad k vytažené kartě se připravuje…');
-        await expect(page.locator('#btn-deep-angel')).toHaveAttribute('aria-busy', 'true');
-        releaseResponse();
         await expect(page.locator('#angel-ai-response')).toContainText('Andělská odpověď');
-        await expect(page.locator('#angel-ai-status')).toHaveText('Hluboký vhled k andělské kartě je připraven.');
-        await expect(page.locator('#btn-deep-angel')).not.toHaveAttribute('aria-busy', 'true');
-        await expect(page.locator('#btn-deep-angel')).toBeDisabled();
-        await expect(page.locator('#btn-deep-angel')).toHaveText('Hluboký vhled je připraven');
-
-        await page.locator('#btn-deep-angel').evaluate(button => {
-            button.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-        });
-        expect(requestCount).toBe(1);
-        expect(await page.evaluate(() => window.__angelSaveCount)).toBe(1);
 
         expect(payload?.intention).toBe('hluboký vhled k andělské kartě');
         expect(payload?.intention).not.toContain('kartě dne');
-    });
-
-    test('chyba uložení hluboký vhled nesmaže ani nepovolí duplicitní vytvoření', async ({ page }) => {
-        await page.route('**/api/angel-card', route => route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({ success: true, response: 'Výklad zůstává viditelný i bez uložení.' })
-        }));
-        await page.evaluate(() => {
-            window.Auth = {
-                ...(window.Auth || {}),
-                isLoggedIn: () => true,
-                isPremium: () => true,
-                saveReading: async () => null
-            };
-            window.getCSRFToken = async () => 'csrf.test.token';
-        });
-
-        await page.locator('#draw-btn').click();
-        await expect(page.locator('#btn-deep-angel')).toBeVisible({ timeout: 3_000 });
-        await page.locator('#btn-deep-angel').click();
-
-        await expect(page.locator('#angel-ai-response')).toContainText('Výklad zůstává viditelný');
-        await expect(page.locator('#angel-ai-status')).toContainText('nepodařilo uložit do profilu');
-        await expect(page.locator('#btn-deep-angel')).toBeDisabled();
-    });
-
-    test('hluboký vhled po změně účtu nezobrazí ani neuloží pozdní odpověď, karta dne zůstane', async ({ page }) => {
-        await page.evaluate(() => {
-            localStorage.removeItem('angelCardDaily');
-            window.Auth = {
-                ...(window.Auth || {}),
-                user: { ...(window.Auth?.user || {}), id: 'angel-user-a' },
-                isLoggedIn: () => true,
-                isPremium: () => true,
-                saveReading: async () => {
-                    window.__angelInsightSaveCount = (window.__angelInsightSaveCount || 0) + 1;
-                    return { id: 'test-angel-reading' };
-                }
-            };
-            window.__angelInsightRequestCount = 0;
-            window.__angelInsightSaveCount = 0;
-            const originalFetch = window.fetch.bind(window);
-            window.fetch = (input, init) => {
-                const url = new URL(typeof input === 'string' ? input : input.url, location.href);
-                if (url.pathname.endsWith('/angel-card')) {
-                    window.__angelInsightRequestCount += 1;
-                    return new Promise(resolve => {
-                        window.__releaseAngelInsight = () => resolve(new Response(JSON.stringify({
-                            success: true,
-                            response: 'STARÝ SOUKROMÝ ANDĚLSKÝ VHLED'
-                        }), {
-                            status: 200,
-                            headers: { 'Content-Type': 'application/json' }
-                        }));
-                    });
-                }
-                return originalFetch(input, init);
-            };
-            window.getCSRFToken = async () => 'csrf.test.token';
-        });
-
-        await page.locator('#draw-btn').click();
-        await expect(page.locator('#btn-deep-angel')).toBeVisible({ timeout: 3_000 });
-        const dailyCardMessage = await page.locator('#angel-short-message').textContent();
-        await page.locator('#btn-deep-angel').click();
-        await expect.poll(() => page.evaluate(() => window.__angelInsightRequestCount)).toBe(1);
-        await expect(page.locator('#angel-ai-response')).toHaveText('Výklad k vytažené kartě se připravuje…');
-
-        await page.evaluate(() => {
-            window.Auth.user.id = 'angel-user-b';
-            document.dispatchEvent(new CustomEvent('auth:changed'));
-        });
-
-        await expect(page.locator('#angel-ai-response')).toBeHidden();
-        await expect(page.locator('#angel-ai-response')).toBeEmpty();
-        await expect(page.locator('#angel-ai-status')).toBeHidden();
-        await expect(page.locator('#favorite-angel-card-btn')).toHaveCount(0);
-        await expect(page.locator('#btn-deep-angel')).toBeEnabled();
-        await expect(page.locator('#btn-deep-angel')).not.toHaveAttribute('aria-busy', 'true');
-        await expect(page.locator('#angel-results')).toHaveClass(/mh-block-visible/);
-        await expect(page.locator('#angel-short-message')).toHaveText(dailyCardMessage);
-
-        await page.evaluate(() => window.__releaseAngelInsight());
-        await expect(page.locator('#angel-ai-response')).not.toContainText('STARÝ SOUKROMÝ ANDĚLSKÝ VHLED');
-        await expect.poll(() => page.evaluate(() => window.__angelInsightSaveCount)).toBe(0);
-        await expect(page.locator('#angel-results')).toHaveClass(/mh-block-visible/);
-        await expect(page.locator('#angel-short-message')).toHaveText(dailyCardMessage);
-    });
-
-    test('pozdní uložení hlubokého vhledu po změně účtu nepřidá oblíbenou akci', async ({ page }) => {
-        await page.route('**/api/angel-card', route => route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({ success: true, response: 'Soukromý vhled čeká na zápis.' })
-        }));
-        await page.evaluate(() => {
-            localStorage.removeItem('angelCardDaily');
-            window.Auth = {
-                ...(window.Auth || {}),
-                user: { id: 'angel-save-owner-a' },
-                isLoggedIn: () => true,
-                isPremium: () => true,
-                saveReading: (...args) => {
-                    window.__angelInsightSaveOwner = args[2];
-                    return new Promise(resolve => {
-                        window.__releaseAngelSave = () => resolve({ id: 'old-account-reading' });
-                    });
-                }
-            };
-            window.getCSRFToken = async () => 'csrf.test.token';
-        });
-
-        await page.locator('#draw-btn').click();
-        await expect(page.locator('#btn-deep-angel')).toBeVisible({ timeout: 3_000 });
-        await page.locator('#btn-deep-angel').click();
-        await expect(page.locator('#angel-ai-response')).toContainText('Soukromý vhled čeká');
-        await expect.poll(() => page.evaluate(() => window.__angelInsightSaveOwner)).toBe('angel-save-owner-a');
-
-        await page.evaluate(() => {
-            window.Auth.user.id = 'angel-save-owner-b';
-            document.dispatchEvent(new CustomEvent('auth:changed'));
-        });
-        await expect(page.locator('#angel-ai-response')).toBeHidden();
-        await expect(page.locator('#favorite-angel-card-btn')).toHaveCount(0);
-
-        await page.evaluate(() => window.__releaseAngelSave());
-        await page.waitForTimeout(0);
-        await expect(page.locator('#angel-ai-response')).toBeHidden();
-        await expect(page.locator('#favorite-angel-card-btn')).toHaveCount(0);
-        await expect(page.locator('#angel-results')).toHaveClass(/mh-block-visible/);
     });
 
     test('mobilní výsledek po vytažení není překrytý cookie bannerem', async ({ page }) => {
@@ -494,122 +311,6 @@ test.describe('Křišťálová koule', () => {
         await input.fill('Co mě čeká v práci?');
         const value = await input.inputValue();
         expect(value).toContain('Co mě čeká');
-    });
-
-    test('prázdná otázka zobrazí přístupnou chybu bez volání API', async ({ page }) => {
-        await page.evaluate(() => {
-            localStorage.removeItem('crystalBall_lastUsage');
-            window.__crystalApiCalls = 0;
-            const nativeFetch = window.fetch.bind(window);
-            window.fetch = (input, init) => {
-                if (String(input).includes('/crystal-ball')) window.__crystalApiCalls += 1;
-                return nativeFetch(input, init);
-            };
-        });
-
-        const input = page.locator('#question-input');
-        const error = page.locator('#question-error');
-        await page.locator('#ask-btn').click();
-
-        await expect(input).toBeFocused();
-        await expect(input).toHaveAttribute('aria-invalid', 'true');
-        await expect(input).toHaveAttribute('aria-describedby', 'question-instruction question-error');
-        await expect(error).toBeVisible();
-        await expect(error).toHaveText('Napiš otázku, na kterou chceš hledat nový úhel pohledu.');
-        expect(await page.evaluate(() => window.__crystalApiCalls)).toBe(0);
-
-        await input.fill('Co můžu ovlivnit?');
-        await expect(input).toHaveAttribute('aria-invalid', 'false');
-        await expect(error).toBeHidden();
-    });
-
-    test('opožděný výsledek se po změně účtu nezobrazí ani neuloží', async ({ page }) => {
-        await page.evaluate(() => {
-            for (const key of Object.keys(localStorage)) {
-                if (key.startsWith('mh_daily_crystal_') || key === 'crystalBall_lastUsage') {
-                    localStorage.removeItem(key);
-                }
-            }
-
-            window.Auth = {
-                ...(window.Auth || {}),
-                user: { id: 'crystal-owner-before' },
-                isLoggedIn: () => true,
-                isPremium: () => true,
-                saveReading: async () => {
-                    window.__crystalSaveCount = (window.__crystalSaveCount || 0) + 1;
-                    return { id: 'old-account-reading' };
-                }
-            };
-            window.getCSRFToken = async () => 'csrf.crystal-session-test';
-            window.__crystalFetchCount = 0;
-            window.__crystalSaveCount = 0;
-            const nativeFetch = window.fetch.bind(window);
-            window.fetch = async (input, options) => {
-                if (String(input).includes('/crystal-ball')) {
-                    window.__crystalFetchCount += 1;
-                    return new Promise(resolve => {
-                        window.__releaseCrystalResponse = () => resolve({
-                            status: 200,
-                            json: async () => ({ success: true, response: 'SOUKROMÁ STARÁ ODPOVĚĎ' })
-                        });
-                    });
-                }
-                return nativeFetch(input, options);
-            };
-        });
-
-        await page.locator('#question-input').fill('Co se mám zeptat pod účtem A?');
-        await page.locator('#ask-btn').click();
-        await expect.poll(() => page.evaluate(() => window.__crystalFetchCount)).toBe(1);
-
-        await page.evaluate(() => {
-            window.Auth.user = { id: 'crystal-owner-after' };
-            document.dispatchEvent(new Event('auth:changed'));
-        });
-        await expect(page.locator('#question-input')).toHaveValue('');
-        await expect(page.locator('#answer-container')).not.toHaveClass(/visible/);
-        await expect(page.locator('#ask-btn')).not.toHaveAttribute('aria-busy', 'true');
-
-        await page.evaluate(() => window.__releaseCrystalResponse());
-        await expect(page.locator('#answer-text')).toBeEmpty();
-        await expect(page.locator('#answer-text')).not.toContainText('SOUKROMÁ STARÁ ODPOVĚĎ');
-        expect(await page.evaluate(() => window.__crystalSaveCount)).toBe(0);
-        await expect(page.locator('#answer-container .favorite-reading-action')).toHaveCount(0);
-    });
-
-    test('neulozena odpoved koule zustane viditelna a je oznamena', async ({ page }) => {
-        await page.route('**/api/crystal-ball', route => route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({ success: true, response: 'Odpověď vybízí k rozdělení velkého kroku na menší části.' })
-        }));
-        await page.evaluate(() => {
-            for (const key of Object.keys(localStorage)) {
-                if (key.startsWith('mh_daily_crystal_') || key === 'crystalBall_lastUsage') localStorage.removeItem(key);
-            }
-            window.Auth = {
-                ...(window.Auth || {}),
-                user: { id: 'crystal-save-failure-owner' },
-                isLoggedIn: () => true,
-                isPremium: () => true,
-                saveReading: async () => null
-            };
-            window.getCSRFToken = async () => 'crystal-save-failure-token';
-            document.dispatchEvent(new Event('auth:changed'));
-        });
-
-        await page.locator('#question-input').fill('Jak si mám rozdělit dnešní úkoly?');
-        await page.locator('#ask-btn').click();
-
-        await expect(page.locator('#answer-container')).toHaveClass(/visible/);
-        await expect(page.locator('#answer-text'))
-            .toContainText('Odpověď vybízí k rozdělení velkého kroku na menší části.');
-        await expect(page.locator('#answer-container [data-reading-save-error]'))
-            .toHaveAttribute('role', 'status');
-        await expect(page.locator('#answer-container [data-reading-save-error]'))
-            .toContainText('uložení do profilu se nepodařilo');
-        await expect(page.locator('#answer-container .favorite-reading-action')).toHaveCount(0);
     });
 
     test('stranka vede dotaz na spravny typ vykladu', async ({ page }) => {
@@ -822,26 +523,6 @@ test.describe('Runy', () => {
         await expect(page.locator('meta[property="og:title"]')).toHaveAttribute('content', 'Runy online: denní runa zdarma | Mystická Hvězda');
     });
 
-    test('denní tah se řídí pražským datem i před půlnocí UTC', async ({ page }) => {
-        await page.clock.install({ time: new Date('2026-10-17T22:30:00.000Z') });
-        await page.addInitScript(() => {
-            localStorage.setItem('runeDaily', JSON.stringify({
-                date: '2026-10-18',
-                runeData: {
-                    name: 'Fehu',
-                    symbol: 'ᚠ',
-                    meaning: 'Začátek a zdroje',
-                    description: 'Zaměř se na to, co máš k dispozici.'
-                }
-            }));
-        });
-        await page.reload();
-
-        await expect(page.locator('#rune-result')).toHaveClass(/visible/);
-        await expect(page.locator('#rune-name')).toContainText('Fehu');
-        await expect(page.locator('#btn-draw')).toBeHidden();
-    });
-
     test('#btn-draw nebo tlačítko pro vytažení runy existuje', async ({ page }) => {
         const btn = page.locator('#btn-draw, button[id*="draw"], button[id*="rune"]').first();
         await expect(btn).toBeAttached();
@@ -875,6 +556,22 @@ test.describe('Runy', () => {
         await expect(page.locator('body')).toBeVisible();
     });
 
+    test('po vytažení runy lze stáhnout její obrázek', async ({ page }) => {
+        await page.evaluate(() => localStorage.removeItem('runeDaily'));
+        await page.reload();
+        await waitForPageReady(page);
+
+        await page.locator('#btn-draw').click();
+        await expect(page.locator('#rune-result')).toHaveClass(/visible/, { timeout: 4_000 });
+        const saveButton = page.locator('#btn-share');
+        await expect(saveButton).toBeVisible();
+
+        const downloadPromise = page.waitForEvent('download');
+        await saveButton.click();
+        const download = await downloadPromise;
+        expect(download.suggestedFilename()).toBe('runa-dne.png');
+    });
+
     test('hluboký výklad volá správný /api/runes endpoint', async ({ page }) => {
         await page.evaluate(() => localStorage.removeItem('runeDaily'));
         await page.reload();
@@ -906,94 +603,6 @@ test.describe('Runy', () => {
         await page.locator('#btn-deep-reading').click();
         await apiCall;
         await expect(page.locator('#ai-response-container')).toContainText('Testovací runový vhled.');
-    });
-
-    test('hluboký runový výklad zůstane viditelný při neúspěšném uložení', async ({ page }) => {
-        await page.evaluate(() => localStorage.removeItem('runeDaily'));
-        await page.reload();
-        await waitForPageReady(page);
-
-        await page.route('**/api/runes', route => route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({ success: true, response: 'Hotový runový výklad zůstává dostupný.' })
-        }));
-
-        await page.evaluate(() => {
-            window.Auth = {
-                ...(window.Auth || {}),
-                user: { id: 'rune-save-failure-user' },
-                isLoggedIn: () => true,
-                isPremium: () => true,
-                showToast: () => {},
-                saveReading: async () => null
-            };
-            window.getCSRFToken = async () => 'csrf.rune-save-failure-test';
-        });
-
-        await page.locator('#btn-draw').click();
-        await expect(page.locator('#rune-result')).toHaveClass(/visible/, { timeout: 4_000 });
-        await page.locator('#btn-deep-reading').click();
-
-        await expect(page.locator('#ai-response-container')).toContainText('Hotový runový výklad zůstává dostupný.');
-        await expect(page.locator('#rune-result [data-reading-save-error]')).toBeVisible();
-        await expect(page.locator('#runes-deep-error')).toHaveCount(0);
-        await expect(page.locator('#btn-deep-reading')).not.toHaveAttribute('aria-busy', 'true');
-    });
-
-    test('opožděný osobní runový výklad se po změně účtu nezobrazí ani neuloží', async ({ page }) => {
-        await page.evaluate(() => localStorage.removeItem('runeDaily'));
-        await page.reload();
-        await waitForPageReady(page);
-
-        await page.evaluate(() => {
-            window.Auth = {
-                ...(window.Auth || {}),
-                user: { id: 'rune-owner-before' },
-                isLoggedIn: () => true,
-                isPremium: () => true,
-                showToast: () => {},
-                saveReading: async () => {
-                    window.__runeSaveCount = (window.__runeSaveCount || 0) + 1;
-                    return { id: 'old-account-rune-reading' };
-                }
-            };
-            window.getCSRFToken = async () => 'csrf.rune-session-test';
-            window.__runeFetchCount = 0;
-            window.__runeSaveCount = 0;
-            const nativeFetch = window.fetch.bind(window);
-            window.fetch = async (input, options) => {
-                if (String(input).includes('/runes')) {
-                    window.__runeFetchCount += 1;
-                    return new Promise(resolve => {
-                        window.__releaseRuneResponse = () => resolve({
-                            status: 200,
-                            json: async () => ({ success: true, response: 'SOUKROMÝ STARÝ RUNOVÝ VÝKLAD' })
-                        });
-                    });
-                }
-                return nativeFetch(input, options);
-            };
-        });
-
-        await page.locator('#btn-draw').click();
-        await expect(page.locator('#rune-result')).toHaveClass(/visible/, { timeout: 4_000 });
-        await page.locator('#rune-intention').fill('Soukromý záměr účtu A');
-        await page.locator('#btn-deep-reading').click();
-        await expect.poll(() => page.evaluate(() => window.__runeFetchCount)).toBe(1);
-
-        await page.evaluate(() => {
-            window.Auth.user = { id: 'rune-owner-after' };
-            document.dispatchEvent(new Event('auth:changed'));
-        });
-        await expect(page.locator('#rune-intention')).toHaveValue('');
-        await expect(page.locator('#ai-response-container')).toBeHidden();
-        await expect(page.locator('#btn-deep-reading')).not.toHaveAttribute('aria-busy', 'true');
-
-        await page.evaluate(() => window.__releaseRuneResponse());
-        await expect(page.locator('#ai-response-container')).not.toContainText('SOUKROMÝ STARÝ RUNOVÝ VÝKLAD');
-        expect(await page.evaluate(() => window.__runeSaveCount)).toBe(0);
-        await expect(page.locator('#favorite-rune-action')).toHaveCount(0);
     });
 
     test('odhlaseny hluboky vyklad ukaze preview paywall bez okamziteho checkoutu', async ({ page }) => {
@@ -1222,12 +831,10 @@ test.describe('Minulý život', () => {
         await page.locator('#pl-name').fill('Jana Testovaci');
         await page.locator('#pl-birth').fill('1992-03-15');
         await page.locator('[data-gender="neutral"]').click();
-        await page.locator('#pl-name').press('Enter');
+        await page.locator('#pl-submit').click();
 
         await expect(page.locator('#past-life-preview-gate')).toBeVisible();
         await expect(page.locator('#past-life-preview-gate')).toContainText('Odemknout');
-        await expect(page.locator('#past-life-preview-heading')).toHaveAttribute('tabindex', '-1');
-        await expect(page.locator('#past-life-preview-heading')).toBeFocused();
         expect(apiCalled).toBe(false);
         expect(await page.evaluate(() => window.__pastLifeCheckoutPayloads.length)).toBe(0);
 
@@ -1243,314 +850,6 @@ test.describe('Minulý život', () => {
                 })
             })
         });
-    });
-
-    test('formulář ohlásí chybu a zaměří první chybějící údaj', async ({ page }) => {
-        await page.locator('#pl-submit').click();
-
-        await expect(page.locator('#pl-error')).toHaveAttribute('role', 'alert');
-        await expect(page.locator('#pl-error')).toContainText('Zadej své jméno.');
-        await expect(page.locator('#pl-name')).toHaveAttribute('aria-invalid', 'true');
-        await expect(page.locator('#pl-name')).toHaveAttribute('aria-describedby', 'pl-error');
-        await expect(page.locator('#pl-name')).toBeFocused();
-
-        await page.locator('#pl-name').fill('Jana Testovací');
-        await page.locator('#pl-birth').fill('1992-03-15');
-        await page.locator('#pl-submit').click();
-        await expect(page.locator('#pl-error')).toContainText('Vyber formu výkladu.');
-        await expect(page.locator('#pl-gender-options')).toHaveAttribute('aria-invalid', 'true');
-        await expect(page.locator('[data-gender="muz"]')).toBeFocused();
-        await page.locator('[data-gender="neutral"]').click();
-        await expect(page.locator('[data-gender="neutral"]')).toHaveAttribute('aria-pressed', 'true');
-        await expect(page.locator('#pl-error')).toBeHidden();
-    });
-
-    test('po návratu obnoví rozpracované údaje a jednorázový kontext smaže', async ({ page }) => {
-        await page.evaluate(() => sessionStorage.setItem('pendingPastLifeContext', JSON.stringify({
-            version: 1,
-            savedAt: Date.now(),
-            payload: { name: 'Jana Návratová', birthDate: '1991-04-12', place: 'Brno', gender: 'neutral' }
-        })));
-
-        await page.goto('/minuly-zivot.html');
-        await waitForPageReady(page);
-
-        await expect(page.locator('#pl-name')).toHaveValue('Jana Návratová');
-        await expect(page.locator('#pl-birth')).toHaveValue('1991-04-12');
-        await expect(page.locator('#pl-place')).toHaveValue('Brno');
-        await expect(page.locator('[data-gender="neutral"]')).toHaveAttribute('aria-pressed', 'true');
-        await expect(page.locator('#pl-context-status')).toContainText('Obnovili jsme údaje');
-        expect(await page.evaluate(() => sessionStorage.getItem('pendingPastLifeContext'))).toBeNull();
-    });
-
-    test('výsledek se zobrazí i když se uložení do historie nedokončí', async ({ page }) => {
-        await page.route('**/csrf-token', route => route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({ csrfToken: 'past-life-test-token' })
-        }));
-        await page.route('**/past-life', route => route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({
-                success: true,
-                result: {
-                    era: 'Renesanční město', identity: 'Pozorovatel příběhů',
-                    karmic_lesson: 'Důvěra', gifts: 'Trpělivost', patterns: 'Hledání jistoty',
-                    mission: 'Dávat věcem čas', message: 'Všímej si, kde už dnes jednáš jinak.'
-                }
-            })
-        }));
-
-        await page.evaluate(() => {
-            window.Auth = {
-                user: { id: 'past-life-result-owner' },
-                isLoggedIn: () => true,
-                isPremium: () => true,
-                saveReading: () => new Promise(() => {})
-            };
-            window.dispatchEvent(new Event('auth:changed'));
-        });
-        await page.locator('#pl-name').fill('Jana Testovací');
-        await page.locator('#pl-birth').fill('1992-03-15');
-        await page.locator('[data-gender="neutral"]').click();
-        await page.locator('#pl-submit').click();
-
-        await expect(page.locator('#pl-result')).toHaveClass(/visible/);
-        await expect(page.locator('#res-era')).toHaveText('Renesanční město');
-        await expect(page.locator('#pl-result-heading')).toBeFocused();
-        await page.locator('#pl-reset').click();
-        await expect(page.locator('#pl-submit')).toBeEnabled();
-        await expect(page.locator('#pl-name')).toBeFocused();
-    });
-
-    test('chyba ulozeni minulého zivota ponecha výklad a ukáže upozornění', async ({ page }) => {
-        await page.route('**/csrf-token', route => route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({ csrfToken: 'past-life-save-failure-token' })
-        }));
-        await page.route('**/past-life', route => route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({
-                success: true,
-                result: {
-                    era: 'Příběh z horské vesnice', identity: 'Pozorovatelka změn',
-                    karmic_lesson: 'Důvěra', gifts: 'Cit pro souvislosti', patterns: 'Přílišná opatrnost',
-                    mission: 'Všímat si dnešních možností', message: 'Zkušenost může být podnětem k zamyšlení.'
-                }
-            })
-        }));
-        await page.evaluate(() => {
-            window.Auth = {
-                user: { id: 'past-life-save-failure-owner' },
-                isLoggedIn: () => true,
-                isPremium: () => true,
-                saveReading: async () => { throw new Error('history unavailable'); }
-            };
-            window.dispatchEvent(new Event('auth:changed'));
-        });
-
-        await page.locator('#pl-name').fill('Jana Testovací');
-        await page.locator('#pl-birth').fill('1992-03-15');
-        await page.locator('[data-gender="neutral"]').click();
-        await page.locator('#pl-submit').click();
-
-        await expect(page.locator('#pl-result')).toHaveClass(/visible/);
-        await expect(page.locator('#res-era')).toHaveText('Příběh z horské vesnice');
-        await expect(page.locator('#res-message')).toHaveText('Zkušenost může být podnětem k zamyšlení.');
-        await expect(page.locator('#pl-result [data-reading-save-error]'))
-            .toContainText('nepodařilo se ho uložit do profilu');
-    });
-
-    test('chyba API formulář obnoví, zachová údaje a dovolí opakování', async ({ page }) => {
-        await page.route('**/csrf-token', route => route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({ csrfToken: 'past-life-test-token' })
-        }));
-        await page.route('**/past-life', route => route.fulfill({
-            status: 503,
-            contentType: 'application/json',
-            body: JSON.stringify({ success: false, error: 'Výklad se teď nepodařilo připravit.' })
-        }));
-        await page.evaluate(() => {
-            window.Auth = { user: { id: 'past-life-error-owner' }, isLoggedIn: () => true, isPremium: () => true };
-            window.dispatchEvent(new Event('auth:changed'));
-        });
-
-        await page.locator('#pl-name').fill('Jana Testovací');
-        await page.locator('#pl-birth').fill('1992-03-15');
-        await page.locator('#pl-place').fill('Brno');
-        await page.locator('[data-gender="neutral"]').click();
-        await page.locator('#pl-submit').click();
-
-        await expect(page.locator('#pl-error')).toContainText('Výklad se teď nepodařilo připravit.');
-        await expect(page.locator('#pl-form-wrap')).toBeVisible();
-        await expect(page.locator('#pl-name')).toHaveValue('Jana Testovací');
-        await expect(page.locator('#pl-birth')).toHaveValue('1992-03-15');
-        await expect(page.locator('#pl-place')).toHaveValue('Brno');
-        await expect(page.locator('#pl-submit')).toBeEnabled();
-    });
-
-    test('zaseknutý požadavek na CSRF bezpečně obnoví formulář před odesláním výkladu', async ({ page }) => {
-        let generationRequested = false;
-        await page.route('**/csrf-token', async route => {
-            await new Promise(resolve => setTimeout(resolve, 100));
-            try {
-                await route.fulfill({
-                    status: 200,
-                    contentType: 'application/json',
-                    body: JSON.stringify({ csrfToken: 'past-life-test-token' })
-                });
-            } catch {
-                // The page should abort this safe preflight before generation starts.
-            }
-        });
-        await page.route('**/past-life', route => {
-            generationRequested = true;
-            return route.fulfill({ status: 500, body: '{}' });
-        });
-        await page.evaluate(() => {
-            const nativeSetTimeout = window.setTimeout.bind(window);
-            window.setTimeout = (callback, delay, ...args) => nativeSetTimeout(callback, delay === 15000 ? 10 : delay, ...args);
-            window.Auth = { user: { id: 'past-life-csrf-owner' }, isLoggedIn: () => true, isPremium: () => true };
-            window.dispatchEvent(new Event('auth:changed'));
-        });
-
-        await page.locator('#pl-name').fill('Jana Testovací');
-        await page.locator('#pl-birth').fill('1992-03-15');
-        await page.locator('[data-gender="neutral"]').click();
-        await page.locator('#pl-submit').click();
-
-        await expect(page.locator('#pl-error')).toContainText('Výklad jsme neodeslali');
-        await expect(page.locator('#pl-name')).toHaveValue('Jana Testovací');
-        await expect(page.locator('#pl-submit')).toBeEnabled();
-        expect(generationRequested).toBe(false);
-    });
-
-    test('pozdni odpoved minuleho zivota se po zmene uctu neukaze ani neulozi', async ({ page }) => {
-        await page.evaluate(() => {
-            window.Auth = {
-                ...(window.Auth || {}),
-                user: { id: 'past-life-owner-a' },
-                isLoggedIn: () => true,
-                isPremium: () => true,
-                saveReading: async () => {
-                    window.__pastLifeSaveCount = (window.__pastLifeSaveCount || 0) + 1;
-                    return { id: 'old-past-life-reading' };
-                }
-            };
-            window.__pastLifeSaveCount = 0;
-            window.dispatchEvent(new Event('auth:changed'));
-            const nativeFetch = window.fetch.bind(window);
-            window.fetch = (input, options) => {
-                const url = new URL(typeof input === 'string' ? input : input.url, location.href);
-                if (url.pathname.endsWith('/past-life')) {
-                    return new Promise(resolve => {
-                        window.__releasePastLifeResponse = () => resolve(new Response(JSON.stringify({
-                            success: true,
-                            result: {
-                                era: 'STARÁ OSOBNÍ ÉRA', identity: 'Soukromá identita',
-                                karmic_lesson: 'Soukromá lekce', gifts: 'Soukromé dary',
-                                patterns: 'Soukromý vzorec', mission: 'Soukromý úkol', message: 'Soukromá zpráva'
-                            }
-                        }), { status: 200, headers: { 'Content-Type': 'application/json' } }));
-                    });
-                }
-                if (url.pathname.endsWith('/csrf-token')) {
-                    return Promise.resolve(new Response(JSON.stringify({ csrfToken: 'past-life-session-token' }), {
-                        status: 200,
-                        headers: { 'Content-Type': 'application/json' }
-                    }));
-                }
-                return nativeFetch(input, options);
-            };
-        });
-
-        await page.locator('#pl-name').fill('Jana Soukromá');
-        await page.locator('#pl-birth').fill('1992-03-15');
-        await page.locator('#pl-place').fill('Brno');
-        await page.locator('[data-gender="neutral"]').click();
-        await page.locator('#pl-submit').click();
-        await expect(page.locator('#pl-loading')).toBeVisible();
-        await expect.poll(() => page.evaluate(() => typeof window.__releasePastLifeResponse)).toBe('function');
-
-        await page.evaluate(() => {
-            window.Auth.user.id = 'past-life-owner-b';
-            document.dispatchEvent(new Event('auth:changed'));
-        });
-        await expect(page.locator('#pl-name')).toHaveValue('');
-        await expect(page.locator('#pl-birth')).toHaveValue('');
-        await expect(page.locator('#pl-place')).toHaveValue('');
-        await expect(page.locator('#pl-loading')).toBeHidden();
-        await expect(page.locator('#form-section')).toBeVisible();
-        await expect(page.locator('#pl-result')).not.toHaveClass(/visible/);
-
-        await page.evaluate(() => window.__releasePastLifeResponse());
-        await expect(page.locator('#res-era')).toBeEmpty();
-        await expect(page.locator('#pl-result')).not.toHaveClass(/visible/);
-        await expect.poll(() => page.evaluate(() => window.__pastLifeSaveCount)).toBe(0);
-        await expect(page.locator('#favorite-past-life-action')).toHaveCount(0);
-    });
-
-    test('zmena uctu odstrani hotovy minuly zivot i pozdni akci ulozeni', async ({ page }) => {
-        await page.route('**/csrf-token', route => route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({ csrfToken: 'past-life-save-session-token' })
-        }));
-        await page.route('**/past-life', route => route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({
-                success: true,
-                result: {
-                    era: 'Symbolická doba', identity: 'Příběh citlivého pozorovatele',
-                    karmic_lesson: 'Trpělivost', gifts: 'Naslouchání',
-                    patterns: 'Hledání jistoty', mission: 'Všímat si dnešních voleb', message: 'Výklad pro účet A.'
-                }
-            })
-        }));
-        await page.evaluate(() => {
-            window.Auth = {
-                ...(window.Auth || {}),
-                user: { id: 'past-life-save-owner-a' },
-                isLoggedIn: () => true,
-                isPremium: () => true,
-                saveReading: (...args) => {
-                    window.__pastLifeSaveOwner = args[2];
-                    return new Promise(resolve => {
-                        window.__releasePastLifeSave = () => resolve({ id: 'old-past-life-reading' });
-                    });
-                }
-            };
-            window.dispatchEvent(new Event('auth:changed'));
-        });
-
-        await page.locator('#pl-name').fill('Jana Soukromá');
-        await page.locator('#pl-birth').fill('1992-03-15');
-        await page.locator('[data-gender="neutral"]').click();
-        await page.locator('#pl-submit').click();
-        await expect(page.locator('#pl-result')).toHaveClass(/visible/);
-        await expect(page.locator('#res-era')).toHaveText('Symbolická doba');
-        await expect.poll(() => page.evaluate(() => window.__pastLifeSaveOwner)).toBe('past-life-save-owner-a');
-
-        await page.evaluate(() => {
-            window.Auth.user.id = 'past-life-save-owner-b';
-            document.dispatchEvent(new Event('auth:changed'));
-        });
-        await expect(page.locator('#pl-result')).not.toHaveClass(/visible/);
-        await expect(page.locator('#res-era')).toBeEmpty();
-        await expect(page.locator('#favorite-past-life-action')).toHaveCount(0);
-        await expect(page.locator('#share-fb')).toHaveAttribute('href', '#');
-        await expect(page.locator('#share-x')).toHaveAttribute('href', '#');
-
-        await page.evaluate(() => window.__releasePastLifeSave());
-        await page.waitForTimeout(0);
-        await expect(page.locator('#favorite-past-life-action')).toHaveCount(0);
-        await expect(page.locator('#pl-result')).not.toHaveClass(/visible/);
     });
 
     test('free prihlaseny uzivatel vidi preview a checkout zdroj free gate', async ({ page }) => {

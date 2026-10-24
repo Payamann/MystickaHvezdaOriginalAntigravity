@@ -1671,7 +1671,7 @@ function renderActivationChecklist(user, readings) {
 function focusJournalInput() {
     const input = document.getElementById('journal-input');
     if (!input) return;
-    document.querySelector('.profile-tab[data-tab="overview"]')?.click();
+    document.querySelector('.profile-tab[data-tab="journal"]')?.click();
 
     input.scrollIntoView({ behavior: getProfileScrollBehavior(), block: 'center' });
     setTimeout(() => input.focus(), 250);
@@ -2005,6 +2005,9 @@ async function initProfile() {
     }
 
     setProfileBlockVisible(loginRequired, false);
+    // Establish ownership before asynchronous loads; a same-account refresh must
+    // preserve an already selected filter instead of treating it as a new login.
+    profileState = { ...profileState, user };
     setProfileBlockVisible(dashboard, true);
     await loadPlanManifest();
     const pendingReadingSavedId = await savePendingProfileReading(user?.id);
@@ -2036,14 +2039,28 @@ async function initProfile() {
     }
 
     initTabs();
+    // Bind before exposing populated fields while history/subscription load.
+    // A quick submit must never fall back to a native page POST.
+    for (const [selector, action] of [['.settings-form', saveSettings], ['.settings-password-fields', changePassword]]) {
+        const form = document.querySelector(selector);
+        if (form && !form.dataset.profileSubmitBound) {
+            form.dataset.profileSubmitBound = 'true';
+            form.addEventListener('submit', event => { event.preventDefault(); void action(); });
+        }
+    }
     initSettingsForm();
     initAvatarPicker();
     initReadingFilters();
+    const readingsFilter = document.getElementById('readings-filter');
+    if (readingsFilter && !readingsFilter.dataset.profileFilterBound) {
+        readingsFilter.dataset.profileFilterBound = 'true';
+        readingsFilter.addEventListener('change', handleFilterChange);
+    }
     const journalInput = document.getElementById('journal-input');
     if (journalInput) journalInput.value = readJournalDraft(user?.id);
 
     const [, subscription, context] = await Promise.all([
-        loadReadings(),
+        loadReadings({ preserveFilter: true }),
         loadSubscriptionStatus(),
         loadProfileContext()
     ]);
@@ -2061,7 +2078,7 @@ async function initProfile() {
 
     if (window.location.hash === '#journal-input') {
         focusJournalInput();
-    } else if (['#tab-history', '#tab-favorites', '#tab-settings', '#tab-overview'].includes(window.location.hash)) {
+    } else if (['#tab-history', '#tab-favorites', '#tab-settings', '#tab-overview', '#tab-journal'].includes(window.location.hash)) {
         openProfileTab(window.location.hash.slice(5));
     }
 
@@ -2070,7 +2087,6 @@ async function initProfile() {
         document.getElementById('daily-guidance-card')?.addEventListener('click', handleDailyGuidanceClick);
         document.getElementById('activation-checklist-card')?.addEventListener('click', handleActivationChecklistClick);
         document.getElementById('ritual-memory-card')?.addEventListener('click', handleRitualMemoryClick);
-        document.getElementById('readings-filter')?.addEventListener('change', handleFilterChange);
         document.getElementById('readings-load-more')?.addEventListener('click', showMoreReadings);
         document.getElementById('readings-list')?.addEventListener('click', handleReadingListInteraction);
         document.getElementById('readings-list')?.addEventListener('keydown', handleReadingListKeyboard);
@@ -2118,17 +2134,10 @@ async function initProfile() {
             }
         });
 
-        document.querySelector('.settings-form')?.addEventListener('submit', event => {
-            event.preventDefault();
-            void saveSettings();
-        });
-        document.querySelector('.settings-password-fields')?.addEventListener('submit', event => {
-            event.preventDefault();
-            void changePassword();
-        });
+
         window.addEventListener('hashchange', () => {
             if (window.location.hash === '#journal-input') focusJournalInput();
-            else if (['#tab-history', '#tab-favorites', '#tab-settings', '#tab-overview'].includes(window.location.hash)) openProfileTab(window.location.hash.slice(5));
+            else if (['#tab-history', '#tab-favorites', '#tab-settings', '#tab-overview', '#tab-journal'].includes(window.location.hash)) openProfileTab(window.location.hash.slice(5));
         });
         document.addEventListener('profile:updated', event => {
             const nextUser = event.detail?.user;

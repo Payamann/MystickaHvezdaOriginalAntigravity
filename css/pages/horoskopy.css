@@ -1,12 +1,11 @@
 /* Extracted from horoskopy.html inline <style> block. */
 /* Critical Hero CSS refined */
-    #horoscope-detail-section { scroll-margin-top: 88px; }
     .section--hero { min-height: 45vh !important; display: flex; align-items: center; justify-content: center; padding: 100px 0 40px !important; }
     .hero__title { font-size: clamp(2.5rem, 8vw, 4rem); text-align: center; margin-bottom: 1rem; }
 
 /* Keep the first screen in the same illustrated family as its shared preview. */
 html body #main-content > .section--hero {
-    background: linear-gradient(90deg, rgba(11, 25, 41, 0.88), rgba(11, 25, 41, 0.66) 48%, rgba(11, 25, 41, 0.38)), url('/img/search-preview/astrology-hero.webp') center / cover no-repeat;
+    background: linear-gradient(90deg, rgba(6, 8, 24, 0.88), rgba(6, 8, 24, 0.66) 48%, rgba(6, 8, 24, 0.38)), url('/img/search-preview/astrology-hero.webp') center / cover no-repeat;
     border-bottom: 1px solid rgba(214, 170, 105, 0.2);
 }
 
@@ -15,20 +14,19 @@ html body #main-content > .section--hero .hero__content {
     margin-inline: auto;
     padding: 2.5rem 1.5rem;
     border-radius: 20px;
-    background: rgba(11, 25, 41, 0.42);
+    background: rgba(7, 9, 29, 0.42);
     backdrop-filter: blur(4px);
 }
 
 @media (max-width: 600px) {
     html body #main-content > .section--hero {
         background-position: 63% center;
-        background-image: linear-gradient(90deg, rgba(11, 25, 41, 0.88), rgba(11, 25, 41, 0.66) 48%, rgba(11, 25, 41, 0.38)), image-set(url('/img/search-preview/astrology-hero-mobile-800.webp') 1x, url('/img/search-preview/astrology-hero.webp') 2x);
     }
 }
 
 /* Migrated from horoskopy.html static style attributes. */
-html body .mh-inline-c7ca2aadf5 { display:none; background: linear-gradient(90deg, rgba(179,149,94,0.08), rgba(16,38,56,0.18)); border-bottom: 1px solid rgba(179,149,94,0.2); padding: 0.65rem 1rem; text-align: center; font-size: 0.88rem; color: rgba(255,255,255,0.8); }
-html body .mh-inline-ab7a727fdb { color: #d0b17c; font-weight: 600; }
+html body .mh-inline-c7ca2aadf5 { display:none; background: linear-gradient(90deg, rgba(212,175,55,0.1), rgba(155,89,182,0.1)); border-bottom: 1px solid rgba(212,175,55,0.2); padding: 0.65rem 1rem; text-align: center; font-size: 0.88rem; color: rgba(255,255,255,0.8); }
+html body .mh-inline-ab7a727fdb { color: #d4af37; font-weight: 600; }
 html body .mh-inline-71ff7bdda8 { background:none;border:none;color:rgba(255,255,255,0.3);cursor:pointer;font-size:1rem;vertical-align:middle; }
 body[data-atlas-polish="horoskopy"] #freemium-banner { background:#102638; border-color:#b3955e44; color:#c3c9cb; }
 body[data-atlas-polish="horoskopy"] #freemium-banner a { color:#d0b17c; }
@@ -37,9 +35,9 @@ html body .mh-inline-2f124be5b2 { min-height: 60vh; }
 html body .mh-inline-9aa7a0fc6b { padding-top: 0; }
 html body .mh-inline-1f4e53068f { padding-top: 1.5rem; padding-bottom: 1.5rem; }
 html body .mh-inline-1054d3c93f { max-width:400px; margin-left:auto; margin-right:auto; }
-html body .mh-inline-1aaa6a5561 { width:100%;box-sizing:border-box;padding:0.75rem 1rem;background:rgba(255,255,255,0.07);border:1px solid rgba(179,149,94,0.3);border-radius:4px;color:#e9e3d7;font-size:1rem;margin-bottom:0.75rem; }
-html body .mh-inline-93bca9f516 { width:100%;box-sizing:border-box;padding:0.75rem 1rem;background:#0b1929;border:1px solid rgba(179,149,94,0.4);border-radius:4px;color:#e9e3d7;font-size:1rem;margin-bottom:1rem;cursor:pointer; }
-html body .mh-inline-03c5c01d1c { display:none;color:#d0b17c;font-weight:600;text-align:center;margin:0.5rem 0 0; }
+html body .mh-inline-1aaa6a5561 { width:100%;box-sizing:border-box;padding:0.75rem 1rem;background:rgba(255,255,255,0.07);border:1px solid rgba(212,175,55,0.3);border-radius:8px;color:#fff;font-size:1rem;margin-bottom:0.75rem; }
+html body .mh-inline-93bca9f516 { width:100%;box-sizing:border-box;padding:0.75rem 1rem;background:#0f0a1f;border:1px solid rgba(212,175,55,0.3);border-radius:8px;color:#fff;font-size:1rem;margin-bottom:1rem;cursor:pointer; }
+html body .mh-inline-03c5c01d1c { display:none;color:#d4af37;font-weight:600;text-align:center;margin:0.5rem 0 0; }
 html body .mh-inline-0e243e1d35 { align-items: center; }
 html body .mh-inline-f85d85243e { margin-bottom: var(--space-md); }
 html body .mh-inline-f7d94d0212 { font-size: 3rem; }
@@ -48,8 +46,8 @@ html body .mh-inline-5f6c97c273 { font-size: var(--text-sm); color: var(--color-
 html body .mh-inline-7e4a8af1a6 { font-size: var(--text-lg); }
 
 /* Migrated from horoskopy.html remaining static style attributes. */
-html body .mh-inline-822870aaa4 { background:#102638;border:1px solid rgba(179,149,94,0.27);border-radius:5px;padding:1.5rem; }
-html body .mh-inline-ab30c465af { color:#d0b17c;font-weight:600;margin:0 0 1rem;text-align:center; }
+html body .mh-inline-822870aaa4 { background:rgba(15,10,31,0.85);border:1px solid rgba(212,175,55,0.3);border-radius:16px;padding:1.5rem;backdrop-filter:blur(10px); }
+html body .mh-inline-ab30c465af { color:#d4af37;font-weight:600;margin:0 0 1rem;text-align:center; }
 html body .mh-inline-6bd7cf3a19 { font-size:0.75rem;opacity:0.5;text-align:center;margin:0.75rem 0 0; }
 html body .mh-inline-3482510637 { margin-top: 1rem; color: var(--color-mystic-gold); }
 html body .mh-inline-78489344ad { font-size: 12rem; opacity: 0.1; }
@@ -185,24 +183,109 @@ html body .mh-inline-78489344ad { font-size: 12rem; opacity: 0.1; }
     color: rgba(255, 165, 165, 0.92);
 }
 
-@media (max-width: 900px) {
-    body[data-atlas-polish="horoskopy"] .tabs { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); }
-    body[data-atlas-polish="horoskopy"] .tabs .tab { min-width:0; min-height:44px; padding:.65rem .35rem; font-size:.85rem; line-height:1.3; text-align:center; }
-}
-
 @media (max-width: 560px) {
     .horoscope-feedback__actions .btn {
         width: 100%;
         justify-content: center;
     }
 }
+
+/* Tie the daily sign picker to the illustrated zodiac atlas. */
+body[data-atlas-polish="horoskopy"] .zodiac-card {
+    position: relative;
+    display: grid;
+    grid-template-columns: 56px minmax(0, 1fr);
+    grid-template-rows: 1fr auto;
+    grid-template-areas:
+        "portrait name"
+        "portrait dates";
+    align-items: center;
+    justify-items: start;
+    gap: 0.35rem 0.8rem;
+    min-height: 124px;
+    padding: 0.7rem;
+    border-color: #bd9b6544;
+    background: #102638;
+    text-align: left;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+
+body[data-atlas-polish="horoskopy"] .zodiac-card::before {
+    grid-area: portrait;
+    width: 56px;
+    aspect-ratio: 1 / 2;
+    border: 1px solid #bd9b65aa;
+    border-radius: 3px;
+    background-image: url("/img/atlas/western-zodiac-v1.webp");
+    background-repeat: no-repeat;
+    background-size: 400% 300%;
+    box-shadow: 0 5px 14px #030c1755;
+    content: "";
+}
+
+body[data-atlas-polish="horoskopy"] .zodiac-card__symbol {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
+body[data-atlas-polish="horoskopy"] .zodiac-card__name {
+    grid-area: name;
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.25;
+}
+
+body[data-atlas-polish="horoskopy"] .zodiac-card__dates {
+    grid-area: dates;
+    align-self: start;
+    font-size: 0.72rem;
+    line-height: 1.35;
+}
+
+body[data-atlas-polish="horoskopy"] .zodiac-card:focus-visible {
+    outline: 2px solid #d0b17c;
+    outline-offset: 3px;
+}
+
+body[data-atlas-polish="horoskopy"] .zodiac-card[href="#beran"]::before { background-position: 0% 0%; }
+body[data-atlas-polish="horoskopy"] .zodiac-card[href="#byk"]::before { background-position: 33.333% 0%; }
+body[data-atlas-polish="horoskopy"] .zodiac-card[href="#blizenci"]::before { background-position: 66.667% 0%; }
+body[data-atlas-polish="horoskopy"] .zodiac-card[href="#rak"]::before { background-position: 100% 0%; }
+body[data-atlas-polish="horoskopy"] .zodiac-card[href="#lev"]::before { background-position: 0% 50%; }
+body[data-atlas-polish="horoskopy"] .zodiac-card[href="#panna"]::before { background-position: 33.333% 50%; }
+body[data-atlas-polish="horoskopy"] .zodiac-card[href="#vahy"]::before { background-position: 66.667% 50%; }
+body[data-atlas-polish="horoskopy"] .zodiac-card[href="#stir"]::before { background-position: 100% 50%; }
+body[data-atlas-polish="horoskopy"] .zodiac-card[href="#strelec"]::before { background-position: 0% 100%; }
+body[data-atlas-polish="horoskopy"] .zodiac-card[href="#kozoroh"]::before { background-position: 33.333% 100%; }
+body[data-atlas-polish="horoskopy"] .zodiac-card[href="#vodnar"]::before { background-position: 66.667% 100%; }
+body[data-atlas-polish="horoskopy"] .zodiac-card[href="#ryby"]::before { background-position: 100% 100%; }
+
+@media (max-width: 560px) {
+    body[data-atlas-polish="horoskopy"] .zodiac-card {
+        grid-template-columns: 48px minmax(0, 1fr);
+        min-height: 104px;
+        gap: 0.3rem 0.65rem;
+        padding: 0.6rem;
+    }
+
+    body[data-atlas-polish="horoskopy"] .zodiac-card::before { width: 48px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body[data-atlas-polish="horoskopy"] .zodiac-card { transition: none; }
+}
 /* Post-signup activation handoff. Hidden for regular SEO visits. */
 .horoscope-activation-welcome {
     margin-bottom: 1.25rem;
     padding: 1rem 1.1rem;
-    border: 1px solid rgba(179, 149, 94, 0.42);
+    border: 1px solid rgba(212, 175, 55, 0.34);
     border-radius: 14px;
-    background: linear-gradient(135deg, rgba(208, 177, 124, 0.12), rgba(16, 38, 56, 0.68));
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.12), rgba(111, 66, 193, 0.1));
     box-shadow: 0 16px 36px rgba(0, 0, 0, 0.18);
 }
 
@@ -212,7 +295,7 @@ html body .mh-inline-78489344ad { font-size: 12rem; opacity: 0.1; }
 
 .horoscope-activation-welcome[data-state="complete"] {
     border-color: rgba(111, 207, 151, 0.46);
-    background: linear-gradient(135deg, rgba(111, 207, 151, 0.12), rgba(208, 177, 124, 0.08));
+    background: linear-gradient(135deg, rgba(111, 207, 151, 0.12), rgba(212, 175, 55, 0.08));
 }
 
 .horoscope-activation-welcome__kicker {
@@ -355,118 +438,233 @@ html body .mh-inline-78489344ad { font-size: 12rem; opacity: 0.1; }
     }
 }
 
-/* Illustrated zodiac picker: same card portraits as the zodiac detail pages. */
-body[data-atlas-polish="horoskopy"] .zodiac-grid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+/* Illustrated service links keep the horoscope hub inside the tarot atlas family. */
+body[data-atlas-polish="horoskopy"] .cross-linking-grid {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+    gap: clamp(0.7rem, 1.8vw, 1rem);
 }
 
-.zodiac-grid .zodiac-card {
-    position: relative;
-    display: grid;
-    grid-template-columns: 56px minmax(0, 1fr);
-    grid-template-rows: 1fr auto;
-    grid-template-areas: "portrait name" "portrait dates";
-    align-items: center;
-    justify-items: start;
-    gap: 0.35rem 0.8rem;
-    min-height: 124px;
-    padding: 0.7rem;
-    border-color: #bd9b6544;
+body[data-atlas-polish="horoskopy"] .cross-link-card {
+    display: flex;
+    min-width: 0;
+    min-height: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    overflow: hidden;
+    padding: 0;
+    border: 1px solid rgba(189, 155, 101, 0.3);
+    border-radius: 14px;
     background: #102638;
     text-align: left;
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
 }
 
-.zodiac-grid .zodiac-card::before {
-    grid-area: portrait;
-    width: 56px;
-    aspect-ratio: 1 / 2;
-    border: 1px solid #bd9b65aa;
-    border-radius: 3px;
-    background-image: url("/img/atlas/western-zodiac-v1-grid.webp");
-    background-repeat: no-repeat;
-    background-size: 400% 300%;
-    box-shadow: 0 5px 14px #030c1755;
-    content: "";
+body[data-atlas-polish="horoskopy"] .cross-link-card:hover,
+body[data-atlas-polish="horoskopy"] .cross-link-card:focus-visible {
+    border-color: rgba(208, 177, 124, 0.78) !important;
+    background: #142e42;
+    box-shadow: 0 14px 30px rgba(1, 8, 17, 0.28);
 }
 
-.zodiac-grid .zodiac-card__symbol {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-}
-
-.zodiac-grid .zodiac-card__name {
-    grid-area: name;
-    margin: 0;
-    font-size: 1rem;
-    line-height: 1.25;
-    max-width: 100%;
-    overflow-wrap: anywhere;
-}
-
-.zodiac-grid .zodiac-card__dates {
-    grid-area: dates;
-    align-self: start;
-    font-size: 0.72rem;
-    line-height: 1.35;
-}
-
-.zodiac-grid .zodiac-card:focus-visible {
+body[data-atlas-polish="horoskopy"] .cross-link-card:focus-visible {
     outline: 2px solid #d0b17c;
     outline-offset: 3px;
 }
 
-.zodiac-grid .zodiac-card[href="#beran"]::before { background-position: 0% 0%; }
-.zodiac-grid .zodiac-card[href="#byk"]::before { background-position: 33.333% 0%; }
-.zodiac-grid .zodiac-card[href="#blizenci"]::before { background-position: 66.667% 0%; }
-.zodiac-grid .zodiac-card[href="#rak"]::before { background-position: 100% 0%; }
-.zodiac-grid .zodiac-card[href="#lev"]::before { background-position: 0% 50%; }
-.zodiac-grid .zodiac-card[href="#panna"]::before { background-position: 33.333% 50%; }
-.zodiac-grid .zodiac-card[href="#vahy"]::before { background-position: 66.667% 50%; }
-.zodiac-grid .zodiac-card[href="#stir"]::before { background-position: 100% 50%; }
-.zodiac-grid .zodiac-card[href="#strelec"]::before { background-position: 0% 100%; }
-.zodiac-grid .zodiac-card[href="#kozoroh"]::before { background-position: 33.333% 100%; }
-.zodiac-grid .zodiac-card[href="#vodnar"]::before { background-position: 66.667% 100%; }
-.zodiac-grid .zodiac-card[href="#ryby"]::before { background-position: 100% 100%; }
+body[data-atlas-polish="horoskopy"] .cross-link-card__art {
+    display: block;
+    width: 100%;
+    height: clamp(126px, 13vw, 164px);
+    flex: 0 0 auto;
+    object-fit: cover;
+    object-position: center;
+    border-bottom: 1px solid rgba(189, 155, 101, 0.24);
+    background: #0b1929;
+}
 
-@media (max-width: 900px) {
-    body[data-atlas-polish="horoskopy"] .zodiac-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+body[data-atlas-polish="horoskopy"] .cross-link-card[href="andelske-karty.html"] .cross-link-card__art {
+    object-position: center 31%;
+}
+
+body[data-atlas-polish="horoskopy"] .cross-link-card[href="tarot.html"] .cross-link-card__art {
+    object-position: center 43%;
+}
+
+body[data-atlas-polish="horoskopy"] .cross-link-card__title {
+    margin: 0;
+    padding: 0.85rem 1rem 0;
+    color: #f4e8cf;
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    line-height: 1.35;
+}
+
+body[data-atlas-polish="horoskopy"] .cross-link-card__text {
+    margin: 0;
+    padding: 0.35rem 1rem 1rem;
+    color: rgba(235, 239, 242, 0.68);
+    font-size: 0.82rem;
+    line-height: 1.5;
+}
+
+/* The result portrait follows the currently selected sign from the same atlas. */
+body[data-atlas-polish="horoskopy"] .horoscope-result-visual {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+body[data-atlas-polish="horoskopy"] #bg-symbol {
+    position: relative;
+    width: min(100%, 260px);
+    aspect-ratio: 1 / 2;
+    overflow: hidden;
+    border: 1px solid rgba(208, 177, 124, 0.8);
+    border-radius: 7px;
+    background-image:
+        linear-gradient(180deg, rgba(8, 19, 32, 0.05), rgba(8, 19, 32, 0.24)),
+        url("/img/atlas/tools-v1/01-astrolab.webp");
+    box-shadow: 0 20px 48px rgba(1, 8, 17, 0.36), 0 0 30px rgba(189, 155, 101, 0.08);
+    color: transparent;
+    font-size: 0;
+    opacity: 1;
+    background-repeat: no-repeat;
+    background-position: center, 70% center;
+    background-size: cover, cover;
+}
+
+body[data-atlas-polish="horoskopy"] #bg-symbol[data-sign] {
+    background-image: url("/img/atlas/western-zodiac-v1.webp");
+    background-size: 400% 300%;
+}
+
+/* The painted atlas has slightly uneven gutters; crop out neighbouring frames. */
+body[data-atlas-polish="horoskopy"] #bg-symbol[data-sign]::after {
+    position: absolute;
+    inset: 0;
+    background-image: inherit;
+    background-position: inherit;
+    background-repeat: inherit;
+    background-size: inherit;
+    content: "";
+    transform: scale(1.06);
+}
+
+body[data-atlas-polish="horoskopy"] #bg-symbol[data-sign="beran"] { background-position: 0% 0%; }
+body[data-atlas-polish="horoskopy"] #bg-symbol[data-sign="byk"] { background-position: 33.333% 0%; }
+body[data-atlas-polish="horoskopy"] #bg-symbol[data-sign="blizenci"] { background-position: 66.667% 0%; }
+body[data-atlas-polish="horoskopy"] #bg-symbol[data-sign="rak"] { background-position: 100% 0%; }
+body[data-atlas-polish="horoskopy"] #bg-symbol[data-sign="lev"] { background-position: 0% 50%; }
+body[data-atlas-polish="horoskopy"] #bg-symbol[data-sign="panna"] { background-position: 33.333% 50%; }
+body[data-atlas-polish="horoskopy"] #bg-symbol[data-sign="vahy"] { background-position: 66.667% 50%; }
+body[data-atlas-polish="horoskopy"] #bg-symbol[data-sign="stir"] { background-position: 100% 50%; }
+body[data-atlas-polish="horoskopy"] #bg-symbol[data-sign="strelec"] { background-position: 0% 100%; }
+body[data-atlas-polish="horoskopy"] #bg-symbol[data-sign="kozoroh"] { background-position: 33.333% 100%; }
+body[data-atlas-polish="horoskopy"] #bg-symbol[data-sign="vodnar"] { background-position: 66.667% 100%; }
+body[data-atlas-polish="horoskopy"] #bg-symbol[data-sign="ryby"] { background-position: 100% 100%; }
+
+@media (max-width: 760px) {
+    body[data-atlas-polish="horoskopy"] .cross-linking-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    body[data-atlas-polish="horoskopy"] .cross-link-card__art {
+        height: 112px;
+    }
+
+    body[data-atlas-polish="horoskopy"] .horoscope-result-visual {
+        order: -1;
+        padding: 0.5rem 0 1.25rem;
+    }
+
+    body[data-atlas-polish="horoskopy"] #bg-symbol {
+        width: min(52vw, 168px);
     }
 }
 
-@media (max-width: 560px) {
-    .zodiac-grid .zodiac-card {
-        grid-template-columns: 48px minmax(0, 1fr);
-        min-height: 104px;
-        gap: 0.3rem 0.65rem;
-        padding: 0.6rem;
+@media (max-width: 360px) {
+    body[data-atlas-polish="horoskopy"] .cross-linking-grid {
+        grid-template-columns: 1fr;
     }
 
-    .zodiac-grid .zodiac-card::before { width: 48px; }
-}
-
-body.atlas-page .horoscope-reference-section { padding-block: 0.5rem; }
-@media (max-width: 560px) {
-    body[data-atlas-polish="horoskopy"] .zodiac-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .6rem; }
-    body[data-atlas-polish="horoskopy"] .zodiac-grid .zodiac-card { grid-template-columns: 36px minmax(0, 1fr); min-height: 108px; gap: .3rem .4rem; padding: .55rem; }
-    body[data-atlas-polish="horoskopy"] .zodiac-grid .zodiac-card::before { width: 36px; }
-    body[data-atlas-polish="horoskopy"] .zodiac-card__name { font-size: .9rem; overflow-wrap: anywhere; }
-    body[data-atlas-polish="horoskopy"] .zodiac-card__dates { font-size: .75rem; }
-    body[data-atlas-polish="horoskopy"] .zodiac-card__badge { position:static; inset:auto; transform:none; grid-column:1 / -1; justify-self:start; max-width:100%; white-space:normal; border-radius:4px; font-size:.6rem; }
-}
-
-@media (max-width: 560px) {
-    .zodiac-grid .zodiac-card::before {
-        background-image: image-set(url('/img/atlas/western-zodiac-v1-grid-mobile-192.webp') 1x, url('/img/atlas/western-zodiac-v1-grid.webp') 2x);
+    body[data-atlas-polish="horoskopy"] .cross-link-card__art {
+        height: 150px;
     }
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .zodiac-grid .zodiac-card { transition: none; }
+    body[data-atlas-polish="horoskopy"] .cross-link-card {
+        transition: none;
+    }
+}
+
+/* Results, e-mail signup and sharing use the same navy surfaces as the atlas. */
+body[data-atlas-polish="horoskopy"] #horoscope-detail-section {
+    scroll-margin-top: 84px;
+}
+
+body[data-atlas-polish="horoskopy"] #horoscope-detail-section .grid {
+    align-items: start;
+}
+
+body[data-atlas-polish="horoskopy"] #detail-symbol {
+    color: #d0b17c;
+    font-family: "Segoe UI Symbol", serif;
+    font-variant-emoji: text;
+}
+
+body[data-atlas-polish="horoskopy"] .mh-inline-822870aaa4,
+body[data-atlas-polish="horoskopy"] #horoscope-share-panel {
+    border: 1px solid rgba(189, 155, 101, 0.3);
+    border-radius: 14px;
+    background: #102638;
+    backdrop-filter: none;
+    box-shadow: none;
+}
+
+body[data-atlas-polish="horoskopy"] #horoscope-share-panel {
+    padding: 1.5rem 1rem;
+}
+
+body[data-atlas-polish="horoskopy"] .hs-title {
+    color: #d0b17c;
+}
+
+body[data-atlas-polish="horoskopy"] .hs-preview-canvas {
+    width: min(100%, 280px);
+    height: auto;
+    border-radius: 6px;
+    box-shadow: 0 8px 24px rgba(1, 8, 17, 0.28);
+}
+
+body[data-atlas-polish="horoskopy"] .hs-btn--primary {
+    min-height: 44px;
+    border-radius: 6px;
+    background: #bd9b65;
+    color: #0b1929;
+}
+
+body[data-atlas-polish="horoskopy"] .hs-opt {
+    min-height: 44px;
+    border-color: rgba(189, 155, 101, 0.25);
+    border-radius: 6px;
+    background: #0b1929;
+}
+
+body[data-atlas-polish="horoskopy"] .hs-toast {
+    border-radius: 6px;
+    background: #0b1929;
+    backdrop-filter: none;
+}
+
+body[data-atlas-polish="horoskopy"] .hs-btn:focus-visible,
+body[data-atlas-polish="horoskopy"] .hs-opt:focus-visible {
+    outline: 2px solid #d0b17c;
+    outline-offset: 3px;
+}
+
+@media (max-width: 760px) {
+    body[data-atlas-polish="horoskopy"] #horoscope-detail-section {
+        scroll-margin-top: 64px;
+    }
 }

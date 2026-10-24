@@ -17,19 +17,20 @@
     <meta name="robots" content="noindex, nofollow">
 
     <meta name="theme-color" content="#0b1929">
-    <link rel="stylesheet" href="css/site.min.css?v=20261018-release-candidate">
-    <link rel="stylesheet" href="css/pages/onboarding.css?v=20261018-atlas-onboarding">
+    <link rel="stylesheet" href="css/site.min.css?v=20261023-release-todo">
+    <link rel="stylesheet" href="css/pages/onboarding.css?v=20261010-atlas">
     <script src="js/dist/api-config.js?v=5" defer></script>
     <script src="js/dist/growth-loop-client.js?v=1" defer></script>
     <script src="/js/dist/analytics-init.js" defer></script>
 
-    <link rel="stylesheet" href="/css/atlas-web.css?v=20261020-03-horoscope-day-switcher-atlas">
-    <link rel="stylesheet" href="/css/atlas-remaining.css?v=20261020-01-remaining-surface-polish">
+    <link rel="stylesheet" href="/css/atlas-web.css?v=20261023-release-todo">
+    <link rel="stylesheet" href="/css/atlas-remaining.css?v=20261023-release-todo">
+<link rel="stylesheet" href="/css/atlas-polish-v1.css?v=20261022-unified-selection">
 </head>
 
 
 
-<body class="atlas-page atlas-remaining-page">
+<body class="atlas-page atlas-remaining-page" data-atlas-polish="onboarding">
     <a href="#main-content" class="skip-link">Přeskočit na obsah</a>
 
 
@@ -40,13 +41,13 @@
 
             <!-- Progress -->
 
-            <div class="progress-bar" role="progressbar" aria-label="Průběh nastavení" aria-valuemin="1" aria-valuemax="3" aria-valuenow="1" aria-valuetext="Krok 1 ze 3">
+            <div class="progress-bar">
 
-                <div class="progress-bar__step active" id="prog-1" aria-hidden="true"></div>
+                <div class="progress-bar__step active" id="prog-1"></div>
 
-                <div class="progress-bar__step" id="prog-2" aria-hidden="true"></div>
+                <div class="progress-bar__step" id="prog-2"></div>
 
-                <div class="progress-bar__step" id="prog-3" aria-hidden="true"></div>
+                <div class="progress-bar__step" id="prog-3"></div>
 
             </div>
 
@@ -58,7 +59,7 @@
 
                 <span class="step-icon"><svg class="mh-symbol" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#star"></use></svg></span>
 
-                <h1 class="step-title" tabindex="-1">Začni jedním rituálem, ne dalším menu</h1>
+                <h1 class="step-title">Začni jedním rituálem, ne dalším menu</h1>
 
                 <p class="step-subtitle">Vyber znamení a téma. Pak tě vezmeme rovnou k prvnímu dennímu kroku, který se dá uložit a později porovnat.</p>
 
@@ -94,7 +95,7 @@
 
                 <span class="step-icon"><svg class="mh-symbol" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#chart"></use></svg></span>
 
-                <h2 class="step-title" tabindex="-1">Tvoje hvězdné znamení</h2>
+                <h2 class="step-title">Tvoje hvězdné znamení</h2>
 
                 <p class="step-subtitle">Podle znamení připravíme denní vedení a rychlejší návrat k tomu, co se ti opakuje.</p>
 
@@ -138,7 +139,7 @@
 
                 <button class="btn btn--primary btn-full onboarding-quick-primary" id="quick-finish-onboarding-btn"
                     data-action="finishOnboarding" aria-describedby="quick-onboarding-note" disabled hidden>
-                    <svg class="mh-symbol mh-symbol--inline" width="18" height="18" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#star"></use></svg><span>Zobrazit dnešní horoskop</span>
+                    Zobrazit dnešní horoskop ✨
                 </button>
 
                 <button class="btn btn--primary btn-full mh-inline-8fa84d4622" id="btn-step2" data-action="goStep" data-step="3" disabled
@@ -161,45 +162,47 @@
 
                 <span class="step-icon"><svg class="mh-symbol" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#star"></use></svg></span>
 
-                <h2 class="step-title" tabindex="-1">K čemu se chceš vracet?</h2>
+                <h2 class="step-title">K čemu se chceš vracet?</h2>
 
                 <p class="step-subtitle">Vyber klidně jen jedno téma. Dokončení otevře první výklad, ne prázdný profil ani katalog nástrojů.</p>
 
                 <div class="interest-grid">
 
-                    <button class="interest-chip" data-action="toggleInterest" data-interest="horoskopy" aria-pressed="false"><svg class="mh-symbol interest-chip__icon" viewBox="0 0 48 48" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#star"></use></svg><span>Horoskopy</span></button>
+                    <button class="interest-chip" data-action="toggleInterest" data-interest="horoskopy" aria-pressed="false">🌌 Horoskopy</button>
 
-                    <button class="interest-chip" data-action="toggleInterest" data-interest="tarot" aria-pressed="false"><svg class="mh-symbol interest-chip__icon" viewBox="0 0 48 48" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#tarot"></use></svg><span>Tarot</span></button>
+                    <button class="interest-chip" data-action="toggleInterest" data-interest="tarot" aria-pressed="false">🃏 Tarot</button>
 
-                    <button class="interest-chip" data-action="toggleInterest" data-interest="andelske-karty" aria-pressed="false"><svg class="mh-symbol interest-chip__icon" viewBox="0 0 48 48" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#angel"></use></svg><span>Andělské karty</span></button>
+                    <button class="interest-chip" data-action="toggleInterest" data-interest="andelske-karty" aria-pressed="false">🪽 Andělské karty</button>
 
-                    <button class="interest-chip" data-action="toggleInterest" data-interest="numerologie" aria-pressed="false"><svg class="mh-symbol interest-chip__icon" viewBox="0 0 48 48" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#numbers"></use></svg><span>Numerologie</span></button>
+                    <button class="interest-chip" data-action="toggleInterest" data-interest="numerologie" aria-pressed="false">🔢 Numerologie</button>
 
-                    <button class="interest-chip" data-action="toggleInterest" data-interest="vztahy" aria-pressed="false"><svg class="mh-symbol interest-chip__icon" viewBox="0 0 48 48" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#partner"></use></svg><span>Vztahy</span></button>
+                    <button class="interest-chip" data-action="toggleInterest" data-interest="vztahy" aria-pressed="false">❤️ Vztahy</button>
 
-                    <button class="interest-chip" data-action="toggleInterest" data-interest="natalni-karta" aria-pressed="false"><svg class="mh-symbol interest-chip__icon" viewBox="0 0 48 48" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#chart"></use></svg><span>Natální karta</span></button>
+                    <button class="interest-chip" data-action="toggleInterest" data-interest="natalni-karta" aria-pressed="false"> Natální karta</button>
 
-                    <button class="interest-chip" data-action="toggleInterest" data-interest="sny" aria-pressed="false"><svg class="mh-symbol interest-chip__icon" viewBox="0 0 48 48" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#dream"></use></svg><span>Sny</span></button>
+                    <button class="interest-chip" data-action="toggleInterest" data-interest="sny" aria-pressed="false">🌙 Sny</button>
 
-                    <button class="interest-chip" data-action="toggleInterest" data-interest="spiritualita" aria-pressed="false"><svg class="mh-symbol interest-chip__icon" viewBox="0 0 48 48" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#star"></use></svg><span>Denní průvodce</span></button>
+                    <button class="interest-chip" data-action="toggleInterest" data-interest="spiritualita" aria-pressed="false">💫 Denní průvodce</button>
 
-                    <button class="interest-chip" data-action="toggleInterest" data-interest="vesteni" aria-pressed="false"><svg class="mh-symbol interest-chip__icon" viewBox="0 0 48 48" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#eye"></use></svg><span>Symbolický vhled</span></button>
+                    <button class="interest-chip" data-action="toggleInterest" data-interest="vesteni" aria-pressed="false">🔮 Symbolický vhled</button>
 
-                    <button class="interest-chip" data-action="toggleInterest" data-interest="kariera" aria-pressed="false"><svg class="mh-symbol interest-chip__icon" viewBox="0 0 48 48" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#compass"></use></svg><span>Kariéra</span></button>
+                    <button class="interest-chip" data-action="toggleInterest" data-interest="kariera" aria-pressed="false">💼 Kariéra</button>
 
-                    <button class="interest-chip" data-action="toggleInterest" data-interest="astrokartografie" aria-pressed="false"><svg class="mh-symbol interest-chip__icon" viewBox="0 0 48 48" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#globe"></use></svg><span>Astrokartografie</span></button>
+                    <button class="interest-chip" data-action="toggleInterest" data-interest="astrokartografie" aria-pressed="false">🌍 Astrokartografie</button>
 
-                    <button class="interest-chip" data-action="toggleInterest" data-interest="runy" aria-pressed="false"><svg class="mh-symbol interest-chip__icon" viewBox="0 0 48 48" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#rune"></use></svg><span>Runy</span></button>
+                    <button class="interest-chip" data-action="toggleInterest" data-interest="runy" aria-pressed="false">ᚱ Runy</button>
 
-                    <button class="interest-chip" data-action="toggleInterest" data-interest="shamanske-kolo" aria-pressed="false"><svg class="mh-symbol interest-chip__icon" viewBox="0 0 48 48" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#spiral"></use></svg><span>Šamanské kolo</span></button>
+                    <button class="interest-chip" data-action="toggleInterest" data-interest="shamanske-kolo" aria-pressed="false">🜃 Šamanské kolo</button>
 
-                    <button class="interest-chip" data-action="toggleInterest" data-interest="kristalova-koule" aria-pressed="false"><svg class="mh-symbol interest-chip__icon" viewBox="0 0 48 48" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#crystal"></use></svg><span>Křišťálová koule</span></button>
+                    <button class="interest-chip" data-action="toggleInterest" data-interest="kristalova-koule" aria-pressed="false">🔮 Křišťálová koule</button>
 
-                    <button class="interest-chip" data-action="toggleInterest" data-interest="minuly-zivot" aria-pressed="false"><svg class="mh-symbol interest-chip__icon" viewBox="0 0 48 48" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#cycle"></use></svg><span>Minulý život</span></button>
+                    <button class="interest-chip" data-action="toggleInterest" data-interest="minuly-zivot" aria-pressed="false">🕯️ Minulý život</button>
 
                 </div>
 
-                <button class="btn btn--primary btn-full" id="finish-onboarding-btn" data-action="finishOnboarding"><svg class="mh-symbol mh-symbol--inline" width="18" height="18" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#star"></use></svg><span>Zobrazit denní horoskop</span></button>
+                <button class="btn btn--primary btn-full" id="finish-onboarding-btn" data-action="finishOnboarding">Zobrazit denní horoskop
+
+                    ✨</button>
 
                 <p class="mh-inline-9611bb8a90" id="finish-onboarding-copy">
                     Po dokončení otevřeme první denní krok podle vybraného znamení a tématu.
@@ -217,7 +220,7 @@
 
 
     <script src="js/dist/analytics.js?v=6" defer></script>
-    <script src="js/dist/onboarding.js?v=20261018-step-focus" defer></script>
+    <script src="js/dist/onboarding.js?v=20260809-quick-activation-3" defer></script>
 
 </body>
 

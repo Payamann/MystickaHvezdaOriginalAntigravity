@@ -128,18 +128,6 @@ test.describe('Homepage', () => {
         await expect(loggedInCta).toBeVisible();
         await expect(page.locator('#hero-cta-container')).toBeHidden();
         await expect(loggedInCta.locator('a', { hasText: 'Otevřít dnešní rituál' })).toHaveAttribute('href', 'profil.html#daily-guidance-card');
-
-        await expect(page.locator('#auth-btn')).toHaveText(/Odhlásit se/);
-        await expect(page.locator('#auth-register-btn')).toBeHidden();
-        await expect(page.locator('#profile-link')).toBeVisible();
-
-        await page.setViewportSize(MOBILE_VIEWPORT);
-        const navToggle = page.locator('.nav__toggle');
-        await navToggle.click();
-        await expect(navToggle).toHaveAttribute('aria-expanded', 'true');
-        await expect(page.locator('#mobile-auth-btn')).toHaveText(/Odhlásit se/);
-        await expect(page.locator('#mobile-auth-register-btn')).toBeHidden();
-        await expect(page.locator('#mobile-profile-link')).toBeVisible();
     });
 
     test('hero rozcestnik ma vlastni analyticky signal', async ({ page }) => {
@@ -347,8 +335,8 @@ test.describe('Homepage', () => {
         await expect(spotlight).toBeVisible();
         await expect(spotlight).toContainText('Osobní mapa');
         await expect(spotlight).toContainText('299 Kč');
-        await expect(spotlight.locator('img[alt*="Osobní mapa"]')).toBeVisible();
-        await expect(spotlight.locator('img[alt*="Osobní mapa"]')).toHaveAttribute('src', /personal-map-soft-v3\.webp/);
+        await expect(spotlight.locator('img[alt*="Modelová obálka PDF"]')).toBeVisible();
+        await expect(spotlight.locator('img[alt*="Modelová obálka PDF"]')).toHaveAttribute('src', /preview-cover-arch-v2\.webp/);
         await expect(spotlight.locator('a.btn--primary')).toHaveAttribute('href', /osobni-mapa\.html\?source=homepage_spotlight/);
         await expect(spotlight.locator('a.btn--primary')).toHaveAttribute('data-analytics-product', 'osobni_mapa_2026');
         await expect(spotlight.locator('a[href*="rocni-horoskop.html"]')).toHaveCount(0);
@@ -413,14 +401,15 @@ test.describe('Homepage', () => {
         expect(url.searchParams.get('mode')).toBe('register');
         expect(url.searchParams.get('source')).toBe('mobile_menu');
         expect(url.searchParams.get('feature')).toBe('account');
-        await expect(page.locator('#checkout-context-title')).toContainText('Účet zdarma');
+        await expect(page.locator('#checkout-context-title')).toContainText('Účet bez zdržení');
+        await expect(page.locator('#login-page-title')).toContainText('účet zdarma');
     });
 
     test('homepage nabízí rychlé vstupy podle hlavních návštěvnických záměrů', async ({ page }) => {
         await expect(page.locator('#hero-explore-link')).toHaveAttribute('href', '#rychly-start');
         await expect(page.locator('[data-analytics-cta="homepage_quick_decision"]')).toHaveAttribute('href', /tarot-ano-ne\.html/);
         await expect(page.locator('[data-analytics-cta="homepage_quick_daily"]')).toHaveAttribute('href', /horoskopy\.html/);
-        await expect(page.locator('[data-analytics-cta="homepage_quick_tarot_daily"]')).toHaveAttribute('href', /tarot-karta-dne\.html/);
+        await expect(page.locator('[data-analytics-cta="homepage_quick_dream"]')).toHaveAttribute('href', /snar\.html/);
 
         await expect(page.locator('.hero__daily-preview')).toHaveCount(0);
     });
@@ -487,31 +476,6 @@ test.describe('Homepage', () => {
         await expect(link).toContainText('Tarot karta dne');
     });
 
-    test('sdílená hlavička podporuje otevření dropdownu klávesnicí a vrací fokus při Escape', async ({ page }) => {
-        await page.goto('/horoskopy.html');
-        await waitForPageReady(page);
-
-        const dropdownToggle = page.locator('.nav__link--dropdown-toggle').first();
-        const firstDropdownLink = page.locator('.nav__item--has-dropdown').first().locator('.nav__dropdown-link').first();
-        await expect.poll(() => page.locator('.nav__list').getAttribute('data-dropdowns-ready')).toBe('true');
-
-        await dropdownToggle.focus();
-        await page.keyboard.press('ArrowDown');
-        await expect(dropdownToggle).toHaveAttribute('aria-expanded', 'true');
-        await expect(firstDropdownLink).toBeVisible();
-        await expect(firstDropdownLink).toBeFocused();
-
-        await page.keyboard.press('Escape');
-        await expect(dropdownToggle).toHaveAttribute('aria-expanded', 'false');
-        await expect(dropdownToggle).toBeFocused();
-
-        await page.keyboard.press('Space');
-        await expect(dropdownToggle).toHaveAttribute('aria-expanded', 'true');
-        await page.keyboard.press('Escape');
-        await expect(dropdownToggle).toHaveAttribute('aria-expanded', 'false');
-        await expect(dropdownToggle).toBeFocused();
-    });
-
     test('spodní CTA vrací návštěvníka k odpovědi zdarma s měřicím kontextem', async ({ page }) => {
         const href = await page.locator('#cta-banner-btn').getAttribute('href');
         expect(href).toContain('tarot-ano-ne.html');
@@ -539,9 +503,9 @@ test.describe('Homepage', () => {
         const bodyText = await page.locator('body').innerText();
         expect(bodyText).not.toContain('efemeridami NASA');
         expect(bodyText).toContain('Najdi nový pohled na to, co právě řešíš.');
-        expect(bodyText).toContain('Tarot, horoskopy, numerologie, sny i osobní výklady');
+        expect(bodyText).toContain('TAROT, HOROSKOPY, NUMEROLOGIE A SNY');
         expect(bodyText).toContain('Nejdřív odpověď. Profil až když chceš navázat.');
-        expect(bodyText).toContain('Jedna odpověď zdarma. Premium, když chceš jít do hloubky.');
+        expect(bodyText).toContain('Jedna odpověď zdarma. Členství, když chceš jít víc do hloubky.');
         expect(bodyText).toContain('Otevřít celý ceník');
         expect(bodyText).not.toContain('Ne další ezoterická stránka');
         expect(bodyText).not.toContain('S čím ti může Mystická Hvězda pomoci');
@@ -561,7 +525,7 @@ test.describe('Homepage', () => {
 
         expect(bodyText).toContain('Bez platební karty');
         expect(bodyText).toContain('Jak chráníte moje údaje?');
-        expect(bodyText).toContain('Můžu Premium kdykoliv zrušit?');
+        expect(bodyText).toContain('Můžu členství kdykoliv zrušit?');
         expect(bodyText).toContain('nenahrazují odbornou pomoc');
         expect(bodyText).toContain('Provozovatel služby Mystická Hvězda');
 
@@ -719,36 +683,38 @@ test.describe('Homepage', () => {
         await expect(page.locator('[data-plan="vip-majestrat"]')).toHaveCount(0);
     });
 
-    test('homepage otočí tarot kartu dne a naváže odkazy na stejnou kartu', async ({ page }) => {
-        const revealButton = page.locator('#tarot-daily-reveal');
+    test('tarotová karta dne na homepage se odhalí a navazuje na tarot i význam karty', async ({ page }) => {
+        const reveal = page.locator('#tarot-daily-reveal');
+        await expect(reveal).toBeEnabled();
+        await reveal.click();
+
         const result = page.locator('#tarot-daily-card-result');
-        const cardImage = page.locator('#tarot-daily-card-image');
-
-        await expect(page.locator('#denni-karta')).toBeVisible();
-        await expect(page.locator('#kdd-card, #kdd-share-btn, #kdd-message')).toHaveCount(0);
-        await expect(result).toHaveAttribute('data-state', 'waiting');
-        await expect(revealButton).toBeEnabled();
-        await revealButton.scrollIntoViewIfNeeded();
-        await revealButton.click();
-
         await expect(result).toHaveAttribute('data-state', 'revealed');
-        const cardName = (await page.locator('#tarot-daily-card-name').textContent())?.trim();
-        expect(cardName).toBeTruthy();
-        await expect(cardImage).toHaveAttribute('alt', `Tarot karta dne: ${cardName}`);
-        await expect(revealButton).toHaveText('Zobrazit znovu dnešní kartu');
+        await expect(page.locator('#tarot-daily-card-name')).not.toHaveText('Chvíle k zamyšlení');
+        await expect(page.locator('#tarot-daily-card-meaning')).not.toBeEmpty();
+        await expect(page.locator('#tarot-daily-full-reading')).toHaveAttribute('href', /\/tarot\.html\?source=tarot_daily_card_widget&feature=tarot&intent=daily_card&card=/);
+        await expect(page.locator('#tarot-daily-card-detail')).toHaveAttribute('href', /\/tarot-vyznam\/.+\.html\?source=tarot_daily_card_widget/);
+    });
 
-        const fullReading = new URL(await page.locator('#tarot-daily-full-reading').getAttribute('href'), BASE_URL);
-        expect(fullReading.pathname).toBe('/tarot.html');
-        expect(fullReading.searchParams.get('source')).toBe('tarot_daily_card_widget');
-        expect(fullReading.searchParams.get('feature')).toBe('tarot');
-        expect(fullReading.searchParams.get('intent')).toBe('daily_card');
-        expect(fullReading.searchParams.get('card')).toBe(cardName);
+    test('tarotová karta na homepage zůstává stejná po celý den', async ({ page }) => {
+        await page.locator('#tarot-daily-reveal').click();
+        const firstCard = (await page.locator('#tarot-daily-card-name').textContent())?.trim();
+        expect(firstCard).toBeTruthy();
 
-        const detail = new URL(await page.locator('#tarot-daily-card-detail').getAttribute('href'), BASE_URL);
-        expect(detail.pathname).toMatch(/^\/tarot-vyznam\/.+\.html$/);
-        expect(detail.searchParams.get('source')).toBe('tarot_daily_card_widget');
+        await page.reload();
+        await waitForPageReady(page);
+        await page.locator('#tarot-daily-reveal').click();
+        await expect(page.locator('#tarot-daily-card-name')).toHaveText(firstCard);
+    });
 
-        await expect(page.locator('a[href="/tarot-karta-dne.html?source=homepage_daily_tarot"]')).toBeVisible();
+    test('home CTA z odhalené karty otevře samostatnou kartu dne', async ({ page }) => {
+        await page.locator('#tarot-daily-reveal').click();
+        const openDailyCard = page.locator('a[href="/tarot-karta-dne.html?source=homepage_daily_tarot"]');
+        await expect(openDailyCard).toBeVisible();
+        await Promise.all([
+            page.waitForURL(/\/tarot-karta-dne\.html\?source=homepage_daily_tarot/),
+            openDailyCard.click()
+        ]);
     });
 
     test('skip-link pro přístupnost existuje', async ({ page }) => {

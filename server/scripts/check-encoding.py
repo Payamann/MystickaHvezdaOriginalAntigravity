@@ -22,6 +22,9 @@ SCANNED_EXTENSIONS = {
 }
 SKIPPED_DIRS = {
     ".git",
+    ".tmp",
+    ".codex-worktrees",
+    ".codex-tmp",
     ".agents",
     ".claire",
     ".pytest_cache",

@@ -2,7 +2,6 @@ import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
-const checkOnly = process.argv.includes('--check');
 // Explicit editorial mapping: decorative illustrations never replace calculated results.
 const pages = [
   ['natalni-karta.html', 'astrolab'],
@@ -19,15 +18,13 @@ const pages = [
   ['o-nas.html', 'about'],
 ];
 let changed = 0;
-const drifted = [];
 for (const [file, theme, image, alt, sectionClass] of pages) {
   const path = root + file;
   let html = fs.readFileSync(path, 'utf8');
   const before = html;
   const nl = html.includes('\r\n') ? '\r\n' : '\n';
-  const artCssVersion = '20261020-01-mobile-image-set';
-  html = html.replace(/\s*<link rel="stylesheet" href="\/css\/atlas-art\.css(?:\?v=\d+)?">/g, '');
-  html = html.replace('</head>', `    <link rel="stylesheet" href="/css/atlas-art.css?v=20261020-01-mobile-image-set">${nl}</head>`);
+  html = html.replace(/\s*<link rel="stylesheet" href="\/css\/atlas-art\.css\?v=1">/g, '');
+  html = html.replace('</head>', `    <link rel="stylesheet" href="/css/atlas-art.css?v=20261023-release-todo">${nl}</head>`);
   if (theme) {
     html = html.replace(/(<main\b[^>]*>[\s\S]*?<section\b[^>]*class=")([^"]*)/, (_, prefix, classes) =>
       prefix + [...new Set([...classes.split(/\s+/).filter(Boolean), 'atlas-art-hero', `atlas-art-${theme}`])].join(' '));
@@ -38,7 +35,7 @@ for (const [file, theme, image, alt, sectionClass] of pages) {
     const marker = `<section class="${sectionClass}"`;
     let start = html.indexOf(marker, html.indexOf('<main'));
     if (start < 0) throw new Error(`Missing editorial section: ${file}`);
-    const figure = `<figure class="atlas-art-interlude" data-atlas-interlude>${nl}            <img src="/img/atlas/social-v1/${image}.webp" alt="${alt}" width="1080" height="1080" loading="lazy" decoding="async" srcset="/img/atlas/social-v1/${image}-480.webp 480w, /img/atlas/social-v1/${image}-800.webp 800w, /img/atlas/social-v1/${image}.webp 1080w" sizes="(max-width: 760px) calc(100vw - 40px), (max-width: 1160px) 100vw, 1120px">${nl}        </figure>${nl}        `;
+    const figure = `<figure class="atlas-art-interlude" data-atlas-interlude>${nl}            <img src="/img/atlas/social-v1/${image}.webp" alt="${alt}" width="1080" height="1080" loading="lazy" decoding="async">${nl}        </figure>${nl}        `;
     html = html.slice(0, start) + figure + html.slice(start);
   }
   if (theme === 'crystal') {
@@ -52,15 +49,6 @@ for (const [file, theme, image, alt, sectionClass] of pages) {
     html = html.replace('src="img/hero-3d.webp" alt="Mystická Hvězda"', 'src="/img/atlas/tools-v1/01-astrolab.webp" alt="Mosazný astroláb v malované noční krajině"')
       .replace('width="800" height="751"', 'width="1200" height="800"');
   }
-  if (html !== before) {
-    changed++;
-    if (checkOnly) drifted.push(file);
-    else fs.writeFileSync(path, html);
-  }
+  if (html !== before) { fs.writeFileSync(path, html); changed++; }
 }
-if (checkOnly && drifted.length) {
-  console.error(`Atlas art check: ${drifted.length} page(s) would change: ${drifted.join(', ')}`);
-  process.exitCode = 1;
-} else {
-  console.log(`Atlas art${checkOnly ? ' check' : ''}: ${pages.length} explicit pages, ${changed} changed.`);
-}
+console.log(`Atlas art: ${pages.length} explicit pages, ${changed} changed.`);

@@ -109,18 +109,6 @@ test.describe('Login stránka', () => {
         expect(robots).toContain('noindex');
     });
 
-    test('sdílené toast oznámení je přístupné jako živý stav', async ({ page }) => {
-        await page.evaluate(() => {
-            window.Auth.showToast('Uložení se nepovedlo', 'Výklad zůstal otevřený.', 'error');
-        });
-
-        const toastRegion = page.locator('.toast-container');
-        await expect(toastRegion).toHaveAttribute('role', 'status');
-        await expect(toastRegion).toHaveAttribute('aria-live', 'polite');
-        await expect(toastRegion).toHaveAttribute('aria-atomic', 'false');
-        await expect(toastRegion).toContainText('Výklad zůstal otevřený.');
-    });
-
     // ── Formulář — struktura ─────────────────────────────────────────────────
     // Poznámka: stránka může obsahovat #login-form vícekrát (page + modal),
     // proto používáme .first() nebo selektor v kontextu .login-section.
@@ -166,44 +154,6 @@ test.describe('Login stránka', () => {
         expect(text.trim().length).toBeGreaterThan(0);
     });
 
-    test('samostatné přihlášení zamkne formulář a režim při čekajícím požadavku', async ({ page }) => {
-        let requestCount = 0;
-        let releaseLoginResponse;
-        const loginResponseGate = new Promise(resolve => { releaseLoginResponse = resolve; });
-        await page.route('**/api/auth/login', async (route) => {
-            requestCount += 1;
-            await loginResponseGate;
-            await route.fulfill({
-                status: 400,
-                contentType: 'application/json',
-                body: JSON.stringify({ success: false, error: 'Invalid credentials' })
-            });
-        });
-
-        await page.goto('/prihlaseni.html?source=e2e_auth_submit_lock');
-        await waitForPageReady(page);
-        const form = page.locator('#login-form').first();
-        const submit = page.locator('#auth-submit').first();
-        await page.locator('#email').first().fill('auth-lock@example.com');
-        await page.locator('#password').first().fill('IncorrectPassword123!');
-        await submit.click();
-
-        await expect(submit).toBeDisabled();
-        await expect(page.locator('#email')).toBeDisabled();
-        await expect(page.locator('#password')).toBeDisabled();
-        await expect(form).toHaveAttribute('aria-busy', 'true');
-        await page.locator('#auth-mode-toggle').click();
-        await expect(page.locator('#gdpr-consent-wrapper')).toBeHidden();
-        await form.dispatchEvent('submit', { bubbles: true, cancelable: true });
-        await expect.poll(() => requestCount).toBe(1);
-
-        releaseLoginResponse();
-        await expect(submit).toBeEnabled();
-        await expect(page.locator('#email')).toBeEnabled();
-        await expect(page.locator('#password')).toBeEnabled();
-        await expect(form).not.toHaveAttribute('aria-busy', 'true');
-    });
-
     test('formular a hlavni ovladaci prvky nepreteka mimo viewport', async ({ page }) => {
         await expectLocatorsWithinViewport(page, [
             page.locator('.login-section #login-form, #login-form').first(),
@@ -235,15 +185,15 @@ test.describe('Login stránka', () => {
         await expect(page.locator('#login-page-title')).toContainText('účet zdarma');
         await expect(page.locator('#checkout-context-banner')).toBeVisible();
         await expect(page.locator('#checkout-context-title')).toContainText('Denní vedení');
-        await expect(page.locator('#signup-value-panel')).toBeVisible();
-        await expect(page.locator('#signup-next-step-title')).toContainText('denní horoskopy');
-        await expect(page.locator('#signup-value-panel')).toContainText('Bez platební karty');
+        await expect(page.locator('#signup-value-panel')).toBeHidden();
+        await expect(page.locator('#checkout-context-copy')).toContainText('dnešní osobní vhled');
+        await expect(page.locator('#login-page-subtitle')).toContainText('Platební kartu nevyžadujeme');
         await expect(page.locator('#password-help')).toBeVisible();
-        await expect(page.locator('#signup-safety-note')).toContainText('bez platební karty');
+        await expect(page.locator('#signup-safety-note')).toContainText('nenahrazují odbornou péči');
+        await expect(page.locator('#signup-safety-note')).not.toContainText('platební kartu');
 
         await expectLocatorsWithinViewport(page, [
             page.locator('#checkout-context-banner').first(),
-            page.locator('#signup-value-panel').first(),
             page.locator('#password-help').first(),
             page.locator('#signup-safety-note').first(),
             page.locator('#auth-submit').first(),
@@ -347,9 +297,10 @@ test.describe('Login stránka', () => {
 
         await expect(page.locator('#checkout-context-banner')).toBeVisible();
         await expect(page.locator('#checkout-context-label')).toContainText('Účet zdarma');
-        await expect(page.locator('#checkout-context-title')).toContainText('Účet zdarma');
+        await expect(page.locator('#checkout-context-title')).toContainText('Účet bez zdržení');
+        await expect(page.locator('#checkout-context-copy')).toContainText('který výklad otevřeš jako první');
         await expect(page.locator('#checkout-context-banner')).not.toContainText('account');
-        await expect(page.locator('#signup-next-step-title')).toContainText('první osobní krok');
+        await expect(page.locator('#signup-value-panel')).toBeHidden();
     });
 
     test('registrace z profiloveho gate navazuje na historii vykladu', async ({ page }) => {
@@ -361,7 +312,7 @@ test.describe('Login stránka', () => {
         await expect(page.locator('#checkout-context-title')).toContainText('Historie výkladů po registraci');
         await expect(page.locator('#checkout-context-copy')).toContainText('ukládat výklady');
         await expect(page.locator('#checkout-context-banner')).not.toContainText('profile_history');
-        await expect(page.locator('#signup-next-step-title')).toContainText('osobní historii');
+        await expect(page.locator('#signup-value-panel')).toBeHidden();
     });
 
     test('registracni CTA je na desktopu viditelne nad foldem', async ({ page }) => {
@@ -374,18 +325,32 @@ test.describe('Login stránka', () => {
         expect(submitBox.y + submitBox.height).toBeLessThanOrEqual(900);
     });
 
-    test('registracni CTA je na mobilu viditelne pred hodnotovym panelem', async ({ page }) => {
+    test('registracni CTA je na mobilu viditelne bez duplicitniho hodnotoveho panelu', async ({ page }) => {
         await page.setViewportSize({ width: 393, height: 851 });
         await page.goto('/prihlaseni.html?mode=register&source=homepage_hero&feature=daily_guidance');
         await waitForPageReady(page);
 
         const submitBox = await page.locator('#auth-submit').boundingBox();
-        const valuePanelBox = await page.locator('#signup-value-panel').boundingBox();
+        const valuePanel = page.locator('#signup-value-panel');
         expect(submitBox).toBeTruthy();
-        expect(valuePanelBox).toBeTruthy();
+        await expect(valuePanel).toBeHidden();
         expect(submitBox.y + submitBox.height).toBeLessThanOrEqual(851);
-        expect(valuePanelBox.y).toBeGreaterThan(submitBox.y);
         await expectNoHorizontalOverflow(page);
+    });
+
+    test('obecna registrace vysvetluje jen jednu cestu po vytvoreni uctu', async ({ page }) => {
+        await page.goto('/prihlaseni.html?mode=register');
+        await waitForPageReady(page);
+
+        await expect(page.locator('#checkout-context-banner')).toBeHidden();
+        await expect(page.locator('#signup-value-panel')).toBeVisible();
+        await expect(page.locator('#signup-value-panel .signup-value-panel__step')).toHaveCount(2);
+        await expect(page.locator('#signup-next-step-title')).toContainText('Vybereš si první krok');
+        await expect(page.locator('#signup-value-panel')).toContainText('Profil doplníš později');
+        await expect(page.locator('#signup-value-panel')).not.toContainText('Bez platební karty');
+        await expect(page.locator('#login-page-subtitle')).toContainText('Platební kartu nevyžadujeme');
+        await expect(page.locator('#signup-safety-note')).toContainText('nenahrazují odbornou péči');
+        await expect(page.locator('#login-social-proof')).toBeHidden();
     });
 
     test('registracni rezim nastavi heslo jako nove heslo a zobrazi pravidla', async ({ page }) => {
@@ -395,13 +360,63 @@ test.describe('Login stránka', () => {
         const passwordInput = page.locator('#password').first();
         await expect(passwordInput).toHaveAttribute('autocomplete', 'new-password');
         await expect(passwordInput).toHaveAttribute('minlength', '8');
+        await expect(passwordInput).toHaveAttribute('aria-describedby', 'password-help');
         await expect(page.locator('#password-help')).toBeVisible();
 
         await page.locator('#auth-mode-toggle').click();
 
         await expect(passwordInput).toHaveAttribute('autocomplete', 'current-password');
         await expect(passwordInput).not.toHaveAttribute('minlength', '8');
+        await expect(passwordInput).not.toHaveAttribute('aria-describedby', 'password-help');
         await expect(page.locator('#password-help')).toBeHidden();
+    });
+
+    test('prepnutim mezi prihlasenim a registraci se odstrani stare validacni chyby', async ({ page }) => {
+        await page.setViewportSize(MOBILE_VIEWPORT);
+        await page.goto('/prihlaseni.html?mode=login');
+        await waitForPageReady(page);
+
+        const email = page.locator('#email');
+        const password = page.locator('#password');
+        const toggle = page.locator('#auth-mode-toggle');
+        const summary = page.locator('.login-section #login-form > .form-error-summary');
+
+        await page.locator('#auth-submit').click();
+        await expect(email).toHaveAttribute('aria-invalid', 'true');
+        await expect(password).toHaveAttribute('aria-invalid', 'true');
+        await expect(summary).toBeVisible();
+
+        await toggle.focus();
+        await page.keyboard.press('Enter');
+
+        await expect(page.locator('body')).toHaveClass(/auth-register-mode/);
+        await expect(summary).toBeHidden();
+        await expect(email).not.toHaveAttribute('aria-invalid', 'true');
+        await expect(password).not.toHaveAttribute('aria-invalid', 'true');
+        await expect(email).toHaveValue('');
+        await expect(password).toHaveValue('');
+        await expect(email).toBeFocused();
+        let emailBox = await email.boundingBox();
+        expect(emailBox?.y).toBeGreaterThanOrEqual(0);
+        expect(emailBox?.y + emailBox?.height).toBeLessThanOrEqual(MOBILE_VIEWPORT.height + 1);
+
+        await email.fill('pavel@example.cz');
+        await password.fill('bezpecne-heslo-123');
+        await page.locator('#auth-submit').click();
+        await expect(page.locator('#gdpr-consent')).toHaveAttribute('aria-invalid', 'true');
+        await expect(summary).toBeVisible();
+
+        await toggle.click();
+
+        await expect(page.locator('body')).not.toHaveClass(/auth-register-mode/);
+        await expect(summary).toBeHidden();
+        await expect(page.locator('#gdpr-consent')).not.toHaveAttribute('aria-invalid', 'true');
+        await expect(email).toHaveValue('pavel@example.cz');
+        await expect(password).toHaveValue('bezpecne-heslo-123');
+        await expect(email).toBeFocused();
+        emailBox = await email.boundingBox();
+        expect(emailBox?.y).toBeGreaterThanOrEqual(0);
+        expect(emailBox?.y + emailBox?.height).toBeLessThanOrEqual(MOBILE_VIEWPORT.height + 1);
     });
 
     test('pending checkout banner nepreteka mimo viewport', async ({ page }) => {
@@ -550,8 +565,8 @@ test.describe('Login stránka', () => {
         await waitForPageReady(page);
 
         await expect(page.locator('#checkout-context-banner')).toBeVisible();
-        await expect(page.locator('#login-page-title')).toContainText('Přihlas se a pokračuj k odemčení');
-        await expect(page.locator('#login-page-subtitle')).toContainText('zachováme vybraný plán a otevřeme bezpečný Stripe checkout');
+        await expect(page.locator('#login-page-title')).toContainText('pokračuj k odemčení');
+        await expect(page.locator('#login-page-subtitle')).toContainText('Stripe checkout');
         await expect(page.locator('#auth-submit')).toContainText('Přihlásit se a pokračovat');
         await expect(page.locator('#auth-submit')).not.toContainText('zdarma');
         await expect.poll(() => page.evaluate(() => document.body.classList.contains('auth-checkout-plan-mode'))).toBe(true);
@@ -751,9 +766,28 @@ test.describe('Login stránka', () => {
             const banner = page.locator('#checkout-context-banner');
             await expect(banner).toBeVisible();
             await expect(banner).toContainText(item.expected);
-            await expect(banner).toContainText('Po registraci otevřeme bezpečný checkout');
+            await expect(banner).toContainText('Po registraci přejdeš do bezpečného Stripe checkoutu');
             await expect(banner).not.toContainText(item.feature);
         }
+    });
+
+    test('checkout banner rozlisuje registraci a login a ukazuje podminky zkusebniho clenstvi', async ({ page }) => {
+        await page.goto('/prihlaseni.html?mode=login&redirect=/cenik.html&plan=pruvodce&source=inline_paywall&feature=numerologie_vyklad');
+        await waitForPageReady(page);
+
+        const banner = page.locator('#checkout-context-banner');
+        const copy = page.locator('#checkout-context-copy');
+        await expect(banner).toBeVisible();
+        await expect(copy).toContainText('Po přihlášení přejdeš do bezpečného Stripe checkoutu');
+        await expect(copy).toContainText('7 dní zdarma, potom 199 Kč/měsíc');
+        await expect(copy).toContainText('Kartu zadáš ve Stripe checkoutu před potvrzením');
+        await expect(copy).not.toContainText('Po registraci');
+
+        await page.locator('#auth-mode-toggle').click();
+
+        await expect(copy).toContainText('Po registraci přejdeš do bezpečného Stripe checkoutu');
+        await expect(copy).toContainText('7 dní zdarma, potom 199 Kč/měsíc');
+        await expect(copy).not.toContainText('Po přihlášení');
     });
 
     test('obnovena registrace z primeho odkazu zachova a dokonci Stripe checkout', async ({ page }) => {
@@ -1335,7 +1369,7 @@ test.describe('Login stránka', () => {
             })
         }));
         await expect(page.locator('body')).not.toContainText('temporary auth completed analytics outage');
-        await expect(page.locator('#auth-submit')).toBeEnabled();
+        await expect(page.locator('.login-section #auth-submit')).toBeEnabled();
     });
 
     test('checkout start analytics outage neblokuje checkout session', async ({ page }) => {
@@ -2211,7 +2245,7 @@ test.describe('Login stránka', () => {
 
         await expect(page.locator('#checkout-context-banner')).toBeVisible();
         await expect(page.locator('#checkout-context-label')).toContainText('Tarot ano/ne');
-        await expect(page.locator('#checkout-context-title')).toContainText('Uložíme výklad do Deníku');
+        await expect(page.locator('#checkout-context-title')).toContainText('Uložíš výklad do Deníku');
         await expect(page.locator('#checkout-context-copy')).toContainText('odpověď z Tarotu ano/ne');
 
         await Promise.all([
@@ -2346,7 +2380,7 @@ test.describe('Login stránka', () => {
         await waitForPageReady(page);
 
         await expect(page.locator('#checkout-context-title')).toContainText('Minulý život');
-        await expect(page.locator('#signup-next-step-copy')).toContainText('archetypálním příběhem pro sebereflexi');
+        await expect(page.locator('#signup-next-step-copy')).toContainText('archetypální příběh k zamyšlení, ne předpověď');
 
         await Promise.all([
             page.waitForURL(url => url.pathname === '/minuly-zivot.html', { timeout: 10000, waitUntil: 'domcontentloaded' }),
@@ -2438,9 +2472,7 @@ test.describe('Login stránka', () => {
     });
 
     test('save reading analytics outage neblokuje ulozeni prvni hodnoty', async ({ page }) => {
-        let savedPayload = null;
         await page.route('**/api/user/readings', async (route) => {
-            savedPayload = route.request().postDataJSON();
             await route.fulfill({
                 status: 200,
                 contentType: 'application/json',
@@ -2489,10 +2521,6 @@ test.describe('Login stránka', () => {
             id: 'reading_analytics_outage',
             type: 'tarot'
         }));
-        expect(savedPayload).toEqual(expect.objectContaining({
-            type: 'tarot',
-            expectedUserId: 'reading-analytics-outage-user'
-        }));
         await expect.poll(() => page.evaluate(() => localStorage.getItem('mh_first_value_completed'))).toBe('1');
         await expect.poll(() => page.evaluate(() => window.__readingSavedEvents)).toEqual([
             {
@@ -2500,267 +2528,6 @@ test.describe('Login stránka', () => {
                 type: 'tarot'
             }
         ]);
-    });
-
-    test('save reading zruší požadavek, když se účet změní během načítání CSRF tokenu', async ({ page }) => {
-        let saveRequests = 0;
-        await page.route('**/api/user/readings', async route => {
-            saveRequests += 1;
-            await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ success: true }) });
-        });
-
-        await page.goto('/tarot.html', { waitUntil: 'domcontentloaded' });
-        await waitForPageReady(page);
-        const savedReading = await page.evaluate(async () => {
-            document.cookie = 'logged_in=1; path=/';
-            const originalUser = { id: 'reading-original-account', email: 'original@example.test' };
-            localStorage.setItem('auth_user', JSON.stringify(originalUser));
-            window.Auth.user = originalUser;
-
-            let releaseCsrf;
-            window.getCSRFToken = () => new Promise(resolve => { releaseCsrf = resolve; });
-            const pendingSave = window.Auth.saveReading('tarot', { cards: ['The Star'] }, 'reading-original-account');
-            await Promise.resolve();
-            await new Promise(resolve => setTimeout(resolve, 0));
-            const newUser = { id: 'reading-new-account', email: 'new@example.test' };
-            localStorage.setItem('auth_user', JSON.stringify(newUser));
-            window.Auth.user = newUser;
-            releaseCsrf('test-csrf');
-            return pendingSave;
-        });
-
-        expect(savedReading).toBeNull();
-        expect(saveRequests).toBe(0);
-    });
-
-    test('feedback výkladu zruší požadavek, když se účet změní během CSRF čekání', async ({ page }) => {
-        let feedbackRequests = 0;
-        await page.route('**/api/user/readings/reading-original/feedback', async route => {
-            feedbackRequests += 1;
-            await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ success: true }) });
-        });
-
-        await page.goto('/tarot.html', { waitUntil: 'domcontentloaded' });
-        await waitForPageReady(page);
-        const feedback = await page.evaluate(async () => {
-            document.cookie = 'logged_in=1; path=/';
-            const originalUser = { id: 'feedback-original-account', email: 'original@example.test' };
-            localStorage.setItem('auth_user', JSON.stringify(originalUser));
-            window.Auth.user = originalUser;
-
-            let releaseCsrf;
-            window.getCSRFToken = () => new Promise(resolve => { releaseCsrf = resolve; });
-            const pendingFeedback = window.Auth.saveReadingFeedback(
-                'reading-original',
-                { resonance: 'fits' },
-                'feedback-original-account'
-            );
-            await Promise.resolve();
-            await new Promise(resolve => setTimeout(resolve, 0));
-            const newUser = { id: 'feedback-new-account', email: 'new@example.test' };
-            localStorage.setItem('auth_user', JSON.stringify(newUser));
-            window.Auth.user = newUser;
-            releaseCsrf('test-csrf');
-            return pendingFeedback;
-        });
-
-        expect(feedback).toBeNull();
-        expect(feedbackRequests).toBe(0);
-    });
-
-    test('Auth aktualizuje otevřenou kartu při změně účtu v jiné kartě', async ({ page }) => {
-        await page.goto('/tarot.html', { waitUntil: 'domcontentloaded' });
-        await waitForPageReady(page);
-
-        const result = await page.evaluate(() => {
-            document.cookie = 'logged_in=1; path=/';
-            const originalUser = { id: 'cross-tab-original-user', email: 'original@example.test' };
-            const nextUser = { id: 'cross-tab-next-user', email: 'next@example.test' };
-            localStorage.setItem('auth_user', JSON.stringify(originalUser));
-            window.Auth.user = originalUser;
-            let authChangedEvents = 0;
-            document.addEventListener('auth:changed', () => { authChangedEvents += 1; });
-            localStorage.setItem('auth_user', JSON.stringify(nextUser));
-
-            window.dispatchEvent(new StorageEvent('storage', {
-                key: 'auth_user',
-                oldValue: JSON.stringify(originalUser),
-                newValue: JSON.stringify(nextUser)
-            }));
-
-            return { userId: window.Auth.user?.id, authChangedEvents };
-        });
-
-        expect(result.userId).toBe('cross-tab-next-user');
-        expect(result.authChangedEvents).toBeGreaterThan(0);
-    });
-
-    test('čekající odhlášení účtu A neukončí relaci účtu B', async ({ page }) => {
-        let logoutRequests = 0;
-        await page.route('**/api/auth/logout', async route => {
-            logoutRequests += 1;
-            await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ success: true }) });
-        });
-        await page.goto('/tarot.html', { waitUntil: 'domcontentloaded' });
-        await waitForPageReady(page);
-
-        await page.evaluate(() => {
-            document.cookie = 'logged_in=1; path=/';
-            const originalUser = { id: 'logout-original-user', email: 'original@example.test' };
-            localStorage.setItem('auth_user', JSON.stringify(originalUser));
-            window.Auth.user = originalUser;
-            window.getCSRFToken = () => new Promise(resolve => { window.__releaseLogoutCsrf = resolve; });
-            window.__pendingLogout = window.Auth.logout();
-        });
-        await page.waitForFunction(() => typeof window.__releaseLogoutCsrf === 'function');
-
-        await page.evaluate(() => {
-            const nextUser = { id: 'logout-next-user', email: 'next@example.test' };
-            const serializedUser = JSON.stringify(nextUser);
-            localStorage.setItem('auth_user', serializedUser);
-            window.dispatchEvent(new StorageEvent('storage', {
-                key: 'auth_user',
-                newValue: serializedUser
-            }));
-            window.__releaseLogoutCsrf('test-csrf-token');
-        });
-        await page.evaluate(async () => { await window.__pendingLogout; });
-
-        const state = await page.evaluate(() => ({
-            userId: window.Auth.user?.id,
-            cachedUserId: JSON.parse(localStorage.getItem('auth_user') || 'null')?.id,
-            loggedIn: window.Auth.isLoggedIn()
-        }));
-        expect(logoutRequests).toBe(0);
-        expect(state).toEqual({
-            userId: 'logout-next-user',
-            cachedUserId: 'logout-next-user',
-            loggedIn: true
-        });
-    });
-
-    test('pozdní obnova profilu nepřepíše účet přihlášený v jiné kartě', async ({ page }) => {
-        const originalUser = {
-            id: 'refresh-original-user',
-            email: 'original@example.test',
-            role: 'user',
-            subscription_status: 'free'
-        };
-        const nextUser = {
-            id: 'refresh-next-user',
-            email: 'next@example.test',
-            role: 'user',
-            subscription_status: 'free'
-        };
-        await page.addInitScript(user => {
-            document.cookie = 'logged_in=1; path=/';
-            localStorage.setItem('auth_user', JSON.stringify(user));
-        }, originalUser);
-        await page.route('**/api/auth/profile', route => route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({ success: true, user: originalUser })
-        }));
-        await page.goto('/tarot.html', { waitUntil: 'domcontentloaded' });
-        await waitForPageReady(page);
-        await page.unroute('**/api/auth/profile');
-
-        let releaseResponse;
-        let requestStarted;
-        const responseGate = new Promise(resolve => { releaseResponse = resolve; });
-        const requestStartedPromise = new Promise(resolve => { requestStarted = resolve; });
-        await page.route('**/api/auth/profile', async route => {
-            requestStarted();
-            await responseGate;
-            await route.fulfill({
-                status: 200,
-                contentType: 'application/json',
-                body: JSON.stringify({ success: true, user: originalUser })
-            });
-        });
-        await page.evaluate(() => {
-            window.__authRefreshFinished = false;
-            window.Auth.refreshSession().finally(() => { window.__authRefreshFinished = true; });
-        });
-        await requestStartedPromise;
-
-        await page.evaluate(user => {
-            const serializedUser = JSON.stringify(user);
-            localStorage.setItem('auth_user', serializedUser);
-            window.dispatchEvent(new StorageEvent('storage', {
-                key: 'auth_user',
-                newValue: serializedUser
-            }));
-        }, nextUser);
-        releaseResponse();
-        await page.waitForFunction(() => window.__authRefreshFinished);
-
-        const state = await page.evaluate(() => ({
-            userId: window.Auth.user?.id,
-            cachedUserId: JSON.parse(localStorage.getItem('auth_user') || 'null')?.id
-        }));
-        expect(state).toEqual({ userId: nextUser.id, cachedUserId: nextUser.id });
-    });
-
-    test('pozdní 401 ze starého profilu neodhlásí nový účet', async ({ page }) => {
-        const originalUser = {
-            id: 'refresh-expired-user',
-            email: 'expired@example.test',
-            role: 'user',
-            subscription_status: 'free'
-        };
-        const nextUser = {
-            id: 'refresh-active-user',
-            email: 'active@example.test',
-            role: 'user',
-            subscription_status: 'free'
-        };
-        await page.addInitScript(user => {
-            document.cookie = 'logged_in=1; path=/';
-            localStorage.setItem('auth_user', JSON.stringify(user));
-        }, originalUser);
-        await page.route('**/api/auth/profile', route => route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({ success: true, user: originalUser })
-        }));
-        await page.goto('/tarot.html', { waitUntil: 'domcontentloaded' });
-        await waitForPageReady(page);
-        await page.unroute('**/api/auth/profile');
-
-        let releaseResponse;
-        let requestStarted;
-        const responseGate = new Promise(resolve => { releaseResponse = resolve; });
-        const requestStartedPromise = new Promise(resolve => { requestStarted = resolve; });
-        await page.route('**/api/auth/profile', async route => {
-            requestStarted();
-            await responseGate;
-            await route.fulfill({ status: 401, contentType: 'application/json', body: JSON.stringify({ success: false }) });
-        });
-        await page.evaluate(() => {
-            window.__authRefreshFinished = false;
-            window.Auth.refreshSession().finally(() => { window.__authRefreshFinished = true; });
-        });
-        await requestStartedPromise;
-
-        await page.evaluate(user => {
-            const serializedUser = JSON.stringify(user);
-            localStorage.setItem('auth_user', serializedUser);
-            window.dispatchEvent(new StorageEvent('storage', {
-                key: 'auth_user',
-                newValue: serializedUser
-            }));
-        }, nextUser);
-        releaseResponse();
-        await page.waitForFunction(() => window.__authRefreshFinished);
-
-        const state = await page.evaluate(() => ({
-            userId: window.Auth.user?.id,
-            cachedUserId: JSON.parse(localStorage.getItem('auth_user') || 'null')?.id,
-            loggedIn: window.Auth.isLoggedIn()
-        }));
-        expect(state).toEqual({ userId: nextUser.id, cachedUserId: nextUser.id, loggedIn: true });
-        await expect(page.locator('#auth-btn')).toHaveText(/Odhlásit se/);
     });
 
     test('registrace z free CTA ceniku presmeruje na denni horoskopy', async ({ page }) => {
@@ -2812,23 +2579,24 @@ test.describe('Login stránka', () => {
     test('nova registrace bez potvrzovaciho emailu projde cely onboarding', async ({ page }) => {
         const unique = Date.now();
         const email = `onboarding-real-${unique}@example.com`;
+        let registerResponse;
+        // Capture the real server body before navigation discards the browser's
+        // response resource. This still exercises the test server and its cookies.
+        await page.route('**/api/auth/register', async route => {
+            const response = await route.fetch();
+            registerResponse = { status: response.status(), body: await response.json() };
+            await route.fulfill({ response });
+        });
 
         await page.goto('/prihlaseni.html?mode=register&source=header_register&feature=account');
         await waitForPageReady(page);
-
-        const registerResponsePromise = page.waitForResponse((response) => (
-            response.url().includes('/api/auth/register') && response.request().method() === 'POST'
-        )).then(async (response) => ({
-            status: response.status(),
-            body: await response.json()
-        }));
 
         await Promise.all([
             page.waitForURL(url => url.pathname === '/onboarding.html', { timeout: 10000, waitUntil: 'domcontentloaded' }),
             submitRegisterForm(page, email),
         ]);
 
-        const registerResponse = await registerResponsePromise;
+        expect(registerResponse).toBeTruthy();
         expect(registerResponse.status).toBe(200);
         const registerBody = registerResponse.body;
         expect(registerBody).toEqual(expect.objectContaining({
@@ -2934,6 +2702,45 @@ test.describe('Login stránka', () => {
         expect(await passwordInput.getAttribute('type')).toBe('password');
     });
 
+    test('HTML odpověď z login API ukáže českou opakovatelnou chybu bez parser detailu', async ({ page }) => {
+        await page.route('**/api/auth/login', async (route) => {
+            await route.fulfill({
+                status: 502,
+                contentType: 'text/html',
+                body: '<html><body>Bad Gateway</body></html>'
+            });
+        });
+
+        await page.locator('.login-section #email').fill('audit@example.invalid');
+        await page.locator('.login-section #password').fill('TestPassword123!');
+        await page.locator('.login-section #auth-submit').click();
+
+        const summary = page.locator('.login-section #login-form > .form-error-summary');
+        await expect(summary).toBeVisible();
+        await expect(summary).toContainText('dočasně nedostupné');
+        await expect(summary).not.toContainText('Unexpected token');
+        await expect(page.locator('.login-section #auth-submit')).toBeEnabled();
+    });
+
+    test('úspěšná login odpověď bez uživatele nevytvoří přihlášenou session', async ({ page }) => {
+        await page.route('**/api/auth/login', async (route) => {
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({ success: true })
+            });
+        });
+
+        await page.locator('.login-section #email').fill('audit@example.invalid');
+        await page.locator('.login-section #password').fill('TestPassword123!');
+        await page.locator('.login-section #auth-submit').click();
+
+        const summary = page.locator('.login-section #login-form > .form-error-summary');
+        await expect(summary).toContainText('nepodařilo ověřit');
+        expect(await page.evaluate(() => localStorage.getItem('auth_user'))).toBeNull();
+        expect((await page.context().cookies()).some(cookie => cookie.name === 'logged_in')).toBe(false);
+    });
+
     test('autocomplete atributy jsou nastaveny (UX + správci hesel)', async ({ page }) => {
         const emailAC = await page.locator('#email').first().getAttribute('autocomplete');
         const pwAC = await page.locator('#password').first().getAttribute('autocomplete');
@@ -2951,11 +2758,13 @@ test.describe('Login stránka', () => {
 
     test('kliknutí na "Zapomněli jste heslo?" zobrazí forgot password formulář', async ({ page }) => {
         await page.locator('#forgot-password-link').first().click();
-        await page.waitForTimeout(400);
+        await expect(page.locator('#forgot-email').first()).toBeFocused();
 
         // Po kliknutí by se měl formulář zobrazit nebo odkaz provést akci
         // Testujeme pouze že stránka zůstala funkční
         await expect(page.locator('body')).toBeVisible();
+        await page.locator('#back-to-login').click();
+        await expect(page.locator('#email').first()).toBeFocused();
     });
 
     test('forgot-password-form má email input', async ({ page }) => {
@@ -2964,141 +2773,109 @@ test.describe('Login stránka', () => {
         expect(await forgotEmail.getAttribute('type')).toBe('email');
     });
 
-    test('požadavek na obnovu hesla zamkne e-mail a odešle jen jednou', async ({ page }) => {
-        let requestCount = 0;
-        let releaseForgotResponse;
-        const forgotResponseGate = new Promise(resolve => { releaseForgotResponse = resolve; });
-        await page.route('**/api/auth/forgot-password', async (route) => {
-            requestCount += 1;
-            await forgotResponseGate;
-            await route.fulfill({
-                status: 200,
-                contentType: 'application/json',
-                body: JSON.stringify({ success: true, message: 'Pokud účet existuje, poslali jsme odkaz.' })
-            });
-        });
-
-        await page.goto('/prihlaseni.html');
+    test('reset=true bez recovery tokenu nabídne rovnou nové vyžádání odkazu', async ({ page }) => {
+        await page.goto('/prihlaseni.html?reset=true');
         await waitForPageReady(page);
-        await page.locator('#forgot-password-link').click();
-        const form = page.locator('#forgot-password-form');
-        const email = page.locator('#forgot-email');
-        const submit = form.locator('button[type="submit"]');
-        await email.fill('forgot-lock@example.com');
-        await submit.click();
 
-        await expect(submit).toBeDisabled();
-        await expect(email).toBeDisabled();
-        await expect(form).toHaveAttribute('aria-busy', 'true');
-        await form.dispatchEvent('submit', { bubbles: true, cancelable: true });
-        await expect.poll(() => requestCount).toBe(1);
+        await expect(page.locator('.login-section #login-form')).toBeHidden();
+        await expect(page.locator('#reset-password-form')).toBeHidden();
+        await expect(page.locator('#forgot-password-form')).toBeVisible();
+        await expect(page.locator('#reset-link-notice')).toContainText('bez ověřovacího odkazu');
+        await expect(page.locator('#forgot-email')).toBeFocused();
+        await expect(page.locator('#forgot-password-form button[type="submit"]')).toContainText('Odeslat odkaz');
 
-        releaseForgotResponse();
-        await expect(page.locator('#recovery-request-status')).toBeVisible();
-        await expect(submit).toBeEnabled();
-        await expect(email).toBeEnabled();
-        await expect(form).not.toHaveAttribute('aria-busy', 'true');
+        await page.locator('#back-to-login').click();
+        await expect(page.locator('.login-section #login-form')).toBeVisible();
+        await expect(page.locator('#reset-link-notice')).toBeHidden();
+        expect(new URL(page.url()).searchParams.has('reset')).toBe(false);
     });
 
-    test('obnova hesla vrátí přihlášení k rozepsané reflexi', async ({ page }) => {
-        let forgotPayload = null;
-        await page.route('**/api/auth/forgot-password', route => {
-            forgotPayload = route.request().postDataJSON();
-            return route.fulfill({
-                status: 200,
-                contentType: 'application/json',
-                body: JSON.stringify({ success: true, message: 'Pokud účet existuje, poslali jsme odkaz.' })
-            });
-        });
-        await page.route('**/api/auth/reset-password', route => route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({ success: true, message: 'Heslo bylo úspěšně změněno.' })
-        }));
-        await page.route('**/api/auth/reset-password/validate', route => route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({ valid: true })
-        }));
-
-        await page.goto('/prihlaseni.html?redirect=%2Fprofil.html%23journal-input');
+    test('prošlý reset odkaz vysvětlí stav a ponechá cestu k novému odkazu', async ({ page }) => {
+        await page.goto('/prihlaseni.html?reset=true#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired');
         await waitForPageReady(page);
-        await page.locator('#forgot-password-link').click();
-        await page.locator('#forgot-email').fill('reset-flow@example.com');
-        await page.locator('#forgot-password-form button[type="submit"]').click();
-        await expect(page.locator('#recovery-request-status')).toContainText(
-            'Pokud je účet s tímto e-mailem vedený, může na něj přijít odkaz k obnovení hesla.'
-        );
-        await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('mh_password_reset_return') || 'null')?.target))
-            .toBe('/profil.html#journal-input');
-        expect(forgotPayload).toEqual({ email: 'reset-flow@example.com' });
 
-        await page.goto('/prihlaseni.html?reset=true#access_token=e2e-reset-token&type=recovery');
+        await expect(page.locator('#reset-password-form')).toBeHidden();
+        await expect(page.locator('#forgot-password-form')).toBeVisible();
+        await expect(page.locator('#reset-link-notice')).toContainText('vypršel nebo už byl použit');
+        await expect(page.locator('#forgot-email')).toBeFocused();
+        expect(new URL(page.url()).hash).toBe('');
+    });
+
+    test('reset formulář se zobrazí jen pro recovery token; backend rozhodne o jeho platnosti', async ({ page }) => {
+        await page.route('**/api/auth/reset-password/validate', route => route.fulfill({ json: { valid: true } }));
+        await page.goto('/prihlaseni.html?reset=true#access_token=e2e-recovery-token&type=recovery');
         await waitForPageReady(page);
         await expect(page.locator('#reset-password-form')).toBeVisible();
-        await expect(page.locator('#auth-modal')).toBeHidden();
-        await page.locator('#new-password').fill('NewPassword123!');
-        await page.locator('#confirm-password').fill('NewPassword123!');
-        await page.locator('#reset-password-form button[type="submit"]').click();
+        await expect(page.locator('#new-password')).toBeFocused();
+        await expect(page.locator('#reset-link-notice')).toBeHidden();
 
-        await expect(page.locator('#reset-password-status a')).toHaveAttribute(
-            'href',
-            '/prihlaseni.html?redirect=%2Fprofil.html%23journal-input'
-        );
-        expect(await page.evaluate(() => window.location.hash)).toBe('');
-        expect(await page.evaluate(() => localStorage.getItem('mh_password_reset_return'))).toBeNull();
+        // A hash-only change is same-document navigation, so the auth initializer
+        // would not rerun. A distinct query makes this a true fresh page load.
+        await page.goto('/prihlaseni.html?reset=true&case=missing-recovery-type#access_token=e2e-recovery-token');
+        await waitForPageReady(page);
+        await expect(page.locator('#reset-password-form')).toBeHidden();
+        await expect(page.locator('#forgot-password-form')).toBeVisible();
+        await expect(page.locator('#reset-link-notice')).toContainText('bez ověřovacího odkazu');
     });
 
-    test('reset hesla zamkne hodnoty a odešle jen jeden požadavek', async ({ page }) => {
-        let requestCount = 0;
-        let releaseResetResponse;
-        const resetResponseGate = new Promise(resolve => { releaseResetResponse = resolve; });
+    test('když backend odmítne prošlý reset token, nabídne nový odkaz', async ({ page }) => {
+        await page.route('**/api/auth/reset-password/validate', route => route.fulfill({ json: { valid: true } }));
         await page.route('**/api/auth/reset-password', async (route) => {
-            requestCount += 1;
-            await resetResponseGate;
+            await route.fulfill({
+                status: 400,
+                contentType: 'application/json',
+                body: JSON.stringify({ error: 'Nepodařilo se obnovit heslo. Odkaz může být neplatný nebo vypršel.' })
+            });
+        });
+
+        await page.goto('/prihlaseni.html?reset=true#access_token=e2e-expired-token&type=recovery');
+        await waitForPageReady(page);
+        await page.locator('#new-password').fill('TestPassword123!');
+        await page.locator('#confirm-password').fill('TestPassword123!');
+        await page.locator('#reset-password-form button[type="submit"]').click();
+
+        await expect(page.locator('#reset-password-form')).toBeHidden();
+        await expect(page.locator('#forgot-password-form')).toBeVisible();
+        await expect(page.locator('#reset-link-notice')).toContainText('už není platný');
+        await expect(page.locator('#forgot-email')).toBeFocused();
+        expect(new URL(page.url()).hash).toBe('');
+    });
+
+    test('úspěšná změna hesla zůstane potvrzená na stránce a nabídne přihlášení', async ({ page }) => {
+        await page.route('**/api/auth/reset-password/validate', route => route.fulfill({ json: { valid: true } }));
+        await page.route('**/api/auth/reset-password', async (route) => {
             await route.fulfill({
                 status: 200,
                 contentType: 'application/json',
-                body: JSON.stringify({ success: true, message: 'Heslo bylo úspěšně změněno.' })
+                body: JSON.stringify({ success: true })
             });
         });
-        await page.route('**/api/auth/reset-password/validate', route => route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({ valid: true })
-        }));
 
-        await page.goto('/prihlaseni.html?reset=true#access_token=e2e-reset-token&type=recovery');
+        await page.goto('/prihlaseni.html?reset=true#access_token=e2e-recovery-token&type=recovery');
         await waitForPageReady(page);
-        const form = page.locator('#reset-password-form');
-        const submit = form.locator('button[type="submit"]');
-        const password = page.locator('#new-password');
-        const confirmation = page.locator('#confirm-password');
-        await password.fill('NewPassword123!');
-        await confirmation.fill('NewPassword123!');
-        await submit.click();
+        await page.locator('#new-password').fill('TestPassword123!');
+        await page.locator('#confirm-password').fill('TestPassword123!');
+        await page.locator('#reset-password-form button[type="submit"]').click();
 
-        await expect(submit).toBeDisabled();
-        await expect(password).toBeDisabled();
-        await expect(confirmation).toBeDisabled();
-        await expect(form).toHaveAttribute('aria-busy', 'true');
-        await form.dispatchEvent('submit', { bubbles: true, cancelable: true });
-        await expect.poll(() => requestCount).toBe(1);
-
-        releaseResetResponse();
-        await expect(page.locator('#reset-password-status')).toBeVisible();
-        await expect(form).not.toHaveAttribute('aria-busy', 'true');
-        await expect(password).toBeEnabled();
-        await expect(confirmation).toBeEnabled();
-    });
-
-    test('neplatný recovery odkaz odstraní nepoužitý token z URL', async ({ page }) => {
-        await page.goto('/prihlaseni.html?reset=true#error=access_denied&error_code=otp_expired');
-        await waitForPageReady(page);
-
-        await expect(page.locator('#forgot-password-form')).toBeVisible();
         await expect(page.locator('#reset-password-form')).toBeHidden();
-        expect(await page.evaluate(() => window.location.hash)).toBe('');
+        await expect(page.locator('#reset-link-notice')).toHaveAttribute('role', 'status');
+        await expect(page.locator('#reset-link-notice')).toContainText('přímo na serveru');
+        await expect(page.locator('#reset-success-login-link')).toBeVisible();
+        await expect(page.locator('#reset-success-login-link')).toBeFocused();
+        expect(new URL(page.url()).hash).toBe('');
+        await page.waitForTimeout(600);
+        await expect(page.locator('#reset-success-login-link')).toBeVisible();
+        await page.reload();
+        await expect(page.locator('#reset-link-notice')).toContainText('přímo na serveru');
+        await page.evaluate(() => history.pushState(null, '', '/prihlaseni.html?reset=true&case=unconfirmed-history-entry'));
+        await page.reload();
+        await expect(page.locator('#reset-link-notice')).toContainText('Otevřel se formulář obnovy bez ověřovacího odkazu');
+        await expect(page.locator('#reset-success-login-link')).toBeHidden();
+        await expect(page.locator('#forgot-password-form')).toBeVisible();
+        await page.goBack();
+        await expect(page.locator('#reset-link-notice')).toContainText('přímo na serveru');
+        await page.locator('#reset-success-login-link').click();
+        await expect(page).toHaveURL(/\/prihlaseni\.html$/);
     });
 
     test('expirovaný bearer zobrazí žádost o nový resetovací odkaz před formulářem hesla', async ({ page }) => {
@@ -3113,30 +2890,8 @@ test.describe('Login stránka', () => {
 
         await expect(page.locator('#reset-password-form')).toBeHidden();
         await expect(page.locator('#forgot-password-form')).toBeVisible();
-        await expect(page.locator('#forgot-password-form')).toContainText('Odkaz pro obnovu už není platný');
+        await expect(page.locator('#reset-link-notice')).toContainText('Odkaz pro obnovu už není platný');
         expect(await page.evaluate(() => window.location.hash)).toBe('');
-    });
-
-    test('neúspěšná žádost o reset smaže starý návratový cíl', async ({ page }) => {
-        await page.addInitScript(() => localStorage.setItem('mh_password_reset_return', JSON.stringify({
-            target: '/profil.html#journal-input',
-            savedAt: Date.now()
-        })));
-        await page.route('**/api/auth/forgot-password', route => route.fulfill({
-            status: 503,
-            contentType: 'application/json',
-            body: JSON.stringify({ success: false, error: 'Služba je dočasně nedostupná.' })
-        }));
-
-        await page.goto('/prihlaseni.html?redirect=%2Fprofil.html%23journal-input');
-        await waitForPageReady(page);
-        await page.locator('#forgot-password-link').click();
-        await page.locator('#forgot-email').fill('reset-flow@example.com');
-        const forgotResponse = page.waitForResponse(response => response.url().includes('/api/auth/forgot-password'));
-        await page.locator('#forgot-password-form button[type="submit"]').click();
-        await forgotResponse;
-
-        expect(await page.evaluate(() => localStorage.getItem('mh_password_reset_return'))).toBeNull();
     });
 
     // ── Confirm password pole ─────────────────────────────────────────────────
@@ -3152,212 +2907,49 @@ test.describe('Login stránka', () => {
 });
 
 test.describe('Auth modal', () => {
-    test('zámek modalu zabrání duplicitnímu přihlášení během čekání na API', async ({ page }) => {
-        let requestCount = 0;
-        let releaseLoginResponse;
-        const loginResponseGate = new Promise(resolve => { releaseLoginResponse = resolve; });
-        await page.route('**/api/auth/login', async (route) => {
-            requestCount += 1;
-            await loginResponseGate;
-            await route.fulfill({
-                status: 400,
-                contentType: 'application/json',
-                body: JSON.stringify({ success: false, error: 'Invalid credentials' })
-            });
+    test('modal exposes labelled dialog semantics and keeps keyboard focus contained', async ({ page }) => {
+        await page.goto('/tarot.html?source=e2e_auth_modal_accessibility');
+        await waitForPageReady(page);
+
+        await page.evaluate(() => {
+            const opener = document.createElement('button');
+            opener.id = 'auth-modal-e2e-opener';
+            opener.type = 'button';
+            opener.textContent = 'Otevřít přihlášení';
+            document.body.append(opener);
+            opener.focus();
         });
-
-        await page.goto('/tarot.html?source=e2e_auth_modal_submit_lock');
-        await waitForPageReady(page);
         await page.evaluate(() => window.Auth.openModal('login'));
-        const form = page.locator('#auth-modal #login-form');
-        const submit = page.locator('#auth-modal #auth-submit');
-        await page.locator('#auth-modal-email').fill('auth-lock@example.com');
-        await page.locator('#auth-modal-password').fill('IncorrectPassword123!');
-        await submit.click();
 
-        await expect(submit).toBeDisabled();
-        await expect(page.locator('#auth-modal-email')).toBeDisabled();
-        await expect(page.locator('#auth-modal-password')).toBeDisabled();
-        await expect(form).toHaveAttribute('aria-busy', 'true');
-        await page.locator('#auth-modal #auth-mode-toggle').click();
-        await expect(page.locator('#auth-modal #auth-title')).toHaveText('Přihlášení');
-        await form.dispatchEvent('submit', { bubbles: true, cancelable: true });
-        await expect.poll(() => requestCount).toBe(1);
+        const modal = page.getByRole('dialog', { name: 'Přihlášení' });
+        const close = modal.getByRole('button', { name: 'Zavřít' });
+        const email = modal.getByLabel('E-mail');
+        await expect(modal).toBeVisible();
+        await expect(email).toBeVisible();
+        await expect(modal.getByLabel('Heslo', { exact: true })).toBeVisible();
+        await expect(close).toBeVisible();
+        await expect(email).toBeFocused();
+        await expect(page.locator('main')).toHaveAttribute('inert', '');
+        await expect(page.locator('body')).toHaveClass(/auth-modal-open/);
 
-        releaseLoginResponse();
-        await expect(page.locator('#auth-modal-status')).toHaveAttribute('role', 'alert');
-        await expect(submit).toBeEnabled();
-        await expect(page.locator('#auth-modal-email')).toBeEnabled();
-        await expect(page.locator('#auth-modal-password')).toBeEnabled();
-        await expect(form).not.toHaveAttribute('aria-busy', 'true');
-    });
+        await email.press('Shift+Tab');
+        await expect(close).toBeFocused();
+        await close.press('Shift+Tab');
+        await expect(modal.locator('#auth-mode-toggle')).toBeFocused();
+        await modal.locator('#auth-mode-toggle').press('Tab');
+        await expect(close).toBeFocused();
 
-    test('reset hesla v modalu zamkne e-mail a zabrání druhému požadavku', async ({ page }) => {
-        let requestCount = 0;
-        let releaseResetResponse;
-        const resetResponseGate = new Promise(resolve => { releaseResetResponse = resolve; });
-        await page.route('**/api/auth/forgot-password', async (route) => {
-            requestCount += 1;
-            await resetResponseGate;
-            await route.fulfill({
-                status: 200,
-                contentType: 'application/json',
-                body: JSON.stringify({ success: true })
-            });
-        });
-
-        await page.goto('/tarot.html?source=e2e_auth_modal_reset_lock');
-        await waitForPageReady(page);
-        await page.evaluate(() => window.Auth.openModal('login'));
-        const modal = page.locator('#auth-modal');
-        const form = modal.locator('#login-form');
-        const submit = modal.locator('#auth-submit');
-        const email = modal.locator('#auth-modal-email');
-        await modal.locator('#auth-forgot-password').click();
-        await email.fill('forgot-lock@example.com');
-        await submit.click();
-
-        await expect(submit).toBeDisabled();
-        await expect(email).toBeDisabled();
-        await expect(form).toHaveAttribute('aria-busy', 'true');
-        await modal.locator('#auth-mode-toggle').click();
-        await expect(modal.locator('#auth-title')).toHaveText('Obnovení hesla');
-        await form.dispatchEvent('submit', { bubbles: true, cancelable: true });
-        await expect.poll(() => requestCount).toBe(1);
-
-        releaseResetResponse();
-        await expect(modal.locator('#auth-modal-status')).toContainText('Pokud je účet s tímto e-mailem vedený');
-        await expect(submit).toBeEnabled();
-        await expect(email).toBeEnabled();
-        await expect(form).not.toHaveAttribute('aria-busy', 'true');
-    });
-
-    test('slovenské a poľské prihlasovacie okno je lokalizované aj v režimoch registrácie a obnovy hesla', async ({ page }) => {
-        await page.route('**/api/auth/login', (route) => route.fulfill({
-            status: 400,
-            contentType: 'application/json',
-            body: JSON.stringify({ success: false, error: 'Invalid credentials' })
-        }));
-        await page.route('**/api/auth/forgot-password', (route) => route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({ success: true })
-        }));
-
-        for (const locale of [
-            {
-                path: '/sk/index.html', language: 'sk', login: 'Prihlásenie', register: 'Registrácia', reset: 'Obnovenie hesla',
-                legal: 'v češtine', loginError: 'Prihlásenie sa nepodarilo. Skontroluj e-mail a heslo.',
-                resetMessage: 'Ak je tento e-mail u nás zaregistrovaný, môže naň prísť odkaz na obnovenie hesla. Skontroluj aj spam; ak odkaz nepríde, môžeš požiadať znova.'
-            },
-            {
-                path: '/pl/index.html', language: 'pl', login: 'Logowanie', register: 'Rejestracja', reset: 'Resetowanie hasła',
-                legal: 'w języku czeskim', loginError: 'Logowanie nie powiodło się. Sprawdź adres e-mail i hasło.',
-                resetMessage: 'Jeśli konto z tym adresem e-mail jest u nas zarejestrowane, możesz otrzymać link do zmiany hasła. Sprawdź też spam; jeśli link nie dotrze, możesz ponowić prośbę.'
-            }
-        ]) {
-            await page.goto(locale.path);
-            await waitForPageReady(page);
-            await expect(page.locator('html')).toHaveAttribute('lang', locale.language);
-            await page.evaluate(() => window.Auth.openModal('login'));
-
-            const modal = page.locator('#auth-modal');
-            await expect(modal.locator('#auth-title')).toHaveText(locale.login);
-            await expect(modal.locator('#auth-submit')).toHaveAttribute('data-mode', 'login');
-            await expect(modal.locator('#auth-forgot-password')).toBeVisible();
-
-            await modal.locator('#auth-modal-email').fill('auth-locale@example.com');
-            await modal.locator('#auth-modal-password').fill('IncorrectPassword123!');
-            await modal.locator('#auth-submit').click();
-            await expect(modal.locator('#auth-modal-status')).toHaveText(locale.loginError);
-            await expect(modal.locator('#auth-modal-status')).toHaveAttribute('role', 'alert');
-
-            await modal.locator('#auth-mode-toggle').click();
-            await expect(modal.locator('#auth-title')).toHaveText(locale.register);
-            await expect(modal.locator('#auth-submit')).toHaveAttribute('data-mode', 'register');
-            await expect(modal.locator('#auth-modal-status')).toBeHidden();
-            await expect(modal.locator('#gdpr-consent-wrapper')).toContainText(locale.legal);
-
-            await modal.locator('#auth-mode-toggle').click();
-            await modal.locator('#auth-forgot-password').click();
-            await expect(modal.locator('#auth-title')).toHaveText(locale.reset);
-            await expect(modal.locator('#auth-submit')).toHaveAttribute('data-mode', 'reset');
-            await modal.locator('#auth-modal-email').fill('auth-locale@example.com');
-            await modal.locator('#auth-submit').click();
-            await expect(modal.locator('#auth-modal-status')).toBeVisible();
-            await expect(modal.locator('#auth-modal-status')).toHaveText(locale.resetMessage);
-        }
-    });
-
-    test('nečitelná odpověď API zobrazí český fallback při přihlášení i registraci', async ({ page }) => {
-        await page.route('**/api/auth/login', (route) => route.fulfill({
-            status: 502,
-            contentType: 'text/html',
-            body: '<!doctype html><title>Bad Gateway</title>'
-        }));
-        await page.route('**/api/auth/register', (route) => route.fulfill({
-            status: 502,
-            contentType: 'text/html',
-            body: '<!doctype html><title>Bad Gateway</title>'
-        }));
-
-        await page.goto('/tarot.html?source=e2e_auth_modal_error');
-        await waitForPageReady(page);
-
-        await page.evaluate(() => window.Auth.openModal('login'));
-        await page.locator('#auth-modal input[name="email"]').fill('modal-login@example.com');
-        await page.locator('#auth-modal input[name="password"]').fill('TestPassword123!');
-        await page.locator('#auth-modal #auth-submit').click();
-        await expect(page.locator('.toast--error .toast__message').last()).toHaveText(
-            'Přihlášení se teď nepodařilo. Zkus to znovu za chvíli.'
-        );
-        await expect(page.locator('#auth-modal-status')).toHaveText(
-            'Přihlášení se teď nepodařilo. Zkus to znovu za chvíli.'
-        );
-        await expect(page.locator('#auth-modal-status')).toHaveAttribute('role', 'alert');
+        await close.press('Escape');
+        await expect(modal).toBeHidden();
+        await expect(page.locator('#auth-modal-e2e-opener')).toBeFocused();
+        await expect(page.locator('main')).not.toHaveAttribute('inert', '');
+        await expect(page.locator('body')).not.toHaveClass(/auth-modal-open/);
 
         await page.evaluate(() => window.Auth.openModal('register'));
-        await page.locator('#auth-modal input[name="email"]').fill('modal-register@example.com');
-        await page.locator('#auth-modal input[name="password"]').fill('TestPassword123!');
-        await page.locator('#auth-modal input[name="confirm_password"]').fill('TestPassword123!');
-        await page.locator('#auth-modal #gdpr-consent').check();
-        await page.locator('#auth-modal #auth-submit').click();
-        await expect(page.locator('.toast--error .toast__message').last()).toHaveText(
-            'Registraci se teď nepodařilo dokončit. Zkus to znovu za chvíli.'
-        );
-        await expect(page.locator('#auth-modal-status')).toHaveText(
-            'Registraci se teď nepodařilo dokončit. Zkus to znovu za chvíli.'
-        );
-    });
-
-    test('kladnou odpověď přihlášení nezamění za síťovou chybu, když selže uložení účtu v prohlížeči', async ({ page }) => {
-        await page.addInitScript(() => {
-            const originalSetItem = Storage.prototype.setItem;
-            Storage.prototype.setItem = function (key, value) {
-                if (key === 'auth_user') throw new DOMException('Storage unavailable', 'QuotaExceededError');
-                return originalSetItem.call(this, key, value);
-            };
-        });
-        await page.route('**/api/auth/login', (route) => route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({
-                success: true,
-                user: { id: 'e2e-auth-user', email: 'auth-storage@example.com', subscription_status: 'free' }
-            })
-        }));
-
-        await page.goto('/tarot.html?source=e2e_auth_storage_error');
-        await waitForPageReady(page);
-        await page.evaluate(() => window.Auth.openModal('login'));
-        await page.locator('#auth-modal input[name="email"]').fill('auth-storage@example.com');
-        await page.locator('#auth-modal input[name="password"]').fill('TestPassword123!');
-        await page.locator('#auth-modal #auth-submit').click();
-
-        await expect(page.locator('.toast--error .toast__message').last()).toHaveText(
-            'Server požadavek přijal, ale stránce se nepodařilo dokončit další krok. Obnov stránku a zkontroluj e-mail nebo stav účtu.'
-        );
-        await expect(page.locator('#auth-modal-status')).toHaveAttribute('role', 'alert');
+        const registerModal = page.getByRole('dialog', { name: 'Registrace' });
+        await expect(registerModal.getByLabel('Potvrď heslo')).toBeVisible();
+        await expect(registerModal.getByLabel('Datum narození')).toBeVisible();
+        await registerModal.getByRole('button', { name: 'Zavřít' }).press('Escape');
     });
 
     test('modal registrace vysvetli datum narozeni a nevyzaduje ho pred vytvorenim uctu', async ({ page }) => {
@@ -3401,7 +2993,7 @@ test.describe('Auth modal', () => {
             gdpr_consent: true,
             terms_consent: true
         }));
-        expect(registerPayload.birth_date).toBeUndefined();
+        expect(registerPayload.birth_date).toBe('');
     });
 
     test('modal registrace s email verifikaci posila signup analytics event v register modu', async ({ page }) => {

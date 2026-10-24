@@ -499,14 +499,7 @@ body.page-login .login-icon .mh-symbol{width:36px;height:36px}
 body.page-login .password-input-wrap .form-input{margin-bottom:0!important;min-height:48px}
 body.page-login .password-toggle{right:3px;border:0;border-radius:3px;background:transparent;min-height:44px}
 body.page-login .password-toggle:hover,body.page-login .password-toggle:focus-visible{background:#bd9b6514}
-body.page-login .login-card__title,
-body.page-login .login-card .form-input { scroll-margin-top: 6rem; }
-.signup-details > summary { cursor: pointer; min-height: 44px; padding: 10px 0; color: #d0b17c; font-weight: 600; }
-.signup-details > summary:focus-visible { outline: 2px solid #d0b17c; outline-offset: 4px; }
+body.page-login .auth-recovery-notice{margin:16px 0;padding:12px 14px;border:1px solid #bd9b6566;border-radius:6px;background:#102638;color:#f1e8d8;font-size:.92rem;line-height:1.55;text-align:left}
+body.page-login .auth-recovery-success-link{display:block;margin-top:12px;text-align:center}
 @media(min-width:1000px){body.auth-register-mode .login-icon{margin-left:0}}
 @media(max-width:999px){body.auth-register-mode .login-icon{display:none}}
-
-.form-success-summary{margin:1rem 0 0;padding:.9rem 1rem;border:1px solid rgba(136,210,162,.34);border-radius:var(--radius-md,12px);background:rgba(44,112,75,.2);color:#e2f3e7;line-height:1.55}
-.form-success-summary a{color:#f2d58d;font-weight:700;text-underline-offset:.18em}
-.form-success-summary[hidden]{display:none}
-

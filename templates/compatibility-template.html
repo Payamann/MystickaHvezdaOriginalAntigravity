@@ -218,15 +218,13 @@
     </script>
 
     <script src="/js/dist/analytics-init.js" defer></script>
-<link rel="stylesheet" href="/css/atlas-web.css?v=20261020-03-horoscope-day-switcher-atlas">
-<link rel="stylesheet" href="/css/atlas-astro.css?v=20261020-01-western-zodiac-image-cards">
+<link rel="stylesheet" href="/css/atlas-web.css?v=20261023-release-todo">
+<link rel="stylesheet" href="/css/atlas-astro.css?v=20261023-release-todo">
 </head>
 
 
 
 <body class="atlas-page atlas-astro-page">
-
-    <a href="#main-content" class="skip-link">Přeskočit na obsah</a>
 
     <!-- Helper for navigation -->
 
@@ -234,11 +232,67 @@
 
 
 
-    <div id="header-placeholder"></div>
+    <header class="header">
+
+        <div class="container">
+
+            <div class="header__inner">
+
+                <a href="../index.html" class="logo">
+
+                    <span style="margin-left: 10px;">Mystická<span class="text-gradient">Hvězda</span></span>
+
+                </a>
+
+                <nav class="nav">
+
+                    <button class="nav__toggle" aria-label="Menu">
+
+                        <span></span><span></span><span></span>
+
+                    </button>
+
+                    <ul class="nav__list">
+
+                        <li><a href="../index.html" class="nav__link">Domů</a></li>
+
+                        <li><a href="../horoskopy.html" class="nav__link">Horoskopy</a></li>
+
+                        <li><a href="../tarot.html" class="nav__link">Tarot</a></li>
+
+                        <li><a href="../natalni-karta.html" class="nav__link">Natální Karta</a></li>
+
+                        <li><a href="../partnerska-shoda.html" class="nav__link active">Shoda</a></li>
+
+                        <li><a href="../numerologie.html" class="nav__link">Numerologie</a></li>
+
+                        <li><a href="../kristalova-koule.html" class="nav__link">Věštírna</a></li>
+
+                        <li><a href="../cenik.html" class="nav__link">Ceník</a></li>
+
+                    </ul>
+
+                    <div class="auth-buttons" style="display: flex; gap: 0.5rem; align-items: center;">
+
+                        <a href="#" id="auth-register-btn" class="btn btn--secondary"
+
+                            style="margin-left: 1rem; font-size: 0.9em; padding: 0.5rem 1rem;">Registrace</a>
+
+                        <a href="#" id="auth-btn" class="btn btn--primary">Přihlásit</a>
+
+                    </div>
+
+                </nav>
+
+            </div>
+
+        </div>
+
+    </header>
 
 
 
-    <main id="main-content" tabindex="-1">
+    <main>
 
         <section class="compatibility-header">
 
@@ -276,7 +330,7 @@
 
                         style="margin-top: 3rem; background: rgba(255,255,255,0.03); padding: 1.5rem; border-radius: 10px; border-left: 3px solid var(--color-primary);">
 
-                        <h3 style="margin-top:0; border:none; color: white;">Tip na rande</h3>
+                        <h3 style="margin-top:0; border:none; color: white;">💡 Tip na rande</h3>
 
                         <p style="margin-bottom:0;">{{DATE_TIP}}</p>
 
@@ -347,9 +401,9 @@
 
 
 
-    <script src="/js/dist/core.js?v=20261021-footer-support-locale" defer></script>
+    <script src="js/dist/core.js?v=1" defer></script>
 
-    <script type="module" src="/js/main.js?v=20261018-reduced-motion-scroll"></script>
+    <script type="module" src="js/main.js?v=10"></script>
 
 
 

@@ -64,7 +64,7 @@
                 "name": "Je partnerská shoda zdarma?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Základní výpočet kompatibility je zdarma a funguje bez registrace. Plný vztahový rozbor s konkrétní komunikací, třecími body a uložením do profilu je součástí Premium."
+                    "text": "Základní výpočet kompatibility je zdarma a funguje bez registrace. Plný vztahový rozbor s konkrétní komunikací, třecími body a uložením do profilu je součástí členství Mystické Hvězdy."
                 }
             },
             {
@@ -80,7 +80,7 @@
                 "name": "Co odemkne plný vztahový rozbor?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "Plný rozbor ukáže emoční propojení, komunikaci, chemii, stabilitu, hlavní napětí a praktický další krok pro vztah."
+                    "text": "Plný rozbor ukáže emoční propojení, komunikaci, chemii, stabilitu, hlavní napětí a praktický další krok pro vztah; je součástí členství Mystické Hvězdy."
                 }
             },
             {
@@ -108,12 +108,14 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
 
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="stylesheet" href="css/site.min.css?v=20261018-release-candidate">
-    <link rel="stylesheet" href="css/pages/partnerska-shoda.css?v=3">
+    <link rel="stylesheet" href="css/site.min.css?v=20261023-release-todo">
+    <link rel="stylesheet" href="css/pages/partnerska-shoda.css?v=4">
 <link rel="alternate" hreflang="cs" href="https://www.mystickahvezda.cz/partnerska-shoda.html">
 
     <link rel="canonical" href="https://www.mystickahvezda.cz/partnerska-shoda.html">
 
+  <!-- DOMPurify for XSS protection (must load synchronously before other scripts use it) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js" integrity="sha384-XQqX/4yiUGu+oyr87jvWzRuqBUK/adrY0DunhL+tID9m/9dwSpV8h9Fk/Sg6ifVQ" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <link rel="alternate" hreflang="x-default" href="https://www.mystickahvezda.cz/partnerska-shoda.html">    <script src="/js/dist/analytics-init.js" defer></script>
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -121,11 +123,12 @@
 <meta property="og:image:alt" content="Partnerská shoda znamení online | Mystická Hvězda">
 <meta name="twitter:image:alt" content="Partnerská shoda znamení online | Mystická Hvězda">
 
-    <link rel="stylesheet" href="/css/atlas-web.css?v=20261020-03-horoscope-day-switcher-atlas">
-    <link rel="stylesheet" href="/css/atlas-astro.css?v=20261020-01-western-zodiac-image-cards">
+    <link rel="stylesheet" href="/css/atlas-web.css?v=20261023-release-todo">
+    <link rel="stylesheet" href="/css/atlas-astro.css?v=20261023-release-todo">
+<link rel="stylesheet" href="/css/atlas-polish-v1.css?v=20261009">
 </head>
 
-<body class="page-compatibility atlas-page atlas-astro-page">
+<body class="page-compatibility atlas-page atlas-astro-page" data-atlas-polish="partnerska-shoda">
 
     <!-- Skip to main content -->
 
@@ -203,7 +206,7 @@
 
                                         for="p1-name">Jméno</label>
 
-                                    <input type="text" id="p1-name" class="email-form__input w-full" autocomplete="name" required>
+                                    <input type="text" id="p1-name" class="email-form__input w-full" required>
 
                                 </div>
 
@@ -213,7 +216,7 @@
 
                                         narození</label>
 
-                                    <input type="date" id="p1-date" class="email-form__input w-full" autocomplete="bday" required>
+                                    <input type="date" id="p1-date" class="email-form__input w-full" required>
 
                                 </div>
 
@@ -257,7 +260,7 @@
 
                                         for="p2-name">Jméno</label>
 
-                                    <input type="text" id="p2-name" class="email-form__input w-full" autocomplete="off" required>
+                                    <input type="text" id="p2-name" class="email-form__input w-full" required>
 
                                 </div>
 
@@ -267,7 +270,7 @@
 
                                         narození</label>
 
-                                    <input type="date" id="p2-date" class="email-form__input w-full" autocomplete="off" required>
+                                    <input type="date" id="p2-date" class="email-form__input w-full" required>
 
                                 </div>
 
@@ -350,61 +353,12 @@
                         <span>Čas a místo pomohou dopočítat ascendent a domy.</span>
                     </div>
                     <div class="synastry-trust-item">
-                        <strong>Premium navazuje</strong>
-                        <span>Plný rozbor řeší komunikaci, napětí a další krok.</span>
+                        <strong>Rozšířený rozbor</strong>
+                        <span>Členství odemyká komunikaci, napětí a konkrétní další krok.</span>
                     </div>
                 </div>
 
-                <details class="feature-reference synastry-intent-section" aria-labelledby="synastry-intent-title">
-                    <summary id="synastry-intent-title" class="feature-reference__summary">Další cesty podle tvé otázky</summary>
-                    <div class="section__header text-center">
-                        <span class="section__badge">Podle otázky</span>
-                        <p class="section__subtitle">
-                            Pokud ještě nechceš zadávat obě data narození, začni tématem, které právě řešíš. Kalkulačka
-                            je nejpřesnější krok, články a navazující nástroje pomůžou pojmenovat otázku.
-                        </p>
-                    </div>
 
-                    <div class="synastry-intent-grid" data-animate>
-                        <a href="#synastry-form-card" class="synastry-intent-card synastry-intent-card--primary" data-analytics-cta="synastry_intent_calculator" data-analytics-feature="partnerska_detail" data-analytics-intent="calculate_match">
-                            <span>Chci konkrétní shodu</span>
-                            <strong>Vyplnit data obou lidí</strong>
-                            <em>Nejrychlejší cesta ke skóre, silným stránkám a tématům k rozhovoru.</em>
-                        </a>
-                        <a href="blog/co-je-synastrie-jak-funguje-partnerska-astrologie.html?source=synastry_intent_cluster&amp;intent=learn_synastry" class="synastry-intent-card" data-analytics-cta="synastry_intent_learn" data-analytics-feature="partnerska_detail" data-analytics-intent="learn_synastry">
-                            <span>Nerozumím synastrii</span>
-                            <strong>Co synastrie opravdu ukazuje</strong>
-                            <em>Proč samotná sluneční znamení nestačí a co v mapě sledovat jako první.</em>
-                        </a>
-                        <a href="blog/attachment-styly-vzorce-ve-vztazich.html?source=synastry_intent_cluster&amp;intent=relationship_patterns" class="synastry-intent-card" data-analytics-cta="synastry_intent_patterns" data-analytics-feature="partnerska_detail" data-analytics-intent="relationship_patterns">
-                            <span>Opakuje se stejný vzorec</span>
-                            <strong>Attachment styly ve vztazích</strong>
-                            <em>Praktičtější rámec pro blízkost, úzkost, vyhýbání a opakované konflikty.</em>
-                        </a>
-                        <a href="partnerska-numerologie.html?source=synastry_intent_cluster&amp;feature=numerologie_vyklad&amp;intent=partner_numbers" class="synastry-intent-card" data-analytics-cta="synastry_intent_numerology" data-analytics-feature="numerologie_vyklad" data-analytics-intent="partner_numbers">
-                            <span>Chci jiný úhel pohledu</span>
-                            <strong>Partnerská numerologie</strong>
-                            <em>Porovná datum narození přes čísla osudu a energii vztahu.</em>
-                        </a>
-                        <a href="tarot-laska.html?source=synastry_intent_cluster&amp;feature=tarot&amp;intent=love_question" class="synastry-intent-card" data-analytics-cta="synastry_intent_love_tarot" data-analytics-feature="tarot" data-analytics-intent="love_question">
-                            <span>Řeším jednu situaci</span>
-                            <strong>Tarot lásky</strong>
-                            <em>Hodí se, když máš konkrétní otázku, rozhodnutí nebo nejasný signál.</em>
-                        </a>
-                        <a href="tarot-ano-ne.html?source=synastry_intent_cluster&amp;feature=tarot_yes_no&amp;intent=relationship_yes_no" class="synastry-intent-card" data-analytics-cta="synastry_intent_tarot_yes_no" data-analytics-feature="tarot_yes_no" data-analytics-intent="relationship_yes_no">
-                            <span>Potřebuji rychlé ano/ne</span>
-                            <strong>Zeptat se jednou kartou</strong>
-                            <em>Když řešíš, jestli se ozvat, počkat nebo udělat další krok ve vztahu.</em>
-                        </a>
-                        <a href="blog/proc-vam-to-v-lasce-nevyhcazi.html?source=synastry_intent_cluster&amp;intent=karmic_relationship" class="synastry-intent-card" data-analytics-cta="synastry_intent_karmic" data-analytics-feature="partnerska_detail" data-analytics-intent="karmic_relationship">
-                            <span>Je to láska, nebo lekce?</span>
-                            <strong>Karmický vztah vs. spřízněná duše</strong>
-                            <em>Pomůže oddělit intenzitu, závislost a vztah, který má reálný klid.</em>
-                        </a>
-                    </div>
-                </details>
-
-                <p id="synastry-status" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></p>
 
                 <!-- RESULTS -->
 
@@ -524,7 +478,9 @@
 
                                 <p class="text-sm">
 
-                                    <strong>Jak číst skóre:</strong> <span id="astro-note">Čísla shrnují astrologický model z obou dat narození. Nejsou měřením kvality vztahu ani předpovědí jeho budoucnosti.</span>
+                                    <strong>Astrologova poznámka:</strong> <span id="astro-note">Váš vztah má silný
+
+                                        potenciál, ale pozor na kvadraturu Saturnu, která může přinášet zkoušky.</span>
 
                                 </p>
 
@@ -539,40 +495,49 @@
                 <section id="synastry-next-step" class="synastry-next-step" hidden aria-labelledby="synastry-next-step-title">
                     <div class="section__header text-center">
                         <span class="section__badge">Nejbližší další krok</span>
-                        <h2 id="synastry-next-step-title" class="section__title">Odemkni rozbor toho, co skóre naznačilo</h2>
-                        <p class="section__subtitle" id="synastry-next-copy">
-                            Skóre <strong id="synastry-next-score">--</strong> shrnuje astrologický model. Podrobnější rozbor nabídne témata pro rozhovor o komunikaci, rozdílech a společných potřebách.
+                        <h2 id="synastry-next-step-title" class="section__title">Chceš prozkoumat konkrétní otázku o vztahu?</h2>
+                        <p class="section__subtitle">
+                            Astrologická shoda <strong id="synastry-next-score">--</strong> je jeden úhel pohledu. Tarot ti nabídne další: jednu otázku, tři karty a praktický krok.
                         </p>
                     </div>
 
                     <div class="synastry-next-grid synastry-next-grid--focused">
-                        <a href="prihlaseni.html?mode=register&redirect=/cenik.html&plan=pruvodce&source=partner_match_result&feature=partnerska_detail&entry_source=partner_match_result&entry_feature=partnerska_detail"
-                            class="synastry-next-card synastry-next-card--primary" data-synastry-upgrade
-                            data-synastry-source="partner_match_result">
-                            <span>Zamčený detail výsledku</span>
+                        <a href="vztahovy-vyklad.html?source=partner_match_result" class="synastry-next-card synastry-next-card--primary" data-relationship-tarot-offer hidden>
+                            <span>Jednorázově · 149 Kč · bez registrace</span>
+                            <strong>Položit osobní vztahovou otázku</strong>
+                            <em>Tři tarotové karty, souvislý výklad a praktický krok ti přijdou e-mailem.</em>
+                            <span class="synastry-next-card__cta">Připravit otázku</span>
+                            <small class="synastry-next-card__reassurance">Jednorázová platba 149 Kč, bez předplatného.</small>
+                        </a>
+                        <a href="prihlaseni.html?mode=register&redirect=/cenik.html&plan=pruvodce&source=partner_match_result&feature=partnerska_detail&entry_source=partner_match_result&entry_feature=partnerska_detail" class="synastry-next-card synastry-next-card--primary" data-synastry-upgrade data-synastry-source="partner_match_result">
+                            <span>Součást členství Mystické Hvězdy</span>
                             <strong>Odemknout plný rozbor</strong>
                             <em>Komunikace, napětí, silné stránky a další krok pro tento vztah.</em>
                             <span class="synastry-next-card__cta">Pokračovat k bezpečnému checkoutu</span>
                             <small class="synastry-next-card__reassurance">Cena se zobrazí ve Stripe před potvrzením. Zrušení najdeš v profilu.</small>
                         </a>
-                        <a href="natalni-karta.html?source=partner_match_intent&feature=natalni_interpretace"
-                            class="synastry-next-card" data-synastry-intent="natal_chart">
+                        <details class="synastry-next-options">
+                            <summary>Další možnosti po výpočtu</summary>
+                            <div class="synastry-next-grid synastry-next-grid--secondary">
+                                                        <a href="natalni-karta.html?source=partner_match_intent&feature=natalni_interpretace" class="synastry-next-card" data-synastry-intent="natal_chart">
                             <span>Nejdřív ty</span>
                             <strong>Natální karta</strong>
                             <em>Uvidíš vlastní vzorce, které si do vztahu neseš.</em>
                         </a>
-                        <a href="tarot.html?source=partner_match_intent&feature=tarot_multi_card"
-                            class="synastry-next-card" data-synastry-intent="relationship_tarot">
+
+                                                        <a href="tarot.html?source=partner_match_intent&feature=tarot_multi_card" class="synastry-next-card" data-synastry-intent="relationship_tarot">
                             <span>Konkrétní otázka</span>
                             <strong>Tarot na vztah</strong>
                             <em>Hodí se, když chceš odpověď na jednu situaci.</em>
                         </a>
-                        <a href="osobni-mapa.html?source=partner_match_result&amp;feature=osobni_mapa_2026&amp;focus_area=relationships#order"
-                            class="synastry-next-card" data-personal-map-offer>
+
+                                                        <a href="osobni-mapa.html?source=partner_match_result&amp;feature=osobni_mapa_2026&amp;focus_area=relationships#order" class="synastry-next-card" data-personal-map-offer>
                             <span>Jednorázově · 299 Kč</span>
                             <strong>Osobní mapa vztahů na 12 měsíců</strong>
                             <em>Vlastní vztahová otázka, konkrétní kroky a PDF bez předplatného.</em>
                         </a>
+                            </div>
+                        </details>
                     </div>
                 </section>
 
@@ -580,122 +545,183 @@
 
         </section>
 
-    <details class="section feature-reference synastry-intent-section" id="synastry-priority-links" aria-labelledby="synastry-priority-title">
-        <summary id="synastry-priority-title" class="feature-reference__summary">Rozbory vybraných dvojic znamení</summary>
+
+
+    <section class="synastry-intent-section" aria-labelledby="synastry-intent-title">
+    <div class="container">
+        <div class="section__header text-center">
+            <span class="section__badge">Další možnosti</span>
+            <h2 class="section__title" id="synastry-intent-title">Řešíš jiný vztahový dotaz?</h2>
+        </div>
+        <details class="synastry-directory-disclosure synastry-related-disclosure">
+            <summary>Zobrazit dalších 6 možností</summary>
+            <p class="section__subtitle">Pokud teď neřešíš kompatibilitu podle dat, vyber si článek, numerologii nebo tarot podle konkrétní otázky.</p>
+            <div class="synastry-intent-grid" data-animate>
+                                <a href="blog/co-je-synastrie-jak-funguje-partnerska-astrologie.html?source=synastry_intent_cluster&amp;intent=learn_synastry" class="synastry-intent-card" data-analytics-cta="synastry_intent_learn" data-analytics-feature="partnerska_detail" data-analytics-intent="learn_synastry">
+                    <span>Nerozumím synastrii</span>
+                    <strong>Co synastrie opravdu ukazuje</strong>
+                    <em>Proč samotná sluneční znamení nestačí a co v mapě sledovat jako první.</em>
+                </a>
+
+                                <a href="blog/attachment-styly-vzorce-ve-vztazich.html?source=synastry_intent_cluster&amp;intent=relationship_patterns" class="synastry-intent-card" data-analytics-cta="synastry_intent_patterns" data-analytics-feature="partnerska_detail" data-analytics-intent="relationship_patterns">
+                    <span>Opakuje se stejný vzorec</span>
+                    <strong>Attachment styly ve vztazích</strong>
+                    <em>Praktičtější rámec pro blízkost, úzkost, vyhýbání a opakované konflikty.</em>
+                </a>
+
+                                <a href="partnerska-numerologie.html?source=synastry_intent_cluster&amp;feature=numerologie_vyklad&amp;intent=partner_numbers" class="synastry-intent-card" data-analytics-cta="synastry_intent_numerology" data-analytics-feature="numerologie_vyklad" data-analytics-intent="partner_numbers">
+                    <span>Chci jiný úhel pohledu</span>
+                    <strong>Partnerská numerologie</strong>
+                    <em>Porovná datum narození přes čísla osudu a energii vztahu.</em>
+                </a>
+
+                                <a href="tarot-laska.html?source=synastry_intent_cluster&amp;feature=tarot&amp;intent=love_question" class="synastry-intent-card" data-analytics-cta="synastry_intent_love_tarot" data-analytics-feature="tarot" data-analytics-intent="love_question">
+                    <span>Řeším jednu situaci</span>
+                    <strong>Tarot lásky</strong>
+                    <em>Hodí se, když máš konkrétní otázku, rozhodnutí nebo nejasný signál.</em>
+                </a>
+
+                                <a href="tarot-ano-ne.html?source=synastry_intent_cluster&amp;feature=tarot_yes_no&amp;intent=relationship_yes_no" class="synastry-intent-card" data-analytics-cta="synastry_intent_tarot_yes_no" data-analytics-feature="tarot_yes_no" data-analytics-intent="relationship_yes_no">
+                    <span>Potřebuji rychlé ano/ne</span>
+                    <strong>Zeptat se jednou kartou</strong>
+                    <em>Když řešíš, jestli se ozvat, počkat nebo udělat další krok ve vztahu.</em>
+                </a>
+
+                                <a href="blog/proc-vam-to-v-lasce-nevyhcazi.html?source=synastry_intent_cluster&amp;intent=karmic_relationship" class="synastry-intent-card" data-analytics-cta="synastry_intent_karmic" data-analytics-feature="partnerska_detail" data-analytics-intent="karmic_relationship">
+                    <span>Je to láska, nebo lekce?</span>
+                    <strong>Karmický vztah vs. spřízněná duše</strong>
+                    <em>Pomůže oddělit intenzitu, závislost a vztah, který má reálný klid.</em>
+                </a>
+            </div>
+        </details>
+    </div>
+</section>
+
+    <section class="section synastry-intent-section" id="synastry-priority-links" aria-labelledby="synastry-priority-title">
         <div class="container">
             <div class="section__header text-center">
-                <span class="section__badge">Vybrané dvojice znamení</span>
+                <span class="section__badge">Nejhledanější dvojice</span>
+                <h2 class="section__title" id="synastry-priority-title">Nejčastější vztahové kombinace podle znamení</h2>
                 <p class="section__subtitle">
                     Začni obecným rozborem dvojice a pak si spočítej přesnější synastrii podle dat narození. Každý rozbor ukazuje lásku, komunikaci, výzvy a další krok.
                 </p>
             </div>
 
-            <div class="synastry-intent-grid">
-                <a href="partnerska-shoda/sagittarius-pisces.html" class="synastry-intent-card synastry-intent-card--primary" data-analytics-cta="synastry_priority_sagittarius_pisces" data-analytics-feature="compatibility">
-                    <span>Dvojice znamení</span>
-                    <strong>Střelec a Ryby ve vztahu</strong>
-                    <em>Rozbor lásky, komunikace a výzev s přechodem do přesnější synastrie.</em>
-                </a>
-                <a href="partnerska-shoda/aquarius-taurus.html" class="synastry-intent-card" data-analytics-cta="synastry_priority_aquarius_taurus" data-analytics-feature="compatibility">
-                    <span>Dvojice znamení</span>
-                    <strong>Vodnář a Býk ve vztahu</strong>
-                    <em>Kontrast svobody a jistoty, který lidé hledají jako konkrétní párový dotaz.</em>
-                </a>
-                <a href="partnerska-shoda/capricorn-leo.html" class="synastry-intent-card" data-analytics-cta="synastry_priority_capricorn_leo" data-analytics-feature="compatibility">
-                    <span>Dvojice znamení</span>
-                    <strong>Kozoroh a Lev ve vztahu</strong>
-                    <em>Ambice, uznání a tempo vztahu přeložené do praktického čtení.</em>
-                </a>
-                <a href="partnerska-shoda/virgo-leo.html" class="synastry-intent-card" data-analytics-cta="synastry_priority_virgo_leo" data-analytics-feature="compatibility">
-                    <span>Dvojice znamení</span>
-                    <strong>Panna a Lev ve vztahu</strong>
-                    <em>Jemný střet detailu a sebevyjádření s jasným dalším krokem.</em>
-                </a>
-                <a href="partnerska-shoda/aries-aries.html" class="synastry-intent-card" data-analytics-cta="synastry_priority_aries_aries" data-analytics-feature="compatibility">
-                    <span>Stejné znamení</span>
-                    <strong>Beran a Beran ve vztahu</strong>
-                    <em>Dynamika dvou ohnivých znamení a prostor pro přesnější výpočet.</em>
-                </a>
-                <a href="partnerska-shoda/aries-virgo.html" class="synastry-intent-card" data-analytics-cta="synastry_priority_aries_virgo" data-analytics-feature="compatibility">
-                    <span>Kontrast tempa</span>
-                    <strong>Beran a Panna ve vztahu</strong>
-                    <em>Impulz proti detailu: kde vzniká přitažlivost a kde začne kritika.</em>
-                </a>
-                <a href="partnerska-shoda/cancer-aquarius.html" class="synastry-intent-card" data-analytics-cta="synastry_priority_cancer_aquarius" data-analytics-feature="compatibility">
-                    <span>Náročná dvojice</span>
-                    <strong>Rak a Vodnář ve vztahu</strong>
-                    <em>Citová jistota versus svoboda a odstup, které potřebují praktický překlad.</em>
-                </a>
-                <a href="partnerska-shoda/gemini-sagittarius.html" class="synastry-intent-card" data-analytics-cta="synastry_priority_gemini_sagittarius" data-analytics-feature="compatibility">
-                    <span>Osa svobody</span>
-                    <strong>Blíženci a Střelec ve vztahu</strong>
-                    <em>Lehkost, dobrodružství a riziko, že oba utečou dřív, než vztah zakoření.</em>
-                </a>
+            <details class="synastry-directory-disclosure">
+                <summary>Prohlédnout vybrané dvojice</summary>
+                <div class="synastry-intent-grid">
+                                    <a href="partnerska-shoda/sagittarius-pisces.html" class="synastry-intent-card synastry-intent-card--primary" data-analytics-cta="synastry_priority_sagittarius_pisces" data-analytics-feature="compatibility">
+                        <span>Častý dotaz</span>
+                        <strong>Střelec a Ryby ve vztahu</strong>
+                        <em>Rozbor lásky, komunikace a výzev s přechodem do přesnější synastrie.</em>
+                    </a>
+                                    <a href="partnerska-shoda/aquarius-taurus.html" class="synastry-intent-card" data-analytics-cta="synastry_priority_aquarius_taurus" data-analytics-feature="compatibility">
+                        <span>Častý dotaz</span>
+                        <strong>Vodnář a Býk ve vztahu</strong>
+                        <em>Kontrast svobody a jistoty, který lidé hledají jako konkrétní párový dotaz.</em>
+                    </a>
+                                    <a href="partnerska-shoda/capricorn-leo.html" class="synastry-intent-card" data-analytics-cta="synastry_priority_capricorn_leo" data-analytics-feature="compatibility">
+                        <span>Častý dotaz</span>
+                        <strong>Kozoroh a Lev ve vztahu</strong>
+                        <em>Ambice, uznání a tempo vztahu přeložené do praktického čtení.</em>
+                    </a>
+                                    <a href="partnerska-shoda/virgo-leo.html" class="synastry-intent-card" data-analytics-cta="synastry_priority_virgo_leo" data-analytics-feature="compatibility">
+                        <span>Častý dotaz</span>
+                        <strong>Panna a Lev ve vztahu</strong>
+                        <em>Jemný střet detailu a sebevyjádření s jasným dalším krokem.</em>
+                    </a>
+                                    <a href="partnerska-shoda/aries-aries.html" class="synastry-intent-card" data-analytics-cta="synastry_priority_aries_aries" data-analytics-feature="compatibility">
+                        <span>Stejné znamení</span>
+                        <strong>Beran a Beran ve vztahu</strong>
+                        <em>Dynamika dvou ohnivých znamení a prostor pro přesnější výpočet.</em>
+                    </a>
+                                    <a href="partnerska-shoda/scorpio-cancer.html" class="synastry-intent-card" data-analytics-cta="synastry_priority_scorpio_cancer" data-analytics-feature="compatibility">
+                        <span>Vztahový cluster</span>
+                        <strong>Štír a Rak ve vztahu</strong>
+                        <em>Emoce, důvěra a bezpečí v kombinaci dvou vodních znamení.</em>
+                    </a>
+                                    <a href="partnerska-shoda/leo-scorpio.html" class="synastry-intent-card" data-analytics-cta="synastry_priority_leo_scorpio" data-analytics-feature="compatibility">
+                        <span>Nový signál</span>
+                        <strong>Lev a Štír / Skorpion ve vztahu</strong>
+                        <em>Silná chemie, kontrola, žárlivost a potřeba uznání v jednom konkrétním rozboru.</em>
+                    </a>
+                                    <a href="partnerska-shoda/aries-virgo.html" class="synastry-intent-card" data-analytics-cta="synastry_priority_aries_virgo" data-analytics-feature="compatibility">
+                        <span>Kontrast tempa</span>
+                        <strong>Beran a Panna ve vztahu</strong>
+                        <em>Impulz proti detailu: kde vzniká přitažlivost a kde začne kritika.</em>
+                    </a>
+                                    <a href="partnerska-shoda/cancer-aquarius.html" class="synastry-intent-card" data-analytics-cta="synastry_priority_cancer_aquarius" data-analytics-feature="compatibility">
+                        <span>Náročná dvojice</span>
+                        <strong>Rak a Vodnář ve vztahu</strong>
+                        <em>Citová jistota versus svoboda a odstup, které potřebují praktický překlad.</em>
+                    </a>
+                                    <a href="partnerska-shoda/scorpio-pisces.html" class="synastry-intent-card" data-analytics-cta="synastry_priority_scorpio_pisces" data-analytics-feature="compatibility">
+                        <span>Vodní shoda</span>
+                        <strong>Štír a Ryby ve vztahu</strong>
+                        <em>Intuice, hloubka a hranice v jedné z nejsilnějších citových kombinací.</em>
+                    </a>
+                                    <a href="partnerska-shoda/gemini-sagittarius.html" class="synastry-intent-card" data-analytics-cta="synastry_priority_gemini_sagittarius" data-analytics-feature="compatibility">
+                        <span>Osa svobody</span>
+                        <strong>Blíženci a Střelec ve vztahu</strong>
+                        <em>Lehkost, dobrodružství a riziko, že oba utečou dřív, než vztah zakoření.</em>
+                    </a>
             </div>
+            </details>
         </div>
-    </details>
+    </section>
 
-    <details class="section feature-reference synastry-intent-section" id="synastry-scorpio-cluster" aria-labelledby="synastry-scorpio-title">
-        <summary id="synastry-scorpio-title" class="feature-reference__summary">Rozbory vztahů se Štírem</summary>
+    <section class="section synastry-intent-section" id="synastry-scorpio-cluster" aria-labelledby="synastry-scorpio-title">
         <div class="container">
             <div class="section__header text-center">
                 <span class="section__badge">Štír / Skorpion</span>
+                <h2 class="section__title" id="synastry-scorpio-title">Hledané vztahové kombinace se Štírem</h2>
                 <p class="section__subtitle">
-                    Štír se někdy píše i jako Skorpion. Dvojice níže ukazují různé podoby vztahové dynamiky se Štírem.
+                    Štír se v dotazech často píše i jako Skorpion. Pokud hledáš „lev a skorpion“,
+                    jde o dvojici Lev a Štír; níže jsou nejdůležitější vztahové rozbory pro tento cluster.
                 </p>
             </div>
 
-            <div class="synastry-intent-grid" data-animate>
-                <a href="partnerska-shoda/leo-scorpio.html?source=synastry_scorpio_cluster&amp;feature=compatibility&amp;intent=leo_scorpio" class="synastry-intent-card synastry-intent-card--primary" data-analytics-cta="synastry_scorpio_leo" data-analytics-feature="compatibility" data-analytics-intent="leo_scorpio">
-                    <span>Výrazná přitažlivost</span>
-                    <strong>Lev a Štír / Skorpion</strong>
-                    <em>Silná chemie, kontrola, hrdost a potřeba absolutní loajality v jednom rozboru.</em>
-                </a>
-                <a href="partnerska-shoda/scorpio-cancer.html?source=synastry_scorpio_cluster&amp;feature=compatibility&amp;intent=scorpio_cancer" class="synastry-intent-card" data-analytics-cta="synastry_scorpio_cancer" data-analytics-feature="compatibility" data-analytics-intent="scorpio_cancer">
-                    <span>Vodní shoda</span>
-                    <strong>Štír a Rak</strong>
-                    <em>Důvěra, bezpečí a hluboké emoce, které potřebují citlivý jazyk.</em>
-                </a>
-                <a href="partnerska-shoda/scorpio-pisces.html?source=synastry_scorpio_cluster&amp;feature=compatibility&amp;intent=scorpio_pisces" class="synastry-intent-card" data-analytics-cta="synastry_scorpio_pisces" data-analytics-feature="compatibility" data-analytics-intent="scorpio_pisces">
-                    <span>Intuice</span>
-                    <strong>Štír a Ryby</strong>
-                    <em>Magnetická citová vazba, hranice a riziko ztratit se ve společné hloubce.</em>
-                </a>
-                <a href="partnerska-shoda/taurus-scorpio.html?source=synastry_scorpio_cluster&amp;feature=compatibility&amp;intent=taurus_scorpio" class="synastry-intent-card" data-analytics-cta="synastry_scorpio_taurus" data-analytics-feature="compatibility" data-analytics-intent="taurus_scorpio">
-                    <span>Osa touhy</span>
-                    <strong>Býk a Štír</strong>
-                    <em>Smyslnost, majetnickost a otázka, kde se z jistoty stává kontrola.</em>
-                </a>
-                <a href="partnerska-shoda/aries-scorpio.html?source=synastry_scorpio_cluster&amp;feature=compatibility&amp;intent=aries_scorpio" class="synastry-intent-card" data-analytics-cta="synastry_scorpio_aries" data-analytics-feature="compatibility" data-analytics-intent="aries_scorpio">
-                    <span>Napětí</span>
-                    <strong>Beran a Štír</strong>
-                    <em>Impuls proti strategii: přitažlivost, konflikt a boj o tempo vztahu.</em>
-                </a>
-                <a href="partnerska-shoda/scorpio-capricorn.html?source=synastry_scorpio_cluster&amp;feature=compatibility&amp;intent=scorpio_capricorn" class="synastry-intent-card" data-analytics-cta="synastry_scorpio_capricorn" data-analytics-feature="compatibility" data-analytics-intent="scorpio_capricorn">
-                    <span>Stabilita</span>
-                    <strong>Štír a Kozoroh</strong>
-                    <em>Ambice, kontrola a tichá loajalita, která může být silná i tvrdá.</em>
-                </a>
+            <details class="synastry-directory-disclosure">
+                <summary>Prohlédnout 3 další dvojice se Štírem</summary>
+                <div class="synastry-intent-grid" data-animate>
+                                    <a href="partnerska-shoda/taurus-scorpio.html?source=synastry_scorpio_cluster&amp;feature=compatibility&amp;intent=taurus_scorpio" class="synastry-intent-card" data-analytics-cta="synastry_scorpio_taurus" data-analytics-feature="compatibility" data-analytics-intent="taurus_scorpio">
+                        <span>Osa touhy</span>
+                        <strong>Býk a Štír</strong>
+                        <em>Smyslnost, majetnickost a otázka, kde se z jistoty stává kontrola.</em>
+                    </a>
+                                    <a href="partnerska-shoda/aries-scorpio.html?source=synastry_scorpio_cluster&amp;feature=compatibility&amp;intent=aries_scorpio" class="synastry-intent-card" data-analytics-cta="synastry_scorpio_aries" data-analytics-feature="compatibility" data-analytics-intent="aries_scorpio">
+                        <span>Napětí</span>
+                        <strong>Beran a Štír</strong>
+                        <em>Impuls proti strategii: přitažlivost, konflikt a boj o tempo vztahu.</em>
+                    </a>
+                                    <a href="partnerska-shoda/scorpio-capricorn.html?source=synastry_scorpio_cluster&amp;feature=compatibility&amp;intent=scorpio_capricorn" class="synastry-intent-card" data-analytics-cta="synastry_scorpio_capricorn" data-analytics-feature="compatibility" data-analytics-intent="scorpio_capricorn">
+                        <span>Stabilita</span>
+                        <strong>Štír a Kozoroh</strong>
+                        <em>Ambice, kontrola a tichá loajalita, která může být silná i tvrdá.</em>
+                    </a>
             </div>
+            </details>
         </div>
-    </details>
+    </section>
 
     <section class="section compat-index-section" aria-labelledby="compat-index-title">
         <div class="container">
-            <details class="feature-reference">
-                <summary id="compat-index-title" class="feature-reference__summary">Kompatibilita znamení podle dvojice</summary>
             <div class="section__header text-center">
                 <span class="section__badge">Průvodce vztahy</span>
+                <h2 class="section__title" id="compat-index-title">Kompatibilita znamení podle dvojice</h2>
                 <p class="section__subtitle">
                     Projdi si rychlý rozbor konkrétní kombinace znamení. Tyto stránky jsou obecný výklad slunečních znamení;
                     pro přesnější vztahovou analýzu použij kalkulačku výše s daty narození obou lidí. Odkazy níže vedou
                     na novější párové rozbory v sekci Partnerská shoda.
                 </p>
             </div>
-            <div class="compat-index-grid" aria-label="Přehled partnerské kompatibility znamení">
+            <details class="synastry-directory-disclosure synastry-all-pairs">
+                <summary>Procházet všech 78 dvojic</summary>
+                <div class="compat-index-grid" aria-label="Přehled partnerské kompatibility znamení">
                 <article class="compat-index-group">
                     <h3>Beran ve vztahu</h3>
                     <div class="compat-index-links">
+                        <a href="partnerska-shoda/aries-aries.html">Beran a Beran</a>
                         <a href="partnerska-shoda/aries-taurus.html">Beran a Býk</a>
                         <a href="partnerska-shoda/aries-gemini.html">Beran a Blíženci</a>
                         <a href="partnerska-shoda/aries-cancer.html">Beran a Rak</a>
@@ -712,6 +738,7 @@
                 <article class="compat-index-group">
                     <h3>Býk ve vztahu</h3>
                     <div class="compat-index-links">
+                        <a href="partnerska-shoda/taurus-taurus.html">Býk a Býk</a>
                         <a href="partnerska-shoda/taurus-gemini.html">Býk a Blíženci</a>
                         <a href="partnerska-shoda/taurus-cancer.html">Býk a Rak</a>
                         <a href="partnerska-shoda/taurus-leo.html">Býk a Lev</a>
@@ -727,6 +754,7 @@
                 <article class="compat-index-group">
                     <h3>Blíženci ve vztahu</h3>
                     <div class="compat-index-links">
+                        <a href="partnerska-shoda/gemini-gemini.html">Blíženci a Blíženci</a>
                         <a href="partnerska-shoda/gemini-cancer.html">Blíženci a Rak</a>
                         <a href="partnerska-shoda/gemini-leo.html">Blíženci a Lev</a>
                         <a href="partnerska-shoda/gemini-virgo.html">Blíženci a Panna</a>
@@ -741,6 +769,7 @@
                 <article class="compat-index-group">
                     <h3>Rak ve vztahu</h3>
                     <div class="compat-index-links">
+                        <a href="partnerska-shoda/cancer-cancer.html">Rak a Rak</a>
                         <a href="partnerska-shoda/cancer-leo.html">Rak a Lev</a>
                         <a href="partnerska-shoda/cancer-virgo.html">Rak a Panna</a>
                         <a href="partnerska-shoda/cancer-libra.html">Rak a Váhy</a>
@@ -754,6 +783,7 @@
                 <article class="compat-index-group">
                     <h3>Lev ve vztahu</h3>
                     <div class="compat-index-links">
+                        <a href="partnerska-shoda/leo-leo.html">Lev a Lev</a>
                         <a href="partnerska-shoda/leo-virgo.html">Lev a Panna</a>
                         <a href="partnerska-shoda/leo-libra.html">Lev a Váhy</a>
                         <a href="partnerska-shoda/leo-scorpio.html">Lev a Štír</a>
@@ -766,6 +796,7 @@
                 <article class="compat-index-group">
                     <h3>Panna ve vztahu</h3>
                     <div class="compat-index-links">
+                        <a href="partnerska-shoda/virgo-virgo.html">Panna a Panna</a>
                         <a href="partnerska-shoda/virgo-libra.html">Panna a Váhy</a>
                         <a href="partnerska-shoda/virgo-scorpio.html">Panna a Štír</a>
                         <a href="partnerska-shoda/virgo-sagittarius.html">Panna a Střelec</a>
@@ -777,6 +808,7 @@
                 <article class="compat-index-group">
                     <h3>Váhy ve vztahu</h3>
                     <div class="compat-index-links">
+                        <a href="partnerska-shoda/libra-libra.html">Váhy a Váhy</a>
                         <a href="partnerska-shoda/libra-scorpio.html">Váhy a Štír</a>
                         <a href="partnerska-shoda/libra-sagittarius.html">Váhy a Střelec</a>
                         <a href="partnerska-shoda/libra-capricorn.html">Váhy a Kozoroh</a>
@@ -787,6 +819,7 @@
                 <article class="compat-index-group">
                     <h3>Štír ve vztahu</h3>
                     <div class="compat-index-links">
+                        <a href="partnerska-shoda/scorpio-scorpio.html">Štír a Štír</a>
                         <a href="partnerska-shoda/scorpio-sagittarius.html">Štír a Střelec</a>
                         <a href="partnerska-shoda/scorpio-capricorn.html">Štír a Kozoroh</a>
                         <a href="partnerska-shoda/scorpio-aquarius.html">Štír a Vodnář</a>
@@ -796,6 +829,7 @@
                 <article class="compat-index-group">
                     <h3>Střelec ve vztahu</h3>
                     <div class="compat-index-links">
+                        <a href="partnerska-shoda/sagittarius-sagittarius.html">Střelec a Střelec</a>
                         <a href="partnerska-shoda/sagittarius-capricorn.html">Střelec a Kozoroh</a>
                         <a href="partnerska-shoda/sagittarius-aquarius.html">Střelec a Vodnář</a>
                         <a href="partnerska-shoda/sagittarius-pisces.html">Střelec a Ryby</a>
@@ -804,6 +838,7 @@
                 <article class="compat-index-group">
                     <h3>Kozoroh ve vztahu</h3>
                     <div class="compat-index-links">
+                        <a href="partnerska-shoda/capricorn-capricorn.html">Kozoroh a Kozoroh</a>
                         <a href="partnerska-shoda/capricorn-aquarius.html">Kozoroh a Vodnář</a>
                         <a href="partnerska-shoda/capricorn-pisces.html">Kozoroh a Ryby</a>
                     </div>
@@ -811,7 +846,14 @@
                 <article class="compat-index-group">
                     <h3>Vodnář ve vztahu</h3>
                     <div class="compat-index-links">
+                        <a href="partnerska-shoda/aquarius-aquarius.html">Vodnář a Vodnář</a>
                         <a href="partnerska-shoda/aquarius-pisces.html">Vodnář a Ryby</a>
+                    </div>
+                </article>
+                <article class="compat-index-group">
+                    <h3>Ryby ve vztahu</h3>
+                    <div class="compat-index-links">
+                        <a href="partnerska-shoda/pisces-pisces.html">Ryby a Ryby</a>
                     </div>
                 </article>
             </div>
@@ -826,22 +868,22 @@
                 <h2 class="section__title">Jak partnerská shoda funguje</h2>
             </div>
             <div class="synastry-faq-grid">
-                <article class="synastry-faq-item">
-                    <h3>Co je zdarma?</h3>
+                <details class="synastry-faq-item">
+                    <summary>Co je zdarma?</summary>
                     <p>Základní skóre vztahu a technický astro souhrn. Registraci nepotřebujete pro první výpočet.</p>
-                </article>
-                <article class="synastry-faq-item">
-                    <h3>Co se zpřesní časem narození?</h3>
+                </details>
+                <details class="synastry-faq-item">
+                    <summary>Co se zpřesní časem narození?</summary>
                     <p>Čas a místo pomáhají dopočítat ascendent, domy a jemnější vztahové vazby.</p>
-                </article>
-                <article class="synastry-faq-item">
-                    <h3>Kdy má smysl Premium?</h3>
-                    <p>Když nechcete jen procento shody, ale konkrétní komunikaci, třecí body a další krok.</p>
-                </article>
-                <article class="synastry-faq-item">
-                    <h3>Musím si výsledek uložit?</h3>
+                </details>
+                <details class="synastry-faq-item">
+                    <summary>Kdy dává smysl rozšířený rozbor?</summary>
+                    <p>Když chceš víc než samotné skóre: rozšířený rozbor ukáže komunikaci, napětí a konkrétní další krok. Je součástí členství Mystické Hvězdy.</p>
+                </details>
+                <details class="synastry-faq-item">
+                    <summary>Musím si výsledek uložit?</summary>
                     <p>Nemusíte. Uložení do historie je dostupné až po přihlášení a dává smysl pro návrat k výkladu.</p>
-                </article>
+                </details>
             </div>
         </div>
     </section>
@@ -849,17 +891,17 @@
     <!-- CROSS-LINKING SEKCE -->
 
 
-    </main>
+</main>
 
     <!-- FOOTER (loaded dynamically) -->
 
     <div id="footer-placeholder"></div>
 
-    <script src="js/dist/favorites-helper.js?v=20261018-favorite-controls" defer></script>
+    <script src="js/dist/favorites-helper.js" defer></script>
 
-    <script src="js/dist/share-image-canvas.js?v=20261018-export-ellipsis" defer></script>
+    <script src="js/dist/share-image-canvas.js?v=2" defer></script>
 
-    <script type="module" src="js/dist/synastry.js?v=20261021-instant-result"></script>
+    <script type="module" src="js/dist/synastry.js?v=20261023-release-icons"></script>
 
     <!-- Service Worker Registration -->
 
@@ -868,19 +910,19 @@
     <script src="js/dist/api-config.js?v=5" defer></script>
     <script src="js/dist/birth-location-suggestions.js" defer></script>
 
-    <script src="js/dist/templates.js?v=20261021-celtic-footer-star-svg" defer></script>
+    <script src="js/dist/templates.js?v=14" defer></script>
 
 <script src="js/dist/auth-client.js?v=20261020-02-register-password-policy" defer></script>
 <script src="js/dist/auth-copy-fixes.js" defer></script>
-<script src="js/dist/tool-pages-copy-fixes.js?v=20261018-numerology-copy" defer></script>
+<script src="js/dist/tool-pages-copy-fixes.js?v=3" defer></script>
 
-<script src="js/dist/share-result.js?v=20261017-icons" defer></script>
+<script src="js/dist/share-result.js?v=3" defer></script>
 
     <script src="js/dist/exit-intent.js" defer></script>
 
-    <script src="js/dist/components.js?v=20261021-footer-support-locale" defer></script>
+    <script src="js/dist/components.js?v=20260522-premium-gate-cache" defer></script>
 
-    <script type="module" src="js/dist/main.js?v=20261018-status-icons"></script>
+    <script type="module" src="js/dist/main.js?v=10"></script>
 
 </body>
 

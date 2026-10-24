@@ -119,6 +119,40 @@
     text-align: center;
 }
 
+.tarot-meaning-load-more-wrap {
+    display: flex;
+    justify-content: center;
+    margin-top: 1.5rem;
+}
+
+.tarot-meaning-load-more {
+    display: inline-flex;
+    min-height: 48px;
+    align-items: center;
+    justify-content: center;
+    padding: 0.7rem 1.35rem;
+    border: 1px solid rgba(212, 175, 55, 0.7);
+    border-radius: 4px;
+    background: rgba(212, 175, 55, 0.14);
+    color: var(--color-starlight);
+    cursor: pointer;
+    font: inherit;
+    font-weight: 700;
+}
+
+.tarot-meaning-load-more:hover {
+    background: rgba(212, 175, 55, 0.24);
+}
+
+.tarot-meaning-load-more:focus-visible {
+    outline: 2px solid var(--color-mystic-gold);
+    outline-offset: 4px;
+}
+
+.tarot-meaning-load-more[hidden] {
+    display: none;
+}
+
 .tarot-meaning-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -362,7 +396,7 @@
 .tarot-card-detail-panel dl {
     display: grid;
     gap: 0.9rem;
-    margin: 0 0 1.25rem;
+    margin: 0;
 }
 
 .tarot-card-detail-panel div {

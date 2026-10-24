@@ -23,7 +23,7 @@
 
             height: 100%;
 
-            filter: drop-shadow(0 0 20px rgba(155, 89, 182, 0.3));
+            filter: drop-shadow(0 0 18px rgba(189, 155, 101, 0.16));
 
         }
 
@@ -76,7 +76,8 @@ html body .mh-inline-2ee748ee9c { gap: var(--space-md); }
 html body .mh-inline-f84cc648fc { width: 100%; margin-top: var(--space-md); }
 html body .mh-inline-2f73dcd12d { margin-top: var(--space-xl); display: none; }
 html body .mh-inline-a8e773483a { border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem; }
-html body .mh-inline-f9715488b0 { background: rgba(155, 89, 182, 0.1); border-radius: var(--radius-md); }
+html body .mh-inline-f9715488b0 { border-radius: 4px; }
+body.atlas-remaining-page .atlas-natal-tip { background:#102638; border:1px solid #bd9b6544; border-radius:4px; }
 html body .mh-inline-239626a1a5 { width: 100%; height: 500px; position: relative; margin-bottom: 2rem; display: none; }
 .natal-3d-canvas { display: block; width: 100%; height: 100%; }
 html body .mh-inline-3ef2c0188e { stop-color:#FFF7E0;stop-opacity:1; }
@@ -103,12 +104,12 @@ html body .mh-inline-0926d50310 { stop-color:#556B2F;stop-opacity:1; }
 html body .mh-inline-80f1bd625d { stop-color:#9B59B6;stop-opacity:1; }
 html body .mh-inline-5e0dbaec70 { stop-color:#4A235A;stop-opacity:1; }
 html body .mh-inline-9bfba94449 { display: none; padding-top: 0; animation: fadeIn 0.5s ease-out; }
-html body .mh-inline-b99dfef38d { background: linear-gradient(135deg, rgba(10, 10, 26, 0.8), rgba(60, 20, 80, 0.4)); border: 1px solid var(--color-mystic-gold); }
+html body .mh-inline-b99dfef38d { background:#102638; border:1px solid #bd9b6555; border-radius:6px; }
+body.atlas-remaining-page #zodiac-ring text { font-family:"Segoe UI Symbol",Georgia,serif; font-variant-emoji:text; fill:#bd9b65; }
 html body .mh-inline-15cadc97f3 { align-items: center; }
 html body .mh-inline-b7eb929638 { color: var(--color-silver-mist); margin-top: 0.5rem; }
 html body .mh-inline-3eba41e878 { gap: var(--space-xl); align-items: center; }
-html body .mh-inline-49835faaa6 { margin-bottom: 1rem; filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.3)); }
-html body .mh-inline-49835faaa6 .mh-symbol { width: 4rem; height: 4rem; color: var(--color-mystic-gold); }
+html body .mh-inline-49835faaa6 { font-size: 4rem; margin-bottom: 1rem; filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.3)); }
 html body .mh-inline-1bd284d04b { color: var(--color-starlight); margin-bottom: 0.5rem; }
 html body .mh-inline-42cf0c1c61 { font-size: 0.9rem; color: var(--color-silver-mist); }
 html body .mh-inline-bf3fb05115 { background: rgba(255,255,255,0.05); border-radius: var(--radius-md); margin-bottom: 1rem; }
@@ -155,24 +156,6 @@ html body .mh-inline-e8965e1cb8 { margin: 0; color: var(--color-mystic-gold); }
     margin: var(--space-md) 0 var(--space-sm);
     color: var(--color-mystic-gold);
     font-size: 0.9rem;
-}
-
-.natal-engine-details {
-    margin-top: var(--space-md);
-    border-top: 1px solid rgba(212, 175, 55, 0.18);
-}
-
-.natal-engine-details > summary {
-    min-height: 44px;
-    padding: 0.6rem 0;
-    color: var(--color-mystic-gold);
-    cursor: pointer;
-    font-weight: 600;
-}
-
-.natal-engine-details > summary:focus-visible {
-    outline: 2px solid var(--color-mystic-gold);
-    outline-offset: 3px;
 }
 
 .natal-aspects-list {
@@ -511,9 +494,9 @@ html body .mh-inline-e8965e1cb8 { margin: 0; color: var(--color-mystic-gold); }
 .natal-ai {
     margin-top: var(--space-xl);
     padding: var(--space-xl);
-    border: 1px solid var(--color-mystic-gold);
-    border-radius: var(--radius-lg);
-    background: linear-gradient(135deg, rgba(155, 89, 182, 0.1) 0%, rgba(10, 10, 26, 0.9) 100%);
+    border: 1px solid rgba(189, 155, 101, 0.45);
+    border-radius: 6px;
+    background: #102638;
 }
 
 .natal-ai__title {
@@ -522,11 +505,9 @@ html body .mh-inline-e8965e1cb8 { margin: 0; color: var(--color-mystic-gold); }
 }
 
 .natal-ai__content {
-    max-width: 70ch;
     color: var(--color-starlight);
     line-height: 1.8;
     white-space: pre-wrap;
-    overflow-wrap: anywhere;
 }
 
 .natal-personal-map-next {

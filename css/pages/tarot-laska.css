@@ -3,16 +3,7 @@
     padding-bottom: 2rem;
 }
 
-.page-tarot-love .love-tarot-hero {
-    background:
-        linear-gradient(90deg, rgba(5, 8, 22, 0.9), rgba(7, 9, 27, 0.67) 53%, rgba(8, 9, 27, 0.45)),
-        url('/img/search-preview/tarot-cloth-hero-optimized.webp') center / cover no-repeat;
-    border-bottom: 1px solid rgba(221, 182, 122, 0.2);
-}
-
-.page-tarot-love .love-tarot-visual img {
-    filter: drop-shadow(0 22px 28px rgba(0, 0, 0, 0.72));
-}
+.page-tarot-love .stars { background-image: linear-gradient(#050510b8, #050510e8), url('/img/bg-cosmic-hd.webp'); }
 .love-tarot-hero .section__title { font-size: clamp(32px, 3.6vw, 46px); line-height: 1.3; margin-bottom: 20px; }
 .love-tarot-hero .section__text { font-size: 14px; line-height: 1.8; color: #c3b8d0; }
 .love-tarot-hero .section__badge { color: #e9c572; font-size: 10px; letter-spacing: 2px; }
@@ -55,7 +46,7 @@
 
 .love-tarot-trust span {
     padding: 0.5rem 0.78rem;
-    border: 1px solid rgba(244, 128, 166, 0.25);
+    border: 1px solid rgba(179, 149, 94, 0.3);
     border-radius: 999px;
     background: rgba(255, 255, 255, 0.045);
     color: rgba(255, 255, 255, 0.72);
@@ -121,15 +112,15 @@
 .love-tarot-intent-card:hover,
 .love-tarot-intent-card:focus-visible {
     transform: translateY(-3px);
-    border-color: rgba(244, 128, 166, 0.45);
-    background: rgba(244, 128, 166, 0.08);
+    border-color: rgba(179, 149, 94, 0.55);
+    background: rgba(179, 149, 94, 0.08);
     outline: none;
 }
 
 .love-tarot-intent-card span {
     display: block;
     margin-bottom: 0.65rem;
-    color: #f6a7be;
+    color: #d0b17c;
     font-size: 0.72rem;
     font-weight: 800;
     letter-spacing: 0.08em;
@@ -157,8 +148,8 @@
 }
 
 .love-tarot-intent-card--primary {
-    background: linear-gradient(135deg, rgba(244, 128, 166, 0.16), rgba(212, 175, 55, 0.12));
-    border-color: rgba(244, 128, 166, 0.38);
+    background: linear-gradient(135deg, rgba(179, 149, 94, 0.15), rgba(212, 175, 55, 0.12));
+    border-color: rgba(179, 149, 94, 0.45);
 }
 
 .love-tarot-faq {
@@ -179,13 +170,13 @@
     padding: clamp(1.25rem, 2.5vw, 1.8rem);
     border: 1px solid rgba(255, 255, 255, .1);
     border-radius: 16px;
-    background: linear-gradient(145deg, rgba(255, 255, 255, .055), rgba(111, 66, 142, .07));
+    background: linear-gradient(145deg, rgba(255, 255, 255, .055), rgba(179, 149, 94, .07));
 }
 
 .love-tarot-question-grid article > span {
     display: block;
     margin-bottom: .65rem;
-    color: #f6a7be;
+    color: #d0b17c;
     font-size: .72rem;
     font-weight: 800;
     letter-spacing: .08em;
@@ -254,12 +245,6 @@
 }
 
 @media (max-width: 720px) {
-    .page-tarot-love .love-tarot-hero {
-        background-image:
-            linear-gradient(90deg, rgba(5, 8, 22, 0.9), rgba(7, 9, 27, 0.67) 53%, rgba(8, 9, 27, 0.45)),
-            image-set(url('/img/search-preview/tarot-cloth-hero-mobile-800.webp') 1x, url('/img/search-preview/tarot-cloth-hero-optimized.webp') 2x);
-    }
-
     .love-tarot-hero {
         padding-top: 4rem;
     }

@@ -17,7 +17,8 @@ function getSafeLocalRedirect(value, fallback = null) {
 
 function hasStoredAuthRedirect() {
     try {
-        return Boolean(sessionStorage.getItem('pending_plan')
+        return Boolean(document.getElementById('login-form')?.dataset.authSubmitting
+            || sessionStorage.getItem('pending_plan')
             || sessionStorage.getItem('post_auth_activation')
             || sessionStorage.getItem('post_auth_redirect_pending'));
     } catch {
@@ -25,36 +26,8 @@ function hasStoredAuthRedirect() {
     }
 }
 
-const PASSWORD_RESET_RETURN_KEY = 'mh_password_reset_return';
-
-function storePasswordResetReturnTarget(target) {
-    try {
-        if (getSafeLocalRedirect(target) === '/profil.html#journal-input') {
-            localStorage.setItem(PASSWORD_RESET_RETURN_KEY, JSON.stringify({
-                target: '/profil.html#journal-input',
-                savedAt: Date.now()
-            }));
-        } else {
-            localStorage.removeItem(PASSWORD_RESET_RETURN_KEY);
-        }
-    } catch { /* Password reset remains available when storage is disabled. */ }
-}
-
-function consumePasswordResetReturnTarget() {
-    try {
-        const raw = localStorage.getItem(PASSWORD_RESET_RETURN_KEY);
-        localStorage.removeItem(PASSWORD_RESET_RETURN_KEY);
-        const saved = JSON.parse(raw || 'null');
-        const age = Date.now() - Number(saved?.savedAt);
-        if (saved?.target === '/profil.html#journal-input' && age >= 0 && age <= 24 * 60 * 60 * 1000) {
-            return saved.target;
-        }
-    } catch { /* Fall back to the profile landing page. */ }
-    return '/profil.html';
-}
-
 document.addEventListener('DOMContentLoaded', () => {
-    const TERMS_VERSION = '2026-08-28';
+    const TERMS_VERSION = '2026-10-23';
     const PRIVACY_VERSION = '2026-08-28';
     const PLAN_COPY = {
         pruvodce: {
@@ -81,31 +54,28 @@ document.addEventListener('DOMContentLoaded', () => {
         return Math.max(0, Number(PLAN_COPY[planId]?.trialDays || 0));
     };
 
-    const getPlanPriceLabel = (planId) => {
-        const plan = planManifestById.get(planId);
-        if (!plan) return '';
-        const amount = typeof plan.priceLabel === 'string' && plan.priceLabel.trim()
-            ? plan.priceLabel.trim()
-            : typeof plan.priceCzk === 'number' && Number.isFinite(plan.priceCzk)
-                ? `${new Intl.NumberFormat('cs-CZ').format(plan.priceCzk)} Kč`
-                : '';
-        if (!amount) return '';
-        const period = plan.interval === 'month' ? '/měsíc' : plan.interval === 'year' ? '/rok' : '';
-        return `${amount}${period}`;
-    };
-
-    const getCheckoutPromiseCopy = (planId, registerMode = isRegisterMode) => {
+    const getCheckoutPromiseCopy = (planId) => {
         const trialDays = getPlanTrialDays(planId);
-        const priceLabel = getPlanPriceLabel(planId);
-        const priceCopy = priceLabel
-            ? `${trialDays > 0 ? 'Po zkoušce' : 'Cena členství:'} ${priceLabel}.`
-            : 'Cenu a období uvidíš ve Stripe před potvrzením.';
-        if (registerMode) {
-            return trialDays > 0
-                ? `Po registraci otevřeme bezpečný checkout s ${trialDays} dny zdarma. Kartu zadáš až ve Stripe checkoutu. ${priceCopy}`
-                : `Po registraci otevřeme bezpečný checkout. ${priceCopy}`;
+        const plan = planManifestById.get(planId);
+        const intervalLabel = plan?.interval === 'month'
+            ? 'měsíc'
+            : plan?.interval === 'year' ? 'rok' : '';
+        const pricePeriod = plan?.priceLabel && intervalLabel
+            ? `${plan.priceLabel}/${intervalLabel}`
+            : '';
+        const nextAction = isRegisterMode ? 'Po registraci' : 'Po přihlášení';
+
+        if (trialDays > 0) {
+            const trial = `${trialDays} dní zdarma${pricePeriod ? `, potom ${pricePeriod}` : ''}`;
+            const paymentDetails = plan?.checkoutEnabled
+                ? ' Kartu zadáš ve Stripe checkoutu před potvrzením.'
+                : ' Cenu a podmínky uvidíš ve Stripe checkoutu před potvrzením.';
+            return `${nextAction} přejdeš do bezpečného Stripe checkoutu: ${trial}.${paymentDetails}`;
         }
-        return `Po přihlášení otevřeme bezpečný checkout. ${trialDays > 0 ? `Zkušební období má ${trialDays} dní; jeho dostupnost potvrdí checkout. ` : ''}${priceCopy}`;
+
+        return pricePeriod
+            ? `${nextAction} přejdeš do bezpečného Stripe checkoutu za ${pricePeriod}. Cenu a podmínky uvidíš před potvrzením.`
+            : `${nextAction} přejdeš do bezpečného Stripe checkoutu. Cenu a podmínky uvidíš před potvrzením.`;
     };
 
     const loadPlanManifest = async () => {
@@ -173,196 +143,196 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const SIGNUP_CONTEXT_BY_FEATURE = {
         account: {
-            title: 'Účet zdarma bez zdržení',
-            copy: 'Po registraci tě provedeme prvním nastavením a pošleme k osobnímu výkladu, který dává smysl jako první.',
-            stepTitle: 'Otevřeme první osobní krok',
-            stepCopy: 'Začneš krátkým výběrem znamení a hned potom konkrétním výkladem.'
+            title: 'Účet bez zdržení',
+            copy: 'Po registraci si vybereš, který výklad otevřeš jako první.',
+            stepTitle: 'Vybereš si první krok',
+            stepCopy: 'Horoskop, tarot i další nástroje najdeš v nabídce.'
         },
         premium_membership: {
-            title: 'Premium bez přerušení',
-            copy: 'Po registraci tě vrátíme k vybranému plánu, aby šlo pokračovat bez hledání.',
-            stepTitle: 'Vrátíme tě k vybranému plánu',
-            stepCopy: 'Vybraný plán zůstane zachovaný, takže další krok bude jasný.'
+            title: 'Členství bez ztráty kontextu',
+            copy: 'Po registraci se vrátíš k nabídce členství, kterou máš otevřenou.',
+            stepTitle: 'Vrátíš se k členství',
+            stepCopy: 'Otevřená nabídka zůstane připravená i po registraci.'
         },
         subscription_management: {
-            title: 'Předplatné bez přerušení',
-            copy: 'Po přihlášení nebo registraci se vrátíš ke správě předplatného a dalšímu kroku kolem plánu.',
-            stepTitle: 'Vrátíme tě ke správě plánu',
-            stepCopy: 'Vybraný plán zůstane zachovaný i po přihlášení nebo registraci.'
+            title: 'Správa členství',
+            copy: 'Po vytvoření účtu se vrátíš ke správě členství v profilu.',
+            stepTitle: 'Otevřeš nastavení členství',
+            stepCopy: 'Členství a platby najdeš v nastavení svého profilu.'
         },
         vip_membership: {
-            title: 'Členství bez přerušení',
+            title: 'Členství bez ztráty kontextu',
             copy: 'Po registraci můžeš pokračovat ke členství s Keltským křížem a dalšími výklady.',
-            stepTitle: 'Vrátíme tě ke členství',
-            stepCopy: 'Neztratíš cestu z úvodní stránky ani vybraný plán.'
+            stepTitle: 'Vrátíš se ke členství',
+            stepCopy: 'Po registraci se vrátíš k otevřené nabídce.'
         },
         astrocartography: {
             title: 'Astrokartografie po registraci',
-            copy: 'Po vytvoření účtu budeš pokračovat k astro mapě a místům, která s tebou astrologicky rezonují.',
-            stepTitle: 'Otevřeme astro mapu',
-            stepCopy: 'Začneš nástrojem, který tě sem přivedl.'
+            copy: 'Po vytvoření účtu se vrátíš k astro mapě a místům, která tě astrologicky zajímají.',
+            stepTitle: 'Vrátíš se k astro mapě',
+            stepCopy: 'Navážeš na zvolený nástroj.'
         },
         daily_guidance: {
             title: 'Denní vedení po registraci',
-            copy: 'Po vytvoření účtu tě pošleme rovnou na horoskopy, kde získáš první osobní vhled.',
-            stepTitle: 'Otevřeme denní horoskopy',
-            stepCopy: 'Začneš tím nejrychlejším: dnešním vedením bez čekání.'
+            copy: 'Po vytvoření účtu se vrátíš na horoskopy a najdeš dnešní osobní vhled.',
+            stepTitle: 'Vrátíš se na denní horoskopy',
+            stepCopy: 'Začneš dnešním výhledem, bez dalšího hledání.'
         },
         horoskopy: {
             title: 'Osobní horoskopy po registraci',
-            copy: 'Po vytvoření účtu budeš pokračovat na horoskopy a vezmeš si první denní vhled.',
-            stepTitle: 'Otevřeme osobní horoskopy',
-            stepCopy: 'První výklad přijde hned po registraci, ne až na stránce profilu.'
+            copy: 'Po vytvoření účtu se vrátíš na horoskopy a přečteš si dnešní vhled.',
+            stepTitle: 'Vrátíš se na osobní horoskopy',
+            stepCopy: 'Horoskop najdeš hned po registraci.'
         },
         weekly_horoscope: {
             title: 'Týdenní horoskop po registraci',
-            copy: 'Po vytvoření účtu budeš pokračovat k horoskopům a můžeš otevřít širší týdenní vedení.',
-            stepTitle: 'Otevřeme horoskopy',
-            stepCopy: 'Začneš denním vhledem a snadno přejdeš na týdenní vedení.'
+            copy: 'Po vytvoření účtu se vrátíš k horoskopům. Týdenní výhled je součástí členství.',
+            stepTitle: 'Vrátíš se k horoskopům',
+            stepCopy: 'Týdenní výhled otevřeš v rámci členství.'
         },
         monthly_horoscope: {
             title: 'Měsíční horoskop po registraci',
-            copy: 'Po vytvoření účtu budeš pokračovat k horoskopům a můžeš otevřít širší měsíční vedení.',
-            stepTitle: 'Otevřeme horoskopy',
-            stepCopy: 'Začneš denním vhledem a snadno přejdeš na měsíční vedení.'
+            copy: 'Po vytvoření účtu se vrátíš k horoskopům. Měsíční výhled je součástí členství.',
+            stepTitle: 'Vrátíš se k horoskopům',
+            stepCopy: 'Měsíční výhled otevřeš v rámci členství.'
         },
         lunar_calendar: {
             title: 'Lunární kalendář po registraci',
-            copy: 'Po vytvoření účtu budeš pokračovat k lunárnímu kalendáři a vezmeš si z dnešní fáze jeden praktický krok.',
-            stepTitle: 'Otevřeme lunární kalendář',
-            stepCopy: 'Začneš konkrétním rytmem dne, ne prázdnou stránkou.'
+            copy: 'Po vytvoření účtu se vrátíš k lunárnímu kalendáři a najdeš praktický tip pro dnešní fázi.',
+            stepTitle: 'Vrátíš se k lunárnímu kalendáři',
+            stepCopy: 'Najdeš tu dnešní rytmus i praktický krok.'
         },
         zodiac_signs: {
             title: 'Znamení zvěrokruhu po registraci',
-            copy: 'Po vytvoření účtu budeš pokračovat k přehledu znamení a můžeš si vybrat osobní vstup do horoskopů.',
-            stepTitle: 'Otevřeme znamení zvěrokruhu',
-            stepCopy: 'Navážeš na otevřené téma a rychle najdeš vlastní znamení.'
+            copy: 'Po vytvoření účtu se vrátíš k přehledu znamení a vybereš si to své.',
+            stepTitle: 'Vrátíš se k přehledu znamení',
+            stepCopy: 'Navážeš na téma, které už máš otevřené, a najdeš své znamení.'
         },
         ritual_memory: {
             title: 'Paměť rituálu po registraci',
-            copy: 'Po vytvoření účtu se budeš vracet k výkladům, reflexím a tématům, která se opravdu opakují.',
-            stepTitle: 'Otevřeme osobní profil',
-            stepCopy: 'Profil nebude prázdný archiv. Povede tě k prvnímu výkladu, reflexi a návratu k tématům.'
+            copy: 'S účtem se můžeš vracet k výkladům, reflexím i tématům, která se opakují.',
+            stepTitle: 'Otevřeš svůj profil',
+            stepCopy: 'Najdeš v něm výklady a můžeš navázat vlastní reflexí.'
         },
         profile_history: {
             title: 'Historie výkladů po registraci',
-            copy: 'Po vytvoření účtu budeš mít místo, kam ukládat výklady, zpětnou vazbu a večerní reflexe.',
-            stepTitle: 'Otevřeme osobní historii',
-            stepCopy: 'Výklady nepůjdou do ztracena. Profil je propojí s dalším konkrétním krokem.'
+            copy: 'S účtem můžeš ukládat výklady, zpětnou vazbu i večerní reflexe.',
+            stepTitle: 'Otevřeš svou historii',
+            stepCopy: 'K uloženým výkladům se můžeš kdykoli vrátit.'
         },
         another_reading: {
             title: 'Navazující výklad po registraci',
-            copy: 'Po vytvoření účtu budeš pokračovat k dalšímu výkladu bez ztráty právě zvoleného tématu.',
-            stepTitle: 'Otevřeme další výklad',
-            stepCopy: 'Zpětná vazba se neztratí a další výklad naváže na předchozí signál.'
+            copy: 'Po vytvoření účtu se vrátíš k dalšímu výkladu i k označenému tématu.',
+            stepTitle: 'Otevřeš další výklad',
+            stepCopy: 'Naváže na předchozí téma a tvoji zpětnou vazbu.'
         },
         tarot: {
             title: 'Tarotový výklad po registraci',
-            copy: 'Po vytvoření účtu budeš pokračovat k tarotu a můžeš si rovnou položit první otázku.',
-            stepTitle: 'Otevřeme tarotový výklad',
-            stepCopy: 'Navážeš přímo na svůj záměr.'
+            copy: 'Po vytvoření účtu se vrátíš k tarotu a položíš svou otázku.',
+            stepTitle: 'Otevřeš tarotový výklad',
+            stepCopy: 'Navážeš na otázku, se kterou přicházíš.'
         },
         tarot_yes_no: {
-            title: 'Uložíme výklad do Deníku',
-            copy: 'Po registraci se vrátíš do profilu a odpověď z Tarotu ano/ne přidáme do Deníku výkladů.',
-            stepTitle: 'Otevřeme Deník výkladů',
+            title: 'Uložíš výklad do Deníku',
+            copy: 'Po registraci se vrátíš do profilu a odpověď z Tarotu ano/ne se uloží do Deníku výkladů.',
+            stepTitle: 'Otevřeš Deník výkladů',
             stepCopy: 'Otázka, karta i odpověď zůstanou pohromadě, takže se k nim můžeš vrátit.'
         },
         tarot_love: {
             title: 'Tarot na lásku po registraci',
-            copy: 'Po vytvoření účtu se vrátíš k tématu vztahu a můžeš pokračovat v hlubším výkladu.',
-            stepTitle: 'Otevřeme tarot na lásku',
-            stepCopy: 'Registrace zachová tvůj vztahový záměr.'
+            copy: 'Po vytvoření účtu se vrátíš k tématu vztahu a můžeš pokračovat hlubším výkladem.',
+            stepTitle: 'Vrátíš se k tarotu na lásku',
+            stepCopy: 'Registrace zachová otázku, se kterou přicházíš.'
         },
         dream_dictionary: {
             title: 'Výklad snu po registraci',
-            copy: 'Po vytvoření účtu navážeš na symbol, který tě sem přivedl, a můžeš pokračovat k osobnímu výkladu.',
-            stepTitle: 'Vrátíme tě k výkladu snu',
-            stepCopy: 'Hlavní motiv snu zůstane součástí dalšího osobního kroku.'
+            copy: 'Po vytvoření účtu navážeš na symbol, který hledáš, a můžeš pokračovat osobním výkladem.',
+            stepTitle: 'Vrátíš se k výkladu snu',
+            stepCopy: 'Motiv snu zůstane součástí dalšího kroku.'
         },
         tarot_daily_card_profile_save: {
             title: 'Ulož si kartu dne do profilu',
-            copy: 'Vytvoř si účet zdarma a vrať se ke stejné kartě dne, aby nezmizela jako jednorázový náhodný vhled.',
-            stepTitle: 'Vrátíme tě ke kartě dne',
-            stepCopy: 'Po registraci pokračuješ u stejného symbolu a můžeš si výklad uložit do profilu.'
+            copy: 'Vytvoř si účet zdarma a vrať se ke stejné kartě dne i jejímu výkladu.',
+            stepTitle: 'Vrátíš se ke kartě dne',
+            stepCopy: 'Stejný symbol si po registraci můžeš uložit do profilu.'
         },
         tarot_multi_card: {
             title: 'Vícekartový tarot po registraci',
-            copy: 'Po vytvoření účtu se vrátíš k tarotu a můžeš pokračovat v hlubším výkladu.',
-            stepTitle: 'Otevřeme vícekartový tarot',
-            stepCopy: 'Registrace naváže na výklad, který si chceš odemknout.'
+            copy: 'Po vytvoření účtu se vrátíš k tarotu a můžeš pokračovat hlubším výkladem.',
+            stepTitle: 'Otevřeš vícekartový tarot',
+            stepCopy: 'Navážeš na vybraný výklad.'
         },
         daily_angel_card: {
             title: 'Karta dne po registraci',
             copy: 'Po vytvoření účtu se vrátíš k dennímu symbolu z úvodní stránky a navážeš na něj v Andělských kartách.',
-            stepTitle: 'Vrátíme tě k dennímu symbolu',
-            stepCopy: 'Karta dne zůstane dostupná i po registraci.'
+            stepTitle: 'Vrátíš se ke kartě dne',
+            stepCopy: 'Zůstaneš u symbolu, který tě zaujal.'
         },
         andelske_karty_hluboky_vhled: {
             title: 'Andělské karty po registraci',
-            copy: 'Po vytvoření účtu se vrátíš k andělským kartám a můžeš pokračovat v hlubším výkladu.',
-            stepTitle: 'Vrátíme tě k andělským kartám',
-            stepCopy: 'Registrace zachová téma výkladu a otevře další krok.'
+            copy: 'Po vytvoření účtu se vrátíš k andělským kartám a můžeš pokračovat hlubším výkladem.',
+            stepTitle: 'Vrátíš se k andělským kartám',
+            stepCopy: 'Navážeš na svůj výklad a jeho téma.'
         },
         partnerska_detail: {
             title: 'Partnerská shoda po registraci',
-            copy: 'Po vytvoření účtu budeš pokračovat k partnerské shodě bez hledání správné stránky.',
-            stepTitle: 'Otevřeme partnerskou shodu',
-            stepCopy: 'Začneš rovnou tam, kde vzniká první osobní výsledek.'
+            copy: 'Po vytvoření účtu se vrátíš k partnerské shodě.',
+            stepTitle: 'Otevřeš partnerskou shodu',
+            stepCopy: 'Pokračuješ rovnou u svého výběru.'
         },
         natalni_interpretace: {
             title: 'Natální karta po registraci',
-            copy: 'Po vytvoření účtu tě navedeme na natální kartu a první osobní interpretaci.',
-            stepTitle: 'Otevřeme natální kartu',
-            stepCopy: 'Datum narození doplníte až v nástroji, který ho opravdu potřebuje.'
+            copy: 'Po vytvoření účtu se vrátíš k natální kartě a její osobní interpretaci.',
+            stepTitle: 'Otevřeš natální kartu',
+            stepCopy: 'Datum narození doplníš až v nástroji, který ho potřebuje.'
         },
         numerologie_vyklad: {
             title: 'Numerologie po registraci',
-            copy: 'Po vytvoření účtu budeš pokračovat k numerologii a prvnímu osobnímu výkladu.',
-            stepTitle: 'Otevřeme numerologii',
-            stepCopy: 'První vhled dostaneš z konkrétního nástroje, ne z prázdné stránky.'
+            copy: 'Po vytvoření účtu se vrátíš k numerologii a osobnímu výkladu.',
+            stepTitle: 'Otevřeš numerologii',
+            stepCopy: 'První vhled najdeš přímo v nástroji.'
         },
         annual_horoscope: {
             title: 'Osobní mapa po registraci',
-            copy: 'Roční horoskop už nenabízíme. Po vytvoření účtu budeš pokračovat k hlubší Osobní mapě.',
-            stepTitle: 'Otevřeme Osobní mapu',
-            stepCopy: 'Navážeš na jednorázový hlubší PDF výklad místo obecného profilu.'
+            copy: 'Roční horoskop už nenabízíme. Po vytvoření účtu se vrátíš k Osobní mapě.',
+            stepTitle: 'Otevřeš Osobní mapu',
+            stepCopy: 'Navážeš na jednorázový PDF výklad.'
         },
         personal_map: {
             title: 'Osobní mapa po registraci',
-            copy: 'Po vytvoření účtu budeš pokračovat k osobní mapě a hlubšímu rozboru vlastního směru.',
-            stepTitle: 'Otevřeme osobní mapu',
-            stepCopy: 'Registrace tě vrátí k hlubšímu výstupu, který na této stránce čeká.'
+            copy: 'Po vytvoření účtu se vrátíš k Osobní mapě a jejímu rozboru tvého směru.',
+            stepTitle: 'Otevřeš Osobní mapu',
+            stepCopy: 'Vrátíš se k výstupu, který máš otevřený.'
         },
         runy_hluboky_vyklad: {
             title: 'Runy po registraci',
-            copy: 'Po vytvoření účtu se vrátíš k runám a můžeš pokračovat v hlubším výkladu.',
-            stepTitle: 'Otevřeme runový výklad',
-            stepCopy: 'Registrace naváže na tvoji otázku.'
+            copy: 'Po vytvoření účtu se vrátíš k runám a můžeš pokračovat hlubším výkladem.',
+            stepTitle: 'Otevřeš runový výklad',
+            stepCopy: 'Navážeš na svou původní otázku.'
         },
         shamanske_kolo_plne_cteni: {
             title: 'Šamanské kolo po registraci',
-            copy: 'Po vytvoření účtu se vrátíš k šamanskému kolu a můžeš pokračovat v plném čtení.',
-            stepTitle: 'Otevřeme šamanské kolo',
-            stepCopy: 'Navážeš na zvolený výklad.'
+            copy: 'Po vytvoření účtu se vrátíš k šamanskému kolu a můžeš pokračovat v plném výkladu.',
+            stepTitle: 'Otevřeš šamanské kolo',
+            stepCopy: 'Navážeš na vybraný výklad.'
         },
         minuly_zivot: {
             title: 'Minulý život po registraci',
-            copy: 'Po vytvoření účtu se vrátíš k symbolickému výkladu minulého života a můžeš pokračovat bez ztráty tématu.',
-            stepTitle: 'Otevřeme minulý život',
-            stepCopy: 'Začneš archetypálním příběhem pro sebereflexi, ne tvrdým slibem.'
+            copy: 'Po vytvoření účtu se vrátíš k symbolickému výkladu minulého života a můžeš pokračovat.',
+            stepTitle: 'Otevřeš výklad minulého života',
+            stepCopy: 'Čeká tě archetypální příběh k zamyšlení, ne předpověď.'
         },
         kristalova_koule: {
             title: 'Křišťálová koule po registraci',
-            copy: 'Po vytvoření účtu se vrátíš ke křišťálové kouli a můžeš položit první osobní otázku.',
-            stepTitle: 'Otevřeme křišťálovou kouli',
-            stepCopy: 'Registrace tě vrátí k otázce, ne na prázdnou stránku profilu.'
+            copy: 'Po vytvoření účtu se vrátíš ke křišťálové kouli a položíš svou otázku.',
+            stepTitle: 'Otevřeš křišťálovou kouli',
+            stepCopy: 'Po registraci se vrátíš rovnou ke své otázce.'
         },
         mentor: {
             title: 'Hvězdný průvodce po registraci',
-            copy: 'Po vytvoření účtu budeš pokračovat k průvodci a můžeš položit první otázku.',
-            stepTitle: 'Otevřeme Hvězdného průvodce',
-            stepCopy: 'První kontakt s produktem začne okamžitou otázkou.'
+            copy: 'Po vytvoření účtu se vrátíš k průvodci a položíš svou otázku.',
+            stepTitle: 'Otevřeš Hvězdného průvodce',
+            stepCopy: 'Začneš otázkou, která tě právě zajímá.'
         }
     };
 
@@ -384,25 +354,25 @@ document.addEventListener('DOMContentLoaded', () => {
         tarot_celtic_cross: SIGNUP_CONTEXT_BY_FEATURE.tarot_multi_card,
         rituals: {
             title: 'Lunární rituály po registraci',
-            copy: 'Po vytvoření účtu budeš pokračovat k rituálům a můžeš začít osobní praxí podle aktuálního rytmu.',
-            stepTitle: 'Otevřeme lunární rituály',
-            stepCopy: 'První krok povede rovnou k praxi, ne do prázdného profilu.'
+            copy: 'Po vytvoření účtu se vrátíš k rituálům a můžeš začít praxí podle aktuálního rytmu.',
+            stepTitle: 'Otevřeš lunární rituály',
+            stepCopy: 'První krok vede rovnou k praxi.'
         }
     });
 
     const SIGNUP_CONTEXT_BY_SOURCE = {
         homepage_hero: SIGNUP_CONTEXT_BY_FEATURE.tarot_yes_no,
         pricing_free_cta: {
-            title: 'Začínáte zdarma',
-            copy: 'Vytvoříš si účet bez platební karty a potom tě pošleme na první denní horoskop.',
-            stepTitle: 'Otevřeme bezplatný denní vhled',
-            stepCopy: 'Uvidíš, co účet zdarma umí, dřív než začneš řešit placený plán.'
+            title: 'Začneš denním horoskopem',
+            copy: 'Po registraci otevřeš dnešní horoskop a přečteš si svůj první vhled.',
+            stepTitle: 'Otevřeš bezplatný denní vhled',
+            stepCopy: 'Další znamení a období najdeš v přehledu horoskopů.'
         },
         homepage_pricing_free_cta: {
-            title: 'Začínáte zdarma',
-            copy: 'Vytvoříš si účet bez platební karty a potom pokračuješ k dennímu vedení.',
-            stepTitle: 'Otevřeme denní horoskopy',
-            stepCopy: 'První vhled přijde hned po registraci.'
+            title: 'Začneš denním horoskopem',
+            copy: 'Po registraci otevřeš denní horoskopy a vybereš si své znamení.',
+            stepTitle: 'Otevřeš denní horoskopy',
+            stepCopy: 'Přehled znamení i období zůstane dostupný v nabídce.'
         },
         newsletter_form: SIGNUP_CONTEXT_BY_FEATURE.daily_guidance,
         newsletter_popup: SIGNUP_CONTEXT_BY_FEATURE.daily_guidance,
@@ -422,24 +392,25 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const GENERIC_SIGNUP_CONTEXT = {
-        title: 'Účet zdarma bez zdržení',
-        copy: 'Po registraci tě navedeme k prvnímu osobnímu výkladu. Nepotřebujeme platební kartu ani dlouhý dotazník.',
-        stepTitle: 'Otevřeme první osobní výklad',
-        stepCopy: 'Začneš konkrétním výkladem, ne prázdnou stránkou.'
+        title: 'Vybereš si, čím začít',
+        copy: 'Po registraci otevřeš profil a zvolíš výklad nebo nástroj.',
+        stepTitle: 'Vybereš si první krok',
+        stepCopy: 'Horoskop, tarot i další nástroje najdeš v nabídce.'
     };
 
     const loginForm = document.getElementById('login-form');
     const forgotPasswordForm = document.getElementById('forgot-password-form');
     const resetPasswordForm = document.getElementById('reset-password-form');
+    const resetSuccessLoginLink = document.getElementById('reset-success-login-link');
     const forgotPasswordLink = document.getElementById('forgot-password-link');
     const backToLoginBtn = document.getElementById('back-to-login');
     const loginHeader = document.getElementById('login-page-title');
     const loginSubtitle = document.getElementById('login-page-subtitle');
+    const resetLinkNotice = document.getElementById('reset-link-notice');
     const authModeWrapper = document.getElementById('auth-mode-toggle')?.parentElement;
     const authSubmitBtn = document.getElementById('auth-submit');
     const toggleBtn = document.getElementById('auth-mode-toggle');
     const socialProofEl = document.getElementById('login-social-proof');
-    const emailInput = document.getElementById('email');
     const passwordInput = document.getElementById('password');
     const passwordHelp = document.getElementById('password-help');
     const registerFields = document.getElementById('register-fields');
@@ -468,11 +439,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const isResetMode = urlParams.get('reset') === 'true';
+    const resetSuccessHistoryKey = 'mhPasswordResetConfirmedAt';
     const hash = window.location.hash;
+    const resetHashParams = new URLSearchParams(hash.startsWith('#') ? hash.slice(1) : hash);
+    const hasResetProviderError = ['error', 'error_code', 'error_description'].some((key) => (
+        resetHashParams.has(key) || urlParams.has(key)
+    ));
+    const resetProviderErrorCode = resetHashParams.get('error_code') || urlParams.get('error_code') || '';
+    const resetAccessToken = resetHashParams.get('access_token') || '';
+    const resetTokenType = (resetHashParams.get('type') || '').toLowerCase();
+    const hasRecoveryToken = Boolean(resetAccessToken) && resetTokenType === 'recovery';
+    const hasRecentResetSuccessInHistoryEntry = () => {
+        const storedAt = Number(window.history.state?.[resetSuccessHistoryKey]);
+        return Number.isFinite(storedAt)
+            && storedAt <= Date.now()
+            && Date.now() - storedAt < 10 * 60 * 1000;
+    };
     let isRegisterMode = urlParams.get('mode') === 'register' || urlParams.get('registrace') === '1';
-    let authRequestPending = false;
-    let forgotPasswordPending = false;
-    let resetPasswordPending = false;
     const redirectTarget = getSafeLocalRedirect(urlParams.get('redirect'), '/profil.html');
     const hasExplicitCheckoutContext = urlParams.has('plan') || urlParams.has('feature') || urlParams.has('source');
     const pendingPlan = !hasExplicitCheckoutContext
@@ -538,64 +521,95 @@ document.addEventListener('DOMContentLoaded', () => {
         if (field) {
             getFormUx().setFieldError?.(field, message);
             field.focus({ preventScroll: true });
-            field.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'nearest' });
+            field.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
         window.Auth?.showToast?.('Chyba', message, 'error');
     };
 
     const clearAuthErrors = () => {
-        [loginForm, forgotPasswordForm, resetPasswordForm].forEach((form) => {
-            getFormUx().clearFormSummary?.(form);
-            form?.querySelectorAll('input, select, textarea').forEach(clearFieldError);
+        getFormUx().clearFormSummary?.(loginForm);
+        [passwordInput, gdprConsent].forEach(clearFieldError);
+    };
+
+    const clearAuthModeErrors = () => {
+        getFormUx().clearFormSummary?.(loginForm);
+        loginForm?.querySelectorAll('input, select, textarea').forEach((field) => {
+            clearFieldError(field);
         });
     };
 
-    const getFriendlyAuthError = (error, fallback) => {
-        const raw = String(error?.message || '').trim();
-        if (!raw || /unexpected token|not valid json|json parse|failed to fetch|networkerror|network request failed/i.test(raw)) {
-            return fallback;
-        }
-        return raw;
+    const focusAuthField = (field) => {
+        if (!field) return;
+        field.focus({ preventScroll: true });
+        field.scrollIntoView({ behavior: 'auto', block: 'center' });
     };
 
-    const focusAndReveal = (element) => {
-        if (!element) return;
-        if (!element.hasAttribute('tabindex')) element.setAttribute('tabindex', '-1');
-        requestAnimationFrame(() => {
-            element.focus({ preventScroll: true });
-            element.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
-        });
+    const toggleAriaDescription = (element, descriptionId, include) => {
+        if (!element || !descriptionId) return;
+
+        const descriptions = new Set((element.getAttribute('aria-describedby') || '').split(/\s+/).filter(Boolean));
+        if (include) descriptions.add(descriptionId);
+        else descriptions.delete(descriptionId);
+
+        if (descriptions.size) element.setAttribute('aria-describedby', Array.from(descriptions).join(' '));
+        else element.removeAttribute('aria-describedby');
     };
 
-    const clearRecoveryFragment = () => {
-        window.history.replaceState(
-            window.history.state,
-            '',
-            `${window.location.pathname}${window.location.search}`
-        );
+    const clearResetCallbackFromUrl = () => {
+        const cleanUrl = new URL(window.location.href);
+        cleanUrl.hash = '';
+        ['error', 'error_code', 'error_description'].forEach((key) => cleanUrl.searchParams.delete(key));
+        window.history.replaceState(window.history.state, '', `${cleanUrl.pathname}${cleanUrl.search}`);
     };
 
-    const showRecoveryRequestForm = (message) => {
-        clearRecoveryFragment();
+    const clearResetSuccessHistoryState = () => {
+        const state = window.history.state;
+        if (!state || typeof state !== 'object' || Array.isArray(state) || !(resetSuccessHistoryKey in state)) return;
+
+        const nextState = { ...state };
+        delete nextState[resetSuccessHistoryKey];
+        window.history.replaceState(nextState, '', window.location.href);
+    };
+
+    const markResetSuccessHistoryState = () => {
+        const state = window.history.state;
+        const nextState = state && typeof state === 'object' && !Array.isArray(state)
+            ? { ...state }
+            : {};
+        nextState[resetSuccessHistoryKey] = Date.now();
+        window.history.replaceState(nextState, '', window.location.href);
+    };
+
+    const showResetRecoveryHelp = (message) => {
         setBlockVisible(loginForm, false);
         setBlockVisible(resetPasswordForm, false);
-        resetPasswordForm?.querySelectorAll('input[type="password"]').forEach((field) => { field.value = ''; });
+        setBlockVisible(resetSuccessLoginLink, false);
         setBlockVisible(forgotPasswordForm, true);
         setBlockVisible(forgotPasswordLink, false);
         setBlockVisible(authModeWrapper, false);
-        const validationStatus = document.getElementById('recovery-validation-status');
-        if (validationStatus) validationStatus.hidden = true;
-        if (loginHeader) loginHeader.textContent = 'Obnova hesla';
-        if (loginSubtitle) loginSubtitle.textContent = 'Pošleme ti nový odkaz pro nastavení hesla.';
-        getFormUx().setFormSummary?.(forgotPasswordForm, message);
-        focusAndReveal(forgotPasswordForm?.querySelector('input'));
+        setBlockVisible(resetLinkNotice, true);
+        if (loginHeader) loginHeader.textContent = 'Obnovení hesla';
+        if (loginSubtitle) loginSubtitle.textContent = 'Obnovu můžeš bezpečně spustit znovu.';
+        if (resetLinkNotice) {
+            resetLinkNotice.setAttribute('role', 'alert');
+            resetLinkNotice.textContent = message;
+        }
+        clearResetCallbackFromUrl();
+        focusAuthField(document.getElementById('forgot-email'));
     };
 
     const verifyRecoveryLink = async (token) => {
-        const validationStatus = document.getElementById('recovery-validation-status');
-        if (validationStatus) {
-            validationStatus.textContent = 'Ověřuji odkaz pro obnovu hesla…';
-            validationStatus.hidden = false;
+        setBlockVisible(loginForm, false);
+        setBlockVisible(forgotPasswordForm, false);
+        setBlockVisible(resetPasswordForm, false);
+        setBlockVisible(resetSuccessLoginLink, false);
+        setBlockVisible(authModeWrapper, false);
+        setBlockVisible(resetLinkNotice, true);
+        if (loginHeader) loginHeader.textContent = 'Obnovení hesla';
+        if (loginSubtitle) loginSubtitle.textContent = 'Kontroluji platnost odkazu pro obnovu hesla.';
+        if (resetLinkNotice) {
+            resetLinkNotice.setAttribute('role', 'status');
+            resetLinkNotice.textContent = 'Ověřuji odkaz pro obnovu hesla…';
         }
 
         try {
@@ -607,24 +621,53 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await response.json().catch(() => null);
 
             if (response.ok && data?.valid === true) {
-                if (validationStatus) validationStatus.hidden = true;
+                setBlockVisible(resetLinkNotice, false);
                 setBlockVisible(resetPasswordForm, true);
-                if (loginHeader) loginHeader.textContent = 'Obnovení hesla';
-                if (loginSubtitle) loginSubtitle.textContent = 'Zadej nové heslo a vrať se zpět do svého účtu.';
-                focusAndReveal(document.getElementById('new-password'));
+                if (loginSubtitle) loginSubtitle.textContent = 'Zadej nové heslo. Platnost odkazu jsme ověřili.';
+                focusAuthField(document.getElementById('new-password'));
                 return;
             }
 
             if (response.status === 401) {
-                showRecoveryRequestForm('Odkaz pro obnovu už není platný. Zadej e-mail a vyžádej si nový.');
+                showResetRecoveryHelp('Odkaz pro obnovu už není platný. Zadej e-mail a vyžádej si nový.');
                 return;
             }
 
-            showRecoveryRequestForm('Odkaz se teď nepodařilo ověřit. Zkus to znovu později, případně požádej o nový.');
+            showResetRecoveryHelp('Odkaz se teď nepodařilo ověřit. Zkus to později nebo požádej o nový.');
         } catch {
-            showRecoveryRequestForm('Odkaz se teď nepodařilo ověřit. Zkontroluj připojení a zkus obnovit stránku nebo požádej o nový.');
+            showResetRecoveryHelp('Odkaz se teď nepodařilo ověřit. Zkontroluj připojení a zkus to znovu.');
         }
     };
+
+    const showResetSuccessState = () => {
+        setBlockVisible(loginForm, false);
+        setBlockVisible(forgotPasswordForm, false);
+        setBlockVisible(resetPasswordForm, false);
+        setBlockVisible(forgotPasswordLink, false);
+        setBlockVisible(authModeWrapper, false);
+        setBlockVisible(resetLinkNotice, true);
+        setBlockVisible(resetSuccessLoginLink, true);
+        if (loginHeader) loginHeader.textContent = 'Heslo bylo změněno';
+        if (loginSubtitle) loginSubtitle.textContent = 'Nové heslo je uložené.';
+        if (resetLinkNotice) {
+            resetLinkNotice.setAttribute('role', 'status');
+            resetLinkNotice.textContent = 'Teď se můžeš přihlásit novým heslem. Tato změna se potvrdila přímo na serveru.';
+        }
+        clearResetCallbackFromUrl();
+        focusAuthField(resetSuccessLoginLink);
+    };
+
+    // Back/forward between same-document history entries does not rerun the
+    // initializer. Restore the success message only for the entry that carries
+    // the server-confirmed marker; a fresh reset URL remains unconfirmed.
+    window.addEventListener('popstate', () => {
+        const currentUrl = new URL(window.location.href);
+        if (currentUrl.searchParams.get('reset') !== 'true'
+            || currentUrl.hash
+            || !hasRecentResetSuccessInHistoryEntry()) return;
+
+        showResetSuccessState();
+    });
 
     // Sdílená hláška: použije ji i nativní validace přes setCustomValidity, aby GDPR
     // checkbox neukazoval generické "Vyplňte prosím toto pole", ale tuhle konkrétní.
@@ -761,9 +804,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         return {
             title: `${label} po registraci`,
-            copy: 'Po vytvoření účtu budeš pokračovat k prvnímu konkrétnímu kroku bez návratu do obecného katalogu.',
-            stepTitle: `Otevřeme ${label}`,
-            stepCopy: 'Registrace zachová původní téma a naváže rovnou prvním výkladem.'
+            copy: 'Po vytvoření účtu přejdeš rovnou k prvnímu konkrétnímu kroku.',
+            stepTitle: `Otevřeš: ${label}`,
+            stepCopy: 'Registrace zachová, odkud přicházíš, a naváže na vybraný nástroj.'
         };
     };
 
@@ -777,23 +820,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const renderSignupValuePanel = () => {
         const context = getSignupContext();
-        if (signupNextStepTitle) signupNextStepTitle.textContent = normalizeSignupCopy(context.stepTitle);
-        if (signupNextStepCopy) signupNextStepCopy.textContent = normalizeSignupCopy(context.stepCopy);
+        if (signupNextStepTitle) signupNextStepTitle.textContent = context.stepTitle;
+        if (signupNextStepCopy) signupNextStepCopy.textContent = context.stepCopy;
     };
 
-    const normalizeSignupCopy = (text) => String(text || '')
-        .replace(/\bvás\b/g, 'tě')
-        .replace(/\bVás\b/g, 'Tě')
-        .replace(/\bvám\b/g, 'tobě')
-        .replace(/\bVám\b/g, 'Tobě')
-        .replace(/\bbudete\b/g, 'budeš')
-        .replace(/\bBudete\b/g, 'Budeš')
-        .replace(/\bzačnete\b/g, 'začneš')
-        .replace(/\bZačnete\b/g, 'Začneš')
-        .replace(/\bneztratíte\b/g, 'neztratíš')
-        .replace(/\bNeztratíte\b/g, 'Neztratíš')
-        .replace(/\bjste\b/g, 'jsi')
-        .replace(/\bJste\b/g, 'Jsi');
+    const shouldShowSignupContext = () => isRegisterMode && (
+        requestedFeature
+        || requestedSource
+        || getSafeRedirectTarget() !== '/profil.html'
+    );
 
     const renderCheckoutContext = () => {
         if (!checkoutContextBanner) return;
@@ -804,33 +839,27 @@ document.addEventListener('DOMContentLoaded', () => {
         if (plan) {
             if (checkoutContextTitle) checkoutContextTitle.textContent = plan.title;
             if (checkoutContextCopy) {
-                const checkoutPromise = getCheckoutPromiseCopy(requestedPlan, isRegisterMode);
+                const checkoutPromise = getCheckoutPromiseCopy(requestedPlan);
                 checkoutContextCopy.textContent = featureLabel
                     ? `Navazuješ na funkci: ${featureLabel}. ${plan.copy} ${checkoutPromise}`
                     : `${plan.copy} ${checkoutPromise}`;
             }
             if (checkoutContextLabel) {
-                checkoutContextLabel.textContent = requestedSource ? 'Pokračuješ k odemčení' : 'Pokračuješ k vybranému plánu';
+                checkoutContextLabel.textContent = requestedSource ? 'Pokračuješ k odemčení' : 'Pokračuješ k plánu';
             }
             setBlockVisible(checkoutContextBanner, true);
             return;
         }
 
-        const shouldShowActivationContext = isRegisterMode && (
-            requestedFeature
-            || requestedSource
-            || getSafeRedirectTarget() !== '/profil.html'
-        );
-
-        if (!shouldShowActivationContext) {
+        if (!shouldShowSignupContext()) {
             setBlockVisible(checkoutContextBanner, false);
             return;
         }
 
         const context = getSignupContext();
-        if (checkoutContextLabel) checkoutContextLabel.textContent = featureLabel || 'Další krok';
-        if (checkoutContextTitle) checkoutContextTitle.textContent = normalizeSignupCopy(context.title);
-        if (checkoutContextCopy) checkoutContextCopy.textContent = normalizeSignupCopy(context.copy);
+        if (checkoutContextLabel) checkoutContextLabel.textContent = featureLabel || 'První hodnota';
+        if (checkoutContextTitle) checkoutContextTitle.textContent = context.title;
+        if (checkoutContextCopy) checkoutContextCopy.textContent = context.copy;
         setBlockVisible(checkoutContextBanner, true);
     };
 
@@ -888,18 +917,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             } else {
                 if (loginHeader) loginHeader.textContent = 'Vytvoř si účet zdarma';
-                if (loginSubtitle) loginSubtitle.textContent = 'Stačí e-mail a heslo. Platební kartu nevyžadujeme a osobní údaje doplníš až u výkladu, který je opravdu potřebuje.';
+                if (loginSubtitle) loginSubtitle.textContent = 'Stačí e-mail a heslo. Platební kartu nevyžadujeme.';
             }
             if (signupSafetyNote) {
                 const trialDays = requestedPlan ? getPlanTrialDays(requestedPlan) : 0;
                 signupSafetyNote.textContent = requestedPlan
                     ? trialDays > 0
-                        ? `Po registraci otevřeme bezpečný Stripe checkout s ${trialDays} dny zdarma. Výklady slouží jako osobní inspirace a nenahrazují odbornou péči.`
-                        : 'Po registraci otevřeme bezpečný Stripe checkout. Cenu a období uvidíš před potvrzením. Výklady slouží jako osobní inspirace a nenahrazují odbornou péči.'
-                    : 'Registrace je zdarma a bez platební karty. Výklady slouží jako osobní inspirace a nenahrazují odbornou péči.';
+                        ? `Po registraci přejdeš do bezpečného Stripe checkoutu s ${trialDays} dny zdarma. Výklady slouží jako osobní inspirace a nenahrazují odbornou péči.`
+                        : 'Po registraci přejdeš do bezpečného Stripe checkoutu. Cenu a období uvidíš před potvrzením. Výklady slouží jako osobní inspirace a nenahrazují odbornou péči.'
+                    : 'Výklady slouží jako osobní inspirace a nenahrazují odbornou péči.';
             }
-            setBlockVisible(socialProofEl, true);
-            setBlockVisible(signupValuePanel, !requestedPlan);
+            setBlockVisible(socialProofEl, false);
+            setBlockVisible(signupValuePanel, !requestedPlan && !shouldShowSignupContext());
             setBlockVisible(passwordHelp, true);
             setBlockVisible(signupSafetyNote, true);
             setBlockVisible(registerFields, false);
@@ -907,20 +936,21 @@ document.addEventListener('DOMContentLoaded', () => {
             if (passwordInput) {
                 passwordInput.autocomplete = 'new-password';
                 passwordInput.minLength = 8;
+                toggleAriaDescription(passwordInput, passwordHelp?.id, true);
             }
             if (gdprConsent) {
                 gdprConsent.required = true;
                 syncGdprValidity();
             }
             authSubmitBtn.textContent = requestedPlan ? 'Vytvořit účet a pokračovat' : 'Vytvořit účet zdarma';
-            if (toggleBtn) toggleBtn.textContent = 'Máš účet? Přihlas se';
+            if (toggleBtn) toggleBtn.textContent = 'Už máš účet? Přihlas se';
         } else {
             if (requestedPlan) {
                 if (loginHeader) loginHeader.textContent = 'Přihlas se a pokračuj k odemčení';
-                if (loginSubtitle) loginSubtitle.textContent = 'Po přihlášení zachováme vybraný plán a otevřeme bezpečný Stripe checkout.';
+                if (loginSubtitle) loginSubtitle.textContent = 'Po přihlášení se vrátíš k vybranému členství a otevřeš bezpečný Stripe checkout.';
             } else {
                 if (loginHeader) loginHeader.textContent = 'Vítej zpět';
-                if (loginSubtitle) loginSubtitle.textContent = 'Přihlas se a otevři svoje uložené výklady.';
+                if (loginSubtitle) loginSubtitle.textContent = 'Přihlas se ke svému účtu a pokračuj.';
             }
             setBlockVisible(socialProofEl, false);
             setBlockVisible(signupValuePanel, false);
@@ -931,6 +961,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (passwordInput) {
                 passwordInput.autocomplete = 'current-password';
                 passwordInput.removeAttribute('minlength');
+                toggleAriaDescription(passwordInput, passwordHelp?.id, false);
             }
             if (gdprConsent) {
                 gdprConsent.required = false;
@@ -938,7 +969,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 gdprConsent.setCustomValidity('');
             }
             authSubmitBtn.textContent = requestedPlan ? 'Přihlásit se a pokračovat' : 'Přihlásit se';
-            if (toggleBtn) toggleBtn.textContent = 'Nemáš účet? Vytvoř si ho zdarma →';
+            if (toggleBtn) toggleBtn.textContent = 'Nemáš účet? Zaregistruj se zdarma →';
         }
 
         setBlockVisible(checkoutExistingAccount, Boolean(requestedPlan && isRegisterMode));
@@ -998,47 +1029,37 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }, true);
 
-    const hashParams = new URLSearchParams(hash.startsWith('#') ? hash.slice(1) : hash);
-    const recoveryError = hashParams.get('error_code') || hashParams.get('error_description') || hashParams.get('error');
-    const accessToken = hashParams.get('access_token');
-    const hasRecoveryToken = isResetMode && Boolean(accessToken) && !recoveryError;
+    if (isResetMode) {
+        const hasRecentResetSuccess = hasRecentResetSuccessInHistoryEntry();
+        if (!hasRecentResetSuccess) clearResetSuccessHistoryState();
 
-    if (hasRecoveryToken) {
-        setBlockVisible(loginForm, false);
-        setBlockVisible(forgotPasswordForm, false);
-        setBlockVisible(resetPasswordForm, false);
-        setBlockVisible(forgotPasswordLink, false);
-        setBlockVisible(authModeWrapper, false);
-        if (loginHeader) loginHeader.textContent = 'Obnovení hesla';
-        if (loginSubtitle) loginSubtitle.textContent = 'Kontroluji platnost odkazu pro obnovu hesla.';
-        void verifyRecoveryLink(accessToken);
-    } else if (isResetMode) {
-        if (window.location.hash) {
-            window.history.replaceState(
-                window.history.state,
-                '',
-                `${window.location.pathname}${window.location.search}`
-            );
+        if (hasRecentResetSuccess && !hash) {
+            showResetSuccessState();
+        } else {
+            clearResetSuccessHistoryState();
+            setBlockVisible(loginForm, false);
+            setBlockVisible(forgotPasswordLink, false);
+            setBlockVisible(authModeWrapper, false);
+            setBlockVisible(resetLinkNotice, false);
+            setBlockVisible(resetSuccessLoginLink, false);
+            if (loginHeader) loginHeader.textContent = 'Obnovení hesla';
+
+            if (hasRecoveryToken && !hasResetProviderError) {
+                void verifyRecoveryLink(resetAccessToken);
+            } else {
+                const isExpiredLink = resetProviderErrorCode === 'otp_expired';
+                const message = isExpiredLink
+                    ? 'Odkaz pro obnovu hesla vypršel nebo už byl použit. Zadej e-mail a pošleme ti nový odkaz.'
+                    : hasResetProviderError
+                        ? 'Tento odkaz pro obnovu hesla nefunguje. Zadej e-mail a požádej o nový odkaz.'
+                        : 'Otevřel se formulář obnovy bez ověřovacího odkazu. Zadej e-mail a pošleme ti nový.';
+                // Supabase error fragments can contain provider details. The helper
+                // removes them from the address bar after showing a safe explanation.
+                showResetRecoveryHelp(message);
+            }
         }
-        setBlockVisible(loginForm, false);
-        setBlockVisible(resetPasswordForm, false);
-        setBlockVisible(forgotPasswordForm, true);
-        setBlockVisible(forgotPasswordLink, false);
-        setBlockVisible(authModeWrapper, false);
-        if (loginHeader) loginHeader.textContent = 'Obnova hesla';
-        if (loginSubtitle) {
-            loginSubtitle.textContent = recoveryError
-                ? 'Tento odkaz už není platný. Požádej o nový odkaz pro obnovu hesla.'
-                : 'Pro obnovu hesla zadej e-mail a pošleme ti nový odkaz.';
-        }
-        getFormUx().setFormSummary?.(
-            forgotPasswordForm,
-            recoveryError
-                ? 'Odkaz pro obnovu hesla vypršel nebo už byl použit. Zadej e-mail a vyžádej si nový.'
-                : 'Chybí platný odkaz pro obnovu hesla. Zadej e-mail a vyžádej si nový.'
-        );
-        focusAndReveal(forgotPasswordForm?.querySelector('input'));
     } else {
+        clearResetSuccessHistoryState();
         applyMode();
         void loadPlanManifest().then(applyMode);
         trackAuthView();
@@ -1051,7 +1072,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     loginForm?.addEventListener('submit', async (event) => {
         event.preventDefault();
-        if (authRequestPending || authSubmitBtn?.disabled) return;
         ensureAuthFormStarted('submit_attempt');
 
         const email = document.getElementById('email')?.value?.trim();
@@ -1077,12 +1097,8 @@ document.addEventListener('DOMContentLoaded', () => {
             isRegisterMode ? 'register_form_submitted' : 'login_form_submitted'
         );
 
-        authRequestPending = true;
-        loginForm.setAttribute('aria-busy', 'true');
         authSubmitBtn.disabled = true;
-        const authFields = [emailInput, passwordInput, gdprConsent].filter(Boolean);
-        const authFieldDisabledStates = authFields.map((field) => field.disabled);
-        authFields.forEach((field) => { field.disabled = true; });
+        loginForm.dataset.authSubmitting = 'true';
         const originalText = authSubmitBtn.textContent;
         const submittedMode = isRegisterMode ? 'register' : 'login';
         authSubmitBtn.textContent = isRegisterMode ? 'Registruji...' : 'Přihlašuji...';
@@ -1116,7 +1132,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             'Tento e-mail může být spojený s existujícím účtem. Přepnuli jsme tě na přihlášení — zadej heslo, nebo použij obnovu hesla.'
                         );
                         passwordInput?.focus({ preventScroll: true });
-                        passwordInput?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' });
+                        passwordInput?.scrollIntoView({ behavior: 'smooth', block: 'center' });
                         trackAuthView('registration_recovery');
                         return;
                     }
@@ -1152,14 +1168,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 window.Auth.showToast?.('Vítej zpět', 'Přihlášení proběhlo úspěšně.', 'success');
             }
         } catch (error) {
-            const message = getFriendlyAuthError(error, 'Přihlášení se teď nepodařilo. Zkus to znovu za chvíli.');
-            getFormUx().setFormSummary?.(loginForm, message);
-            window.Auth.showToast?.('Chyba', message, 'error');
+            getFormUx().setFormSummary?.(loginForm, error.message);
+            window.Auth.showToast?.('Chyba', error.message, 'error');
         } finally {
-            authRequestPending = false;
-            loginForm.removeAttribute('aria-busy');
-            authFields.forEach((field, index) => { field.disabled = authFieldDisabledStates[index]; });
             authSubmitBtn.disabled = false;
+            delete loginForm.dataset.authSubmitting;
             if ((isRegisterMode ? 'register' : 'login') === submittedMode) {
                 authSubmitBtn.textContent = originalText;
             } else {
@@ -1168,46 +1181,47 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    forgotPasswordLink?.addEventListener('click', (event) => {
-        if (authRequestPending) {
-            event.preventDefault();
-            return;
-        }
+    forgotPasswordLink?.addEventListener('click', () => {
+        clearAuthModeErrors();
+        setBlockVisible(resetLinkNotice, false);
         setBlockVisible(loginForm, false);
         setBlockVisible(forgotPasswordForm, true);
         setBlockVisible(forgotPasswordLink, false);
         setBlockVisible(authModeWrapper, false);
         if (loginHeader) loginHeader.textContent = 'Zapomenuté heslo';
         if (loginSubtitle) loginSubtitle.textContent = 'Pošleme ti odkaz pro nastavení nového hesla.';
+        focusAuthField(document.getElementById('forgot-email'));
     });
 
     backToLoginBtn?.addEventListener('click', () => {
+        setBlockVisible(resetLinkNotice, false);
+        if (isResetMode) {
+            const cleanUrl = new URL(window.location.href);
+            cleanUrl.searchParams.delete('reset');
+            cleanUrl.hash = '';
+            window.history.replaceState(window.history.state, '', `${cleanUrl.pathname}${cleanUrl.search}`);
+        }
         setBlockVisible(loginForm, true);
         setBlockVisible(forgotPasswordForm, false);
         setBlockVisible(authModeWrapper, true);
         applyMode();
+        focusAuthField(document.getElementById('email'));
     });
 
     forgotPasswordForm?.addEventListener('submit', async (event) => {
         event.preventDefault();
         const email = document.getElementById('forgot-email')?.value;
-        const emailInput = document.getElementById('forgot-email');
         const submitBtn = forgotPasswordForm.querySelector('button[type="submit"]');
         const originalText = submitBtn?.textContent;
 
-        if (!submitBtn || forgotPasswordPending || submitBtn.disabled) return;
+        if (!submitBtn) {
+            return;
+        }
 
-        const recoveryStatus = document.getElementById('recovery-request-status');
-        const emailWasDisabled = emailInput?.disabled === true;
-        if (recoveryStatus) recoveryStatus.hidden = true;
-        forgotPasswordPending = true;
-        forgotPasswordForm.setAttribute('aria-busy', 'true');
-        if (emailInput) emailInput.disabled = true;
         submitBtn.textContent = 'Odesílám...';
         submitBtn.disabled = true;
 
         try {
-            storePasswordResetReturnTarget(null);
             const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
             const response = await fetch('/api/auth/forgot-password', {
                 method: 'POST',
@@ -1218,27 +1232,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({ email })
             });
 
-            const data = await response.json().catch(() => null);
+            const data = await response.json();
 
-            if (response.ok && data?.success) {
-                storePasswordResetReturnTarget(redirectTarget);
-                if (recoveryStatus) {
-                    recoveryStatus.textContent = 'Pokud je účet s tímto e-mailem vedený, může na něj přijít odkaz k obnovení hesla. Zkontroluj i spam; pokud odkaz nedorazí, můžeš žádost zopakovat. Na této stránce se pak můžeš vrátit k přihlášení.';
-                    recoveryStatus.hidden = false;
-                    if (!forgotPasswordForm.hidden) recoveryStatus.focus();
-                }
-                try { window.trackEvent?.('password_reset_requested', { source: 'forgot_password_form' }); } catch { /* Telemetry must not hide the acknowledgement. */ }
+            if (data.success) {
+                window.trackEvent?.('password_reset_requested', {
+                    source: 'forgot_password_form'
+                });
+                window.Auth?.showToast?.('E-mail odeslán', data.message, 'success');
+                backToLoginBtn?.click();
             } else {
-                throw new Error(data?.error || 'Nepodařilo se odeslat e-mail s obnovou hesla.');
+                throw new Error(data.error || 'Nepodařilo se odeslat e-mail s obnovou hesla.');
             }
         } catch (error) {
-            const message = getFriendlyAuthError(error, 'Odkaz pro obnovu se teď nepodařilo odeslat. Zkus to znovu za chvíli.');
-            getFormUx().setFormSummary?.(forgotPasswordForm, message);
-            window.Auth?.showToast?.('Chyba', message, 'error');
+            window.Auth?.showToast?.('Chyba', error.message, 'error');
         } finally {
-            forgotPasswordPending = false;
-            forgotPasswordForm.removeAttribute('aria-busy');
-            if (emailInput) emailInput.disabled = emailWasDisabled;
             submitBtn.textContent = originalText || 'Odeslat odkaz pro obnovu';
             submitBtn.disabled = false;
         }
@@ -1246,9 +1253,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     resetPasswordForm?.addEventListener('submit', async (event) => {
         event.preventDefault();
-        const submitBtn = resetPasswordForm.querySelector('button[type="submit"]');
-        if (!submitBtn || resetPasswordPending || submitBtn.disabled) return;
-
         const newPassword = document.getElementById('new-password')?.value;
         const confirmPassword = document.getElementById('confirm-password')?.value;
 
@@ -1261,21 +1265,19 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        const submitBtn = resetPasswordForm.querySelector('button[type="submit"]');
         const originalText = submitBtn?.textContent;
-        const resetFields = [
-            document.getElementById('new-password'),
-            document.getElementById('confirm-password')
-        ].filter(Boolean);
-        const resetFieldDisabledStates = resetFields.map((field) => field.disabled);
-        resetPasswordPending = true;
-        resetPasswordForm.setAttribute('aria-busy', 'true');
-        resetFields.forEach((field) => { field.disabled = true; });
+
+        if (!submitBtn) {
+            return;
+        }
+
         submitBtn.textContent = 'Ukládám...';
         submitBtn.disabled = true;
 
         try {
-            if (!accessToken) {
-                throw new Error('Neplatný odkaz pro obnovení hesla.');
+            if (!hasRecoveryToken || hasResetProviderError) {
+                throw new Error('Odkaz pro obnovu hesla není platný. Požádej o nový odkaz.');
             }
 
             const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
@@ -1283,53 +1285,35 @@ document.addEventListener('DOMContentLoaded', () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    Authorization: `Bearer ${accessToken}`,
+                    Authorization: `Bearer ${resetAccessToken}`,
                     ...(csrfToken && { 'X-CSRF-Token': csrfToken })
                 },
                 body: JSON.stringify({ password: newPassword })
             });
 
-            const data = await response.json().catch(() => null);
+            const data = await response.json();
 
-            if (response.ok && data?.success) {
-                // The recovery token is no longer needed after the server confirms
-                // the password change. Remove it from the browser's address bar.
-                window.history.replaceState(
-                    window.history.state,
-                    '',
-                    `${window.location.pathname}${window.location.search}`
-                );
+            if (data.success) {
                 window.trackEvent?.('password_reset_completed', {
                     source: 'reset_password_form'
                 });
-                const resetStatus = document.getElementById('reset-password-status');
-                if (resetStatus) {
-                    const loginLink = document.createElement('a');
-                    loginLink.href = `/prihlaseni.html?redirect=${encodeURIComponent(consumePasswordResetReturnTarget())}`;
-                    loginLink.textContent = 'Přihlásit se';
-                    resetStatus.textContent = 'Heslo bylo změněno. Teď se můžeš ';
-                    resetStatus.append(loginLink, '.');
-                    resetStatus.hidden = false;
-                    resetPasswordForm.hidden = true;
-                    resetStatus.focus();
-                } else {
-                    window.Auth?.showToast?.('Hotovo', 'Heslo bylo změněno. Teď se můžeš přihlásit.', 'success');
-                }
+                markResetSuccessHistoryState();
+                document.getElementById('new-password').value = '';
+                document.getElementById('confirm-password').value = '';
+                showResetSuccessState();
             } else {
-                if (response.status === 401) {
-                    showRecoveryRequestForm('Odkaz pro obnovu už není platný. Zadej e-mail a vyžádej si nový.');
+                const errorMessage = data.error || 'Nepodařilo se změnit heslo.';
+                const invalidRecoveryLink = response.status === 401
+                    || /(?:odkaz|token).*(?:neplat|vypršel|expired|invalid)|(?:expired|invalid).*(?:link|token)/i.test(errorMessage);
+                if (invalidRecoveryLink) {
+                    showResetRecoveryHelp('Odkaz pro obnovu hesla už není platný. Zadej e-mail a požádej o nový odkaz.');
                     return;
                 }
-                throw new Error(data?.error || 'Nepodařilo se změnit heslo.');
+                throw new Error(errorMessage);
             }
         } catch (error) {
-            const message = getFriendlyAuthError(error, 'Heslo se teď nepodařilo změnit. Zkus to znovu za chvíli.');
-            getFormUx().setFormSummary?.(resetPasswordForm, message);
-            window.Auth?.showToast?.('Chyba', message, 'error');
+            window.Auth?.showToast?.('Chyba', error.message, 'error');
         } finally {
-            resetPasswordPending = false;
-            resetPasswordForm.removeAttribute('aria-busy');
-            resetFields.forEach((field, index) => { field.disabled = resetFieldDisabledStates[index]; });
             submitBtn.textContent = originalText || 'Nastavit nové heslo';
             submitBtn.disabled = false;
         }
@@ -1341,40 +1325,36 @@ document.addEventListener('DOMContentLoaded', () => {
         window.history.replaceState(window.history.state, '', `${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`);
     }
 
-    toggleBtn?.addEventListener('click', (event) => {
-        if (authRequestPending) {
-            event.preventDefault();
-            return;
-        }
-        clearAuthErrors();
+    toggleBtn?.addEventListener('click', () => {
+        clearAuthModeErrors();
         isRegisterMode = !isRegisterMode;
         syncAuthModeInUrl();
         applyMode();
-        focusAndReveal(loginHeader || document.getElementById('email'));
+        focusAuthField(document.getElementById('email'));
         trackAuthView('toggle');
     });
 
-    checkoutExistingAccount?.addEventListener('click', (event) => {
-        if (authRequestPending) {
-            event.preventDefault();
-            return;
-        }
+    checkoutExistingAccount?.addEventListener('click', () => {
+        clearAuthModeErrors();
         isRegisterMode = false;
         syncAuthModeInUrl();
         applyMode();
         trackAuthView('checkout_existing_account');
-        focusAndReveal(loginHeader || document.getElementById('email'));
+        focusAuthField(document.getElementById('email'));
     });
 
     setTimeout(() => {
+        if (isResetMode) return;
+
         if (window.Auth?.isLoggedIn()) {
             if (hasPendingAuthRedirect()) {
                 return;
             }
 
-            const redirect = getSafeLocalRedirect(urlParams.get('redirect'));
-            if (redirect) {
-                window.location.href = redirect;
+            const redirect = urlParams.get('redirect');
+            const safeRedirect = getSafeLocalRedirect(redirect, null);
+            if (safeRedirect) {
+                window.location.href = safeRedirect;
             } else {
                 window.location.href = '/profil.html';
             }
@@ -1383,6 +1363,8 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 document.addEventListener('auth:changed', () => {
+    if (new URLSearchParams(window.location.search).get('reset') === 'true') return;
+
     if (window.Auth?.isLoggedIn()) {
         // getPostVerificationCheckout guards the login recovery flow: right after a
         // login, Auth.loginSuccess may be about to resume an interrupted checkout

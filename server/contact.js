@@ -27,17 +27,26 @@ router.post('/', contactLimiter, async (req, res) => {
 
         // Validated inputs are ready to use; do not log contact details or message bodies.
 
-        // Send notification to admin (fire-and-forget)
+        // Confirm success only after the notification provider accepts the message.
         const adminEmail = process.env.ADMIN_EMAIL ||
             process.env.SUPPORT_FORWARD_EMAIL ||
             process.env.SUPPORT_EMAIL ||
             process.env.REPLY_TO_EMAIL ||
             'support@mystickahvezda.cz';
-        sendEmail({
-            to: adminEmail,
-            template: 'admin_contact_notification',
-            data: { name: validatedName, email: validatedEmail, subject: validatedSubject, message: validatedMessage }
-        }).catch(err => console.error('[Contact] Admin notification failed:', err.message));
+
+        try {
+            await sendEmail({
+                to: adminEmail,
+                template: 'admin_contact_notification',
+                data: { name: validatedName, email: validatedEmail, subject: validatedSubject, message: validatedMessage }
+            });
+        } catch (err) {
+            console.error('[Contact] Admin notification failed:', err.message);
+            return res.status(503).json({
+                success: false,
+                error: 'Nepodařilo se potvrdit odeslání zprávy. Zkuste to prosím později.'
+            });
+        }
 
         res.status(200).json({
             success: true,

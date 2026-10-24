@@ -23,6 +23,8 @@ function portFromBaseUrl(value) {
 
 const configuredBaseUrl = process.env.PLAYWRIGHT_BASE_URL || '';
 const explicitPort = parsePort(process.env.PLAYWRIGHT_PORT);
+const configuredChromiumExecutablePath = process.env.PLAYWRIGHT_E2E_CHROMIUM_EXECUTABLE_PATH?.trim()
+    || process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH?.trim();
 const defaultLocalPort = process.env.CI ? 3001 : 3100 + (process.pid % 700);
 const E2E_PORT = explicitPort || portFromBaseUrl(configuredBaseUrl) || defaultLocalPort;
 const E2E_BASE_URL = configuredBaseUrl || `http://localhost:${E2E_PORT}`;
@@ -57,6 +59,17 @@ export default defineConfig({
         locale: 'cs-CZ',
         timezoneId: 'Europe/Prague',
         viewport: { width: 1280, height: 720 },
+        ...(configuredChromiumExecutablePath
+            ? {
+                // The system Edge exposes Windows' native Web Share sheet in headless mode.
+                // Disable it in this local fallback run so download tests exercise the
+                // deterministic PNG download path instead of waiting on OS UI.
+                launchOptions: {
+                    executablePath: configuredChromiumExecutablePath,
+                    args: ['--disable-features=WebShare']
+                }
+            }
+            : {}),
         ignoreHTTPSErrors: true,
         serviceWorkers: 'block',
         // Zachytit screenshot při selhání

@@ -16,6 +16,7 @@ function makeElement(id = '') {
             contains: value => classes.has(value)
         },
         addEventListener(type, handler) { listeners[type] = handler; },
+        focus() {},
         click() { return listeners.click?.(); },
         setAttribute(name, value) { this.attrs[name] = value; },
         removeAttribute(name) { delete this.attrs[name]; }

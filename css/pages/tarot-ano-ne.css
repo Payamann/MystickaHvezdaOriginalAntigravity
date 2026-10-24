@@ -105,9 +105,8 @@
   box-shadow: 0 0 0 3px #e9c57212
 }
 #question-hint {
-  font-size: 12px;
-  line-height: 1.5;
-  color: #c5b9cb;
+  font-size: 11px;
+  color: #a49aaf;
   margin: 9px 0 0
 }
 .question-error {
@@ -178,19 +177,9 @@
 }
 .card-back {
   background: #10101b url('/img/tarot-v2/tarot_card_back.webp') center/cover no-repeat;
-  background-image: image-set(
-    url('/img/tarot-v2/tarot_card_back-mobile.webp') 1x,
-    url('/img/tarot-v2/tarot_card_back-mobile-480.webp') 2x,
-    url('/img/tarot-v2/tarot_card_back-mobile-480.webp') 3x
-  );
   border: 1px solid #d5b46ecc;
   box-shadow: 0 12px 26px #0008,0 0 18px #b79c5420;
   transition: box-shadow .25s,border-color .25s
-}
-@media(max-width:600px) {
-  .card-back {
-    background-image: url('/img/tarot-v2/tarot_card_back-mobile.webp')
-  }
 }
 .page-tarot-yes-no .tarot-card:not(.tarot-card--locked):hover .card-back,
 .page-tarot-yes-no .tarot-card:focus-visible .card-back {
@@ -223,8 +212,8 @@
 }
 .yes-no-reflection {
   text-align: center;
-  font-size: 12px;
-  color: #c5b9cb;
+  font-size: 11px;
+  color: #a59ab3;
   margin: 23px auto 0
 }
 .result-panel {
@@ -344,25 +333,31 @@
   color: #d6bbeb;
   text-underline-offset: 4px
 }
-.tarot-member-continuation {
+.tarot-result-upgrade-bridge {
   padding: 24px;
   border: 1px solid var(--reading-line);
   border-radius: 16px;
-  background: #102638
+  background: #191426
 }
-.tarot-member-continuation__eyebrow {
+.tarot-result-upgrade-bridge__eyebrow {
   display: block;
   color: var(--reading-gold);
   font-size: 11px;
   margin-bottom: 10px
 }
-.tarot-member-continuation__content strong {
+.tarot-result-upgrade-bridge__content strong {
   font: 22px/1.4 'Cinzel',Georgia,serif
 }
-.tarot-member-continuation__content p {
+.tarot-result-upgrade-bridge__content p {
   font-size: 14px;
   color: var(--reading-muted);
   margin: 12px 0 18px
+}
+.tarot-result-upgrade-bridge__action small {
+  display: block;
+  font-size: 11px;
+  color: var(--reading-muted);
+  margin-top: 12px
 }
 .yes-no-more {
   max-width: 790px;
@@ -582,7 +577,7 @@
   padding-top: 76px
 }
 .page-tarot-yes-no .stars {
-  background-image: linear-gradient(#050510c9,#050510f2),url('/img/search-preview/tarot-cloth-hero-optimized.webp');
+  background-image: linear-gradient(#050510cc,#050510ed),url('/img/bg-cosmic-hd.webp');
   opacity: 1
 }
 .page-tarot-yes-no .tarot-card {
@@ -599,9 +594,6 @@
 @media(max-width:600px) {
   .page-tarot-yes-no main {
     padding-top: 70px
-  }
-  .page-tarot-yes-no .stars {
-    background-image: linear-gradient(#050510c9,#050510f2),image-set(url('/img/search-preview/tarot-cloth-hero-mobile-800.webp') 1x,url('/img/search-preview/tarot-cloth-hero-optimized.webp') 2x)
   }
 }
 @media(min-width:601px) {

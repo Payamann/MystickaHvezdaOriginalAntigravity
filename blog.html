@@ -15,7 +15,7 @@
 
     <meta name="description" content="Články o horoskopech, tarotu, numerologii, lunárních cyklech a sebereflexi. Praktické návody, významy symbolů a cesty k vlastním výkladům.">
     <link rel="stylesheet" href="/fonts/local-fonts.css">
-    <link rel="stylesheet" href="css/style.v2.min.css?v=20261018-release-candidate">
+    <link rel="stylesheet" href="css/style.v2.min.css?v=20261023-release-todo">
     <link rel="stylesheet" href="css/pages/blog.css">
 <link rel="canonical" href="https://www.mystickahvezda.cz/blog.html">
 
@@ -38,11 +38,12 @@
 <meta property="og:image:alt" content="Blog Mystická Hvězda | Tarot, horoskopy a numerologie">
 <meta name="twitter:image:alt" content="Blog Mystická Hvězda | Tarot, horoskopy a numerologie">
 
-    <link rel="stylesheet" href="/css/atlas-web.css?v=20261020-03-horoscope-day-switcher-atlas">
-    <link rel="stylesheet" href="/css/atlas-blog.css?v=20261018-author-avatar">
+    <link rel="stylesheet" href="/css/atlas-web.css?v=20261023-release-todo">
+    <link rel="stylesheet" href="/css/atlas-blog.css?v=1">
+<link rel="stylesheet" href="/css/atlas-polish-v1.css?v=20261009">
 </head>
 
-<body class="atlas-page atlas-blog">
+<body class="atlas-page atlas-blog" data-atlas-polish="blog">
     <a href="#main-content" class="skip-link">Přeskočit na obsah</a>
 
     <div id="header-placeholder"></div>
@@ -73,7 +74,12 @@
 
             <div class="container">
 
-                <div class="category-filter" id="categoryFilter">
+                <div class="blog-search" hidden>
+                    <label for="blogSearch">Hledat článek podle názvu nebo tématu</label>
+                    <input id="blogSearch" type="search" placeholder="Např. tarot, vztahy, sny…" autocomplete="off">
+                </div>
+
+                <div class="category-filter" id="categoryFilter" hidden>
 
                     <button class="category-btn active" data-category="all">Všechny články</button>
 
@@ -86,7 +92,7 @@
                     <!-- STATIC-BLOG-FEATURED:START -->
                     <a href="blog/saturnuv-navrat-krize-tricitky.html" class="featured-post">
                         <div class="featured-post__image-wrapper">
-                            <img src="img/atlas/social-v1/04-prvni-schody.webp" srcset="img/atlas/social-v1/04-prvni-schody-480.webp 480w, img/atlas/social-v1/04-prvni-schody-800.webp 800w, img/atlas/social-v1/04-prvni-schody.webp 1080w" sizes="(max-width: 720px) 88vw, 640px" alt="" role="presentation" class="featured-post__image" width="640" height="360" loading="eager" fetchpriority="high">
+                            <img src="img/atlas/social-v1/04-prvni-schody.webp" alt="" role="presentation" class="featured-post__image" width="640" height="360" loading="eager" fetchpriority="high">
                         </div>
                         <div class="featured-post__content">
                             <div class="featured-post__meta"><span>Astrologie</span></div>
@@ -108,7 +114,7 @@
                     <!-- STATIC-BLOG-LINKS:START -->
                     <a href="blog/minuly-zivot-znameni-vzpominky.html" class="blog-card">
                         <div class="blog-card-image-wrapper">
-                            <img src="img/atlas/social-v1/02-zahradni-branka.webp" srcset="img/atlas/social-v1/02-zahradni-branka-480.webp 480w, img/atlas/social-v1/02-zahradni-branka-800.webp 800w, img/atlas/social-v1/02-zahradni-branka.webp 1080w" sizes="(max-width: 720px) 88vw, 320px" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                            <img src="img/atlas/social-v1/02-zahradni-branka.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
                         </div>
                         <div class="blog-card-content">
                             <div class="blog-meta-small">Spiritualita</div>
@@ -118,7 +124,7 @@
                     </a>
                     <a href="blog/silove-zvire-jak-najit.html" class="blog-card">
                         <div class="blog-card-image-wrapper">
-                            <img src="img/atlas/tools-v1/06-lesni-kruh.webp" srcset="img/atlas/tools-v1/06-lesni-kruh-480.webp 480w, img/atlas/tools-v1/06-lesni-kruh-800.webp 800w, img/atlas/tools-v1/06-lesni-kruh.webp 1200w" sizes="(max-width: 720px) 88vw, 320px" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                            <img src="img/atlas/tools-v1/06-lesni-kruh.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
                         </div>
                         <div class="blog-card-content">
                             <div class="blog-meta-small">Šamanismus</div>
@@ -128,7 +134,7 @@
                     </a>
                     <a href="blog/karta-blazen-tarot-vyznam.html" class="blog-card">
                         <div class="blog-card-image-wrapper">
-                            <img src="img/tarot-v2/tarot_blazen.webp" srcset="img/tarot-v2/tarot_blazen-240.webp 240w, img/tarot-v2/tarot_blazen-360.webp 360w, img/tarot-v2/tarot_blazen-480.webp 480w, img/tarot-v2/tarot_blazen.webp 600w" sizes="(max-width: 720px) 88vw, 320px" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                            <img src="img/tarot-v2/tarot_blazen.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
                         </div>
                         <div class="blog-card-content">
                             <div class="blog-meta-small">Tarot</div>
@@ -138,7 +144,7 @@
                     </a>
                     <a href="blog/andelske-cislo-222-vyznam.html" class="blog-card">
                         <div class="blog-card-image-wrapper">
-                            <img src="img/atlas/tools-v1/03-numerologicky-zapisnik.webp" srcset="img/atlas/tools-v1/03-numerologicky-zapisnik-480.webp 480w, img/atlas/tools-v1/03-numerologicky-zapisnik-800.webp 800w, img/atlas/tools-v1/03-numerologicky-zapisnik.webp 1200w" sizes="(max-width: 720px) 88vw, 320px" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                            <img src="img/atlas/tools-v1/03-numerologicky-zapisnik.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
                         </div>
                         <div class="blog-card-content">
                             <div class="blog-meta-small">Spiritualita</div>
@@ -148,7 +154,7 @@
                     </a>
                     <a href="blog/letni-laska-astrologie-znameni.html" class="blog-card">
                         <div class="blog-card-image-wrapper">
-                            <img src="img/atlas/social-v1/01-dva-hrnky.webp" srcset="img/atlas/social-v1/01-dva-hrnky-480.webp 480w, img/atlas/social-v1/01-dva-hrnky-800.webp 800w, img/atlas/social-v1/01-dva-hrnky.webp 1080w" sizes="(max-width: 720px) 88vw, 320px" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                            <img src="img/atlas/social-v1/01-dva-hrnky.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
                         </div>
                         <div class="blog-card-content">
                             <div class="blog-meta-small">Vztahy</div>
@@ -158,7 +164,7 @@
                     </a>
                     <a href="blog/lvi-sezona-2026.html" class="blog-card">
                         <div class="blog-card-image-wrapper">
-                            <img src="img/atlas/social-v1/09-granatove-jablko.webp" srcset="img/atlas/social-v1/09-granatove-jablko-480.webp 480w, img/atlas/social-v1/09-granatove-jablko-800.webp 800w, img/atlas/social-v1/09-granatove-jablko.webp 1080w" sizes="(max-width: 720px) 88vw, 320px" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                            <img src="img/atlas/social-v1/09-granatove-jablko.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
                         </div>
                         <div class="blog-card-content">
                             <div class="blog-meta-small">Astrologie</div>
@@ -168,7 +174,7 @@
                     </a>
                     <a href="blog/karta-milenci-tarot-vyznam.html" class="blog-card">
                         <div class="blog-card-image-wrapper">
-                            <img src="img/tarot-v2/tarot_milenci.webp" srcset="img/tarot-v2/tarot_milenci-240.webp 240w, img/tarot-v2/tarot_milenci-360.webp 360w, img/tarot-v2/tarot_milenci-480.webp 480w, img/tarot-v2/tarot_milenci.webp 600w" sizes="(max-width: 720px) 88vw, 320px" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                            <img src="img/tarot-v2/tarot_milenci.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
                         </div>
                         <div class="blog-card-content">
                             <div class="blog-meta-small">Tarot</div>
@@ -176,13 +182,673 @@
                             <div class="blog-desc">Milenci nejsou jen karta lásky — jsou to karta volby. Co znamená šestá velká arkána ve výkladu na lásku, práci, jako karta dne i v obrácené poloze — a proč se jí říká křižovatka srdce.</div>
                         </div>
                     </a>
+                    <a href="blog/zatmeni-slunce-srpen-2026-lev.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/atlas/tools-v1/02-mesicni-krajina.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Astrologie</div>
+                            <div class="blog-title">Zatmění Slunce 12. srpna 2026 ve Lvu: Co přinese a jak se připravit</div>
+                            <div class="blog-desc">12. srpna 2026 nastane úplné zatmění Slunce ve znamení Lva — první viditelné z Evropy po desítkách let. Zjisti, co zatmění znamená astrologicky, koho se dotkne nejvíc a co v den zatmění (ne)dělat.</div>
+                        </div>
+                    </a>
+                    <a href="blog/opakujici-se-sny-co-znamenaji.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/atlas/social-v1/05-kocka-u-okna.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Snář</div>
+                            <div class="blog-title">Proč se ti vrací stejný sen? Co znamenají opakující se sny</div>
+                            <div class="blog-desc">Padáš, utíkáš, vypadávají ti zuby — a pořád dokola? Opakující se sny nejsou náhoda, ale doporučený dopis od tvé psychiky. Zjisti, co znamenají ty nejčastější a jak je zastavit ve 4 krocích.</div>
+                        </div>
+                    </a>
+                    <a href="blog/osobni-mesic-numerologie-vypocet.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/atlas/tools-v1/03-numerologicky-zapisnik.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Numerologie</div>
+                            <div class="blog-title">Osobní měsíc v numerologii: Proč se ti tento měsíc (ne)daří</div>
+                            <div class="blog-desc">Každý měsíc má pro tebe jinou energii. Nauč se jednoduchý výpočet osobního měsíce, pochop význam čísel 1–9 a přestaň plavat proti proudu — plánuj podle svého rytmu.</div>
+                        </div>
+                    </a>
+                    <a href="blog/chiron-raneny-lecitel-natalni-karta.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/atlas/social-v1/08-zrcadlo.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Astrologie</div>
+                            <div class="blog-title">Chiron: Raněný léčitel v tvé natální kartě — kde skrývá tvá největší rána i dar</div>
+                            <div class="blog-desc">Chiron v natální kartě označuje místo tvé nejhlubší rány — ale také tvůj největší dar. Zjisti, co ti říká znamení a dům Chirona a proč ho astrologové považují za klíč k uzdravení.</div>
+                        </div>
+                    </a>
+                    <a href="blog/ctyri-zivly-astrologie-ohen-zeme-vzduch-voda.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/atlas/tools-v1/01-astrolab.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Astrologie</div>
+                            <div class="blog-title">Čtyři živly v astrologii: Oheň, Země, Vzduch a Voda — průvodce energiemi zvěrokruhu</div>
+                            <div class="blog-desc">Oheň, Země, Vzduch, Voda — čtyři živly tvoří základ celé astrologie. Zjisti, jaký živel dominuje ve tvém horoskopu, co to říká o tvé osobnosti a jak živly ovlivňují vztahy.</div>
+                        </div>
+                    </a>
+                    <a href="blog/pentagramy-tarot-penize-kariera.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/tarot-v2/tarot_eso_pentaklu.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Tarot</div>
+                            <div class="blog-title">Pentákly v tarotu: práce, hodnota a každodenní zázemí</div>
+                            <div class="blog-desc">Průvodce všemi 14 kartami pentáklů. Jejich význam v lásce, práci i běžném životě, obrácená poloha a otázka k zamyšlení.</div>
+                        </div>
+                    </a>
+                    <a href="blog/hulkove-karty-tarot-vyznam.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/tarot-v2/tarot_eso_holi.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Tarot</div>
+                            <div class="blog-title">Hůlkové karty v tarotu: význam všech 14 karet a příklady</div>
+                            <div class="blog-desc">Přehled 14 hůlkových karet s ilustracemi, modelovou situací a otázkami pro lásku, práci i obrácenou polohu. Význam záleží na kontextu.</div>
+                        </div>
+                    </a>
+                    <a href="blog/numerologie-jmena-krizni-jmeno.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/atlas/tools-v1/03-numerologicky-zapisnik.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Numerologie</div>
+                            <div class="blog-title">Numerologie jména: Co skrývá vaše křestní jméno a jak ho změna ovlivní osud</div>
+                            <div class="blog-desc">Vaše jméno vibruje na konkrétní frekvenci. Pythagorická numerologie odhalí, co vaše křestní jméno říká o vaší osobnosti — a co se stane, když ho změníte.</div>
+                        </div>
+                    </a>
+                    <a href="blog/cakrove-leceni-navod.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/atlas/social-v1/06-zalevani.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Spiritualita</div>
+                            <div class="blog-title">Čakrová praxe: bezpečný průvodce pro začátečníky</div>
+                            <div class="blog-desc">Čakry jako sebereflexe, ne diagnóza. Jemný průvodce orientačními signály, bezpečnými technikami a 10minutovou praxí bez zdravotních slibů.</div>
+                        </div>
+                    </a>
+                    <a href="blog/novy-mesic-ritual-zacatecnici.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/atlas/tools-v1/02-mesicni-krajina.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Spiritualita</div>
+                            <div class="blog-title">Nový Měsíc: Rituál pro začátečníky a jak správně zasadit semena přání</div>
+                            <div class="blog-desc">Nový Měsíc je nejsilnější okamžik pro zasazení záměrů. Průvodce rituálem pro začátečníky — bez mystického balastu, jen čistá praxe.</div>
+                        </div>
+                    </a>
+                    <a href="blog/karta-soudce-tarot-vyznam.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/tarot-v2/tarot_soud.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Tarot</div>
+                            <div class="blog-title">Soud (XX) v tarotu: zhodnotit zkušenost a zvolit další krok</div>
+                            <div class="blog-desc">Význam Soudu v tarotu: bilance zkušenosti, vztahy, práce i obrácená poloha. V katalogu Mystické Hvězdy se karta jmenuje Soud; Soudce zůstává v původní adrese.</div>
+                        </div>
+                    </a>
+                    <a href="blog/numerologie-kompatibilita-partneru.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/atlas/social-v1/01-dva-hrnky.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Numerologie</div>
+                            <div class="blog-title">Partnerská kompatibilita v numerologii: Jsou vaše čísla osudu ve shodě?</div>
+                            <div class="blog-desc">Numerologie odhaluje hlubší vrstvu partnerské dynamiky než horoskopy. Zjistěte, jak vaše životní čísla spolupracují — a kde leží největší výzvy.</div>
+                        </div>
+                    </a>
+                    <a href="blog/mecove-karty-tarot-vyznam.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/tarot-v2/tarot_eso_mecu.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Tarot</div>
+                            <div class="blog-title">Mečové karty v tarotu: význam všech 14 karet a příklady</div>
+                            <div class="blog-desc">Přehled 14 mečových karet s vlastními ilustracemi: jasnost, volba, rozhovor a hranice. Praktický příklad, obrácené polohy a souvislosti bez strašení.</div>
+                        </div>
+                    </a>
+                    <a href="blog/keltsky-kriz-tarot-rozlozeni.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/tarot-v2/tarot_hvezda.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Tarot</div>
+                            <div class="blog-title">Keltský kříž v tarotu: 10 pozic a praktický postup</div>
+                            <div class="blog-desc">Deset pozic Keltského kříže podle našeho webu. Jedna otázka, propojení symbolů a modelová situace bez pevných předpovědí; celý online rozklad v členství.</div>
+                        </div>
+                    </a>
+                    <a href="blog/shamansko-kolo-totemove-zvire.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/atlas/tools-v1/06-lesni-kruh.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Šamanismus</div>
+                            <div class="blog-title">Šamanské Kolo: Jak zjistit své totemové zvíře a co vám o sobě prozradí</div>
+                            <div class="blog-desc">Každý z nás se rodí pod ochranou konkrétního totemového zvířete. Šamanské Kolo vám ukáže, které to je — a co vám o vaší cestě životem prozrazuje.</div>
+                        </div>
+                    </a>
+                    <a href="blog/retrograde-venus-2026-co-cekat-v-lasce.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/atlas/social-v1/01-dva-hrnky.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Astrologie</div>
+                            <div class="blog-title">Retrográdní Venuše 2026: Co čekat v lásce, vztazích a financích</div>
+                            <div class="blog-desc">Venuše retrográdní 2026 — kdy začíná, co to znamená pro tvůj vztah, lásku a finance. Výklad pro všechna znamení: Beran, Býk, Blíženci, Rak, Lev, Panna, Váhy, Štír, Střelec, Kozoroh, Vodnář, Ryby. Praktický průvodce jak toto období přežít a využít ve svůj prospěch.</div>
+                        </div>
+                    </a>
+                    <a href="blog/uplnek-v-panne-ritual-a-vyklad-pro-kazde-znameni.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/atlas/tools-v1/02-mesicni-krajina.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Lunární Magie</div>
+                            <div class="blog-title">Úplněk v Panně: Rituál, výklad a co čekat pro každé znamení</div>
+                            <div class="blog-desc">Úplněk v Panně přináší čas čistoty, přehodnocení a propuštění. Zjistěte přesný výklad pro vaše znamení, rituál a jak tuto lunaci vědomě využít.</div>
+                        </div>
+                    </a>
+                    <a href="blog/uplnek-v-kozorohovi-ritual-a-vyznam.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/atlas/tools-v1/02-mesicni-krajina.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Lunární Magie</div>
+                            <div class="blog-title">Úplněk v Kozorohu: Čas sklizně ambicí a uvolnění strachu z neúspěchu</div>
+                            <div class="blog-desc">Úplněk v Kozorohu osvěcuje kariéru, ambice a vztah k autoritě. Rituál a výklad pro každé znamení.</div>
+                        </div>
+                    </a>
+                    <a href="blog/merkur-v-retrograde-co-to-znamena-pro-vase-znameni.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/atlas/tools-v1/01-astrolab.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Astrologie</div>
+                            <div class="blog-title">Merkur v retrográdě 2026: Co to skutečně znamená pro každé znamení</div>
+                            <div class="blog-desc">Merkur v retrográdě nemusí být pohromou. Zjistěte, co toto astrologické období přináší každému ze 12 znamení, jak se připravit a jak retrográdu využít ve svůj prospěch.</div>
+                        </div>
+                    </a>
+                    <a href="blog/proc-vam-to-v-lasce-nevyhcazi.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/atlas/social-v1/08-zrcadlo.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Vztahy</div>
+                            <div class="blog-title">Karmický vztah vs. Spřízněná duše: Proč vám to v lásce nevychází?</div>
+                            <div class="blog-desc">Stále se točíte v bludném kruhu toxických vztahů? Možná potkáváte karmické učitele místo své skutečné spřízněné duše. Zjistěte ten zásadní rozdíl.</div>
+                        </div>
+                    </a>
+                    <a href="blog/zivotni-cislo-odhaleni-kodu-vasi-duse.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/atlas/tools-v1/03-numerologicky-zapisnik.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Numerologie</div>
+                            <div class="blog-title">Životní číslo: Starověký klíč k vaší karmě a skrytému potenciálu</div>
+                            <div class="blog-desc">Vaše datum narození není matematická náhoda. Objevte, jak starořecká numerologie dešifruje mapu vaší duše a jaký osudový úkol vám byl svěřen.</div>
+                        </div>
+                    </a>
+                    <a href="blog/rozpoznejte-svou-astrologickou-signaturu.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/atlas/tools-v1/01-astrolab.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Astrologie</div>
+                            <div class="blog-title">Slunce, Měsíc, Ascendent: Vaše svatá astrologická trojice</div>
+                            <div class="blog-desc">Číst pofidérní horoskopy v časopisech z vás astrologa neudělá. K pochopení vaší skutečné osobnosti musíte znát svou velkou trojku.</div>
+                        </div>
+                    </a>
+                    <a href="blog/tajemstvi-12-astrologickych-domu.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/atlas/tools-v1/01-astrolab.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Astrologie</div>
+                            <div class="blog-title">Architektura Osudu: Skryté tajemství 12 Astrologických domů</div>
+                            <div class="blog-desc">Myslíte si, že znát své znamení stačí? Pokud neznáte své Astrologické domy, čtete z mapy svého života jen obal s názvem knihy. Pojďme do hloubky.</div>
+                        </div>
+                    </a>
+                    <a href="blog/stir-muz-a-panna-zena-kompatibilita.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/atlas/social-v1/01-dva-hrnky.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Kompatibilita</div>
+                            <div class="blog-title">Štír muž a Panna žena: Kompatibilita vztahu, láska a výzvy</div>
+                            <div class="blog-desc">Štír muž a Panna žena – jeden z nejsilnějších párů zvěrokruhu? Detailní analýza kompatibility, lásky, komunikace a sexuální chemie tohoto spojení.</div>
+                        </div>
+                    </a>
+                    <a href="blog/runy-severska-magie-v-modernim-svete.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/atlas/tools-v1/04-runove-kameny.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Věštění</div>
+                            <div class="blog-title">Futhark: Syrová krása Run a proč severská magie není hrou pro slabé</div>
+                            <div class="blog-desc">Zatímco Tarot odpovídá v jemných psychologických nuancích, Runy do vás vrhnou syrovou, ostrou severskou pravdu. Jak bezpečně pracovat s tímto starodávným systémem?</div>
+                        </div>
+                    </a>
+                    <a href="blog/co-je-synastrie-jak-funguje-partnerska-astrologie.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/atlas/tools-v1/01-astrolab.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Astrologie</div>
+                            <div class="blog-title">Co je synastrie a jak funguje partnerská astrologie?</div>
+                            <div class="blog-desc">Synastrie je astrologická metoda porovnávání dvou natálních karet. Zjistěte, co synastrie skutečně ukazuje, jak ji číst a proč sluneční znamení nestačí pro posouzení vztahu.</div>
+                        </div>
+                    </a>
+                    <a href="blog/andelska-cisla-1111.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/atlas/editorial-v1/11-11-morning-1200.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Spiritualita</div>
+                            <div class="blog-title">Co znamená 11:11 a číslo 1111?</div>
+                            <div class="blog-desc">Všímáš si často 11:11 nebo čísla 1111? Poznej jejich symbolický význam, rozdíl proti 111 a 22:22 i to, jak naši pozornost ovlivňuje známý číselný vzor.</div>
+                        </div>
+                    </a>
+                    <a href="blog/5-znaku-ze-potkavate-svou-spriznenou-dusi.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/atlas/social-v1/01-dva-hrnky.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Spiritualita</div>
+                            <div class="blog-title">5 znamení, že potkáváte svou spřízněnou duši</div>
+                            <div class="blog-desc">Jak poznáte, že jste potkali svou spřízněnou duši? Pět konkrétních znamení – a proč spřízněná duše nemusí být ta, u které zůstanete navždy.</div>
+                        </div>
+                    </a>
+                    <a href="blog/jak-zjistit-sve-logo-a-sestici-v-numerologii.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/atlas/tools-v1/03-numerologicky-zapisnik.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Numerologie</div>
+                            <div class="blog-title">Číslo Výrazu, Duše a Osobnosti: Jak je vypočítat a co prozradí</div>
+                            <div class="blog-desc">Logo (Číslo Výrazu), Číslo Duše a Číslo Osobnosti – tři klíčové numerologické ukazatele, které jdou daleko za Číslo Osudu. Kompletní průvodce výpočtem a výkladem.</div>
+                        </div>
+                    </a>
+                    <a href="blog/iluze-spriznene-duse-karmicke-vztahy.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/atlas/social-v1/01-dva-hrnky.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Vztahy</div>
+                            <div class="blog-title">Iluze jménem Spřízněná duše: Proč nás tytéž vztahy chronicky stahují ke dnu?</div>
+                            <div class="blog-desc">Motýlci v břiše, pocit, že se znáte staletí, a pak náhlý a zničující pád. Proč astrologická praxe nabádá k maximální opatrnosti před karmickými svazky?</div>
+                        </div>
+                    </a>
+                    <a href="blog/co-znamenaji-pohary-v-tarotu.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/tarot-v2/tarot_eso_poharu.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Tarot</div>
+                            <div class="blog-title">Poháry v tarotu: význam všech 14 karet</div>
+                            <div class="blog-desc">Přehled 14 karet Pohárů: jejich symbolika, obrácená poloha a modelové situace pro lásku, práci i každodenní rozhodování.</div>
+                        </div>
+                    </a>
+                    <a href="blog/psychologie-snu-stici-stromy.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/atlas/social-v1/10-sova.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Snář</div>
+                            <div class="blog-title">Vypadané zuby a sen o pádu: Co se vám snaží říct vaše stínové nevědomí?</div>
+                            <div class="blog-desc">Myslíte si, že ten mrazivý sen, v němž nemůžete utéct, je jen hloupost? Sny jsou královskou cestou do hlubin toho nejtemnějšího uvnitř nás. Pojďme je rozluštit.</div>
+                        </div>
+                    </a>
+                    <a href="blog/ascendent-vs-slunecni-znameni-jaky-je-rozdil.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/atlas/tools-v1/01-astrolab.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Astrologie</div>
+                            <div class="blog-title">Ascendent vs. Sluneční znamení: Jaký je skutečný rozdíl?</div>
+                            <div class="blog-desc">Proč se někdy nevztahujete ke svému slunečnímu znamení? Ascendent odhaluje, jak vás vidí svět. Pochopte rozdíl a zjistěte, jaký je váš Ascendent.</div>
+                        </div>
+                    </a>
+                    <a href="blog/zaklady-sedmi-caker-anatomie.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/atlas/social-v1/06-zalevani.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Spiritualita</div>
+                            <div class="blog-title">7 Čaker: Zevrubná anatomie neviditelného energetického světla</div>
+                            <div class="blog-desc">Myslíte si, že tělo končí vaší kožní bariérou? Existuje prastará mapa sedmi silových generátorů, u níž by zablokování i jediné pumpy ohrozilo všechny psychofyzikální vrstvy.</div>
+                        </div>
+                    </a>
+                    <a href="blog/tajemstvi-kristalove-koule-scrying.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/atlas/tools-v1/05-kristalova-koule.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Věštění</div>
+                            <div class="blog-title">Za oponou prostoru a času: Skutečné umění Scryingu z Křišťálové koule</div>
+                            <div class="blog-desc">Pokud považujete křišťálovou kouli jen za rekvizitu pro hollywoodské filmy o čarodějnicích, připravujete se o jednu z nejsilnějších technik starověkého zření.</div>
+                        </div>
+                    </a>
+                    <a href="blog/tajemstvi-snilku-jak-rozklivovat-nocni-vzazy.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/atlas/social-v1/10-sova.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Snář</div>
+                            <div class="blog-title">Tajemství snů: Jak správně dekódovat noční vizualizace</div>
+                            <div class="blog-desc">Padání z útesu, vypadávající zuby, pronásledování... Každou noc hrajeme ve vlastním filmu, jehož autorem je naše podvědomí. Jak těmto poselstvím porozumět?</div>
+                        </div>
+                    </a>
+                    <a href="blog/znameni-zverokruhu-a-penize.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/atlas/social-v1/09-granatove-jablko.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Astrologie</div>
+                            <div class="blog-title">Zvěrokruh a peníze: Kdo se topí ve zlatě a kdo má průvan v peněžence?</div>
+                            <div class="blog-desc">Každé znamení má jiný skrytý postoj k financím. Zjistěte, jestli jste od přírody magnet na peníze, nebo se musíte naučit zkrotit nutkání utrácet.</div>
+                        </div>
+                    </a>
+                    <a href="blog/skryty-kod-biorytmu-energeticke-cykly.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/atlas/social-v1/03-posledni-list.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Spiritualita</div>
+                            <div class="blog-title">Věda a Esoterika Biorytmů: Proč neštěstí nechodí náhodou, ale v sinusoidách</div>
+                            <div class="blog-desc">Některé dny sršíte vtipem a všechno se daří. O týden později máte pocit, že se proti vám spikl svět. Co když ale tyto výkyvy nejsou náhodné, ale přísně matematické?</div>
+                        </div>
+                    </a>
+                    <a href="blog/biorytmy-proc-se-vam-nedari.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/atlas/social-v1/05-kocka-u-okna.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Spiritualita</div>
+                            <div class="blog-title">Skrytý kód těla: Proč máte dny, kdy vám padá všechno z rukou?</div>
+                            <div class="blog-desc">Jste bez energie, v práci děláte chyby a s partnerem jste na nože. Dříve se tomu říkalo smůla. Dnes tomu říkáme kritický den Biorytmu.</div>
+                        </div>
+                    </a>
+                    <a href="blog/lekce-padajici-veze-tarot.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/tarot-v2/tarot_vez.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Tarot</div>
+                            <div class="blog-title">Věž (XVI) v tarotu: co dělat, když se změní plán</div>
+                            <div class="blog-desc">Význam Věže v tarotu pro vztahy a práci, obrácená poloha i modelová situace. Karta není předpovědí katastrofy ani příkazem ke změně.</div>
+                        </div>
+                    </a>
+                    <a href="blog/pruvodce-energie-ochrana.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/atlas/social-v1/08-zrcadlo.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Spiritualita</div>
+                            <div class="blog-title">Jak odrazit energetické upíry: Štíty v každodenním životě</div>
+                            <div class="blog-desc">Znáte lidi, po kterých se cítíte, jako by vás přejel parní válec? Ukážeme vám, jak se zamknout před odsáváním životní energie.</div>
+                        </div>
+                    </a>
+                    <a href="blog/zatmeni-slunce-a-mesice-2026.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/atlas/tools-v1/02-mesicni-krajina.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Astrologie</div>
+                            <div class="blog-title">Zatmění Slunce a Měsíce 2026: Jak přežít kosmický chaos?</div>
+                            <div class="blog-desc">Zatmění nejsou jen pěkná astronomická podívaná. V astrologii fungují jako urychlovače osudu. Připravte se na to, že věci naberou spád.</div>
+                        </div>
+                    </a>
+                    <a href="blog/panna-a-beran-partnerska-shoda.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/atlas/social-v1/01-dva-hrnky.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Vztahy</div>
+                            <div class="blog-title">Proč to Pannám a Beranům neklape? Anatomie vztahové katastrofy</div>
+                            <div class="blog-desc">Některé znakové kombinace vypadají na papíře skvěle, ale v reálu končí slzami a křikem. Pojďme si rozebrat klasický příklad nesourodého spojení.</div>
+                        </div>
+                    </a>
+                    <a href="blog/retrogradni-merkur-pruvodce.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/atlas/tools-v1/01-astrolab.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Astrologie</div>
+                            <div class="blog-title">Retrográdní Merkur: Ultimátní průvodce přežitím</div>
+                            <div class="blog-desc">Rozbité telefony, ztracené emaily, ex-partneři v DMs... Vítejte v týdnech Retrográdního Merkuru. Jak tuto dobu otočit ve svůj prospěch?</div>
+                        </div>
+                    </a>
+                    <a href="blog/zakon-pritazlivosti-chyby.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/atlas/social-v1/04-prvni-schody.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Spiritualita</div>
+                            <div class="blog-title">Manifestace a Zákon Přitažlivosti: 3 fatální chyby, které vás blokují</div>
+                            <div class="blog-desc">Tak rádi byste přitáhli hojnost a lásku, ale The Secret pro vás nefunguje? Děláte pravděpodobně jednu z těchto tří začátečnických chyb.</div>
+                        </div>
+                    </a>
+                    <a href="blog/vyklad-tarotu-pro-zacatecniky.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/tarot-v2/tarot_blazen.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Tarot</div>
+                            <div class="blog-title">Tarot pro začátečníky: jedna otázka, karta a vlastní krok</div>
+                            <div class="blog-desc">Jak začít s tarotem: připravit otázku, číst symbol a vybrat vlastní krok. Přehled 22 karet Velké arkány, modelová situace a bezplatné online možnosti.</div>
+                        </div>
+                    </a>
+                    <a href="blog/saturuv-navrat-29-rok-zivota.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/atlas/social-v1/04-prvni-schody.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Astrologie</div>
+                            <div class="blog-title">Saturův návrat: Proč je 29. rok života zlomový a co ti přinese</div>
+                            <div class="blog-desc">Saturův návrat kolem 29. roku zásadně mění kariéru, vztahy i identitu. Zjisti, co tě čeká, jak se připravit a proč jde o nejdůležitější tranzit v životě.</div>
+                        </div>
+                    </a>
+                    <a href="blog/karta-hvezda-tarot-vyznam.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/tarot-v2/tarot_hvezda.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Tarot</div>
+                            <div class="blog-title">Hvězda v tarotu: význam, naděje a vlastní další krok</div>
+                            <div class="blog-desc">Co může karta Hvězda nabídnout při otázkách na vztahy, práci a další směr? Praktický průvodce jejím významem, obrácenou polohou a souvislostmi.</div>
+                        </div>
+                    </a>
+                    <a href="blog/uzel-osudu-severni-jizni-uzel.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/atlas/social-v1/02-zahradni-branka.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Astrologie</div>
+                            <div class="blog-title">Uzel osudu v astrologii: Severní a Jižní uzel — tvoje karmická cesta</div>
+                            <div class="blog-desc">Co jsou severní a jižní uzel osudu v astrologii? Zjisti svou karmickou misi, co pustit z minulých životů a kdy přicházejí velké životní zlomy každých 18,5 let.</div>
+                        </div>
+                    </a>
+                    <a href="blog/osobni-rok-numerologie-2026.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/atlas/tools-v1/03-numerologicky-zapisnik.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Numerologie</div>
+                            <div class="blog-title">Osobní rok v numerologii: Co tě čeká v roce 2026</div>
+                            <div class="blog-desc">Zjisti, co ti přinese rok 2026 podle numerologie. Vypočítej svůj osobní rok, pochop energii každého čísla a využij ji vědomě ve svůj prospěch.</div>
+                        </div>
+                    </a>
+                    <a href="blog/karta-mesic-tarot-vyznam.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/tarot-v2/tarot_luna.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Tarot</div>
+                            <div class="blog-title">Karta Měsíc v tarotu: nejistota, dojem a chybějící informace</div>
+                            <div class="blog-desc">Karta Měsíc v tarotu připomíná nejistotu a rozdíl mezi dojmem a ověřenou informací. Podívej se na význam, obrácenou polohu i modelovou situaci.</div>
+                        </div>
+                    </a>
+                    <a href="blog/attachment-styly-vzorce-ve-vztazich.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/atlas/social-v1/08-zrcadlo.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Vztahy</div>
+                            <div class="blog-title">Attachment styly v lásce: Proč se opakují stejné vzorce ve vztazích</div>
+                            <div class="blog-desc">Proč přitahujeme stále stejné typy lidí? Pochop attachment styly — jistý, úzkostný, vyhýbavý — a zjisti, jak změnit hluboké vztahové vzorce.</div>
+                        </div>
+                    </a>
+                    <a href="blog/letani-ve-snu-vyznam.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/atlas/social-v1/07-volavka.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Snář</div>
+                            <div class="blog-title">Létání ve snu: Co znamená a co ti chce podvědomí říct</div>
+                            <div class="blog-desc">Létání ve snu je jedním z nejčastějších a nejkrásnějších snových zážitků. Zjisti, co ti chce podvědomí říct a jak tyto sny vědomě využít.</div>
+                        </div>
+                    </a>
+                    <a href="blog/feng-shui-doma-energie-penizy-laska.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/atlas/social-v1/02-zahradni-branka.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Spiritualita</div>
+                            <div class="blog-title">Feng Shui doma: Jak upravit prostor pro příliv energie, lásky a peněz</div>
+                            <div class="blog-desc">Feng shui doma není jen o dekoraci. Naučte se, jak pomocí bagua mapy aktivovat zóny prosperity, lásky a hojnosti ve svém bytě nebo domě.</div>
+                        </div>
+                    </a>
+                    <a href="blog/karta-slunce-tarot-vyznam.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/tarot-v2/tarot_slunce.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Tarot</div>
+                            <div class="blog-title">Karta Slunce v tarotu: význam, láska a obrácená poloha</div>
+                            <div class="blog-desc">Slunce v tarotu jako téma radosti, jasnosti a otevřenosti. Symboly na kartě, modelová situace, láska, práce a obrácená poloha bez slibů o budoucnosti.</div>
+                        </div>
+                    </a>
+                    <a href="blog/mistrovska-cisla-numerologie.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/atlas/tools-v1/03-numerologicky-zapisnik.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Numerologie</div>
+                            <div class="blog-title">Mistrovská čísla 11, 22 a 33 v numerologii: Dar nebo prokletí?</div>
+                            <div class="blog-desc">Mistrovská čísla 11, 22 a 33 nesou mimořádný potenciál i mimořádnou zátěž. Zjistěte, co znamenají, jak je poznat ve svém životopisu a jak s nimi pracovat.</div>
+                        </div>
+                    </a>
+                    <a href="blog/jak-se-pripravit-na-uplnek.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/atlas/tools-v1/02-mesicni-krajina.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Lunární Magie</div>
+                            <div class="blog-title">Jak se připravit na nadcházející magický Úplněk</div>
+                            <div class="blog-desc">Úplněk je časem uvolnění a silných energií. Zjistěte, jaké rituály vám pomohou tuto energii využít naplno.</div>
+                        </div>
+                    </a>
+                    <a href="blog/andelska-cisla-333-444-555.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/atlas/tools-v1/03-numerologicky-zapisnik.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Spiritualita</div>
+                            <div class="blog-title">Andělská čísla 333, 444, 555 — co vám říká vesmír?</div>
+                            <div class="blog-desc">Vidíte všude 333, 444 nebo 555? Každé andělské číslo nese přesnou zprávu. Přečtěte si, co vám vesmír opakovaně posílá — a jak na tuto komunikaci správně reagovat.</div>
+                        </div>
+                    </a>
+                    <a href="blog/jak-cist-natalni-kartu-pruvodce.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/atlas/tools-v1/01-astrolab.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Astrologie</div>
+                            <div class="blog-title">Jak číst natální kartu: Kompletní průvodce pro začátečníky</div>
+                            <div class="blog-desc">Natální karta je mapa vaší duše zapsaná v hvězdách v moment vašeho narození. Naučte se číst planety, domy a aspekty — i jako úplný začátečník.</div>
+                        </div>
+                    </a>
+                    <a href="blog/lilith-v-natalni-karte.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/atlas/social-v1/08-zrcadlo.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Astrologie</div>
+                            <div class="blog-title">Lilith v natální kartě: Temná bohyně a tvůj skrytý rebel</div>
+                            <div class="blog-desc">Lilith v natální kartě označuje místo, kde žijete svou nejsilnější, nejdivočejší a nejméně společensky přijímanou energii. Průvodce Černou Měsíční Lilith v každém znamení.</div>
+                        </div>
+                    </a>
+                    <a href="blog/runovy-vyklad-doma-pruvodce.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/atlas/tools-v1/04-runove-kameny.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Spiritualita</div>
+                            <div class="blog-title">Runový výklad doma: Průvodce pro začátečníky krok za krokem</div>
+                            <div class="blog-desc">Runy jsou prastarý věštecký systém skandinávských Vikingů. Naučte se dělat runové výklady doma — od výběru run přes kladení až po interpretaci symbolů.</div>
+                        </div>
+                    </a>
+                    <a href="blog/pluto-ve-vodnari-2024-2043.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/atlas/social-v1/02-zahradni-branka.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Astrologie</div>
+                            <div class="blog-title">Pluto ve Vodnáři 2024–2043: Největší generační transformace za 248 let</div>
+                            <div class="blog-desc">Pluto vstoupilo do Vodnáře a zůstane tam až do roku 2043. Co tato historická událost znamená pro lidstvo, technologii, AI, revoluci a vaše osobní transformace?</div>
+                        </div>
+                    </a>
+                    <a href="blog/mesicni-znak-natalni-karta.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/atlas/tools-v1/02-mesicni-krajina.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Astrologie</div>
+                            <div class="blog-title">Váš Měsíční znak: Co Měsíc v natální kartě říká o vaší duši</div>
+                            <div class="blog-desc">Sluneční znamení znáte. Ale víte, kde byl Měsíc, když jste se narodili? Měsíční znak odhaluje vaše emoce, vnitřní svět, potřeby a to, jak se cítíte bezpečně.</div>
+                        </div>
+                    </a>
+                    <a href="blog/cinsky-horoskop-2026-rok-ohniveho-kone.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/tarot-v2/tarot_slunce.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Astrologie</div>
+                            <div class="blog-title">Čínský horoskop 2026: Rok Ohnivého Koně — co čeká každé zvíře</div>
+                            <div class="blog-desc">Rok 2026 je Rokem Ohnivého Koně. Přečtěte si, co tento divoký, vášnivý a nepředvídatelný rok přinese každému z 12 čínských zvířat — a jak se na něj připravit.</div>
+                        </div>
+                    </a>
+                    <a href="blog/jak-funguji-andelske-karty.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/atlas/social-v1/07-volavka.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Spiritualita</div>
+                            <div class="blog-title">Jak fungují andělské karty: Průvodce pro začátečníky</div>
+                            <div class="blog-desc">Andělské karty nejsou tarot. Jsou laskavým, povzbudivým systémem, který vás spojuje s vyššími průvodci. Zjistěte, jak fungují, jak s nimi pracovat a jak interpretovat poselství.</div>
+                        </div>
+                    </a>
+                    <a href="blog/co-je-aura-jak-ji-videt-cist-cistit.html" class="blog-card">
+                        <div class="blog-card-image-wrapper">
+                            <img src="img/atlas/social-v1/08-zrcadlo.webp" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-meta-small">Spiritualita</div>
+                            <div class="blog-title">Co je aura: Jak ji vidět, číst a čistit</div>
+                            <div class="blog-desc">Aura je energetické pole obklopující každou živou bytost. Naučte se, jak auru vidět, jaké barvy co znamenají a jak ji pravidelně čistit pro více energie a ochranu.</div>
+                        </div>
+                    </a>
                     <!-- STATIC-BLOG-LINKS:END -->
 
                 </div>
 
-                <div class="text-center">
-                    <button type="button" id="blog-load-more" class="btn btn--ghost" aria-controls="blogContainer" hidden>Načíst další články</button>
-                    <p id="blog-load-status" class="sr-only" aria-live="polite"></p>
+                <div class="blog-results-controls">
+                    <p id="blogResultsCount" class="blog-results-count" aria-live="polite" hidden></p>
+                    <button id="blogLoadMore" class="blog-load-more" type="button" aria-controls="blogContainer" hidden>Zobrazit další články</button>
                 </div>
 
             </div>
@@ -195,20 +861,20 @@
 
     <script src="js/dist/api-config.js" defer></script>
 
-    <script src="js/dist/templates.js?v=20261021-celtic-footer-star-svg" defer></script>
+    <script src="js/dist/templates.js?v=14" defer></script>
     <script src="js/dist/auth-client.js?v=20261020-02-register-password-policy" defer></script>
 <script src="js/dist/auth-copy-fixes.js" defer></script>
-    <script src="js/dist/secondary-pages-copy-fixes.js?v=20261018-honest-astro-copy" defer></script>
+    <script src="js/dist/secondary-pages-copy-fixes.js?v=4" defer></script>
 
     
 
     <script src="js/dist/exit-intent.js" defer></script>
 
-    <script src="js/dist/components.js?v=20261021-footer-support-locale" defer></script>
+    <script src="js/dist/components.js" defer></script>
 
-    <script type="module" src="js/dist/main.js?v=20261018-status-icons"></script>
+    <script type="module" src="js/dist/main.js"></script>
 
-    <script src="js/dist/blog.js?v=20261018-shorter-first-batch" defer></script>
+    <script src="js/dist/blog.js?v=20261022-batched-archive-v04" defer></script>
 
     <script src="js/dist/newsletter-popup.js?v=20260706-sign-step" defer></script>
 

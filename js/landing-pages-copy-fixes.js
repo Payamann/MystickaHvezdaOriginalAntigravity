@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setMeta('meta[property="og:title"]', 'Horoskop na dnes pro 12 znamení | Mystická Hvězda');
         setMeta('meta[property="og:description"]', 'Vyber si své znamení a získej denní horoskop jako praktický rámec pro vztahy, práci a další krok.');
         setHtml('.hero__title', 'Denní <span class="text-gradient">horoskop</span>');
-        setText('.hero__subtitle', 'Astrologický kontext pro dnešní den. Ber ho jako mapu témat a otázek k zamyšlení.');
+        setText('.hero__subtitle', 'Astrologický kontext pro dnešní den. Ber ho jako mapu témat a otázek, ne jako pevnou předpověď.');
     }
 
     if (path.endsWith('/natalni-karta.html') || path.endsWith('natalni-karta.html')) {
@@ -79,11 +79,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (path.endsWith('/minuly-zivot.html') || path.endsWith('minuly-zivot.html')) {
         document.title = 'Minulý Život — Akashické Záznamy | Mystická Hvězda';
-        setMeta('meta[name="description"]', 'Vytvoř si automatický symbolický výklad minulého života. Je to podnět k sebereflexi, ne ověřitelná vzpomínka ani skutečná regrese.');
+        setMeta('meta[name="description"]', 'Vytvořte si symbolický výklad minulého života pro sebereflexi. Objevte archetypální příběh, karmické motivy, dary a téma, které může inspirovat současný život.');
         setMeta('meta[property="og:title"]', 'Minulý Život — Akashické Záznamy | Mystická Hvězda');
-        setMeta('meta[property="og:description"]', 'Automatický symbolický příběh minulého života pro sebereflexi. Nejde o ověřitelnou vzpomínku ani regresi.');
-        setMeta('meta[name="twitter:description"]', 'Automatický symbolický příběh minulého života jako podnět k sebereflexi, ne důkaz skutečné minulosti.');
-        setHtml('.past-life-hero h1, .hero__title', 'Symbolický příběh<br><span class="text-gradient">minulého života</span>');
-        setText('.past-life-hero p, .hero__subtitle', 'Vytvoř si symbolický příběh minulého života jako podnět k zamyšlení nad tím, co se opakuje dnes.');
+        setMeta('meta[property="og:description"]', 'Symbolický výklad minulého života pro sebereflexi: archetypální příběh, karmické motivy, dary a téma pro současný život.');
+        setHtml('.past-life-hero h1, .hero__title', 'Minulý život a <span class="text-gradient">akashické záznamy</span>');
+        setText('.past-life-hero p, .hero__subtitle', 'Vytvořte symbolický obraz minulého života, který může odhalit opakující se motivy, dary a téma pro současnou cestu.');
     }
 });

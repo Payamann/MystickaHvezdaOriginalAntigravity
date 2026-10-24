@@ -70,8 +70,8 @@
   <link rel="dns-prefetch" href="https://www.googletagmanager.com">
 
   <!-- Homepage CSS bundle: local fonts + global CSS + homepage-only rules -->
-  <link rel="preload" href="/css/home.min.css?v=20261020-home-reading-history" as="style">
-  <link rel="stylesheet" href="/css/home.min.css?v=20261020-home-reading-history">
+  <link rel="preload" href="/css/home.min.css?v=20261023-release-todo" as="style">
+  <link rel="stylesheet" href="/css/home.min.css?v=20261023-release-todo">
 
   <!-- SEO Schema -->
 
@@ -131,10 +131,10 @@
         }
       }, {
         "@type": "Question",
-        "name": "Můžu členství kdykoliv zrušit?",
+        "name": "Můžu předplatné zrušit?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Ano, členství zrušíš ve svém profilu a přístup zůstane aktivní do konce zaplaceného období."
+          "text": "Ano. Předplatné má být nástroj, ke kterému se vracíš dobrovolně. S dotazy ke zrušení pomůže podpora."
         }
       }]
     }
@@ -154,23 +154,20 @@
 <meta name="twitter:image" content="https://www.mystickahvezda.cz/img/search-preview/home.webp">
 <meta property="og:image:alt" content="Mystická Hvězda | Tarot zdarma, horoskopy a osobní výklady">
 <meta name="twitter:image:alt" content="Mystická Hvězda | Tarot zdarma, horoskopy a osobní výklady">
-<link rel="stylesheet" href="/css/pages/tarot-karta-dne.css?v=20261020-03-primer-two-column">
-<link rel="stylesheet" href="/css/tarot-atlas.css?v=20261020-01-tarot-daily-surfaces">
+<link rel="stylesheet" href="/css/pages/tarot-karta-dne.css">
+<link rel="stylesheet" href="/css/tarot-atlas.css?v=20261023-release-todo">
+<link rel="stylesheet" href="/css/atlas-polish-v1.css?v=20261009">
 </head>
 
 
 
-<body class="page-home atlas-home">
+<body class="page-home atlas-home" data-atlas-polish="index">
 
   <!-- Skip to main content for accessibility -->
 
   <a href="#main-content" class="skip-link">Přeskočit na obsah</a>
 
 
-
-  <!-- STARS BACKGROUND -->
-
-  <div class="stars" aria-hidden="true"></div>
 
 
 
@@ -179,8 +176,8 @@
     <div class="container">
       <div class="header__inner">
         <a href="index.html" class="logo">
-          <img src="img/logo-3d.webp?v=4" alt="Mystická Hvězda logo" class="logo__image" width="40" height="40">
-          <span class="logo__text">Mystická<span class="text-gradient">Hvězda</span></span>
+          <img src="img/logo-3d.webp?v=4" alt="" class="logo__image" width="40" height="40">
+          <span class="logo__text">Mystická <span class="text-gradient">Hvězda</span></span>
         </a>
 
         <button class="nav__toggle" type="button" aria-label="Otevřít hlavní menu" aria-expanded="false" aria-controls="primary-navigation">
@@ -194,8 +191,8 @@
             <li class="nav__item"><a href="index.html" class="nav__link">Domů</a></li>
 
             <li class="nav__item nav__item--has-dropdown">
-              <button type="button" class="nav__link nav__link--dropdown-toggle" aria-expanded="false" aria-haspopup="true" aria-controls="nav-dropdown-astrologie">Astrologie <span class="dropdown-icon" aria-hidden="true">▾</span></button>
-              <ul class="nav__dropdown" id="nav-dropdown-astrologie">
+              <a href="#" class="nav__link nav__link--dropdown-toggle">Astrologie <span class="dropdown-icon">▾</span></a>
+              <ul class="nav__dropdown">
                 <li><a href="horoskopy.html" class="nav__dropdown-link">Horoskopy</a></li>
                 <li><a href="horoskop/index.html" class="nav__dropdown-link">Znamení zvěrokruhu</a></li>
                 <li><a href="natalni-karta.html" class="nav__dropdown-link">Natální karta</a></li>
@@ -209,8 +206,8 @@
             </li>
 
             <li class="nav__item nav__item--has-dropdown">
-              <button type="button" class="nav__link nav__link--dropdown-toggle" aria-expanded="false" aria-haspopup="true" aria-controls="nav-dropdown-tarot">Tarot a věštění <span class="dropdown-icon" aria-hidden="true">▾</span></button>
-              <ul class="nav__dropdown" id="nav-dropdown-tarot">
+              <a href="#" class="nav__link nav__link--dropdown-toggle">Věštění & Tarot <span class="dropdown-icon">▾</span></a>
+              <ul class="nav__dropdown">
                 <li><a href="tarot.html" class="nav__dropdown-link">Tarot</a></li>
                 <li><a href="tarot-karta-dne.html" class="nav__dropdown-link">Tarot karta dne</a></li>
                 <li><a href="tarot-tri-karty.html" class="nav__dropdown-link">Tarot 3 karty</a></li>
@@ -220,7 +217,7 @@
                 <li><a href="tarot-vyznam-karet.html" class="nav__dropdown-link">Významy karet</a></li>
                 <li><a href="andelske-karty.html" class="nav__dropdown-link">Andělské karty</a></li>
                 <li><a href="andelska-posta.html" class="nav__dropdown-link">Andělská pošta</a></li>
-                <li><a href="runy.html" class="nav__dropdown-link">Runy</a></li>
+                <li><a href="runy.html" class="nav__dropdown-link">Výklad z run</a></li>
                 <li><a href="kristalova-koule.html" class="nav__dropdown-link">Křišťálová koule</a></li>
                 <li><a href="snar.html" class="nav__dropdown-link">Snář</a></li>
                 <li><a href="shamansko-kolo.html" class="nav__dropdown-link">Šamanské kolo</a></li>
@@ -228,10 +225,10 @@
             </li>
 
             <li class="nav__item nav__item--has-dropdown">
-              <button type="button" class="nav__link nav__link--dropdown-toggle" aria-expanded="false" aria-haspopup="true" aria-controls="nav-dropdown-cisla">Čísla a energie <span class="dropdown-icon" aria-hidden="true">▾</span></button>
-              <ul class="nav__dropdown" id="nav-dropdown-cisla">
+              <a href="#" class="nav__link nav__link--dropdown-toggle">Čísla & Energie <span class="dropdown-icon">▾</span></a>
+              <ul class="nav__dropdown">
                 <li><a href="numerologie.html" class="nav__dropdown-link">Numerologie</a></li>
-                <li><a href="kalkulacka-cisla-osudu.html" class="nav__dropdown-link">Kalkulačka životní cesty</a></li>
+                <li><a href="kalkulacka-cisla-osudu.html" class="nav__dropdown-link">Kalkulačka čísla osudu</a></li>
                 <li><a href="aura.html" class="nav__dropdown-link">Aura kalkulačka</a></li>
                 <li><a href="afirmace.html" class="nav__dropdown-link">Denní afirmace</a></li>
                 <li><a href="jmena/" class="nav__dropdown-link">Databáze jmen</a></li>
@@ -241,9 +238,9 @@
             </li>
 
             <li class="nav__item nav__item--has-dropdown">
-              <button type="button" class="nav__link nav__link--dropdown-toggle" aria-expanded="false" aria-haspopup="true" aria-controls="nav-dropdown-poznani">Poznání <span class="dropdown-icon" aria-hidden="true">▾</span></button>
-              <ul class="nav__dropdown" id="nav-dropdown-poznani">
-                <li><a href="testy/index.html" class="nav__dropdown-link">Mystické testy</a></li>
+              <a href="#" class="nav__link nav__link--dropdown-toggle">Poznání <span class="dropdown-icon">▾</span></a>
+              <ul class="nav__dropdown">
+                <li><a href="testy/index.html" class="nav__dropdown-link u-text-gold">Mystické testy</a></li>
                 <li><a href="blog.html" class="nav__dropdown-link">Mystický blog</a></li>
                 <li><a href="faq.html" class="nav__dropdown-link">Časté otázky</a></li>
                 <li><a href="o-nas.html" class="nav__dropdown-link">O nás</a></li>
@@ -251,27 +248,27 @@
             </li>
 
             <li class="nav__item nav__item--has-dropdown">
-              <button type="button" class="nav__link nav__link--dropdown-toggle" aria-expanded="false" aria-haspopup="true" aria-controls="nav-dropdown-sluzby">Výklady a služby <span class="dropdown-icon" aria-hidden="true">▾</span></button>
-              <ul class="nav__dropdown" id="nav-dropdown-sluzby">
+              <a href="#" class="nav__link nav__link--dropdown-toggle">Členství <span class="dropdown-icon">▾</span></a>
+              <ul class="nav__dropdown">
                 <li><a href="osobni-mapa.html?source=homepage_nav" class="nav__dropdown-link" data-analytics-cta="homepage_premium_nav_product" data-analytics-feature="osobni_mapa_2026" data-analytics-product="osobni_mapa_2026" data-analytics-intent="one_time_purchase">Osobní mapa na 12 měsíců</a></li>
                 <li><a href="mentor.html" class="nav__dropdown-link" data-premium="true">Průvodce</a></li>
-                <li><a href="cenik.html" class="nav__dropdown-link">Ceník</a></li>
+                <li><a href="cenik.html" class="nav__dropdown-link">Ceník členství</a></li>
               </ul>
             </li>
 
             <li class="nav__item mobile-auth-buttons">
-              <a href="profil.html" id="mobile-profile-link" class="btn btn--glass btn--sm mh-inline-7e933fa469 header-profile-link" hidden><svg class="mh-symbol mh-symbol--inline" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#user"></use></svg> Profil</a>
-              <a href="prihlaseni.html?mode=register&source=mobile_menu&feature=account" id="mobile-auth-register-btn" class="btn btn--secondary">Registrace</a>
-              <a href="prihlaseni.html?source=mobile_menu_login" id="mobile-auth-btn" class="btn btn--primary">Přihlásit se</a>
+              <a href="profil.html" id="mobile-profile-link" class="btn btn--glass btn--sm mh-inline-7e933fa469">👤 Profil</a>
+              <a href="prihlaseni.html?mode=register&source=mobile_menu&feature=account" id="mobile-auth-register-btn" class="btn btn--primary">Registrace</a>
+              <a href="prihlaseni.html?source=mobile_menu_login" id="mobile-auth-btn" class="btn btn--secondary">Přihlásit se</a>
             </li>
           </ul>
         </nav>
 
         <div class="header__actions">
           <div class="auth-buttons">
-            <a href="profil.html" id="profile-link" class="btn btn--glass btn--sm mh-inline-7e933fa469 header-profile-link" hidden><svg class="mh-symbol mh-symbol--inline" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#user"></use></svg> Profil</a>
-            <a href="prihlaseni.html?mode=register&source=header_register&feature=account" id="auth-register-btn" class="btn btn--secondary">Registrace</a>
-            <a href="prihlaseni.html?source=header_login" id="auth-btn" class="btn btn--primary">Přihlásit se</a>
+            <a href="profil.html" id="profile-link" class="btn btn--glass btn--sm mh-inline-7e933fa469">👤 Profil</a>
+            <a href="prihlaseni.html?mode=register&source=header_register&feature=account" id="auth-register-btn" class="btn btn--primary">Registrace</a>
+            <a href="prihlaseni.html?source=header_login" id="auth-btn" class="btn btn--secondary">Přihlásit se</a>
           </div>
         </div>
       </div>
@@ -360,10 +357,6 @@
 
               </a>
 
-              <a href="profil.html#tab-history" class="home-history-link" data-analytics-cta="homepage_reading_history" data-analytics-feature="profile_history">
-                Moje výklady <span aria-hidden="true">→</span>
-              </a>
-
             </div>
 
 
@@ -377,7 +370,7 @@
           </div>
 
           <figure class="atlas-home-art">
-            <img src="/img/atlas/01-lucerna-na-rozcesti.webp" srcset="/img/atlas/01-lucerna-na-rozcesti-400.webp 400w, /img/atlas/01-lucerna-na-rozcesti-800.webp 800w, /img/atlas/01-lucerna-na-rozcesti-960.webp 960w, /img/atlas/01-lucerna-na-rozcesti.webp 1200w" sizes="(max-width: 760px) 340px, (max-width: 1280px) 50vw, 560px" alt="Lucerna osvětluje rozcestí v malované večerní krajině" width="1200" height="800" fetchpriority="high" decoding="async">
+            <img src="/img/atlas/01-lucerna-na-rozcesti.webp" alt="Lucerna osvětluje rozcestí v malované večerní krajině" width="1200" height="800" fetchpriority="high" decoding="async">
             <figcaption>Chvíle pro otázku. Prostor pro vlastní směr.</figcaption>
           </figure>
 
@@ -414,9 +407,9 @@
 
         </div>
 
-        <nav class="home-intent-grid" id="rychly-start" data-animate aria-label="Rychlé volby podle situace">
+        <div class="home-intent-grid" id="rychly-start" data-animate aria-label="Rychlý výběr výkladu">
           <a href="tarot-ano-ne.html?source=homepage_quick_decision&amp;feature=tarot_yes_no&amp;variant=audience_intent_v1" class="home-intent-card" data-analytics-cta="homepage_quick_decision" data-analytics-feature="tarot_yes_no" data-analytics-variant="audience_intent_v1">
-            <img class="atlas-intent-art" src="/img/atlas/15-zlaty-klic.webp" srcset="/img/atlas/15-zlaty-klic-360.webp 360w, /img/atlas/15-zlaty-klic-600.webp 600w, /img/atlas/15-zlaty-klic.webp 720w" sizes="(max-width: 768px) calc(100vw - 32px), (max-width: 1146px) calc((100vw - 148px) / 3), 333px" alt="" width="720" height="720" loading="lazy" decoding="async">
+            <img class="atlas-intent-art" src="/img/atlas/15-zlaty-klic.webp" alt="" width="720" height="720" loading="lazy" decoding="async">
             <span class="home-intent-card__copy">
               <span>Rozhodnutí</span>
               <strong>Tarot ano/ne</strong>
@@ -425,7 +418,7 @@
             <span class="home-intent-card__arrow" aria-hidden="true">→</span>
           </a>
           <a href="horoskopy.html?source=homepage_quick_daily&amp;feature=horoskopy&amp;variant=audience_intent_v1" class="home-intent-card" data-analytics-cta="homepage_quick_daily" data-analytics-feature="horoskopy" data-analytics-variant="audience_intent_v1">
-            <img class="atlas-intent-art" src="/img/atlas/10-hory-pred-svitanim.webp" srcset="/img/atlas/10-hory-pred-svitanim-360.webp 360w, /img/atlas/10-hory-pred-svitanim-600.webp 600w, /img/atlas/10-hory-pred-svitanim.webp 720w" sizes="(max-width: 768px) calc(100vw - 32px), (max-width: 1146px) calc((100vw - 148px) / 3), 333px" alt="" width="720" height="480" loading="lazy" decoding="async">
+            <img class="atlas-intent-art" src="/img/atlas/10-hory-pred-svitanim.webp" alt="" width="720" height="480" loading="lazy" decoding="async">
             <span class="home-intent-card__copy">
               <span>Dnešní energie</span>
               <strong>Denní horoskop</strong>
@@ -433,16 +426,16 @@
             </span>
             <span class="home-intent-card__arrow" aria-hidden="true">→</span>
           </a>
-          <a href="tarot-karta-dne.html?source=homepage_quick_tarot_daily&amp;feature=tarot&amp;variant=audience_intent_v1" class="home-intent-card" data-analytics-cta="homepage_quick_tarot_daily" data-analytics-feature="tarot" data-analytics-variant="audience_intent_v1">
-            <img class="atlas-intent-art" src="/img/atlas/16-kompas-oliva-360.webp" srcset="/img/atlas/16-kompas-oliva-360.webp 360w, /img/atlas/16-kompas-oliva-600.webp 600w, /img/atlas/16-kompas-oliva.webp 640w" sizes="(max-width: 768px) calc(100vw - 32px), (max-width: 1146px) calc((100vw - 148px) / 3), 333px" alt="" width="640" height="640" loading="lazy" decoding="async">
+          <a href="snar.html?source=homepage_quick_dream&amp;feature=dream_dictionary&amp;variant=audience_intent_v1" class="home-intent-card" data-analytics-cta="homepage_quick_dream" data-analytics-feature="dream_dictionary" data-analytics-variant="audience_intent_v1">
+            <img class="atlas-intent-art" src="/img/atlas/05-studna-hvezd.webp" alt="" width="720" height="480" loading="lazy" decoding="async">
             <span class="home-intent-card__copy">
-              <span>Symbol pro dnešek</span>
-              <strong>Tarot karta dne</strong>
-              <small>Jedna karta jako podnět k zamyšlení</small>
+              <span>Sny a symboly</span>
+              <strong>Snář</strong>
+              <small>Najdi význam hlavního motivu</small>
             </span>
             <span class="home-intent-card__arrow" aria-hidden="true">→</span>
           </a>
-        </nav>
+        </div>
 
         <nav class="home-more-paths" data-animate aria-label="Další možnosti na Mystické Hvězdě">
           <span class="home-more-paths__label">Prozkoumat dál</span>
@@ -467,14 +460,13 @@
             </div>
             <div id="tarot-daily-card-result" class="tarot-daily-card-result" aria-live="polite" data-state="waiting">
               <div class="tarot-daily-card-result__image">
-                <img id="tarot-daily-card-image" src="/img/tarot-v2/tarot_card_back.webp" srcset="/img/tarot-v2/tarot_card_back-mobile.webp 240w, /img/tarot-v2/tarot_card_back-mobile-480.webp 480w, /img/tarot-v2/tarot_card_back.webp 600w" sizes="(max-width: 760px) 198px, 230px" alt="Zadní strana tarotové karty" width="600" height="1000" loading="lazy">
+                <img id="tarot-daily-card-image" src="/img/tarot-v2/tarot_card_back.webp" alt="Zadní strana tarotové karty" width="600" height="1000" loading="lazy">
               </div>
               <div class="tarot-daily-card-result__content">
                 <span id="tarot-daily-date" class="tarot-daily-card-result__date">Karta čeká na otočení</span>
                 <h3 id="tarot-daily-card-name">Chvíle k zamyšlení</h3>
                 <p id="tarot-daily-card-meaning"></p>
-                <p id="tarot-daily-card-question" class="tarot-daily-card-result__question"></p>
-                            <p id="tarot-daily-card-advice" class="tarot-daily-card-result__advice"></p>
+                <p id="tarot-daily-card-advice" class="tarot-daily-card-result__advice"></p>
                 <div class="tarot-daily-card-result__actions">
                   <a id="tarot-daily-full-reading" href="/tarot.html?source=tarot_daily_card_widget&amp;feature=tarot&amp;intent=daily_card" class="btn btn--primary">Rozvinout výklad</a>
                   <a id="tarot-daily-card-detail" href="/tarot-vyznam-karet.html" class="btn btn--ghost">Význam karty</a>
@@ -527,7 +519,7 @@
 
           <div class="step">
 
-            <img class="atlas-step-art" src="/img/atlas/16-kompas-oliva.webp" srcset="/img/atlas/16-kompas-oliva-360.webp 360w, /img/atlas/16-kompas-oliva-600.webp 600w, /img/atlas/16-kompas-oliva.webp 640w" sizes="(max-width: 768px) calc(100vw - 32px), (max-width: 1200px) calc((100vw - 192px) / 3), 336px" alt="" width="640" height="640" loading="lazy" decoding="async">
+            <img class="atlas-step-art" src="/img/atlas/16-kompas-oliva.webp" alt="" width="640" height="640" loading="lazy" decoding="async">
             <div class="step__number">1</div>
 
             <h3 class="step__title">Vybereš téma</h3>
@@ -544,7 +536,7 @@
 
           <div class="step">
 
-            <img class="atlas-step-art" src="/img/atlas/08-seminko-mezi-kameny.webp" srcset="/img/atlas/08-seminko-mezi-kameny-360.webp 360w, /img/atlas/08-seminko-mezi-kameny-600.webp 600w, /img/atlas/08-seminko-mezi-kameny.webp 640w" sizes="(max-width: 768px) calc(100vw - 32px), (max-width: 1200px) calc((100vw - 192px) / 3), 336px" alt="" width="640" height="427" loading="lazy" decoding="async">
+            <img class="atlas-step-art" src="/img/atlas/08-seminko-mezi-kameny.webp" alt="" width="640" height="427" loading="lazy" decoding="async">
             <div class="step__number">2</div>
 
             <h3 class="step__title">Získáš první odpověď</h3>
@@ -561,7 +553,7 @@
 
           <div class="step">
 
-            <img class="atlas-step-art" src="/img/atlas/18-zapisnik-pero.webp" srcset="/img/atlas/18-zapisnik-pero-360.webp 360w, /img/atlas/18-zapisnik-pero-600.webp 600w, /img/atlas/18-zapisnik-pero.webp 640w" sizes="(max-width: 768px) calc(100vw - 32px), (max-width: 1200px) calc((100vw - 192px) / 3), 336px" alt="" width="640" height="640" loading="lazy" decoding="async">
+            <img class="atlas-step-art" src="/img/atlas/18-zapisnik-pero.webp" alt="" width="640" height="640" loading="lazy" decoding="async">
             <div class="step__number">3</div>
 
             <h3 class="step__title">Navážeš, jen když chceš</h3>
@@ -582,11 +574,213 @@
 
 
 
+    <!-- ============================================
+
+         SAMPLE OUTPUTS
+
+         ============================================ -->
+
+    <section class="section section--alt" hidden aria-hidden="true">
+
+      <div class="container">
+
+        <div class="section__header" data-animate>
+
+          <span class="section__badge">Ukázka výstupu</span>
+
+          <h2 class="section__title">Než se zaregistruješ, podívej se na ukázku</h2>
+
+          <p class="section__text">Takhle přibližně zní výklad na Mystické Hvězdě: krátce, konkrétně a bez strašení. Po vytvoření profilu bude osobnější.</p>
+
+        </div>
+
+        <div class="sample-output-grid" data-animate>
+
+          <article class="sample-output-card">
+            <span class="sample-output-card__label">Denní energie</span>
+            <h3>Ráno začni jednoduše</h3>
+            <p>Dnes se vyplatí nechat věci dozrát. Největší posun přijde ve chvíli, kdy přestaneš tlačit na okamžitou odpověď.</p>
+            <ul>
+              <li><strong>Zaměření:</strong> klid, vztahy, pracovní rytmus</li>
+              <li><strong>Další krok:</strong> vybrat jednu věc, kterou dnes dokončíš</li>
+            </ul>
+          </article>
+
+          <article class="sample-output-card">
+            <span class="sample-output-card__label">Karta dne</span>
+            <h3>Symbol jako opora, ne rozkaz</h3>
+            <p>Karta pojmenuje téma dne a nabídne praktickou otázku. Výklad má pomoct přemýšlet, ne rozhodovat za tebe.</p>
+            <ul>
+              <li><strong>Otázka:</strong> co dnes zbytečně komplikuješ?</li>
+              <li><strong>Směr:</strong> zjednodušit jeden rozhovor nebo úkol</li>
+            </ul>
+          </article>
+
+          <article class="sample-output-card">
+            <span class="sample-output-card__label">Osobní profil</span>
+            <h3>Historie ukáže opakující se témata</h3>
+            <p>Po přihlášení se výklady ukládají do profilu, aby se k nim dalo vracet a lépe vidět, která témata se opakují.</p>
+            <ul>
+              <li><strong>Uloženo:</strong> horoskopy, karty, vybrané výklady</li>
+              <li><strong>Kontrola:</strong> účet a předplatné spravuješ v profilu</li>
+            </ul>
+          </article>
+
+        </div>
+
+      </div>
+
+    </section>
 
 
 
+    <!-- ============================================
+
+         WHY US - USP SECTION
+
+         ============================================ -->
+
+    <section class="section section--alt" hidden aria-hidden="true">
+
+      <div class="container">
+
+        <div class="section__header" data-animate>
+
+          <span class="section__badge">Proč Mystická Hvězda</span>
+
+          <h2 class="section__title">Ne další ezoterická stránka</h2>
+
+          <p class="section__text">
+
+            Mystická Hvězda má být osobní průvodce, ne katalog náhodných výkladů. Každý dotek má vést k rituálu, historii nebo jasnějšímu dalšímu kroku.
+
+          </p>
+
+        </div>
 
 
+
+        <div class="grid grid-4 mh-inline-486a7e41f0" data-animate>
+
+          <div class="card card--service text-center">
+
+            <div class="feature-icon-wrapper mh-inline-a6575faab4">
+
+              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+
+                stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z">
+
+                </path>
+
+              </svg>
+
+            </div>
+
+            <h3 class="card__title">Denní rituál, ne náhodné klikání</h3>
+
+            <p class="card__text">
+
+              Hlavní produkt je návrat: ráno otevřeš jeden přehled, večer se můžeš vrátit k poznámce a zítra navázat.
+
+            </p>
+
+          </div>
+
+
+
+          <div class="card card--service text-center">
+
+            <div class="feature-icon-wrapper mh-inline-a6575faab4">
+
+              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+
+                stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+
+                <circle cx="12" cy="12" r="5"></circle>
+
+                <path
+
+                  d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42">
+
+                </path>
+
+              </svg>
+
+            </div>
+
+            <h3 class="card__title">Paměť výkladů, ne jednorázový obsah</h3>
+
+            <p class="card__text">
+
+              Profil ukládá vybrané výklady a témata. Časem tak vidíš, co se opakuje — a nezačínáš pokaždé od nuly.
+
+            </p>
+
+          </div>
+
+
+
+          <div class="card card--service text-center">
+
+            <div class="feature-icon-wrapper mh-inline-a6575faab4">
+
+              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+
+                stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+
+                <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path>
+
+                <line x1="4" y1="22" x2="4" y2="15"></line>
+
+              </svg>
+
+            </div>
+
+            <h3 class="card__title">Konkrétní další krok, ne mlha</h3>
+
+            <p class="card__text">
+
+              Výklad má skončit praktickou otázkou nebo malým krokem pro dnešek. Ne slibem, že za tebe vyřeší život.
+
+            </p>
+
+          </div>
+
+
+
+          <div class="card card--service text-center">
+
+            <div class="feature-icon-wrapper mh-inline-a6575faab4">
+
+              <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+
+                stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+
+              </svg>
+
+            </div>
+
+            <h3 class="card__title">Soukromí a hranice na prvním místě</h3>
+
+            <p class="card__text">
+
+              Citlivá data používáme jen pro osobní výklady a profil. Výklady nejsou lékařská, právní, finanční ani psychologická rada.
+
+            </p>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
 
 
 
@@ -605,9 +799,9 @@
         </div>
         <figure class="home-reading-art">
           <div class="home-reading-cards">
-            <img src="/img/tarot-v2/tarot_spravedlnost.webp" srcset="/img/tarot-v2/tarot_spravedlnost-240.webp 240w, /img/tarot-v2/tarot_spravedlnost-360.webp 360w, /img/tarot-v2/tarot_spravedlnost.webp 600w" sizes="(max-width: 760px) 102px, 149px" alt="Ukázková karta Spravedlnost" width="600" height="1000" loading="lazy" decoding="async">
-            <img src="/img/tarot-v2/tarot_milenci.webp" srcset="/img/tarot-v2/tarot_milenci-240.webp 240w, /img/tarot-v2/tarot_milenci-360.webp 360w, /img/tarot-v2/tarot_milenci.webp 600w" sizes="(max-width: 760px) 102px, 149px" alt="Ukázková karta Milenci" width="600" height="1000" loading="lazy" decoding="async">
-            <img src="/img/tarot-v2/tarot_mirnost.webp" srcset="/img/tarot-v2/tarot_mirnost-240.webp 240w, /img/tarot-v2/tarot_mirnost-360.webp 360w, /img/tarot-v2/tarot_mirnost.webp 600w" sizes="(max-width: 760px) 102px, 149px" alt="Ukázková karta Mírnost" width="600" height="1000" loading="lazy" decoding="async">
+            <img src="/img/tarot-v2/tarot_spravedlnost.webp" alt="Ukázková karta Spravedlnost" width="600" height="1000" loading="lazy" decoding="async">
+            <img src="/img/tarot-v2/tarot_milenci.webp" alt="Ukázková karta Milenci" width="600" height="1000" loading="lazy" decoding="async">
+            <img src="/img/tarot-v2/tarot_mirnost.webp" alt="Ukázková karta Mírnost" width="600" height="1000" loading="lazy" decoding="async">
           </div>
           <figcaption>Tvoje potřeby · Tvoje hranice · Tvůj další krok<br><span>Karty z ukázky. Pro tvůj výklad vybereme tři nové.</span></figcaption>
         </figure>
@@ -618,8 +812,8 @@
       <div class="container">
         <div class="section__header" data-animate>
           <span class="section__badge">Když chceš pokračovat</span>
-          <h2 class="section__title">Jedna odpověď zdarma. Členství, když chceš jít do hloubky.</h2>
-          <p class="section__text">Nejdřív si službu vyzkoušíš zdarma. Členství dává smysl, až se chceš k výkladům vracet.</p>
+          <h2 class="section__title">Jedna odpověď zdarma. Členství, když chceš jít víc do hloubky.</h2>
+          <p class="section__text">Nejdřív si službu vyzkoušíš. Profil a předplatné dávají smysl až ve chvíli, kdy se chceš k výkladům vracet.</p>
         </div>
 
         <div class="grid grid-2 home-pricing-grid" data-animate>
@@ -639,6 +833,7 @@
             <span class="home-plan-label home-plan-label--featured">Volitelné členství</span>
             <h3 class="card__title">Členství Mystické Hvězdy</h3>
             <div class="card__price">199 Kč<span>/měsíc</span></div>
+            <p class="card__text">7 dní za 0 Kč, potom 199 Kč/měsíc. Členství můžeš kdykoliv zrušit.</p>
             <ul class="card__features">
               <li>Tarotové výklady včetně Keltského kříže</li>
               <li>Týdenní a měsíční horoskopy</li>
@@ -649,7 +844,7 @@
         </div>
 
         <p class="home-pricing-note" data-animate>
-          Profil je zdarma · Členství: 7 dní za 0 Kč, potom 199 Kč/měsíc, pokud ho předem nezrušíš ·
+          Profil je zdarma · Členství zrušíš kdykoliv ·
           <a href="cenik.html?source=homepage_pricing_full_compare">Otevřít celý ceník</a>
         </p>
       </div>
@@ -692,7 +887,7 @@
           </div>
 
           <a href="osobni-mapa.html?source=homepage_spotlight_preview" class="personal-map-spotlight__preview" data-analytics-cta="homepage_personal_map_preview" data-analytics-feature="osobni_mapa_2026" data-analytics-product="osobni_mapa_2026" data-analytics-intent="one_time_purchase">
-            <img src="img/personal-map/preview-cover-arch-v2.webp" srcset="img/personal-map/preview-cover-arch-v2-380.webp 380w, img/personal-map/preview-cover-arch-v2-570.webp 570w, img/personal-map/preview-cover-arch-v2.webp 760w" sizes="(max-width: 900px) 88vw, 360px" alt="Modelová obálka PDF s malovaným kamenným obloukem, krajinou a kompasem" width="760" height="1075" loading="lazy" decoding="async" fetchpriority="low">
+            <img src="img/personal-map/preview-cover-arch-v2.webp" alt="Modelová obálka PDF s malovaným kamenným obloukem, krajinou a kompasem" width="760" height="1075" loading="lazy" decoding="async" fetchpriority="low">
             <span class="personal-map-spotlight__preview-caption">Modelová obálka · 20 stran PDF</span>
           </a>
 
@@ -704,11 +899,545 @@
 
 
 
+    <!-- ============================================
+
+         TESTIMONIALS (DIVI: Testimonial Module)
+
+         ============================================ -->
+
+    <section class="section" id="reference" hidden aria-hidden="true">
+
+      <div class="container">
+
+        <!-- DIVI ROW: Section Header -->
+
+        <div class="section__header" data-animate>
+
+          <span class="section__badge">Příklady použití</span>
+
+          <h2 class="section__title">S čím ti může Mystická Hvězda pomoci</h2>
+
+        </div>
+
+        <!-- Carousel Container -->
+
+        <div class="carousel-container" data-animate>
+
+          <button class="carousel-btn prev" aria-label="Předchozí příklad použití">❮</button>
 
 
 
+          <div class="carousel-track-container">
+
+            <ul class="carousel-track">
+
+              <!-- Review 1 - Jana T. -->
+
+              <li class="carousel-slide">
+
+                <div class="testimonial" data-review-source="internal_story">
+
+                  <span class="testimonial__quote">"</span>
+
+                  <p class="testimonial__text">
+
+                    Po rozchodu může denní horoskop nabídnout téma k zastavení a pomoci pojmenovat, co právě potřebuješ.
+
+                  </p>
+
+                  <div class="testimonial__author">
+
+                    <div class="testimonial__avatar">J
+
+                    </div>
+
+                    <div>
+
+                      <div class="testimonial__name">Nadhled po rozchodu</div>
+
+                      <div class="testimonial__role">Denní horoskop</div>
+
+                      <div class="testimonial__meta">Pro sebereflexi</div>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </li>
 
 
+
+              <!-- Review 2 - Marek D. -->
+
+              <li class="carousel-slide">
+
+                <div class="testimonial" data-review-source="internal_story">
+
+                  <span class="testimonial__quote">"</span>
+
+                  <p class="testimonial__text">
+
+                    Při úvaze o změně kariéry může natální karta nabídnout symbolický rámec pro silné stránky, napětí a priority.
+
+                  </p>
+
+                  <div class="testimonial__author">
+
+                    <div class="testimonial__avatar">M
+
+                    </div>
+
+                    <div>
+
+                      <div class="testimonial__name">Změna kariéry</div>
+
+                      <div class="testimonial__role">Natální karta</div>
+
+                      <div class="testimonial__meta">
+
+                        Pro strukturování otázek</div>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </li>
+
+
+
+              <!-- Review 3 - Eva L. -->
+
+              <li class="carousel-slide">
+
+                <div class="testimonial" data-review-source="internal_story">
+
+                  <span class="testimonial__quote">"</span>
+
+                  <p class="testimonial__text">
+
+                    Denní horoskop může fungovat jako krátká ranní rutina: jedno téma, jedna otázka a jeden vědomý krok.
+
+                  </p>
+
+                  <div class="testimonial__author">
+
+                    <div class="testimonial__avatar">E
+
+                    </div>
+
+                    <div>
+
+                      <div class="testimonial__name">Ranní rutina</div>
+
+                      <div class="testimonial__role">Denní horoskop</div>
+
+                      <div class="testimonial__meta">
+
+                        Pro každodenní zastavení</div>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </li>
+
+
+
+              <!-- Review 4 - Petra H. -->
+
+              <li class="carousel-slide">
+
+                <div class="testimonial" data-review-source="internal_story">
+
+                  <span class="testimonial__quote">"</span>
+
+                  <p class="testimonial__text">
+
+                    Numerologie může nabídnout jiný pohled na načasování a pomoci sepsat argumenty pro i proti před důležitým rozhodnutím.
+
+                  </p>
+
+                  <div class="testimonial__author">
+
+                    <div class="testimonial__avatar">P
+
+                    </div>
+
+                    <div>
+
+                      <div class="testimonial__name">Rozhodování a načasování</div>
+
+                      <div class="testimonial__role">Numerologie</div>
+
+                      <div class="testimonial__meta">
+
+                        Pro nový úhel pohledu</div>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </li>
+
+
+
+              <!-- Review 5 - David N. -->
+
+              <li class="carousel-slide">
+
+                <div class="testimonial" data-review-source="internal_story">
+
+                  <span class="testimonial__quote">"</span>
+
+                  <p class="testimonial__text">
+
+                    Partnerská shoda může otevřít otázky o komunikaci, potřebách a možných třecích plochách ve spolupráci.
+
+                  </p>
+
+                  <div class="testimonial__author">
+
+                    <div class="testimonial__avatar">D
+
+                    </div>
+
+                    <div>
+
+                      <div class="testimonial__name">Dynamika spolupráce</div>
+
+                      <div class="testimonial__role">Partnerská shoda</div>
+
+                      <div class="testimonial__meta">Pro lepší komunikaci</div>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </li>
+
+
+
+              <!-- Review 6 - Lenka S. -->
+
+              <li class="carousel-slide">
+
+                <div class="testimonial" data-review-source="internal_story">
+
+                  <span class="testimonial__quote">"</span>
+
+                  <p class="testimonial__text">
+
+                    Natální karta může nabídnout symbolická témata, nad kterými se dá přemýšlet při opakujících se vztahových situacích.
+
+                  </p>
+
+                  <div class="testimonial__author">
+
+                    <div class="testimonial__avatar">L
+
+                    </div>
+
+                    <div>
+
+                      <div class="testimonial__name">Vztahové vzorce</div>
+
+                      <div class="testimonial__role">Natální karta</div>
+
+                      <div class="testimonial__meta">
+
+                        Pro osobní reflexi</div>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </li>
+
+
+
+              <!-- Review 7 - Tomáš K. -->
+
+              <li class="carousel-slide">
+
+                <div class="testimonial" data-review-source="internal_story">
+
+                  <span class="testimonial__quote">"</span>
+
+                  <p class="testimonial__text">
+
+                    Před důležitou schůzkou může denní horoskop posloužit jako krátká příprava: co chci sdělit a čemu věnovat pozornost.
+
+                  </p>
+
+                  <div class="testimonial__author">
+
+                    <div class="testimonial__avatar">T
+
+                    </div>
+
+                    <div>
+
+                      <div class="testimonial__name">Příprava na náročný den</div>
+
+                      <div class="testimonial__role">Denní horoskop</div>
+
+                      <div class="testimonial__meta">
+
+                        Pro vědomou přípravu</div>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </li>
+
+
+
+              <!-- Review 8 - Adéla M. -->
+
+              <li class="carousel-slide">
+
+                <div class="testimonial" data-review-source="internal_story">
+
+                  <span class="testimonial__quote">"</span>
+
+                  <p class="testimonial__text">
+
+                    Při odkládání může natální karta nabídnout otázky k motivaci, obavám a způsobu, jakým zacházíš s energií.
+
+                  </p>
+
+                  <div class="testimonial__author">
+
+                    <div class="testimonial__avatar">A
+
+                    </div>
+
+                    <div>
+
+                      <div class="testimonial__name">Odkládání a návyky</div>
+
+                      <div class="testimonial__role">Natální karta</div>
+
+                      <div class="testimonial__meta">
+
+                        Pro pojmenování témat</div>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </li>
+
+
+
+              <!-- Review 9 - Filip R. -->
+
+              <li class="carousel-slide">
+
+                <div class="testimonial" data-review-source="internal_story">
+
+                  <span class="testimonial__quote">"</span>
+
+                  <p class="testimonial__text">
+
+                    Hvězdný průvodce může pomoci rozdělit nejasnou situaci na menší otázky a navrhnout konkrétní podnět k zamyšlení.
+
+                  </p>
+
+                  <div class="testimonial__author">
+
+                    <div class="testimonial__avatar">F
+
+                    </div>
+
+                    <div>
+
+                      <div class="testimonial__name">Rychlá reflexe</div>
+
+                      <div class="testimonial__role">Hvězdný průvodce</div>
+
+                      <div class="testimonial__meta">
+
+                        Pro rozdělení problému</div>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </li>
+
+            </ul>
+
+          </div>
+
+
+
+          <button class="carousel-btn next" aria-label="Další příklad použití">❯</button>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- ============================================
+
+         PRICING PREVIEW (DIVI: Pricing Table)
+
+         ============================================ -->
+
+    <section class="section section--alt" id="cenik-legacy" hidden aria-hidden="true">
+
+      <div class="container">
+
+        <!-- DIVI ROW: Section Header -->
+
+        <div class="section__header" data-animate>
+
+          <span class="section__badge">Ceník bez překvapení</span>
+
+          <h2 class="section__title">Začni zdarma. Plať až ve chvíli, kdy chceš víc.</h2>
+
+          <p class="section__text">
+
+            Základní denní nástroje si vyzkoušíš bez platební karty. Členství dává smysl, pokud chceš historii, delší výklady a osobnější vedení.
+
+          </p>
+
+        </div>
+
+
+
+        <!-- DIVI ROW: 2 Columns -->
+
+        <div class="grid grid-2 mh-inline-c233b4bfc7" data-animate>
+
+          <!-- FREE -->
+
+          <div class="card card--pricing">
+
+            <h3 class="card__title">Poutník</h3>
+
+            <p class="card__text">Pro první vyzkoušení</p>
+
+            <div class="card__price">0 Kč<span>/měsíc</span></div>
+
+            <ul class="card__features">
+
+              <li>Denní horoskop</li>
+
+              <li>Tarot (1 karta denně)</li>
+
+              <li>Křišťálová koule (3/den)</li>
+
+              <li>Osobní průvodce (3/den)</li>
+
+              <li>Partnerská shoda (skóre)</li>
+
+              <li>Natální karta (grafika)</li>
+
+            </ul>
+
+            <a href="prihlaseni.html?mode=register&redirect=/horoskopy.html&source=homepage_pricing_legacy&feature=daily_guidance" class="btn btn--secondary u-w-full">Vytvořit účet</a>
+
+          </div>
+
+
+
+          <!-- PREMIUM -->
+
+          <div class="card card--pricing featured">
+
+            <div
+
+              class="mh-inline-632b28a9aa">
+
+              Doporučený start</div>
+
+            <h3 class="card__title">Členství Mystické Hvězdy</h3>
+
+            <p class="card__text">Pro pravidelné vedení</p>
+
+            <div class="card__price">199 Kč<span>/měsíc</span></div>
+
+            <p class="mh-inline-dd91af65eb">199 Kč měsíčně •
+
+              Zrušit kdykoliv</p>
+
+            <ul class="card__features">
+
+              <li>Vše z Poutníka +</li>
+
+              <li><strong>Tarotové výklady včetně Keltského kříže</strong></li>
+
+              <li><strong>Týdenní + měsíční horoskopy</strong></li>
+
+              <li><strong>Natální karta (interpretace)</strong></li>
+
+              <li><strong>Numerologie + Astrokartografie</strong></li>
+
+              <li><strong>Návazný chat a Křišťálová koule</strong></li>
+
+            </ul>
+
+            <a href="prihlaseni.html?mode=register&redirect=/cenik.html&plan=pruvodce&source=homepage_pricing_legacy&feature=premium_membership" class="btn btn--primary u-w-full">Odemknout Průvodce</a>
+
+          </div>
+
+
+
+        </div>
+
+        <p class="pricing-trust-links" data-animate>
+          Chceš znát podmínky členství?
+          <a href="cenik.html?source=homepage_pricing_legacy">Otevřít celý ceník</a>
+        </p>
+
+        <div class="pricing-trust-links" data-animate aria-label="Důležité informace k cenám a soukromí">
+          <span>Platby, soukromí a pravidla služby:</span>
+          <a href="podminky.html">Obchodní podmínky</a>
+          <a href="soukromi.html">Zásady soukromí</a>
+          <a href="#cookie-banner">Správa cookies</a>
+          <a href="kontakt.html">Kontakt na podporu</a>
+        </div>
+
+        <div class="cancel-flow-card" data-animate>
+          <div>
+            <span class="cancel-flow-card__label">Bez zamykání</span>
+            <h3>Jak zrušit předplatné</h3>
+            <p>Prémiový plán má být dobrovolná opora. Zrušení probíhá z profilu a přístup ti zůstane aktivní do konce už zaplaceného období.</p>
+          </div>
+          <ol>
+            <li>Přihlas se do svého profilu.</li>
+            <li>Otevři kartu <strong>Správa předplatného</strong>.</li>
+            <li>Zvol <strong>Zrušit předplatné</strong> nebo <strong>Správa plateb</strong>.</li>
+          </ol>
+        </div>
+
+      </div>
+
+    </section>
 
 
 
@@ -752,7 +1481,7 @@
 
           <details class="homepage-faq-card">
             <summary>Můžu členství kdykoliv zrušit?</summary>
-            <p>Ano, členství zrušíš ve svém profilu a přístup zůstane aktivní do konce zaplaceného období.</p>
+            <p>Ano. Předplatné zrušíš ve svém profilu a přístup zůstane aktivní do konce zaplaceného období.</p>
           </details>
 
         </div>
@@ -819,8 +1548,8 @@
       <div class="footer__grid footer__grid--compact">
         <div class="footer__brand">
           <div class="footer__logo logo">
-            <img src="img/logo-3d.webp" alt="Mystická Hvězda logo" class="logo__image" width="40" height="40" loading="lazy">
-            <span class="mh-inline-4781eaf975">Mystická<span class="text-gradient">Hvězda</span></span>
+            <img src="img/logo-3d.webp" alt="" class="logo__image" width="40" height="40" loading="lazy">
+            <span class="mh-inline-4781eaf975">Mystická <span class="text-gradient">Hvězda</span></span>
           </div>
           <p class="footer__desc">
             Tarot, astrologie a osobní výklady pro chvíle, kdy hledáš nový pohled.
@@ -986,21 +1715,22 @@
   <script src="js/dist/analytics.js" defer></script>
   <script src="js/dist/api-config.js" defer></script>
   <script src="js/dist/sentry-init.js" defer></script>
-  <script src="js/dist/templates.js?v=20261021-celtic-footer-star-svg" defer></script>
-  <script type="module" src="js/dist/personalization.js?v=20261018-sign-picker-pen" async></script>
+  <script src="js/dist/templates.js?v=14" defer></script>
+  <script type="module" src="js/dist/personalization.js?v=6" async></script>
 <script src="js/dist/auth-client.js?v=20261020-02-register-password-policy" defer></script>
 <script src="js/dist/auth-copy-fixes.js" defer></script>
-<script src="js/dist/premium-gates.js?v=20261018-paywall-svg" defer></script>
+<script src="js/dist/premium-gates.js?v=20261010-membership-gate-copy" defer></script>
   <script src="js/dist/feedback-widget.js" defer></script>
 
-  <script type="module" src="js/dist/tarot-karta-dne.js?v=20261019-share-feedback" defer></script>
+  <script src="js/dist/tarot-karta-dne.js" defer></script>
+  <script src="js/dist/relationship-tarot-bridge.js?v=20261013-seo" defer></script>
 
   <script type="module" src="js/dist/platby-init.js" async></script>
 
 
 
   <script type="module" src="js/dist/moon-phase.js?v=2" async></script>
-  <script type="module" src="js/dist/main.js?v=20261018-status-icons" async></script>
+  <script type="module" src="js/dist/main.js" async></script>
 
 
 
@@ -1047,7 +1777,7 @@
 
 
 
-  <script src="js/dist/error-boundary.js?v=20261018-plain-recovery" defer></script>
+  <script src="js/dist/error-boundary.js" defer></script>
   <script src="js/dist/mobile-nav.js?v=5" defer></script>
 
   <!-- GDPR Cookie Save Handler — loaded via components.js for all pages, kept here for index.html (hardcoded footer) -->
@@ -1059,8 +1789,7 @@
 
   <script type="module" src="js/dist/analytics-page-init.js" async></script>
 
-  <script src="js/dist/relationship-tarot-bridge.js?v=20261018-intent-context" defer></script>
-  <script src="js/dist/index-lazy-load.js?v=20261021-auth-aware-trust-strip" defer></script>
+  <script src="js/dist/index-lazy-load.js?v=4" defer></script>
 
   <script src="js/dist/pwa-install.js" defer></script>
 

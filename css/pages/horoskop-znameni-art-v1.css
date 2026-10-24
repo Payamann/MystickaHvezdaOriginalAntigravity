@@ -1,0 +1,121 @@
+/* Shared tarot-style sign artwork for the twelve zodiac detail pages. */
+body[data-sign] .sign-hero {
+    padding: 6.25rem 0 1.75rem;
+}
+
+body[data-sign] .sign-hero > .container {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 180px;
+    grid-template-areas:
+        "bread bread"
+        "title art"
+        "dates art"
+        "answer art"
+        "meta art";
+    align-items: center;
+    gap: 0.9rem clamp(1.5rem, 4vw, 3.5rem);
+    max-width: 1120px;
+    text-align: left;
+}
+
+body[data-sign] .sign-hero .bread {
+    grid-area: bread;
+    align-self: start;
+    justify-self: start;
+    position: relative;
+    z-index: 1;
+    margin: 0 0 0.4rem;
+    color: #c3c9cb;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+body[data-sign] .sign-hero .sign-emoji { display: none; }
+body[data-sign] .sign-hero .hero__title {
+    grid-area: title;
+    margin: 0;
+    font-size: clamp(2.25rem, 4vw, 3.5rem);
+    line-height: 1.15;
+    text-align: left;
+    text-wrap: balance;
+}
+body[data-sign] .sign-hero .sign-dates {
+    grid-area: dates;
+    margin: 0;
+    font-size: 1rem;
+    letter-spacing: 0.04em;
+}
+body[data-sign] .sign-hero .sign-answer-box {
+    grid-area: answer;
+    max-width: 760px;
+    margin: 0;
+    padding: 1.2rem 1.35rem;
+    border-color: #bd9b6540;
+    border-radius: 6px;
+    background: #102638;
+}
+body[data-sign] .sign-hero .sign-meta-grid {
+    grid-area: meta;
+    max-width: 760px;
+    margin: 0;
+    gap: 0.75rem;
+}
+body[data-sign] .sign-hero .meta-card {
+    padding: 1rem 0.75rem;
+    border-color: #bd9b6535;
+    border-radius: 5px;
+    background: #102638;
+}
+body[data-sign] .sign-hero__art {
+    grid-area: art;
+    display: block;
+    width: min(100%, 160px);
+    aspect-ratio: 1 / 2;
+    justify-self: center;
+    border: 1px solid #bd9b65aa;
+    border-radius: 4px;
+    background-image: url("/img/atlas/western-zodiac-v1.webp");
+    background-repeat: no-repeat;
+    background-size: 400% 300%;
+    box-shadow: 0 8px 24px #0006;
+}
+body[data-sign] .sign-section { padding-top: 1.5rem; }
+
+body[data-sign="beran"] .sign-hero__art { background-position: 0% 0%; }
+body[data-sign="byk"] .sign-hero__art { background-position: 33.333% 0%; }
+body[data-sign="blizenci"] .sign-hero__art { background-position: 66.667% 0%; }
+body[data-sign="rak"] .sign-hero__art { background-position: 100% 0%; }
+body[data-sign="lev"] .sign-hero__art { background-position: 0% 50%; }
+body[data-sign="panna"] .sign-hero__art { background-position: 33.333% 50%; }
+body[data-sign="vahy"] .sign-hero__art { background-position: 66.667% 50%; }
+body[data-sign="stir"] .sign-hero__art { background-position: 100% 50%; }
+body[data-sign="strelec"] .sign-hero__art { background-position: 0% 100%; }
+body[data-sign="kozoroh"] .sign-hero__art { background-position: 33.333% 100%; }
+body[data-sign="vodnar"] .sign-hero__art { background-position: 66.667% 100%; }
+body[data-sign="ryby"] .sign-hero__art { background-position: 100% 100%; }
+
+@media (max-width: 640px) {
+    body[data-sign] .sign-hero { padding: 5.25rem 0 1.5rem; }
+    body[data-sign] .sign-hero > .container {
+        grid-template-columns: minmax(0, 1fr) 88px;
+        grid-template-areas:
+            "bread bread"
+            "title art"
+            "dates art"
+            "answer answer"
+            "meta meta";
+        gap: 0.8rem 0.9rem;
+    }
+    body[data-sign] .sign-hero .hero__title { font-size: clamp(1.8rem, 7vw, 2.5rem); }
+    body[data-sign] .sign-hero .sign-dates { font-size: 0.9rem; line-height: 1.45; }
+    body[data-sign] .sign-hero .sign-answer-box { max-width: none; padding: 1rem; font-size: 0.95rem; }
+    body[data-sign] .sign-hero .sign-meta-grid { max-width: none; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    body[data-sign] .sign-hero__art { width: 84px; justify-self: end; }
+}
+
+@media (max-width: 360px) {
+    body[data-sign] .sign-hero .sign-meta-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body[data-sign] .sign-hero .sign-emoji { animation: none; }
+}

@@ -77,13 +77,13 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="stylesheet" href="/fonts/local-fonts.css">
 
-    <link rel="stylesheet" href="css/style.v2.min.css?v=20261018-release-candidate">
-    <link rel="stylesheet" href="css/pages/astro-mapa.css?v=20261021-result-focus">
+    <link rel="stylesheet" href="css/style.v2.min.css?v=20261023-release-todo">
+    <link rel="stylesheet" href="css/pages/astro-mapa.css">
 
     <link rel="stylesheet" href="css/page-extras.css">
 
-  <!-- DOMPurify sanitizes generated result markup after user interaction. -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js" integrity="sha384-XQqX/4yiUGu+oyr87jvWzRuqBUK/adrY0DunhL+tID9m/9dwSpV8h9Fk/Sg6ifVQ" crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
+  <!-- DOMPurify for XSS protection (must load synchronously before other scripts use it) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js" integrity="sha384-XQqX/4yiUGu+oyr87jvWzRuqBUK/adrY0DunhL+tID9m/9dwSpV8h9Fk/Sg6ifVQ" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <link rel="canonical" href="https://www.mystickahvezda.cz/astro-mapa.html">
     <script src="/js/dist/analytics-init.js" defer></script>
 <meta property="og:image:width" content="1200">
@@ -92,11 +92,12 @@
 <meta property="og:image:alt" content="Astro mapa míst | Astrokartografie | Mystická Hvězda">
 <meta name="twitter:image:alt" content="Astro mapa míst | Astrokartografie | Mystická Hvězda">
 
-    <link rel="stylesheet" href="/css/atlas-web.css?v=20261020-03-horoscope-day-switcher-atlas">
-    <link rel="stylesheet" href="/css/atlas-remaining.css?v=20261020-01-remaining-surface-polish">
+    <link rel="stylesheet" href="/css/atlas-web.css?v=20261023-release-todo">
+    <link rel="stylesheet" href="/css/atlas-remaining.css?v=20261023-release-todo">
+<link rel="stylesheet" href="/css/atlas-polish-v1.css?v=20261023-map">
 </head>
 
-<body class="atlas-page atlas-remaining-page">
+<body class="atlas-page atlas-remaining-page" data-atlas-polish="astro-mapa">
 
     <a href="#main-content" class="skip-link">Přeskočit na obsah</a>
 
@@ -118,8 +119,8 @@
 
                 <p class="hero__subtitle">
 
-                    Která místa mohou otevřít nový impuls? Zadej datum narození a záměr a získej symbolickou mapu témat
-                    pro cestování, relokaci nebo rozhodnutí. Ber ji jako podklad k úvaze, ne jako jistotu výsledku.
+                    Která místa mohou otevřít nový impuls? Zadejte narození a záměr a získejte symbolickou mapu témat
+                    pro cestování, relokaci nebo rozhodnutí. Berte ji jako podklad k úvaze, ne jako jistotu výsledku.
 
                 </p>
 
@@ -141,7 +142,7 @@
 
                         <div class="flex-between mb-lg">
 
-                            <h2 class="card__title mh-inline-0e3d9ac75a">Zadej své údaje</h2>
+                            <h2 class="card__title mh-inline-0e3d9ac75a">Zadejte své údaje</h2>
 
                             <label class="checkbox-wrapper mh-inline-c445a143df" id="profile-option-wrapper"
 
@@ -163,7 +164,7 @@
 
                                 <label for="astro-name" class="form-label">Jméno</label>
 
-                                <input type="text" id="astro-name" class="form-input" placeholder="Tvoje jméno" autocomplete="name">
+                                <input type="text" id="astro-name" class="form-input" placeholder="Vaše jméno">
 
                             </div>
 
@@ -171,7 +172,7 @@
 
                                 <label for="astro-date" class="form-label">Datum narození</label>
 
-                                <input type="date" id="astro-date" class="form-input" autocomplete="bday" required>
+                                <input type="date" id="astro-date" class="form-input" required>
 
                             </div>
 
@@ -179,7 +180,7 @@
 
                                 <label for="astro-time" class="form-label">Čas narození</label>
 
-                                <input type="time" id="astro-time" class="form-input" autocomplete="off" required>
+                                <input type="time" id="astro-time" class="form-input" required>
 
                             </div>
 
@@ -187,7 +188,7 @@
 
                                 <label for="astro-place" class="form-label">Místo narození</label>
 
-                                <input type="text" id="astro-place" class="form-input" placeholder="Např. Praha" autocomplete="address-level2"
+                                <input type="text" id="astro-place" class="form-input" placeholder="Např. Praha"
                                     list="birth-place-suggestions"
 
                                     required>
@@ -229,17 +230,17 @@
 
                                 <select id="astro-intention" class="form-input mh-inline-c747dd33a1">
 
-                                    <option value="obecny">Obecný přehled</option>
+                                    <option value="obecny">🌍 Obecný přehled</option>
 
-                                    <option value="kariera">Kariéra a úspěch</option>
+                                    <option value="kariera">💼 Kariéra a Úspěch</option>
 
-                                    <option value="laska">Láska a vztahy</option>
+                                    <option value="laska">❤️ Láska a Vztahy</option>
 
-                                    <option value="zdravi">Zdraví a relaxace</option>
+                                    <option value="zdravi">⚛️ Zdraví a Relaxace</option>
 
-                                    <option value="duchovno">Duchovní růst</option>
+                                    <option value="duchovno">✨ Duchovní růst</option>
 
-                                    <option value="rodina">Domov a rodina</option>
+                                    <option value="rodina">🏠 Domov a Rodina</option>
 
                                 </select>
 
@@ -249,7 +250,7 @@
 
                                 <button type="submit" class="btn btn--primary u-w-full">
 
-                                    <span>Sestavit symbolickou mapu</span>
+                                    🌍 Sestavit symbolickou mapu
 
                                 </button>
 
@@ -263,7 +264,7 @@
 
                     <div class="map-container" id="astro-map-container" data-animate>
 
-                        <img loading="lazy" src="img/world-map-flat.webp" srcset="img/world-map-flat-400.webp 400w, img/world-map-flat-800.webp 800w, img/world-map-flat.webp 1024w" sizes="(max-width: 720px) 100vw, (max-width: 1200px) 50vw, 560px" class="map-bg" alt="Astrokartografická mapa světa" width="1024" height="1024">
+                        <img loading="lazy" src="img/world-map-flat.webp" class="map-bg" alt="Astrokartografická mapa světa" width="1024" height="1024">
 
                         <!-- Markers added by JS -->
 
@@ -285,11 +286,9 @@
 
                 <div class="loading-spinner"></div>
 
-                <span class="u-text-gold">Počítám mapu a připravuji její symbolický výklad…</span>
+                <span class="u-text-gold">Analyzuji symbolickou mapu míst...</span>
 
             </div>
-
-            <p id="astro-status" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></p>
 
             <!-- Results -->
 
@@ -309,7 +308,7 @@
 
                     <div class="card card--service">
 
-                        <img loading="lazy" src="/img/atlas/tools-v1/01-astrolab.webp" srcset="/img/atlas/tools-v1/01-astrolab-240.webp 240w, /img/atlas/tools-v1/01-astrolab-480.webp 480w, /img/atlas/tools-v1/01-astrolab-800.webp 800w, /img/atlas/tools-v1/01-astrolab.webp 1200w" sizes="80px" alt="" class="card__icon-img mh-inline-49809fe465" width="200" height="200"
+                        <img loading="lazy" src="/img/atlas/tools-v1/01-astrolab.webp" alt="" class="card__icon-img mh-inline-49809fe465" width="200" height="200"
 
                            >
 
@@ -317,9 +316,9 @@
 
                         <p class="card__text">
 
-                            Symbolický výklad, který propojuje tvé narození, záměr a mapu světa. Ukazuje, ve kterých zemích
+                            Symbolický výklad, který propojuje vaše narození, záměr a mapu světa. Ukazuje, ve kterých zemích
 
-                            mohou být pro tebe zajímavá témata růstu, vztahů nebo kariéry.
+                            mohou být pro vás zajímavá témata růstu, vztahů nebo kariéry.
 
                         </p>
 
@@ -327,7 +326,7 @@
 
                     <div class="card card--service">
 
-                        <img loading="lazy" src="/img/atlas/tools-v1/06-lesni-kruh.webp" srcset="/img/atlas/tools-v1/06-lesni-kruh-240.webp 240w, /img/atlas/tools-v1/06-lesni-kruh-480.webp 480w, /img/atlas/tools-v1/06-lesni-kruh-800.webp 800w, /img/atlas/tools-v1/06-lesni-kruh.webp 1200w" sizes="80px" alt="" class="card__icon-img mh-inline-49809fe465" width="200" height="200"
+                        <img loading="lazy" src="/img/atlas/tools-v1/06-lesni-kruh.webp" alt="" class="card__icon-img mh-inline-49809fe465" width="200" height="200"
 
                            >
 
@@ -335,8 +334,8 @@
 
                         <p class="card__text">
 
-                            Přemýšlíš o stěhování? Porovnej, jaká témata může nová destinace symbolicky otevřít.
-                            Výsledek ber jako podklad k rozhodnutí, ne jako pokyn, kam se přestěhovat.
+                            Přemýšlíte o stěhování? Porovnejte, jaká témata může nová destinace symbolicky otevřít.
+                            Výsledek berte jako podklad k rozhodnutí, ne jako pokyn, kam se přestěhovat.
 
                         </p>
 
@@ -344,7 +343,7 @@
 
                     <div class="card card--service">
 
-                        <img loading="lazy" src="/img/atlas/tools-v1/02-mesicni-krajina.webp" srcset="/img/atlas/tools-v1/02-mesicni-krajina-240.webp 240w, /img/atlas/tools-v1/02-mesicni-krajina-480.webp 480w, /img/atlas/tools-v1/02-mesicni-krajina-800.webp 800w, /img/atlas/tools-v1/02-mesicni-krajina.webp 1200w" sizes="80px" alt="" class="card__icon-img mh-inline-49809fe465" width="200" height="200"
+                        <img loading="lazy" src="/img/atlas/tools-v1/02-mesicni-krajina.webp" alt="" class="card__icon-img mh-inline-49809fe465" width="200" height="200"
 
                            >
 
@@ -352,8 +351,8 @@
 
                         <p class="card__text">
 
-                            Při plánování cesty si všimni, jaký typ zážitku hledáš: odpočinek, vztahy, práci
-                            nebo inspiraci. Mapa pomůže pojmenovat záměr, ne vybrat dovolenou za tebe.
+                            Při plánování cesty si všimněte, jaký typ zážitku hledáte: odpočinek, vztahy, práci
+                            nebo inspiraci. Mapa pomůže pojmenovat záměr, ne vybrat dovolenou za vás.
 
                         </p>
 
@@ -367,6 +366,21 @@
 
     <!-- CROSS-LINKING SEKCE -->
 
+    <section class="section cross-linking-section atlas-next-step" aria-labelledby="atlas-next-step-title">
+  <div class="container cross-linking-container">
+    <h3 class="cross-linking-title" id="atlas-next-step-title">Jeden další krok</h3>
+    <div class="cross-linking-grid">
+      <a href="/natalni-karta.html" class="card cross-link-card atlas-next-step-card">
+        <span class="cross-link-card__icon"><svg class="mh-symbol" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#chart"></use></svg></span>
+        <span class="atlas-next-step-card__copy">
+          <span class="cross-link-card__title">Natální karta</span>
+          <span class="cross-link-card__text">Prozkoumej osobní astrologický základ, ze kterého mapa vychází.</span>
+        </span>
+        <span class="atlas-next-step-card__arrow" aria-hidden="true">→</span>
+      </a>
+    </div>
+  </div>
+</section>
 
     </main>
 
@@ -374,8 +388,8 @@
 
     <div id="footer-placeholder"></div>
 
-    <script src="js/dist/favorites-helper.js?v=20261018-favorite-controls" defer></script>
-        <script src="js/dist/astro-map.js?v=20261021-result-focus" defer></script>
+    <script src="js/dist/favorites-helper.js" defer></script>
+    <script src="js/dist/astro-map.js?v=20261003-single-membership" defer></script>
 
     <!-- Service Worker Registration -->
 
@@ -384,19 +398,19 @@
     <script src="js/dist/api-config.js?v=5" defer></script>
     <script src="js/dist/birth-location-suggestions.js" defer></script>
 
-    <script src="js/dist/templates.js?v=20261021-celtic-footer-star-svg" defer></script>
+    <script src="js/dist/templates.js?v=14" defer></script>
 
     <script src="js/dist/auth-client.js?v=20261020-02-register-password-policy" defer></script>
 <script src="js/dist/auth-copy-fixes.js" defer></script>
-    <script src="js/dist/secondary-pages-copy-fixes.js?v=20261018-honest-astro-copy" defer></script>
+    <script src="js/dist/secondary-pages-copy-fixes.js?v=4" defer></script>
 
-        <script src="js/dist/share-result.js?v=20261017-icons" defer></script>
+        <script src="js/dist/share-result.js?v=3" defer></script>
 
     <script src="js/dist/exit-intent.js" defer></script>
 
-    <script src="js/dist/components.js?v=20261021-footer-support-locale" defer></script>
+    <script src="js/dist/components.js?v=20260522-premium-gate-cache" defer></script>
 
-    <script type="module" src="js/dist/main.js?v=20261018-status-icons"></script>
+    <script type="module" src="js/dist/main.js?v=10"></script>
 
 </body>
 

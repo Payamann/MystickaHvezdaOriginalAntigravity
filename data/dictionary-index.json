@@ -3,169 +3,169 @@
     "slug": "ascendent",
     "title": "Ascendent",
     "category": "Astrologie",
-    "short_description": "Bod horoskopu vypočítaný z času a místa narození. Astrologie jej spojuje s vystupováním navenek, neurčuje ale, jak tě druzí skutečně vnímají."
+    "short_description": "Znamení vycházející na východním obzoru v okamžiku vašeho narození. Určuje vaši masku pro vnější svět – jak vás vidí ostatní na první pohled."
   },
   {
     "slug": "retrogradi-planeta",
     "title": "Retrográdní planeta",
     "category": "Astrologie",
-    "short_description": "Zdánlivý zpětný pohyb planety pozorovaný ze Země. Astrologie mu přiřazuje symbolické významy; nejde o příčinu jistých komplikací."
+    "short_description": "Zdánlivý pohyb planety pozpátku (od Země) po obloze. Každý retrográd spouští zpomalení a přehodnocení dané sféry života."
   },
   {
     "slug": "aspekty",
     "title": "Aspekty",
     "category": "Astrologie",
-    "short_description": "Úhlové vztahy mezi planetami v horoskopu. Astrologické tradice je vykládají různými způsoby; samy o sobě nedokazují osobnostní vlastnosti ani události."
+    "short_description": "Úhly, které svírají planety mezi sebou v Natální mapě. Harmonické aspekty (triny, sekstily) přinášejí dar; napjaté (opozice, kvadratury) přinášejí výzvy."
   },
   {
     "slug": "nativni-karta",
     "title": "Natální karta (Horoskop)",
     "category": "Astrologie",
-    "short_description": "Astrologický diagram polohy nebeských těles pro čas a místo narození. Astrologie jej vykládá symbolicky; není vědecky ověřeným popisem osobnosti ani osudu."
+    "short_description": "Mapa oblohy zachycená v okamžiku vašeho narození. Kompletní energetický otisk vaší duše, ukazující potenciály, výzvy i dary, se kterými jste přišli na svět."
   },
   {
     "slug": "saturnosky-navrat",
     "title": "Saturnský návrat",
     "category": "Astrologie",
-    "short_description": "Astrologický název pro období, kdy se Saturn vrací přibližně na svou polohu v natální mapě, zhruba po 29,5 letech. Jeho symbolický význam nepředpovídá konkrétní události."
+    "short_description": "Okamžik, kdy Saturn ve svém 29letém cyklu dosáhne stejné pozice jako při vašem narození. Bývá nemilosrdnou zkouškou dospělosti."
   },
   {
     "slug": "velka-arkana",
     "title": "Velká Arkána",
     "category": "Tarot",
-    "short_description": "22 karet, které v běžném tarotovém balíčku tvoří Velkou Arkánu. V mnoha výkladech se spojují s širšími životními tématy; jejich význam závisí na systému a kontextu."
+    "short_description": "22 hlavních karet tarotového balíčku zobrazující velké životní archetypy – od naivního Blázna přes Smrt až po osvícení Světa."
   },
   {
     "slug": "mala-arkana",
     "title": "Malá Arkána",
     "category": "Tarot",
-    "short_description": "56 karet ve čtyřech barvách: Hůlky, Meče, Číše a Pentakly. V mnoha tarotových systémech se jejich symboly používají k zamyšlení nad každodenními tématy."
+    "short_description": "56 karet rozdělených do 4 suit (Hůlky, Meče, Číše, Pentakly). Odráží každodenní situace a konkrétní životní oblasti."
   },
   {
     "slug": "tarot-blazen",
     "title": "Blázen (Tarot)",
     "category": "Tarot",
-    "short_description": "Nultá karta Velké Arkány. V mnoha současných výkladech se spojuje s novým začátkem, otevřeností a nejistotou; sama o sobě nepředpovídá výsledek."
+    "short_description": "Nultá karta Velké Arkány. Symbol neohroženého začátku, čisté naivity a odevzdání se vesmírné cestě bez záruky výsledku."
   },
   {
     "slug": "zivotni-cislo",
     "title": "Životní číslo",
     "category": "Numerologie",
-    "short_description": "Číslo, které některé numerologické směry odvozují z data narození. Naše kalkulačka redukuje den, měsíc a rok zvlášť a v mezikrocích ponechává 11, 22 a 33; výklad je symbolický."
+    "short_description": "Nejzákladnější numerologický ukazatel. Získáte ho redukcí data narození na jednu číslici (1–9, výjimky 11, 22, 33). Odráží vaši životní cestu."
   },
   {
     "slug": "mistrovska-cisla",
     "title": "Mistrovská čísla (11, 22, 33)",
     "category": "Numerologie",
-    "short_description": "Některé numerologické směry označují 11, 22 a 33 za mistrovská čísla a při redukci je ponechávají. Jejich významy jsou symbolické, ne ověřené vlastnosti člověka."
+    "short_description": "Čísla s dvojitou silou, která se při numerologické redukci neredukují dál. Nositelé nesou výjimečný potenciál, ale i těžší životní lekce."
   },
   {
     "slug": "karma",
     "title": "Karma",
     "category": "Spiritualita",
-    "short_description": "Pojem pro jednání a jeho důsledky v různých indických náboženských a filozofických tradicích. Význam se mezi směry liší; nejde o ověřitelný zákon, že se každému vše vrátí stejnou měrou."
+    "short_description": "Zákon příčiny a následku přesahující hranice jednoho života. Vše, co vysíláme (myšlenky, slova, činy), se k nám vrátí – v tomto nebo budoucím životě."
   },
   {
     "slug": "reinkarnace",
     "title": "Reinkarnace",
     "category": "Spiritualita",
-    "short_description": "Duchovní představa, že život po smrti pokračuje novým zrozením. Výklady se mezi tradicemi liší; astrologie ji nedokládá jako ověřenou skutečnost."
+    "short_description": "Víra v opakované zrození duše v novém těle. Každý život přináší specifické lekce a příležitosti k duchovnímu růstu."
   },
   {
     "slug": "draci-uzly",
     "title": "Dračí uzly (Severní a Jižní)",
     "category": "Astrologie",
-    "short_description": "Dva matematické body v horoskopu. Astrologie je někdy vykládá jako symbol minulých návyků a směru osobního rozvoje; nejde o důkaz minulých životů."
+    "short_description": "Dva matematické body (ne planety) v Natální mapě. Jižní uzel = karmická minulost a vrozené způsoby reakcí. Severní uzel = duchovní výzva tohoto vtělení."
   },
   {
     "slug": "synchronicita",
     "title": "Synchronicita",
     "category": "Spiritualita",
-    "short_description": "Pojem pro události, které člověk vnímá jako smysluplnou shodu, i když mezi nimi není zřejmá příčinná souvislost."
+    "short_description": "Pojem zavedený C. G. Jungem pro „smysluplné náhody\" – kdy vnější události a vnitřní stavy spolu zdánlivě nesouvisí, ale přesto tvoří soudržný celek."
   },
   {
     "slug": "akasicke-zaznamy",
     "title": "Akášické záznamy",
     "category": "Spiritualita",
-    "short_description": "Ezoterický pojem pro představu duchovního archivu všech událostí. Jde o duchovní tradici, ne ověřenou databázi informací."
+    "short_description": "Ezoterický pojem pro „kosmickou paměť\" – nefyzickou databázi všech myšlenek, slov, činů a událostí, jaké se kdy odehrály ve vesmíru."
   },
   {
     "slug": "fehu",
     "title": "Fehu (Runa)",
     "category": "Runosloví",
-    "short_description": "První runa staršího Futharku se zvukovou hodnotou „f“. Její jméno se pojí s dobytkem či majetkem; dnešní věštecké významy jsou symbolické interpretace."
+    "short_description": "První runa staršího Futharku. Symbolizuje dobytek, majetek a pohybující se bohatství. Energie plodnosti, hojnosti a sílu manifestace."
   },
   {
     "slug": "hagalaz",
     "title": "Hagalaz (Runa)",
     "category": "Runosloví",
-    "short_description": "Runa staršího Futharku spojená s hláskou „h“ a názvem pro krupobití. Její moderní věštecké významy neoznamují jistou krizi ani změnu."
+    "short_description": "Devátá runa – runa krupobití, chaosu a náhlé destrukce. Přichází nevyzvaná a bez ohledu na vaše plány. Je zároveň zárodkem budoucí transformace."
   },
   {
     "slug": "tiwaz",
     "title": "Tiwaz (Runa)",
     "category": "Runosloví",
-    "short_description": "Runa staršího Futharku pro zvuk „t“, jejíž jméno se spojuje s bohem Týrem. Dnešní výklady ji někdy pojí s odvahou a férovostí; nejsou věštbou výsledku."
+    "short_description": "Runa boha Týra, spravedlnosti a mužské oběti. Šipka ukazující vskyř – symbol nezlomné vůle a ochoty obětovat osobní zisk pro vyšší dobro."
   },
   {
     "slug": "muladhara",
     "title": "Muladhara – Kořenová čakra",
     "category": "Energie",
-    "short_description": "Čakra v některých tantrických a moderních duchovních systémech. V často používaném sedmičkovém schématu se spojuje se stabilitou; nejde o anatomickou strukturu ani zdravotní měření."
+    "short_description": "První čakra sídlící u kostrče. Vládne bezpečí, přežití a fyzickému uzemění. Asociována s červenou barvou a elementem Země."
   },
   {
     "slug": "svadhisthana",
     "title": "Svadhisthana – Sakrální čakra",
     "category": "Energie",
-    "short_description": "Čakra v některých duchovních systémech. V moderním sedmičkovém výkladu se symbolicky pojí s tvořivostí a emocemi; nejde o diagnózu ani tělesný orgán."
+    "short_description": "Druhá čakra, sídlící pod pupíkem. Centrum smyslnosti, kreativity, radosti a emocí. Asociována s oranžovou barvou a elementem Vody."
   },
   {
     "slug": "anahata",
     "title": "Anahata – Srdeční čakra",
     "category": "Energie",
-    "short_description": "Čakra ve vybraných duchovních systémech, často symbolicky spojovaná se srdcem, soucitem a vztahy. Její výklad neurčuje zdraví ani schopnost milovat."
+    "short_description": "Čtvrtá čakra, most mezi nižšími a vyššími energiemi. Centrum lásky, soucitu, léčení a schopnosti otevřít se druhým lidem. Barva: zelená / růžová."
   },
   {
     "slug": "lucidni-sen",
     "title": "Lucidní sen",
     "category": "Snář",
-    "short_description": "Ve snu si uvědomíš, že sníš. Někdy můžeš ovlivnit jeho průběh, ale kontrola obsahu není podmínkou lucidního snu."
+    "short_description": "Stav, kdy si ve snu uvědomujete, že sníte, a dokážete záměrně ovlivňovat obsah snu. Starověká praxe i moderní vědecky ověřitelný fenomén."
   },
   {
     "slug": "andelska-cisla",
     "title": "Andělská čísla",
     "category": "Numerologie",
-    "short_description": "Některé duchovní směry vykládají opakující se čísla (111, 222, 333…) jako symboly. Jde o osobní interpretace, ne ověřené zprávy nebo předpovědi."
+    "short_description": "Opakující se číselné posloupnosti (111, 222, 333...) interpretované jako poselství z vyšších vědomí nebo duchovních průvodců."
   },
   {
     "slug": "lilith-cerna-luna",
     "title": "Lilith (Černá Luna)",
     "category": "Astrologie",
-    "short_description": "Černá Luna Lilith je astrologický výpočtový bod spojený s apogeem Měsíce. Výklad je symbolický a může se lišit podle použité metody i astrologické školy."
+    "short_description": "Lilith nebo Černá Luna představuje naši temnou stránku duše, potlačené touhy a skrytou sílu. Bod na oběžné dráze Měsíce, kde je nejdále od Země."
   },
   {
     "slug": "descendent",
     "title": "Descendent (DC)",
     "category": "Astrologie",
-    "short_description": "Bod v horoskopu naproti Ascendentu, který označuje začátek 7. domu. Astrologie jej spojuje s blízkými vztahy; neurčuje partnera ani kompatibilitu."
+    "short_description": "Descendent leží přesně naproti Ascendentu a reprezentuje naše partnerské vztahy, sňatky a typ lidí, ke kterým jsme přitahováni. Zjistěte více o 7. domě v astrologii."
   },
   {
     "slug": "chiron",
-    "title": "Chiron („Zraněný léčitel“)",
+    "title": "Chiron (\"Zraněný léčitel\")",
     "category": "Astrologie",
-    "short_description": "Malé těleso ve Sluneční soustavě, které astrologie symbolicky spojuje s citlivostí a osobním růstem. Horoskop ale neurčuje trauma ani léčebný postup."
+    "short_description": "Chiron symbolizuje naše nejhlubší karmické rány a schopnost je proměnit v největší dar léčení. Zjistěte význam Chirona ve vašem natálním horoskopu."
   },
   {
     "slug": "spankova-paralyza",
     "title": "Spánková Paralýza",
     "category": "Snář",
-    "short_description": "Krátká neschopnost pohnout se nebo promluvit při usínání či probouzení. Může být spojena se živými vjemy; nejde o důkaz nadpřirozeného dění."
+    "short_description": "Spánková paralýza: Fenomén na pomezí spánku a bdění. Co znamená, proč vzniká a jaký má duchovní a snový přesah."
   },
   {
     "slug": "andelske-cislo-1111",
     "title": "Andělské Číslo 11:11",
     "category": "Numerologie",
-    "short_description": "V některých numerologických směrech se 11:11 vykládá jako symbol pozornosti, záměru a synchronicity. Jde o duchovní interpretaci, ne o důkaz nebo předpověď."
+    "short_description": "Andělské číslo 11:11 je mocný symbol synchronicity, probuzení a potvrzení z vesmíru, že vaše myšlenky se rychle manifestují do reality."
   },
   {
     "slug": "uplnek",

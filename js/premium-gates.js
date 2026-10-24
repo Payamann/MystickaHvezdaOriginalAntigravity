@@ -7,30 +7,6 @@ window.Premium = {
     _plansById: new Map(),
     _featurePlanMap: {},
 
-    _createSymbolIcon(symbolId, className = '') {
-        const allowedSymbols = ['check', 'compass', 'gem', 'lock', 'star'];
-        if (!allowedSymbols.includes(symbolId)) return null;
-
-        const namespace = 'http://www.w3.org/2000/svg';
-        const icon = document.createElementNS(namespace, 'svg');
-        icon.setAttribute('class', `mh-symbol premium-symbol${className ? ` ${className}` : ''}`);
-        icon.setAttribute('viewBox', '0 0 48 48');
-        icon.setAttribute('width', '24');
-        icon.setAttribute('height', '24');
-        icon.setAttribute('fill', 'none');
-        icon.setAttribute('stroke', 'currentColor');
-        icon.setAttribute('stroke-width', '1.8');
-        icon.setAttribute('stroke-linecap', 'round');
-        icon.setAttribute('stroke-linejoin', 'round');
-        icon.setAttribute('aria-hidden', 'true');
-        icon.setAttribute('focusable', 'false');
-
-        const use = document.createElementNS(namespace, 'use');
-        use.setAttribute('href', `/img/icons/mh-symbols.svg#${symbolId}`);
-        icon.appendChild(use);
-        return icon;
-    },
-
     _escapeHTML(str) {
         const div = document.createElement('div');
         div.textContent = str;
@@ -39,24 +15,6 @@ window.Premium = {
 
     _hasLoginCookie() {
         return document.cookie.split(';').some((part) => part.trim() === 'logged_in=1');
-    },
-
-    getSafeLocalRedirect(value, fallback = '/cenik.html') {
-        if (typeof value !== 'string') return fallback;
-        const redirect = value.trim();
-        if (!redirect || !redirect.startsWith('/') || redirect.startsWith('//')
-            || redirect.includes('\\') || /[\u0000-\u001F\u007F]/.test(redirect)) {
-            return fallback;
-        }
-
-        try {
-            const target = new URL(redirect, window.location.origin);
-            return target.origin === window.location.origin
-                ? `${target.pathname}${target.search}${target.hash}`
-                : fallback;
-        } catch {
-            return fallback;
-        }
     },
 
     async checkStatus() {
@@ -126,13 +84,14 @@ window.Premium = {
         const plan = this._plansById.get(planId);
         if (!plan) return fallbackLabel;
 
+        const icon = planId === 'pruvodce' ? '\u{1F52D}' : '\u2728';
         const name = this.readablePlanName(plan.name);
         let suffix = '';
         if (plan.interval === 'month') suffix = '/m\u011bs\u00edc';
         if (plan.interval === 'year') suffix = '/rok';
 
         if (!name || !plan.priceLabel) return fallbackLabel;
-        return `Odemknout ${name} - ${plan.priceLabel}${suffix}`;
+        return `${icon} Odemknout ${name} - ${plan.priceLabel}${suffix}`;
     },
 
     getPlanTrialDays(planId) {
@@ -163,8 +122,8 @@ window.Premium = {
 
     getTrialCtaLabel(planId, fallbackLabel) {
         const trialDays = this.getPlanTrialDays(planId);
-        if (trialDays > 0) return `Vyzkou\u0161et ${trialDays} dn\u00ed zdarma`;
-        return this.getPlanCtaLabel(planId, fallbackLabel || 'Odemknout Hv\u011bzdn\u00e9ho Pr\u016fvodce');
+        if (trialDays > 0) return `\ud83c\udf1f Vyzkou\u0161et ${trialDays} dn\u00ed zdarma`;
+        return this.getPlanCtaLabel(planId, fallbackLabel || '\ud83c\udf1f Odemknout Hv\u011bzdn\u00e9ho Pr\u016fvodce');
     },
 
     getFeaturePlanId(featureName, fallbackPlanId = 'pruvodce') {
@@ -185,7 +144,11 @@ window.Premium = {
     buildCheckoutAuthUrl(planId, context = {}) {
         const source = context.source || 'premium_gate';
         const feature = context.feature || null;
-        const redirect = this.getSafeLocalRedirect(context.redirect);
+        const redirect = typeof context.redirect === 'string'
+            && context.redirect.startsWith('/')
+            && !context.redirect.startsWith('//')
+            ? context.redirect
+            : '/cenik.html';
         const authMode = context.authMode === 'login' ? 'login' : 'register';
         const metadata = this.buildCheckoutMetadata(source, feature, context.metadata);
         const authUrl = new URL('/prihlaseni.html', window.location.origin);
@@ -221,7 +184,11 @@ window.Premium = {
         try {
             const source = context.source || 'premium_gate';
             const feature = context.feature || null;
-            const redirect = this.getSafeLocalRedirect(context.redirect);
+            const redirect = typeof context.redirect === 'string'
+                && context.redirect.startsWith('/')
+                && !context.redirect.startsWith('//')
+                ? context.redirect
+                : '/cenik.html';
             const authMode = context.authMode === 'login' ? 'login' : 'register';
             const metadata = this.buildCheckoutMetadata(source, feature, context.metadata);
 
@@ -320,14 +287,15 @@ window.Premium = {
     createOverlay({ icon, title, message, benefits, ctaLabel, footer, badgeLabel = '' }) {
         const overlay = document.createElement('div');
         overlay.className = 'paywall-overlay';
-        const iconId = ['compass', 'gem', 'star'].includes(icon) ? icon : 'gem';
         overlay.innerHTML = `
             <div class="paywall-content">
-                <div class="paywall-icon" aria-hidden="true"></div>
+                <div class="paywall-icon">${this._escapeHTML(icon)}</div>
                 ${badgeLabel ? `<div class="paywall-trial-badge">${this._escapeHTML(badgeLabel)}</div>` : ''}
                 <h3 class="paywall-title">${this._escapeHTML(title)}</h3>
                 <p class="paywall-message">${this._escapeHTML(message)}</p>
-                <div class="paywall-benefits"></div>
+                <div class="paywall-benefits">
+                    ${(benefits || []).map((item) => `<div class="benefit-item">${this._escapeHTML(item)}</div>`).join('')}
+                </div>
                 <div class="paywall-actions">
                     <button class="btn btn--primary paywall-upgrade">${this._escapeHTML(ctaLabel)}</button>
                     <button class="btn btn--ghost paywall-close">Teď ne</button>
@@ -335,18 +303,6 @@ window.Premium = {
                 <p class="paywall-footer">${this._escapeHTML(footer)}</p>
             </div>
         `;
-
-        overlay.querySelector('.paywall-icon').appendChild(this._createSymbolIcon(iconId));
-        const benefitsContainer = overlay.querySelector('.paywall-benefits');
-        (benefits || []).forEach((item) => {
-            const benefit = document.createElement('div');
-            benefit.className = 'benefit-item';
-            benefit.appendChild(this._createSymbolIcon('check', 'paywall-benefit-icon'));
-            const text = document.createElement('span');
-            text.textContent = String(item).replace(/^\s*✓\s*/, '');
-            benefit.appendChild(text);
-            benefitsContainer.appendChild(benefit);
-        });
 
         document.body.appendChild(overlay);
         return overlay;
@@ -379,75 +335,75 @@ window.Premium = {
         const featurePaywalls = {
             numerology: {
                 title: 'Hluboký numerologický rozbor',
-                message: 'Základní číslo ukáže směr. Premium odemkne osobní cykly, silné stránky a konkrétní doporučení pro aktuální období.',
+                message: 'Základní číslo ukáže směr. V členství najdeš osobní cykly, silné stránky a doporučení pro aktuální období.',
                 benefits: ['✓ Osobní výklad životního čísla', '✓ Denní a měsíční numerologické cykly', '✓ Uložená historie rozborů', '✓ Doporučení pro rozhodování a načasování']
             },
             numerologie_vyklad: {
                 title: 'Hluboký numerologický rozbor',
-                message: 'Odemkněte plnou interpretaci čísel, která ukáže nejen význam, ale i konkrétní další krok.',
+                message: 'V členství najdeš plnou interpretaci čísel i konkrétní další krok.',
                 benefits: ['✓ Osobní výklad životního čísla', '✓ Denní a měsíční numerologické cykly', '✓ Uložená historie rozborů', '✓ Doporučení pro rozhodování a načasování']
             },
             weekly_horoscope: {
                 title: 'Týdenní mapa pod hvězdami',
-                message: 'Denní horoskop dá směr na dnes. Premium ukáže celý týden: kdy jednat, kdy zpomalit a na co si dát pozor.',
-                benefits: ['✓ Týdenní přehled energií', '✓ Vztahy, práce a vnitřní klid v souvislostech', '✓ Osobní doporučení podle znamení', '✓ Historie pro návrat k předchozím týdnům']
+                message: 'Plný týdenní výhled je součástí členství. Najdeš v něm vztahy, práci i energii týdne v širších souvislostech.',
+                benefits: ['✓ Týdenní přehled energií', '✓ Vztahy, práce a vnitřní klid v souvislostech', '✓ Osobní doporučení podle znamení']
             },
             monthly_horoscope: {
                 title: 'Měsíční mapa rozhodnutí',
-                message: 'Odemkněte delší výhled, který pomůže plánovat důležité rozhovory, práci i osobní kroky.',
+                message: 'V členství najdeš delší výhled a souvislosti pro důležité rozhovory, práci i osobní kroky.',
                 benefits: ['✓ Témata měsíce', '✓ Silné a citlivé dny', '✓ Doporučení pro vztahy a práci', '✓ Návrat k uloženým výkladům']
             },
             natal_chart: {
                 title: 'Plná natální interpretace',
-                message: 'Základní mapa ukáže obrys. Premium odemkne domy, aspekty, silné stránky a vzorce, které se vám v životě opakují.',
+                message: 'Základní mapa ukáže obrys. Členství zpřístupní domy, aspekty, silné stránky a vzorce, které se ti v životě opakují.',
                 benefits: ['✓ Výklad znamení, domů a aspektů', '✓ Silné stránky a citlivá místa', '✓ Vztahové a pracovní vzorce', '✓ Osobní profil uložený pro další výklady']
             },
             natalni_interpretace: {
                 title: 'Plná natální interpretace',
-                message: 'Odemkněte hlubší výklad své mapy narození a propojte ji s tím, co řešíte právě teď.',
+                message: 'V členství najdeš hlubší výklad své mapy narození a můžeš ho propojit s tím, co řešíš právě teď.',
                 benefits: ['✓ Výklad znamení, domů a aspektů', '✓ Silné stránky a citlivá místa', '✓ Vztahové a pracovní vzorce', '✓ Osobní profil uložený pro další výklady']
             },
             synastry: {
                 title: 'Plný vztahový rozbor',
-                message: 'Základní kompatibilita nestačí. Premium ukáže třecí body, komunikační styl a konkrétní doporučení pro vztah.',
+                message: 'Základní kompatibilita ukáže jen část souvislostí. Členství zpřístupní třecí body, komunikační styl a doporučení pro vztah.',
                 benefits: ['✓ Hlubší dynamika vztahu', '✓ Silné stránky a napětí mezi vámi', '✓ Doporučení pro komunikaci', '✓ Uložený rozbor pro pozdější návrat']
             },
             partnerska_detail: {
                 title: 'Plný vztahový rozbor',
-                message: 'Odemkněte, kde si rozumíte přirozeně, kde vzniká napětí a jak s tím prakticky pracovat.',
+                message: 'V rozboru uvidíš, kde si rozumíte přirozeně, kde může vznikat napětí a jak s tím prakticky pracovat.',
                 benefits: ['✓ Hlubší dynamika vztahu', '✓ Silné stránky a napětí mezi vámi', '✓ Doporučení pro komunikaci', '✓ Uložený rozbor pro pozdější návrat']
             },
             mentor: {
                 title: 'Návazné otázky pro Hvězdného Průvodce',
-                message: 'Jedna odpověď pomůže v tu chvíli. Premium odemkne pokračování, historii a možnost jít v tématu hlouběji.',
-                benefits: ['✓ Návazné otázky v rámci provozních limitů', '✓ Návazné odpovědi k jednomu tématu', '✓ Historie předchozích vhledů', '✓ Doporučení podle vašeho profilu']
+                message: 'Jedna odpověď pomůže s otázkou teď. V členství můžeš navázat dalšími otázkami, vracet se k historii a jít v tématu hlouběji.',
+                benefits: ['✓ Návazné otázky v rámci provozních limitů', '✓ Návazné odpovědi k jednomu tématu', '✓ Historie předchozích vhledů', '✓ Doporučení podle tvého profilu']
             },
             rituals: {
                 title: 'Lunární rituály pro návrat k sobě',
-                message: 'Odemkněte rituály podle fáze Měsíce, záměru a aktuální energie dne.',
+                message: 'V členství najdeš rituály podle fáze Měsíce, záměru a tématu, kterému se chceš věnovat.',
                 benefits: ['✓ Rituály podle lunární fáze', '✓ Záměry pro vztahy, práci a klid', '✓ Večerní reflexe', '✓ Uložená osobní praxe']
             },
             tarot_multi_card: {
                 title: 'Celý tarotový výklad',
-                message: 'První karta naznačí směr. Premium odemkne celý výklad, skryté vlivy a konkrétní další krok.',
+                message: 'První karta naznačí směr. Vícekaretní výklad v členství doplní další souvislosti a konkrétní krok.',
                 benefits: ['✓ Vícekaretní výklady', '✓ Skryté vlivy a doporučení', '✓ Uložená historie tarotu', '✓ Návrat k tématům, která se opakují']
             },
             tarot_celtic_cross: {
                 title: 'Keltský kříž do hloubky',
-                message: 'Odemkněte plnou strukturu výkladu pro situace, které nejdou vyřešit jednou kartou.',
+                message: 'Plná struktura Keltského kříže nabízí víc souvislostí pro situace, kde jedna karta nestačí.',
                 benefits: ['✓ Kompletní výklad Keltského kříže', '✓ Souvislosti mezi kartami', '✓ Doporučený další krok', '✓ Uložený výklad v profilu']
             },
             astrocartography: {
-                title: 'Astrokartografie a místa, která vás volají',
+                title: 'Astrokartografie a místa, která tě volají',
                 message: 'Členství zahrnuje astrologickou mapu míst a jejich symbolický výklad.',
                 planId: 'pruvodce',
-                ctaLabel: this.getPlanCtaLabel('pruvodce', 'Odemknout členství'),
+                ctaLabel: this.getPlanCtaLabel('pruvodce', '🔭 Odemknout členství'),
                 footer: this.getPlanFooter('pruvodce'),
                 benefits: ['✓ Hvězdná mapa míst', '✓ Linie pro vztahy, práci a růst', '✓ Pokročilé interpretace', '✓ Roční kontext a hlubší analýzy']
             },
             journal_insights: {
-                title: 'Vzorce ve vašich záznamech',
-                message: 'Premium pomůže najít témata, která se opakují v deníku, výkladech i horoskopech.',
+                title: 'Vzorce v tvých záznamech',
+                message: 'Členství pomůže hledat témata, která se opakují v deníku, výkladech i horoskopech.',
                 benefits: ['✓ Analýza opakujících se témat', '✓ Souvislosti mezi výklady', '✓ Jemné návraty k minulým záznamům', '✓ Doporučení pro další reflexi']
             }
         };
@@ -468,11 +424,11 @@ window.Premium = {
         this.trackPaywallHit(featureName, 'inline_paywall', planId);
 
         const overlay = this.createOverlay({
-            icon: planId === 'pruvodce' ? 'compass' : 'gem',
+            icon: planId === 'pruvodce' ? '🔭' : '✨',
             title: config.title,
             message: displayMessage,
             benefits: config.benefits,
-            ctaLabel: this.getPlanCtaLabel(planId, config.ctaLabel || 'Odemknout Hvězdného Průvodce'),
+            ctaLabel: this.getPlanCtaLabel(planId, config.ctaLabel || '🌟 Odemknout Hvězdného Průvodce'),
             footer: this.getPlanFooter(planId, config.footer)
         });
 
@@ -487,16 +443,16 @@ window.Premium = {
         this.trackPaywallHit(featureName, 'exclusive_paywall', 'pruvodce');
 
         const overlay = this.createOverlay({
-            icon: 'compass',
+            icon: '🔭',
             title: 'Členství Mystické Hvězdy',
             message: 'Tato funkce je součástí členství Mystické Hvězdy.',
             benefits: [
-                '✓ Astrokartografie a vaše hvězdná mapa světa',
+                '✓ Astrokartografie a tvá hvězdná mapa světa',
                 '✓ Pokročilá natální karta s hlubším výkladem',
                 '✓ Exkluzivní lunární rituály',
                 '✓ Návazné odpovědi Hvězdného Průvodce'
             ],
-            ctaLabel: this.getPlanCtaLabel('pruvodce', 'Odemknout členství'),
+            ctaLabel: this.getPlanCtaLabel('pruvodce', '🔭 Odemknout členství'),
             footer: this.getPlanFooter('pruvodce')
         });
 
@@ -508,7 +464,7 @@ window.Premium = {
     },
 
     showLoginGate(container, message = null, featureName = null, source = 'inline_login_gate') {
-        const defaultMsg = 'Vytvořte účet a pokračujte k odemčení plného osobního výkladu';
+        const defaultMsg = '⭐ Vytvoř si účet a pokračuj k plnému osobnímu výkladu';
         const safeMsg = this._escapeHTML(message || defaultMsg);
         const planId = this.getFeaturePlanId(featureName, 'pruvodce');
         this.trackPaywallHit(featureName, source, planId, 'login_gate_viewed');
@@ -517,8 +473,8 @@ window.Premium = {
         gate.className = 'login-gate';
         gate.innerHTML = `
             <p class="login-gate__message">${safeMsg}</p>
-            <p class="login-gate__hint">Účet vytvoříte zdarma. Placený plán potvrdíte až na zabezpečeném checkoutu.</p>
-            <button class="btn btn--primary login-gate-btn">Pokračovat k odemčení</button>
+            <p class="login-gate__hint">Účet si vytvoříš zdarma. Členství a jeho cenu potvrdíš až v zabezpečené platební bráně.</p>
+            <button class="btn btn--primary login-gate-btn">Pokračovat k členství</button>
         `;
 
         container.appendChild(gate);
@@ -536,9 +492,8 @@ window.Premium = {
     markAsPremium(element) {
         const badge = document.createElement('span');
         badge.className = 'premium-badge';
-        badge.appendChild(this._createSymbolIcon('gem', 'premium-badge__icon'));
-        badge.appendChild(document.createTextNode(' Premium'));
-        badge.title = 'Tato funkce vyžaduje Premium předplatné';
+        badge.textContent = '💎 Členství';
+        badge.title = 'Tato funkce je součástí členství Mystické Hvězdy';
 
         element.classList.add('premium-badge-host');
         element.appendChild(badge);
@@ -550,11 +505,10 @@ window.Premium = {
         const lockOverlay = document.createElement('div');
         lockOverlay.className = 'premium-lock-overlay';
         lockOverlay.innerHTML = `
-            <div class="lock-icon" aria-hidden="true"></div>
-            <p class="lock-text">Premium obsah</p>
+            <div class="lock-icon">🔒</div>
+            <p class="lock-text">Obsah v členství</p>
             <button class="btn btn--sm btn--gold unlock-btn">Odemknout</button>
         `;
-        lockOverlay.querySelector('.lock-icon').appendChild(this._createSymbolIcon('lock', 'premium-lock-icon'));
 
         container.appendChild(lockOverlay);
 
@@ -604,7 +558,7 @@ window.Premium = {
             partnerska_detail: 'Základní shoda je jen začátek. Plný rozbor ukáže třecí body, komunikaci a konkrétní další krok pro vztah.',
             numerologie_vyklad: 'Odemkni plnou interpretaci čísel, osobní cykly a doporučení pro aktuální období.',
             natalni_interpretace: 'Odemkni domy, aspekty, silné stránky a opakující se životní vzorce ve své natální kartě.',
-            tarot_multi_card: 'První karta naznačí směr. Premium odemkne celý výklad, skryté vlivy a konkrétní další krok.',
+            tarot_multi_card: 'První karta naznačí směr. Vícekaretní výklad doplní další souvislosti a konkrétní krok.',
             tarot_celtic_cross: 'Keltský kříž dává smysl pro složitější situace, kde jedna karta nestačí.',
             mentor: 'Pokračuj ve své otázce a vrať se k historii předchozích vhledů.'
         };
@@ -620,12 +574,12 @@ window.Premium = {
         const selectedBenefits = benefits[featureName] || benefits.default;
 
         const overlay = this.createOverlay({
-            icon: 'star',
+            icon: '✨',
             badgeLabel: this.getPlanTrialBadge(planId),
-            title: 'Hvězdný Průvodce',
-            message: featureMessages[featureName] || 'Tato funkce je součástí Hvězdného Průvodce.',
+            title: 'Členství Mystické Hvězdy',
+            message: featureMessages[featureName] || 'Tuhle funkci najdeš v členství Mystické Hvězdy.',
             benefits: selectedBenefits,
-            ctaLabel: this.getTrialCtaLabel(planId, 'Odemknout Hvězdného Průvodce'),
+            ctaLabel: this.getTrialCtaLabel(planId, '🌟 Odemknout Hvězdného Průvodce'),
             footer: this.getPlanFooter(planId)
         });
 
@@ -647,12 +601,7 @@ window.Premium = {
             document.querySelectorAll('[data-premium="true"]').forEach((element) => {
                 const badge = document.createElement('span');
                 badge.className = 'nav-premium-badge';
-                badge.title = 'Součást členství';
-                badge.appendChild(this._createSymbolIcon('gem', 'nav-premium-icon'));
-                const label = document.createElement('span');
-                label.className = 'sr-only';
-                label.textContent = 'Členství';
-                badge.appendChild(label);
+                badge.textContent = '💎';
                 element.appendChild(badge);
             });
         }

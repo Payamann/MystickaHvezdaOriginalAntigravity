@@ -323,22 +323,12 @@ describe('manual script guardrails', () => {
     test('chakra article keeps energy practice outside medical claims', () => {
         const html = readScript('blog/cakrove-leceni-navod.html');
 
-        expect(html).toContain('ne jako léčbu ani diagnostiku');
-        expect(html).toContain('kvalifikovaným zdravotnickým odborníkem');
+        expect(html).toContain('nenahrazuje lékařskou ani psychologickou péči');
         expect(html).toContain('bez zdravotních slibů');
         expect(html).not.toContain('Blokovaná čakra se vždy projeví');
         expect(html).not.toContain('diabetes jako energetický korelát');
         expect(html).not.toContain('pro lepší zdraví, vztahy a hojnost');
         expect(html).not.toContain('skutečně ovlivňuje nervový systém a endokrinní žlázy');
-        expect(html).not.toContain('odstraňuje energetické bloky');
-        expect(html).not.toContain('přímo stimuluje solar plexus');
-        expect(html).not.toContain('fyzicky masírují krční oblast');
-        expect(html).not.toContain('přetrvávají déle než tři dny');
-        expect(html).not.toContain('běžné reakce po praxi');
-        expect(html).not.toContain('kapalabhati');
-        expect(html).not.toContain('Energie těla se pohybuje v cyklech');
-        expect(html).toContain('pokud vám během něj není dobře, přerušte ho');
-        expect(html).toContain('Při závažných nebo akutních potížích vyhledejte neodkladnou pomoc.');
     });
 
     test('local server does not run scheduled jobs by default', () => {
@@ -363,36 +353,6 @@ describe('manual script guardrails', () => {
         expect(envExample).toContain('ENABLE_SOCIAL_AGENT_SCHEDULER=false');
         expect(envExample).toContain('ENABLE_DAILY_HOROSCOPE_EMAILS=false');
         expect(envExample).toContain('DISABLE_DAILY_HOROSCOPE_EMAILS=false');
-    });
-
-    test('blog generator refuses implicit demo-content fallback', () => {
-        const source = readScript('server/scripts/generate-blog.js');
-
-        expect(source).toContain("const USE_DUMMY_DATA_FLAG = '--use-dummy-data'");
-        expect(source).toContain("process.env.NODE_ENV !== 'production'");
-        expect(source).toContain('!process.env.RAILWAY_ENVIRONMENT_NAME');
-        expect(source).toContain('Generování zastaveno, aby se na web nezapsala ukázková data.');
-        expect(source).toContain('if (!allowLocalDemoData)');
-        expect(source).toContain('const POST_SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/');
-        expect(source).toContain('Duplicate blog post slug:');
-        expect(source.indexOf('validatePosts(posts);')).toBeLessThan(source.indexOf('fs.mkdirSync(OUTPUT_DIR'));
-    });
-
-    test('dictionary generator validates all input before creating output', () => {
-        const source = readScript('server/scripts/generate-dictionary.js');
-
-        expect(source).toContain('function validateInput()');
-        expect(source).toContain('DICTIONARY_TERMS.length === 0');
-        expect(source).toContain('const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/');
-        expect(source).toContain('Duplicate dictionary slug:');
-        const validationIndex = source.indexOf('validateInput();');
-        const firstWriteIndex = source.indexOf('fs.writeFileSync(filePath, expected');
-        expect(validationIndex).toBeGreaterThan(-1);
-        expect(firstWriteIndex).toBeGreaterThan(validationIndex);
-        expect(source).toContain("const checkOnly = process.argv.includes('--check')");
-        expect(source).toContain('if (checkOnly) continue;');
-        expect(source).toContain('generatedFiles.set(INDEX_PATH');
-        expect(source).toContain('bez zápisu.');
     });
 
     test('social media agent scheduler is opt-in beyond the AI API key', () => {

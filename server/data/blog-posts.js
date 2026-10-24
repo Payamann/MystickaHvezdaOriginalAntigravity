@@ -1,41 +1,57 @@
 const PREMIUM_BLOG_POSTS = [
     {
         slug: 'zivotni-cislo-odhaleni-kodu-vasi-duse',
-        title: 'Životní číslo: jak se počítá a co může symbolizovat',
-        short_description: 'Zjisti, jak naše kalkulačka počítá číslo životní cesty a jak tradiční numerologický výklad použít jako podnět k zamyšlení, ne jako předpověď.',
+        title: 'Životní číslo: Starověký klíč k vaší karmě a skrytému potenciálu',
+        short_description: 'Vaše datum narození není matematická náhoda. Objevte, jak starořecká numerologie dešifruje mapu vaší duše a jaký osudový úkol vám byl svěřen.',
         category: 'Numerologie',
         featured_image: '../img/atlas/tools-v1/03-numerologicky-zapisnik.webp',
         author: 'Mystická Hvězda',
         content_html: `
-            <p>Životní číslo, kterému se říká také číslo životní cesty, je pojem z numerologie. Různé směry používají různé způsoby výpočtu i výkladu. Tady popisujeme postup naší kalkulačky. Výsledek ber jako symbolický námět k sebereflexi; datum narození samo o sobě nedokládá povahu, schopnosti ani budoucnost.</p>
-
-            <h2>Jak počítá naše kalkulačka</h2>
-            <p>Den, měsíc a rok narození redukuje zvlášť. V mezikrocích ponechává 11, 22 a 33, pokud na ně redukce dojde. Potom tři části sečte a součet stejným pravidlem zredukuje. Jiné numerologické školy mohou číslice celého data sčítat jinak, proto se jejich výsledek může lišit.</p>
-            <p>Například pro datum <strong>15. 8. 1992</strong> vyjde den 1+5 = 6, měsíc 8 a rok 1+9+9+2 = 21 → 2+1 = 3. Závěrečný součet je 6+8+3 = 17 → 1+7 = <strong>8</strong>.</p>
-
-            <h2>Co čísla v numerologii symbolizují</h2>
-            <p>Následující témata jsou tradiční symbolické asociace, ne popis lidí, kteří dané číslo dostanou. Můžeš je použít jako otázku k vlastní zkušenosti:</p>
+            <p>Už řecký filozof a matematik Pythagoras, otec moderní geometrie, před více než dvěma a půl tisíci lety prohlásil, že "celý vesmír je postaven na síle čísel". Pythagoras a jeho mystická škola nevnímali čísla pouze jako prostředek k měření vzdáleností nebo objemů. Pro zasvěcence byla čísla živoucími entitami, rezonujícími specifickou frekvencí a nesoucími v sobě esenciálních archetypy lidského bytí.</p>
+            
+            <p>Vycházíme-li z předpokladu, že žijeme v synchronistickém vesmíru, kde nic neexistuje v izolaci a bez příčiny, pak ani okamžik vašeho zrození nemůže být náhodný. Datum, kdy jste po prvé pohlédli na svět, v sobě nese energetický kód – detailní mapu vaší duše. A tím nejzákladnějším a nejdůležitějším bodem této mapy je vaše <strong>Životní číslo</strong> (někdy nazývané jako Osudové číslo či Číslo životní cesty).</p>
+            
+            <blockquote>Čísla jsou univerzálním jazykem, který nám propůjčuje Stvořitel k tomu, abychom dokázali rozluštit podstatu nás samotných i celého makrokosmu.</blockquote>
+            
+            <h2>Jak správně provést výpočet?</h2>
+            <p>Základní numerologická redukce je disciplínou hledání jádra. Spočívá v prostém postupném sčítání všech číslic vašeho celého data narození, dokud nedojdete k jediné cifře od 1 do 9. Existují ovšem tři vznešené výjimky – takzvaná <strong>Mistrovská čísla 11, 22 a 33</strong>. Pokud vám při sčítání vyjde těsně před koncem jedno z těchto čísel, již ho dále neredukujete (například z 11 neděláte 2).</p>
+            
+            <p>Ukažme si to na příkladu. Dejme tomu, že se jedná o osobu narozenou <strong>15. srpna 1992</strong> (15. 8. 1992):</p>
             <ul>
-                <li><strong>1 — iniciativa:</strong> Kde chci převzít první krok?</li>
-                <li><strong>2 — spolupráce:</strong> Kdy pomáhá naslouchat a kde potřebuji hranici?</li>
-                <li><strong>3 — vyjádření:</strong> Co chci tvořit nebo říct nahlas?</li>
-                <li><strong>4 — struktura:</strong> Jaký malý řád by podpořil můj záměr?</li>
-                <li><strong>5 — změna:</strong> Kterou změnu si vybírám a na kterou jen reaguji?</li>
-                <li><strong>6 — péče:</strong> O koho nebo o co chci pečovat, aniž bych přehlížel/a vlastní potřeby?</li>
-                <li><strong>7 — poznání:</strong> Čemu potřebuji lépe porozumět, než se rozhodnu?</li>
-                <li><strong>8 — odpovědnost a zdroje:</strong> S čím mohu naložit vědoměji?</li>
-                <li><strong>9 — dokončení:</strong> Co mohu uzavřít nebo pustit?</li>
-                <li><strong>11 — inspirace:</strong> Který nápad stojí za ověření v praxi?</li>
-                <li><strong>22 — uskutečnění:</strong> Jaký je první konkrétní krok k důležitému záměru?</li>
-                <li><strong>33 — péče a předávání:</strong> Co mohu nabídnout a co už není moje odpovědnost?</li>
+                <li><strong>Den:</strong> 1 + 5 = 6</li>
+                <li><strong>Měsíc:</strong> 8</li>
+                <li><strong>Rok:</strong> 1 + 9 + 9 + 2 = 21 &rarr; 2 + 1 = 3</li>
+                <li><strong>Závěrečný součet:</strong> 6 (den) + 8 (měsíc) + 3 (rok) = 17 &rarr; 1 + 7 = <strong>8</strong></li>
             </ul>
+            <p>V tomto případě je životním číslem 8. Tato osoba se narodila do vibračního pole vůdcovství, manifestace hojnosti a karmického učení se rovnováze mezi materiálním a spirituálním světem.</p>
 
-            <h2>Jak výsledek používat</h2>
-            <p>Vezmi si z něj jen to, co ti dává smysl ve světle skutečné zkušenosti. Pokud se výklad nepotkává s tím, jak se znáš, nemusíš se do něj vměstnávat. Pro důležitá rozhodnutí dej přednost konkrétním informacím, rozhovoru s dotčenými lidmi a odborné radě, když ji situace vyžaduje.</p>
+            <div style="background: rgba(212, 175, 55, 0.05); border: 1px solid var(--color-mystic-gold); border-radius: 12px; padding: 2.5rem; text-align: center; margin: 4rem 0; box-shadow: 0 15px 40px rgba(0,0,0,0.6);">
+                <h3 style="margin-top:0; font-family:'Cinzel', serif; font-size:2rem; letter-spacing: 1px;">Vyhněte se zdlouhavým výpočtům</h3>
+                <p style="font-size:1.15rem; margin-bottom: 2.5rem; line-height: 1.8;">Zadejte své datum narození do naší prémiové Numerologické kalkulačky. Během okamžiku získáte svůj kompletní osobnostní profil – nejen vaše životní číslo, ale i číslo karmické, intimní a osobní roční vibraci.</p>
+                <a href="../numerologie.html" class="btn btn--primary" style="font-size:1.2rem; padding: 1.2rem 2.5rem; text-transform: uppercase; letter-spacing: 1px;">Spočítat můj numerologický profil</a>
+            </div>
 
-            <p><a href="../kalkulacka-cisla-osudu.html" class="btn btn--primary">Spočítat číslo životní cesty</a></p>
+            <h2>Charakteristika základních cest duše (1-9)</h2>
+            <p>Pojďme alespoň ve stručnosti nahlédnout na to, jakou esenci s sebou jednotlivá čísla do tohoto světa přinášejí.</p>
+
+            <h3>Životní vibrace 1: Tvořivý Průkopník</h3>
+            <p>Lidé s jedničkou jsou rození inovátoři a nezávislí tvůrci. Jejich osudem je razit cesty tam, kde ostatní vidí jen neproniknutelný prales. Mají neuvěřitelně silnou vůli a odvahu riskovat. Jejich fatální karmickou zkouškou je však překonání vlastního sobectví. Musí se naučit nesrážet ostatní a pochopit, že být vůdcem neznamená být diktátorem.</p>
+            
+            <h3>Životní vibrace 2: Vnímavý Mírotvůrce</h3>
+            <p>Dvojka představuje dualitu a harmonii. Tito lidé jsou obdařeni takřka mimosmyslovou empatií. Jsou to tkalci jemných mezilidských vztahů, lepidlo, které drží rozpadající se rodiny i týmy pohromadě. Jejich stinnou stránkou je ale tendence stahovat se do ústraní a obětovat své vlastní potřeby na oltář klidu. Musí se naučit, jak říkat "ne".</p>
+            
+            <h3>Životní vibrace 3: Radostný Komunikátor</h3>
+            <p>Vibrace trojky je explozí životní síly, kreativity a nevyčerpatelného optimismu. Trojky mají vrozený dar slova a dokážou prodat led i Eskymákům. Jsou to umělci, baviči a učitelé. Nebezpečí, které na ně na osudové cestě číhá, tkví v ničivé roztříštěnosti. Trojka často nedotahuje věci do konce a vrhá se do nových dobrodružství, zatímco ta stará nechává ležet ladem.</p>
+            
+            <h3>Životní vibrace 4: Architekt Základů</h3>
+            <p>Pokud potřebujete postavit dům, který vydrží zemětřesení, pozvěte si čtyřku. Zosobňují archetyp budovatele, pevného řádu a spolehlivosti. Dokážou transformovat vzdušné zámky ve zhmotněnou realitu skrze tvrdou a metodičnou práci. Jejich lekcí je nebýt natolik rigidní a naučit se přijímat náhlé životní zvraty a spontánnost, aniž by je zachvátila panika.</p>
+
+            <h2>Mistrovská vibrace: Dar nebo přítěž?</h2>
+            <p>Mistrovská čísla 11, 22 a 33 představují vysoce vyspělé duše, které se sem vrátily se zcela konkrétním posláním zasahujícím velké skupiny lidí. Učí nás, budují globální systémy a léčí rány lidstva. Nutno ale podotknout, že žít s mistrovskou vibrací je značně vyčerpávající. Pokud nositel tuto silnou frekvenci neustojí, často padá do těžkých depresí, nebo rezignuje a žije redukovanou formu svého čísla (11 padá do 2, 22 do 4).</p>
+            
+            <p>Pochopit své životní číslo neznamená rezignovat před osudem a říci si "takový jsem". Znamená to pochopit paletu barev, se kterou jste přišli na tento svět malovat. Jaký obraz s ní nakonec stvoříte, zůstává už zcela ve vaší režii.</p>
         `,
-        published_at: '2026-02-27T20:06:34.985Z'
+        published_at: new Date(Date.now() - 86400000 * 2).toISOString()
     },
     {
         slug: 'iluze-spriznene-duse-karmicke-vztahy',
@@ -127,24 +143,44 @@ const PREMIUM_BLOG_POSTS = [
     },
     {
         slug: 'skryty-kod-biorytmu-energeticke-cykly',
-        title: 'Biorytmy: jak se počítá model tří cyklů',
-        short_description: 'Zjisti, jak kalkulačka z data narození počítá tři cykly a co znamená průchod nulou. Výsledek je matematický model, ne měření zdraví, nálady ani předpověď nehody.',
+        title: 'Věda a Esoterika Biorytmů: Proč neštěstí nechodí náhodou, ale v sinusoidách',
+        short_description: 'Některé dny sršíte vtipem a všechno se daří. O týden později máte pocit, že se proti vám spikl svět. Co když ale tyto výkyvy nejsou náhodné, ale přísně matematické?',
         category: 'Spiritualita',
         featured_image: '../img/atlas/social-v1/03-posledni-list.webp',
         author: 'Mystický Průvodce',
         content_html: `
-            <p>Biorytmy jsou zjednodušený matematický model. Kalkulačka na webu počítá tři sinusové křivky od data narození: fyzickou (23 dní), emoční (28 dní) a intelektuální (33 dní). Graf ukazuje jejich vypočtenou polohu v rozmezí −100 až +100; nejde o procenta kondice, nálady ani schopností.</p>
+            <p>Každému z nás se občas stane den, kdy to lidově řečeno "prostě neběží". Vyrazíte z domova a zapomenete klíče, při řízení vás všichni vybržďují, v práci špatně napíšete důležitý e-mail a aby dnu dodala korunu vaše vlastní nervová soustava, kvůli naprosté malichernosti vyvoláte ostrou hádku se svým dlouholetým partnerem. Večer si říkáte: „Měl jsem smůlu“. Ale z hlediska starých esoterických zákonů, a dnes i fascinujících polovědeckých teorií lidských cyklů, se o náhodnou smůlu nejedná ani zdaleka. Procházíte tzv. kritickým dnem <strong>Biorytmu</strong>.</p>
+            
+            <p>Princip, se kterým Biorytmy pracují, hovoří o tom, že člověk nesměruje na lineární trajektorii. Naše celková životní, emoční a intelektuální síla pulzuje přesně definovanými vlnami v dokonalém harmonickém řádu od chvíle narození. Vesmír samotný pulzuje – ve vlnových délkách se pohybuje světlo i tón. Stejně tak osciluje hladina naší osobní kapacity nad a pod nulovou osou.</p>
+            
+            <h2>Anatomie tří základních sinusoid</h2>
+            <p>Podle tohoto vědění jsme ovládáni trojicí nepřetržitých cyklů. Každý se pohybuje jinou rychlostí, a i přesto občas dojde k drtivému momentu jejich přesného protnutí.</p>
+            
+            <h3>1. Fyzický cyklus (23denní vlna)</h3>
+            <p>Nejrychlejší z cyklů, představující zemitost. Ovládá naši fyzickou výdrž, tělesnou toleranci vůči zátěži a imunitní rezistenci, chuť tvořit fyzické úsilí a v podstatě agresivitu těla. Pokud se nalézá ve vysokých, pozitivních vlnách, lidé podávají sportovní výkony na profesionální úrovni za hranicí svých sil, a nepocítí jediné zranění. Při hlubokém prolomu pod pomyslnou nulovou hladinu cítíte letargii, jste vyčerpáni mnohem dříve, cítíte únavu i po dvanácti hodinách spánku.</p>
 
-            <h2>Jak vzniká výsledek</h2>
-            <p>Výpočet porovná zadané datum narození s místním kalendářním dnem a pro každý cyklus určí hodnotu sinusové křivky. Popisuje tedy polohu v matematickém modelu, ne aktuální stav člověka. Kalkulačka neměří zdraví, náladu ani soustředění.</p>
+            <h3>2. Citový cyklus (28denní vlna)</h3>
+            <p>Vodní cyklus, reprezentující duši a nálady, úzce propojený s ženským / lunárním dvaceti osmi denním principem. V pozitivní fázi vidíte svět růžovými brýlemi, máte chuť komunikovat, socializovat se a je velmi těžké vás urazit útočným argumentem. Ve chvíli pohlcení spodní křivkou (v negativní fázi) naopak člověk trpí přehnanou sebelítostí, podezřívavostí a vztahovačností. Pokaždé, když prožíváte nevysvětlitelný sklon k plačtivosti a vidíte ve všem konec světa, podívejte se do kalendáře – váš emocionální biorytmus pravděpodobně padl na své absolutní dno.</p>
 
-            <h2>Co znamená kritický den?</h2>
-            <p>V biorytmickém modelu se tak označuje okamžik, kdy křivka prochází nulou. Je to vlastnost grafu, ne varování před nehodou, nemocí, konfliktem nebo špatným rozhodnutím. Samotný nulový průchod nic nevypovídá o skutečném riziku; graf pouze ukazuje výsledek nastaveného vzorce.</p>
+            <h3>3. Intelektuální cyklus (33denní vlna)</h3>
+            <p>Vzdušný cyklus tvořící architekturu vaší racionální mysli, bystrosti a paměti. Řídí schopnost se efektivně učit novým věcem a přijímat logická usnesení. Jak v době záporné amplitudy zapomenete po prvním kroku, pro co jste šli do garáže a psaní slohového útvaru na vás působí jako nepřekonatelný problém, v amplitidudě kladné vám argumentace probleskuje mozkem rychlostí kulometu.</p>
 
-            <h2>Jak s grafem naložit</h2>
-            <p>Pokud tě model zaujal, můžeš si poznamenat, jaký byl tvůj den a co se skutečně dělo. Zápis zachytí tvoji zkušenost; samotná křivka ji nevysvětluje. Důležitá rozhodnutí o zdraví, řízení, práci nebo vztazích opírej o skutečné okolnosti, ne o biorytmický výpočet.</p>
+            <div style="background: rgba(41, 128, 185, 0.05); border: 1px solid rgba(41, 128, 185, 0.4); border-radius: 12px; padding: 3rem; margin: 4rem 0; box-shadow: inset 0 0 50px rgba(0,0,0,0.5);">
+                <h3 style="margin-top:0; font-family:'Cinzel', serif; font-size:2rem; text-align:center; margin-bottom: 1.5rem;">Neponechávejte svůj zítřek kruté náhodě</h3>
+                <p style="font-size:1.15rem; line-height: 1.8; text-align:center; margin-bottom: 2.5rem; padding: 0 1rem;">Máte zítra důležitou schůzku? Čeká vás těžká investice nebo rande s vysněnou ženou? Nenechte své tělo ovládat skrytým příbojem. Pomocí biorytmické matice zobrazíme orientační oscilaci a naznačíme, kdy mohou nastávat citlivější chvíle.</p>
+                <div style="text-align:center;">
+                    <a href="../biorytmy.html" class="btn btn--primary" style="font-size:1.2rem; padding:1.2rem 3rem; letter-spacing:1px; background:linear-gradient(45deg, #1abc9c, #16a085); border:none;">Spočítat mé dnešní Biorytmy</a>
+                </div>
+            </div>
 
-            <p>Chceš se podívat na vlastní modelové křivky? Otevři si <a href="../biorytmy.html?source=blog_biorhythm_article">bezplatnou kalkulačku biorytmů</a>. Zobrazí průběh všech tří cyklů pro dnešek i okolní dny.</p>
+            <h2>Pozor na kritické „Dny křížení“ (Nulového bodu)</h2>
+            <p>Mnoho osob považuje za nejnebezpečnější stav ty dny, kdy se křivka sinusoidy tře až úbočím o zemské dno. Odborníci věnující se tomuto cyklickému systému vědí, že pravda je daleko temnější. Ten skutečně rizikový den totiž není den minima (tělo se na "dno" energeticky adaptovalo a prostě "přirozeně zimuje").</p>
+            
+            <p>Skutečnou Achillovou patou biorytmů jsou <strong>kritické dny křížení přes nulovou osu.</strong> Okamžiky takzvaného převratu energií z pozitivního stavu do negativního a naopak. Během průtoku naší vnitřní nulou vzniká masivní systémová latence, zmatek, otřes rovnováhy na fyziologické či duševní úrovni.</p>
+            
+            <p>Je statisticky prokázáno (a tuto statistiku po desetiletí vedly velkoobjemové oborové profesní korporace jako japonský zjevný či zemské dráhy ve snaze snížit nehodovost zaměstnanců), že pokud se vám protnou fyzická a intelektuální nulová křížení naráz ve stejný kalendářní úsek, vaše šance na autonehodu, zranění v důsledku špatné motoriky či jiná kritická pochybení stoupá o stovky procent.</p>
+            
+            <p>Pamatujte, poznání cyklu z nás nesnímá odpovědnost žít. Dává nám ale ten neuvěřitelný luxus, že ve chvíli citové nulové deprese, nebo intelektuálního "mlha dne", nevyhodíte na základě impulzivního klamu manžela od stolu ani nepodepíšete pochybnou nevýhodnou pracovní nabídku, protože si uvědomíte, že se s vámi právě jen "cvrnkají biorytmy". Přečkáte tuto bouři v bezpečném, chápavém tichu svého ústraní.</p>
         `,
         published_at: new Date(Date.now() - 86400000 * 45).toISOString()
     },

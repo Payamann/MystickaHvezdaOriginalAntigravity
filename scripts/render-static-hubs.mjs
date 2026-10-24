@@ -14,40 +14,6 @@ function escapeHtml(value) {
         .replace(/'/g, '&#39;');
 }
 
-function responsiveImageAttrs(image, sizes) {
-    const source = String(image ?? '').replace(/^(?:\.\.\/|\/+)/, '');
-    if (!source.startsWith('img/')) return '';
-
-    let candidateWidths;
-    let originalWidth;
-    let base = source.replace(/\.webp$/i, '');
-    if (source.startsWith('img/tarot-v2/')) {
-        candidateWidths = [240, 360, 480];
-        originalWidth = 600;
-    } else if (source.startsWith('img/atlas/tools-v1/')) {
-        candidateWidths = [480, 800];
-        originalWidth = 1200;
-    } else if (source.startsWith('img/atlas/social-v1/')) {
-        candidateWidths = [480, 800];
-        originalWidth = 1080;
-    } else if (source.startsWith('img/atlas/editorial-v1/')) {
-        const widthMatch = base.match(/-(480|800|960|1200)$/);
-        if (!widthMatch) return '';
-        originalWidth = Number(widthMatch[1]);
-        base = base.replace(/-(480|800|960|1200)$/, '');
-        candidateWidths = [480, 800, 960];
-    } else {
-        return '';
-    }
-
-    const candidates = candidateWidths
-        .filter((width) => width < originalWidth && fs.existsSync(path.join(ROOT, `${base}-${width}.webp`)))
-        .map((width) => `${base}-${width}.webp ${width}w`);
-    if (!candidates.length) return '';
-    candidates.push(`${source} ${originalWidth}w`);
-    return ` srcset="${escapeHtml(candidates.join(', '))}" sizes="${escapeHtml(sizes)}"`;
-}
-
 function replaceRegion(source, marker, content) {
     const start = `<!-- ${marker}:START -->`;
     const end = `<!-- ${marker}:END -->`;
@@ -57,12 +23,10 @@ function replaceRegion(source, marker, content) {
 }
 
 function renderFeaturedPost(post) {
-    const imagePath = post.featured_image || 'img/atlas/social-v1/09-granatove-jablko.webp';
-    const image = escapeHtml(imagePath);
-    const imageAttrs = responsiveImageAttrs(imagePath, '(max-width: 720px) 88vw, 640px');
+    const image = escapeHtml(post.featured_image || 'img/atlas/social-v1/09-granatove-jablko.webp');
     return `                    <a href="blog/${escapeHtml(post.slug)}.html" class="featured-post">
                         <div class="featured-post__image-wrapper">
-                            <img src="${image}"${imageAttrs} alt="" role="presentation" class="featured-post__image" width="640" height="360" loading="eager" fetchpriority="high">
+                            <img src="${image}" alt="" role="presentation" class="featured-post__image" width="640" height="360" loading="eager" fetchpriority="high">
                         </div>
                         <div class="featured-post__content">
                             <div class="featured-post__meta"><span>${escapeHtml(post.category || 'Článek')}</span></div>
@@ -75,12 +39,10 @@ function renderFeaturedPost(post) {
 
 function renderBlogCards(posts) {
     return posts.map((post) => {
-        const imagePath = post.featured_image || 'img/atlas/social-v1/09-granatove-jablko.webp';
-        const image = escapeHtml(imagePath);
-        const imageAttrs = responsiveImageAttrs(imagePath, '(max-width: 720px) 88vw, 320px');
+        const image = escapeHtml(post.featured_image || 'img/atlas/social-v1/09-granatove-jablko.webp');
         return `                    <a href="blog/${escapeHtml(post.slug)}.html" class="blog-card">
                         <div class="blog-card-image-wrapper">
-                            <img src="${image}"${imageAttrs} alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
+                            <img src="${image}" alt="" role="presentation" class="blog-card-image" width="480" height="270" loading="lazy">
                         </div>
                         <div class="blog-card-content">
                             <div class="blog-meta-small">${escapeHtml(post.category || 'Článek')}</div>
@@ -115,7 +77,7 @@ if (!blogPosts.length || !dictionaryTerms.length) throw new Error('Hub data must
 
 const blogChanged = updateFile('blog.html', (source) => {
     const withFeatured = replaceRegion(source, 'STATIC-BLOG-FEATURED', renderFeaturedPost(blogPosts[0]));
-    return replaceRegion(withFeatured, 'STATIC-BLOG-LINKS', renderBlogCards(blogPosts.slice(1, 8)));
+    return replaceRegion(withFeatured, 'STATIC-BLOG-LINKS', renderBlogCards(blogPosts.slice(1)));
 });
 const dictionaryChanged = updateFile('slovnik.html', (source) => (
     replaceRegion(source, 'STATIC-DICTIONARY-LINKS', renderDictionaryCards(dictionaryTerms))

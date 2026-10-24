@@ -363,6 +363,50 @@ describe('🔐 Auth Endpoint Tests', () => {
             }));
         });
 
+        test('PUT /api/auth/profile updates and clears birth date and time, validates input and account binding', async () => {
+            const csrfToken = await getCsrfToken();
+            const userId = `profile-birth-data-${Date.now()}`;
+            const email = `${userId}@example.com`;
+            const token = jwt.sign({ id: userId, email, role: 'user' }, process.env.JWT_SECRET, { expiresIn: '1h' });
+            await supabase.from('users').insert({
+                id: userId,
+                email,
+                role: 'user',
+                birth_date: '1990-08-10',
+                birth_time: '12:30'
+            });
+
+            const updated = await request(app)
+                .put('/api/auth/profile')
+                .set('x-csrf-token', csrfToken)
+                .set('Cookie', `auth_token=${token}`)
+                .send({ expectedUserId: userId, birth_date: '2000-02-29', birth_time: '23:59' })
+                .expect(200);
+            expect(updated.body.user).toMatchObject({ birth_date: '2000-02-29', birth_time: '23:59' });
+
+            const cleared = await request(app)
+                .put('/api/auth/profile')
+                .set('x-csrf-token', csrfToken)
+                .set('Cookie', `auth_token=${token}`)
+                .send({ expectedUserId: userId, birth_date: null, birth_time: null })
+                .expect(200);
+            expect(cleared.body.user).toMatchObject({ birth_date: null, birth_time: null });
+
+            await request(app)
+                .put('/api/auth/profile')
+                .set('x-csrf-token', csrfToken)
+                .set('Cookie', `auth_token=${token}`)
+                .send({ expectedUserId: `${userId}-other`, first_name: 'Wrong account' })
+                .expect(409);
+
+            await request(app)
+                .put('/api/auth/profile')
+                .set('x-csrf-token', csrfToken)
+                .set('Cookie', `auth_token=${token}`)
+                .send({ expectedUserId: userId, birth_time: '99:99' })
+                .expect(400);
+        });
+
         test('POST /api/auth/logout without auth returns 401', async () => {
             const csrfToken = await getCsrfToken();
             const res = await request(app)

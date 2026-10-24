@@ -10,7 +10,7 @@
 
     <meta name="description"
 
-        content="Prohlédni si zdarma matematický model tří cyklů podle data narození. Výsledek neukazuje skutečnou kondici, náladu ani soustředění.">
+        content="Zjistěte své osobní biorytmy. Fyzický, emoční a intelektuální cyklus na základě vašeho data narození zdarma a online.">
 
     <meta name="keywords"
 
@@ -26,7 +26,7 @@
 
     <meta property="og:description"
 
-        content="Zobraz si zdarma matematický model fyzického, emočního a intelektuálního cyklu. Nejde o předpověď výkonu, nálady ani zdraví.">
+        content="Odhalte své silné a slabé dny! Výpočet osobních biorytmů zdarma na Mystická Hvězda.">
 
     <meta property="og:image" content="https://www.mystickahvezda.cz/img/search-preview/other.webp">
 
@@ -42,9 +42,7 @@
 
         "@type": "WebApplication",
 
-        "name": "Matematický model biorytmů",
-
-        "description": "Zobrazení tří matematických cyklů podle data narození. Výsledek není měřením kondice, nálady ani schopností.",
+        "name": "Výpočet Biorytmů Online",
 
         "applicationCategory": "LifestyleApplication",
 
@@ -75,15 +73,19 @@
     <link rel="apple-touch-icon" href="img/icon-192.webp">
     <link rel="stylesheet" href="/fonts/local-fonts.css">
 
-    <link rel="stylesheet" href="css/style.v2.min.css?v=20261018-release-candidate">
-    <link rel="stylesheet" href="css/pages/biorytmy.css?v=20261018-model-index-values">
+    <link rel="stylesheet" href="css/style.v2.min.css?v=20261023-release-todo">
+    <link rel="stylesheet" href="css/pages/biorytmy.css">
 
-    <!-- Chart.js is loaded on demand after the user requests a calculation. -->
+    <!-- Chart.js for biorhythms -->
 
-    <script src="js/dist/biorhythms.js?v=20261021-result-status" defer></script>
+    <script src="js/vendor/chart.js" defer></script>
+
+    <script src="js/dist/biorhythms.js?v=2" defer></script>
+<!-- DOMPurify for XSS protection (must load synchronously before other scripts use it) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js" integrity="sha384-XQqX/4yiUGu+oyr87jvWzRuqBUK/adrY0DunhL+tID9m/9dwSpV8h9Fk/Sg6ifVQ" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <link rel="canonical" href="https://www.mystickahvezda.cz/biorytmy.html">
     <script src="/js/dist/analytics-init.js" defer></script>
-    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Jak se biorytmy počítají?", "acceptedAnswer": {"@type": "Answer", "text": "Od data narození běží tři sinusové cykly: fyzický 23 dní, emocionální 28 dní a intelektuální 33 dní. Kalkulačka spočítá, v jaké fázi je každý z nich právě dnes."}}, {"@type": "Question", "name": "Co znamená kritický den?", "acceptedAnswer": {"@type": "Answer", "text": "V tomto modelu jde o průchod matematické křivky nulou. Neznamená to prokázané kolísání tvé energie ani varování před neúspěchem."}}, {"@type": "Question", "name": "Jsou biorytmy vědecky podložené?", "acceptedAnswer": {"@type": "Answer", "text": "Kalkulačka zobrazuje pevné matematické cykly z data narození. Neměří aktuální zdraví, náladu ani soustředění a výpočet sám neprokazuje jejich předpověď. Můžeš ho použít jako námět pro vlastní zápis, ne jako podklad pro důležitá rozhodnutí."}}, {"@type": "Question", "name": "Je výpočet biorytmů zdarma?", "acceptedAnswer": {"@type": "Answer", "text": "Ano, výpočet všech tří cyklů je zdarma a bez registrace."}}]}</script>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Jak se biorytmy počítají?", "acceptedAnswer": {"@type": "Answer", "text": "Od data narození běží tři sinusové cykly: fyzický 23 dní, emocionální 28 dní a intelektuální 33 dní. Kalkulačka spočítá, v jaké fázi je každý z nich právě dnes."}}, {"@type": "Question", "name": "Co znamená kritický den?", "acceptedAnswer": {"@type": "Answer", "text": "Den, kdy cyklus prochází nulou a energie dané oblasti kolísá. Vyplatí se ten den víc hlídat — odpočinout si, neřešit konflikty, odložit riskantní rozhodnutí."}}, {"@type": "Question", "name": "Jsou biorytmy vědecky podložené?", "acceptedAnswer": {"@type": "Answer", "text": "Klasická teorie biorytmů patří mezi alternativní nauky — ber ji jako nástroj sebereflexe a plánování, ne jako lékařskou předpověď. Vnímat vlastní cykly energie ale prokazatelně pomáhá."}}, {"@type": "Question", "name": "Je výpočet biorytmů zdarma?", "acceptedAnswer": {"@type": "Answer", "text": "Ano, výpočet všech tří cyklů je zdarma a bez registrace."}}]}</script>
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
@@ -91,12 +93,14 @@
 <meta property="og:image:alt" content="Osobní Biorytmy | Mystická Hvězda">
 <meta name="twitter:image:alt" content="Osobní Biorytmy | Mystická Hvězda">
 
-    <link rel="stylesheet" href="/css/atlas-web.css?v=20261020-03-horoscope-day-switcher-atlas">
-    <link rel="stylesheet" href="/css/atlas-remaining.css?v=20261020-01-remaining-surface-polish">
-    <link rel="stylesheet" href="/css/atlas-art.css?v=20261020-01-mobile-image-set">
+    <link rel="stylesheet" href="/css/atlas-web.css?v=20261023-release-todo">
+    <link rel="stylesheet" href="/css/atlas-remaining.css?v=20261023-release-todo">
+    <link rel="stylesheet" href="/css/atlas-art.css?v=20261023-release-todo">
+<link rel="stylesheet" href="/css/atlas-polish-v1.css?v=20261009">
+    <link rel="stylesheet" href="/css/faq-disclosures.css?v=20261022">
 </head>
 
-<body class="atlas-page atlas-remaining-page">
+<body class="atlas-page atlas-remaining-page" data-atlas-polish="biorytmy">
 
     <a href="#main-content" class="skip-link">Přeskočit na obsah</a>
 
@@ -120,7 +124,7 @@
 
                 <p class="hero__subtitle u-narrow-center-600">
 
-                    Prohlédni si symbolický model tří cyklů. Vypočítej si svůj fyzický, emoční a intelektuální cyklus na
+                    Poznejte své silné a slabé dny. Vypočítejte si svůj fyzický, emoční a intelektuální cyklus na
 
                     základě data narození.
 
@@ -140,7 +144,7 @@
 
                     <div class="text-center mb-xl">
 
-                        <h3 class="card__title mh-inline-1edbc0b906">Zadej datum narození</h3>
+                        <h3 class="card__title mh-inline-1edbc0b906">Zadejte datum narození</h3>
 
                     </div>
 
@@ -158,21 +162,19 @@
 
                             <button type="submit" class="btn btn--primary btn--lg mh-inline-934b479c34"
 
-                               >Vypočítat moje biorytmy</button>
+                               >Vypočítat mé biorytmy</button>
 
                         </div>
 
                     </form>
 
-                    <p id="bio-result-status" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></p>
-
                     <!-- RESULTS SECTION (Hidden initially) -->
 
-                    <div id="biorhythm-results" class="mh-inline-1f494c8269" hidden>
+                    <div id="biorhythm-results" class="mh-inline-1f494c8269">
 
                         <hr class="mh-inline-f5dad90286">
 
-                        <h3 class="text-center">Tvoje biorytmy pro dnešní den</h3>
+                        <h3 class="text-center">Vaše biorytmy pro dnešní den</h3>
 
                         <div class="bio-stats" id="bio-stats-container">
 
@@ -180,14 +182,11 @@
 
                         </div>
 
-                        <p class="bio-model-note">Graf a čísla ukazují matematickou polohu křivek v rozsahu −100 až +100. Nejde o procenta kondice, nálady ani schopností.</p>
-
                         <div class="biorhythm-chart">
-                            <canvas id="bio-canvas" role="img" aria-label="Matematický graf tří modelových křivek. Hodnoty od minus 100 do plus 100 nejsou měřením kondice, nálady ani soustředění."></canvas>
+
+                            <canvas id="bio-canvas"></canvas>
 
                         </div>
-
-                        <p id="bio-chart-status" class="text-center" role="status" aria-live="polite"></p>
 
                         <div class="bio-legend">
 
@@ -211,15 +210,15 @@
 
                            >
 
-                            <h4 class="mh-inline-2b886153c4">Chceš si vést vlastní poznámky?
+                            <h4 class="mh-inline-2b886153c4">Chcete si uložit své
 
-                                </h4>
+                                biorytmy?</h4>
 
                             <p class="mh-inline-da6f3fb3d8">
 
-                                Založ si bezplatný profil na Mystické Hvězdě a otevři si osobní dashboard s prostorem
+                                Založte si bezplatný profil na Mystické Hvězdě. Budete mít přístup k osobnímu
 
-                                pro vlastní poznámky a astrologické výklady.
+                                dashboardu, astrologickým výkladům a uložení vašeho data narození.
 
                             </p>
 
@@ -241,41 +240,53 @@
 
     
 
-        <figure class="atlas-art-interlude" data-atlas-interlude>
-            <img src="/img/atlas/social-v1/05-kocka-u-okna.webp" alt="Kočka odpočívající u otevřeného okna" width="1080" height="1080" loading="lazy" decoding="async" srcset="/img/atlas/social-v1/05-kocka-u-okna-480.webp 480w, /img/atlas/social-v1/05-kocka-u-okna-800.webp 800w, /img/atlas/social-v1/05-kocka-u-okna.webp 1080w" sizes="(max-width: 760px) calc(100vw - 40px), (max-width: 1160px) 100vw, 1120px">
+    <!-- CROSS-LINKING SEKCE -->
+
+    <figure class="atlas-art-interlude" data-atlas-interlude>
+            <img src="/img/atlas/social-v1/05-kocka-u-okna.webp" alt="Kočka odpočívající u otevřeného okna" width="1080" height="1080" loading="lazy" decoding="async">
         </figure>
+
+
         <!-- SEO-DEPTH:START -->
         <section class="section">
             <div class="container">
-                <details class="feature-reference">
-                    <summary class="feature-reference__summary">Co jsou biorytmy a jak je číst</summary>
-                    <p>Model biorytmů pracuje se třemi cykly od data narození: fyzickým (23 dní), emocionálním (28 dní) a intelektuálním (33 dní). Každý se pohybuje mezi vyšší a nižší fází; jejich kombinace může sloužit jako podnět k vlastnímu zápisu.</p>
-                    <p>Takzvaný kritický den označuje průchod modelové křivky nulou. Tento výpočet neurčuje, kdy máš sportovat, řešit konflikt nebo odkládat rozhodnutí. Všímej si vlastní aktuální zkušenosti.</p>
-                    <p>Biorytmy počítáme z tvého data narození pro aktuální den i několik dní dopředu. Výsledek je matematický model k zamyšlení, ne doporučení pro plánování výkonu, rozhovorů nebo důležitých rozhodnutí.</p>
-                </details>
+                <div class="card">
+                    <h2>Co jsou biorytmy a jak je číst</h2>
+                    <p>Teorie biorytmů popisuje tři cykly, které běží od narození: fyzický (23 dní), emocionální (28 dní) a intelektuální (33 dní). Každý osciluje mezi vysokou a nízkou fází — a jejich kombinace naznačuje, kdy máš energii na výkon, kdy na tvořivost a kdy je lepší zvolnit.</p>
+                    <p>Kritické dny nastávají, když cyklus prochází nulou — tehdy bývá energie dané oblasti nestabilní. Nejde o předpověď neúspěchu, spíš o doporučení: v kritický den fyzického cyklu nedávej osobní rekord, v kritický den emocionálního neřeš vyhrocené konflikty.</p>
+                    <p>Biorytmy počítáme z tvého data narození na aktuální den i pár dní dopředu, takže si můžeš plánovat: náročný výkon do vysoké fyzické fáze, důležitý rozhovor do vysoké emocionální.</p>
+                </div>
 
                 <div>
                     <span class="section__badge">Časté otázky</span>
                     <h2>Otázky k biorytmům</h2>
-                    <details class="faq-item feature-reference">
-                        <summary class="feature-reference__summary">Jak se biorytmy počítají?</summary>
+                    <details class="faq-disclosure card">
+                        <summary><h3>Jak se biorytmy počítají?</h3></summary>
                         <p>Od data narození běží tři sinusové cykly: fyzický 23 dní, emocionální 28 dní a intelektuální 33 dní. Kalkulačka spočítá, v jaké fázi je každý z nich právě dnes.</p>
                     </details>
-                    <details class="faq-item feature-reference">
-                        <summary class="feature-reference__summary">Co znamená kritický den?</summary>
-                        <p>V tomto modelu jde o průchod matematické křivky nulou. Neznamená to prokázané kolísání tvé energie ani varování před neúspěchem.</p>
+                    <details class="faq-disclosure card">
+                        <summary><h3>Co znamená kritický den?</h3></summary>
+                        <p>Den, kdy cyklus prochází nulou a energie dané oblasti kolísá. Vyplatí se ten den víc hlídat — odpočinout si, neřešit konflikty, odložit riskantní rozhodnutí.</p>
                     </details>
-                    <details class="faq-item feature-reference">
-                        <summary class="feature-reference__summary">Jsou biorytmy vědecky podložené?</summary>
-                        <p>Kalkulačka zobrazuje pevné matematické cykly z data narození. Neměří aktuální zdraví, náladu ani soustředění a výpočet sám neprokazuje jejich předpověď. Můžeš ho použít jako námět pro vlastní zápis, ne jako podklad pro důležitá rozhodnutí.</p>
+                    <details class="faq-disclosure card">
+                        <summary><h3>Jsou biorytmy vědecky podložené?</h3></summary>
+                        <p>Klasická teorie biorytmů patří mezi alternativní nauky — ber ji jako nástroj sebereflexe a plánování, ne jako lékařskou předpověď. Vnímat vlastní cykly energie ale prokazatelně pomáhá.</p>
                     </details>
-                    <details class="faq-item feature-reference">
-                        <summary class="feature-reference__summary">Je výpočet biorytmů zdarma?</summary>
+                    <details class="faq-disclosure card">
+                        <summary><h3>Je výpočet biorytmů zdarma?</h3></summary>
                         <p>Ano, výpočet všech tří cyklů je zdarma a bez registrace.</p>
                     </details>
                 </div>
 
-
+                <div class="card">
+                    <h3>Pokračuj ve výkladu</h3>
+                    <div class="related-links">
+                        <a href="lunace.html?source=biorytmy_detail" class="related-chip">🌙 Lunární kalendář</a>
+                        <a href="horoskopy.html?source=biorytmy_detail" class="related-chip"> Denní horoskop</a>
+                        <a href="numerologie.html?source=biorytmy_detail" class="related-chip">🔢 Numerologie</a>
+                        <a href="kalkulacka-cisla-osudu.html?source=biorytmy_detail" class="related-chip"> Číslo osudu</a>
+                    </div>
+                </div>
             </div>
         </section>
         <!-- SEO-DEPTH:END -->
@@ -287,21 +298,21 @@
 
     <script src="js/dist/api-config.js?v=5" defer></script>
 
-    <script src="js/dist/templates.js?v=20261021-celtic-footer-star-svg" defer></script>
+    <script src="js/dist/templates.js?v=14" defer></script>
 
     <script src="js/dist/auth-client.js?v=20261020-02-register-password-policy" defer></script>
 <script src="js/dist/auth-copy-fixes.js" defer></script>
-    <script src="js/dist/secondary-pages-copy-fixes.js?v=20261018-symbolic-tool-metadata" defer></script>
+    <script src="js/dist/secondary-pages-copy-fixes.js?v=4" defer></script>
 
-    <script src="js/dist/share-result.js?v=20261017-icons" defer></script>
+    <script src="js/dist/share-result.js?v=3" defer></script>
 
         
 
     <script src="js/dist/exit-intent.js" defer></script>
 
-    <script src="js/dist/components.js?v=20261021-footer-support-locale" defer></script>
+    <script src="js/dist/components.js?v=20260522-premium-gate-cache" defer></script>
 
-    <script type="module" src="js/dist/main.js?v=20261018-status-icons"></script>
+    <script type="module" src="js/dist/main.js?v=10"></script>
 
 </body>
 

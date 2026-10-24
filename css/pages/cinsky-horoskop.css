@@ -61,25 +61,11 @@
 
             display: block;
 
-            font-family: 'Noto Serif CJK SC', 'Microsoft YaHei', 'SimSun', serif;
-
-            font-size: 1.85rem;
+            font-size: 2rem;
 
             margin-bottom: 0.4rem;
 
         }
-
-        .chinese-animal-symbol {
-            display: block;
-            width: 3.5rem;
-            height: 3.5rem;
-            margin: 0 auto 0.55rem;
-            color: #d0b17c;
-        }
-
-        #result-emoji .chinese-animal-symbol { width: 5rem; height: 5rem; }
-        #syn-emoji1 .chinese-animal-symbol,
-        #syn-emoji2 .chinese-animal-symbol { width: 3.25rem; height: 3.25rem; }
 
 
 
@@ -302,7 +288,7 @@
 
         .result-hero--active {
             border: 1px solid rgba(212, 175, 55, 0.25);
-            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(155, 89, 182, 0.1));
+            background: linear-gradient(135deg, rgba(189, 155, 101, 0.12), rgba(16, 38, 56, 0.96));
         }
 
         .chinese-element--metal { color: #b0c4de; }
@@ -348,5 +334,3 @@ html body .mh-inline-a3cd1c1280 { display:grid; grid-template-columns:1fr 1fr; g
 html body .mh-inline-4ed11ed228 { text-align:center; flex:1; }
 html body .mh-inline-507e25c2d7 { font-size:2rem; opacity:0.5; }
 html body .mh-inline-fb7d31145b { text-align:center; margin-top:1.5rem; }
-html body #result-name:focus,
-html body #syn-title:focus { outline:2px solid var(--color-mystic-gold); outline-offset:4px; }

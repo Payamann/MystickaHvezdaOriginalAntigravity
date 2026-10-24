@@ -28,7 +28,7 @@
     </script>
 
     <link rel="stylesheet" href="/fonts/local-fonts.css">
-    <link rel="stylesheet" href="../css/style.v2.min.css?v=20261018-release-candidate">
+    <link rel="stylesheet" href="../css/style.v2.min.css?v=20261023-release-todo">
     <link rel="stylesheet" href="../css/pages/jmena-index.css">
 <script src="/js/dist/analytics-init.js" defer></script>
 <meta property="og:image" content="https://www.mystickahvezda.cz/img/search-preview/names.webp">
@@ -39,14 +39,14 @@
 <meta property="og:image:alt" content="Databáze jmen — Původ, Význam, Numerologie | Mystická Hvězda">
 <meta name="twitter:image:alt" content="Databáze jmen — Původ, Význam, Numerologie | Mystická Hvězda">
 
-    <link rel="stylesheet" href="/css/atlas-web.css?v=20261020-03-horoscope-day-switcher-atlas">
-    <link rel="stylesheet" href="/css/atlas-content.css?v=2">
+    <link rel="stylesheet" href="/css/atlas-web.css?v=20261023-release-todo">
+    <link rel="stylesheet" href="/css/atlas-content.css?v=20261023-release-todo">
+<link rel="stylesheet" href="/css/atlas-polish-v1.css?v=20261009">
 </head>
-<body class="atlas-page atlas-content-page">
-    <a href="#main-content" class="skip-link">Přeskočit na obsah</a>
+<body class="atlas-page atlas-content-page" data-atlas-polish="jmena-index">
     <div id="header-placeholder"></div>
 
-    <main id="main-content" tabindex="-1">
+    <main>
         <section class="section mh-inline-af119e0c1a">
             <div class="container">
                 <div class="mh-inline-330d143940" data-animate>
@@ -59,7 +59,7 @@
 
                 <div class="name-search-container" data-animate>
                     <div class="name-search">
-                        <input type="text" id="name-search" class="name-input" aria-label="Hledat jméno" placeholder="Hledejte své jméno..." autocomplete="off">
+                        <input type="text" id="name-search" class="name-input" placeholder="Hledejte své jméno..." autocomplete="off">
                         <button id="btn-search-name" class="btn btn--primary mh-inline-9c3070c354">Hledat</button>
                     </div>
                     <div id="autocomplete-results" class="autocomplete-dropdown"></div>
@@ -79,15 +79,15 @@
                         <p id="res-personality" class="mh-inline-a004d34b30"></p>
 
                         <div class="detail-grid">
-                            <div class="detail-item"><strong><svg class="mh-symbol mh-symbol--inline" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg?v=20261018#calendar"></use></svg>Jmeniny</strong><span id="res-nameday"></span></div>
-                            <div class="detail-item"><strong><svg class="mh-symbol mh-symbol--inline" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg?v=20261018#numbers"></use></svg>Numerologie</strong><span id="res-numerology">Osobní číslo <span id="res-num" class="mh-inline-64d881d188"></span></span></div>
-                            <div class="detail-item"><strong><svg class="mh-symbol mh-symbol--inline" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg?v=20261018#spectrum"></use></svg>Barva aury</strong><span id="res-aura"></span></div>
-                            <div class="detail-item"><strong><svg class="mh-symbol mh-symbol--inline" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg?v=20261018#leaf"></use></svg>Element</strong><span id="res-element"></span></div>
+                            <div class="detail-item"><strong>📅 Jmeniny</strong><span id="res-nameday"></span></div>
+                            <div class="detail-item"><strong>🔢 Numerologie</strong><span id="res-numerology">Osobní číslo <span id="res-num" class="mh-inline-64d881d188"></span></span></div>
+                            <div class="detail-item"><strong>🌈 Barva Aury</strong><span id="res-aura"></span></div>
+                            <div class="detail-item"><strong>🌿 Element</strong><span id="res-element"></span></div>
                         </div>
 
                         <div class="mh-inline-cfacb5e5cc">
-                            <div class="detail-item"><strong><svg class="mh-symbol mh-symbol--inline" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg?v=20261018#heart"></use></svg>Energie v lásce</strong><p id="res-love" class="mh-inline-9663f92856"></p></div>
-                            <div class="detail-item"><strong><svg class="mh-symbol mh-symbol--inline" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg?v=20261018#compass"></use></svg>Životní cesta</strong><p id="res-career" class="mh-inline-9663f92856"></p></div>
+                            <div class="detail-item"><strong>❤️ Energie v lásce</strong><p id="res-love" class="mh-inline-9663f92856"></p></div>
+                            <div class="detail-item"><strong>💼 Životní cesta</strong><p id="res-career" class="mh-inline-9663f92856"></p></div>
                         </div>
 
                         <div class="mh-inline-6faa04939c">
@@ -396,7 +396,7 @@
 
     
     <script src="../js/dist/exit-intent.js" defer></script>
-    <script type="module" src="../js/dist/main.js?v=20261018-status-icons"></script>
+    <script type="module" src="../js/dist/main.js?v=11"></script>
 
     <script src="../js/dist/jmena.js" defer></script>
     <script src="../js/dist/newsletter-popup.js?v=20260706-sign-step" defer></script>

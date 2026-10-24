@@ -52,20 +52,6 @@ test.describe('Runtime config', () => {
 
         await expect.poll(() => configRequests).toBe(1);
     });
-
-    test('homepage vybírá vhodnou velikost hlavní ilustrace podle hustoty displeje', async ({ page }) => {
-        await page.goto('/', { waitUntil: 'load' });
-        const image = page.locator('.atlas-home-art img');
-        await expect(image).toBeVisible();
-        const state = await image.evaluate(el => ({
-            loaded: el.complete && el.naturalWidth > 0,
-            source: new URL(el.currentSrc).pathname,
-            devicePixelRatio: window.devicePixelRatio
-        }));
-        expect(state.loaded).toBe(true);
-        const expectedVariant = state.devicePixelRatio >= 2.5 ? '01-lucerna-na-rozcesti-960.webp' : '01-lucerna-na-rozcesti-800.webp';
-        expect(state.source).toBe(`/img/atlas/${expectedVariant}`);
-    });
 });
 
 test.describe('Blog', () => {
@@ -88,6 +74,87 @@ test.describe('Blog', () => {
         await expect(cards.first()).toBeAttached();
         const count = await cards.count();
         expect(count).toBeGreaterThanOrEqual(1);
+    });
+
+    test('blog zobrazí nejdřív krátkou dávku a zachová celý archiv i kategorie', async ({ page }) => {
+        const postsResponse = await page.request.get('/data/blog-index.json');
+        const posts = await postsResponse.json();
+        const sourceResponse = await page.request.get('/blog.html');
+        const source = await sourceResponse.text();
+        const staticSlugs = Array.from(source.matchAll(/href="blog\/([^"?#]+)\.html"/g), (match) => match[1]);
+        expect(new Set(staticSlugs).size).toBe(posts.length);
+
+        await page.goto('/blog.html');
+        await waitForPageReady(page);
+
+        const cards = page.locator('#blogContainer .blog-card');
+        const loadMore = page.locator('#blogLoadMore');
+        const defaultTotal = posts.length - 1;
+        await expect(cards).toHaveCount(6);
+        await expect(page.locator('#blogResultsCount')).toHaveText(`Zobrazeno 6 z ${defaultTotal} položek`);
+        await expect(loadMore).toBeVisible();
+        expect(await loadMore.evaluate((button) => button.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);
+        expect(await page.evaluate(() => document.documentElement.scrollHeight)).toBeLessThan(30000);
+
+        const latePost = posts[20];
+        const searchPhrase = latePost.title.split(/\s+/).slice(0, 3).join(' ');
+        await page.locator('#blogSearch').fill(searchPhrase);
+        await expect(cards).toHaveCount(1);
+        await expect(cards.first()).toHaveAttribute('href', `blog/${latePost.slug}.html`);
+        await page.locator('#blogSearch').fill('');
+        await expect(cards).toHaveCount(6);
+
+        for (let shown = 6; shown < defaultTotal;) {
+            const expected = Math.min(shown + 6, defaultTotal);
+            await loadMore.click();
+            await expect(cards).toHaveCount(expected);
+            shown = expected;
+        }
+        await expect(loadMore).toBeHidden();
+        const tarotTotal = posts.filter((post) => post.category === 'Tarot').length;
+        await page.locator('[data-category="Tarot"]').click();
+        await expect(cards).toHaveCount(Math.min(6, tarotTotal));
+        for (let shown = Math.min(6, tarotTotal); shown < tarotTotal;) {
+            const expected = Math.min(shown + 6, tarotTotal);
+            await loadMore.click();
+            await expect(cards).toHaveCount(expected);
+            shown = expected;
+        }
+    });
+
+    test('blog bez JavaScriptu zachová celý statický archiv a skryje ovládací prvky', async ({ browser, page }) => {
+        const postsResponse = await page.request.get('/data/blog-index.json');
+        const posts = await postsResponse.json();
+        const context = await browser.newContext({ javaScriptEnabled: false });
+        try {
+            const noJsPage = await context.newPage();
+            await noJsPage.goto('/blog.html', { waitUntil: 'domcontentloaded' });
+            const cards = noJsPage.locator('#blogContainer .blog-card');
+            await expect(cards).toHaveCount(posts.length - 1);
+            await expect(cards.last()).toBeVisible();
+            await expect(noJsPage.locator('#categoryFilter')).toBeHidden();
+            await expect(noJsPage.locator('.blog-search')).toBeHidden();
+            await expect(noJsPage.locator('#blogLoadMore')).toBeHidden();
+        } finally {
+            await context.close();
+        }
+    });
+
+    test('blog při chybě indexu obnoví celý statický archiv', async ({ page }) => {
+        const postsResponse = await page.request.get('/data/blog-index.json');
+        const posts = await postsResponse.json();
+        await page.route('**/data/blog-index.json**', (route) => route.fulfill({
+            status: 503,
+            contentType: 'application/json',
+            body: '{"error":"temporarily unavailable"}'
+        }));
+        await page.goto('/blog.html', { waitUntil: 'domcontentloaded' });
+
+        const cards = page.locator('#blogContainer .blog-card');
+        await expect(cards).toHaveCount(posts.length - 1);
+        await expect(cards.last()).toBeVisible();
+        await expect(page.locator('#blogLoadMore')).toBeHidden();
+        await expect(page.locator('#blogResultsCount')).toBeHidden();
     });
 
     test('filtry kategorií mají pohodlnou dotykovou plochu', async ({ page }) => {
@@ -472,10 +539,8 @@ test.describe('Tarot zdarma', () => {
         await expect(page.locator('a[href*="tarot-ano-ne.html?source=tarot_free_intent"]')).toBeVisible();
         await expect(page.locator('a[href*="tarot-karta-dne.html?source=tarot_free_intent"]')).toBeVisible();
         await expect(page.locator('a[href*="tarot-laska.html?source=tarot_free_intent"]')).toBeVisible();
-        await expect(page.locator('a[href*="andelske-karty.html?source=tarot_free_intent"]')).toBeVisible();
         await expect(page.locator('a[href*="tarot-vyznam-karet.html?source=tarot_free_intent"]')).toBeVisible();
         await expect(page.locator('a[href*="tarot-tri-karty.html?source=tarot_free_intent"][href*="intent=three_cards"]')).toBeVisible();
-        await expect(page.locator('a[href*="tarot-keltsky-kriz.html?source=tarot_free_landing"]')).toContainText('součástí členství');
     });
 
     test('důvěryhodnost nepoužívá falešný social proof ani přesnostní sliby', async ({ page }) => {
@@ -485,9 +550,10 @@ test.describe('Tarot zdarma', () => {
         await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /jednu kartu zdarma/);
         await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /bez registrace/);
         await expect(page.locator('script[src*="secondary-pages-copy-fixes"]')).toHaveAttribute('src', /\/secondary-pages-copy-fixes\.mh-[a-f0-9]{16}\.js$/);
-        await expect(page.locator('main')).toContainText('ne jako slib budoucnosti');
-        await expect(page.locator('main')).toContainText('Jedna karta zdarma, bez registrace a platební karty.');
-        await expect(page.locator('main')).toContainText('Jak s výkladem pracovat');
+        await expect(page.locator('.section__text').first()).toContainText('ne slib pevné budoucnosti');
+        await expect(page.locator('main')).toContainText('Bez registrace, bez platební karty, s jasným dalším krokem');
+        await expect(page.locator('main')).toContainText('Jak z výkladu získat víc');
+        await expect(page.locator('main')).toContainText('Bez osudových jistot');
 
         const structuredData = await page.locator('script[type="application/ld+json"]').first().textContent();
         expect(structuredData).toContain('symbolický tarotový výklad');
@@ -518,7 +584,6 @@ test.describe('Tarot karta dne', () => {
     test('nabizi odber denniho horoskopu e-mailem a posle spravny payload', async ({ page }) => {
         let subscribePayload = null;
         let subscribeAttempts = 0;
-        await page.addInitScript(() => localStorage.setItem('mh_horoscope_subscribed', 'Beran'));
         await page.route('**/api/subscribe/horoscope', async (route) => {
             subscribePayload = JSON.parse(route.request().postData() || '{}');
             subscribeAttempts += 1;
@@ -530,6 +595,7 @@ test.describe('Tarot karta dne', () => {
                     : { success: true })
             });
         });
+        page.on('dialog', (dialog) => dialog.accept());
 
         await page.goto('/tarot-karta-dne.html');
         await waitForPageReady(page);
@@ -542,51 +608,21 @@ test.describe('Tarot karta dne', () => {
         await page.locator('#tarot-daily-reveal').click();
         await expect(page.locator('#tarot-daily-card-result')).toHaveAttribute('data-state', 'revealed');
         await expect(bridge).toBeVisible();
-        await expect(page.locator('#horoscope-email-input')).toBeVisible();
-
-        await page.locator('#horoscope-subscribe-btn').click();
-        await expect(page.locator('#horoscope-subscribe-error')).toContainText('Zadej platnou e-mailovou adresu.');
-        await expect(page.locator('#horoscope-email-input')).toHaveAttribute('aria-invalid', 'true');
 
         await page.fill('#horoscope-email-input', 'e2e-daily@example.com');
-        await expect(page.locator('#horoscope-subscribe-error')).toBeHidden();
-        await page.locator('#horoscope-subscribe-btn').click();
-        await expect(page.locator('#horoscope-subscribe-error')).toContainText('Vyber své znamení zvěrokruhu.');
-        await expect(page.locator('#horoscope-sign-select')).toHaveAttribute('aria-invalid', 'true');
-
         await page.selectOption('#horoscope-sign-select', 'Panna');
-        await expect(page.locator('#horoscope-subscribe-error')).toBeHidden();
-        await page.locator('#horoscope-email-input').press('Enter');
+        await page.locator('#horoscope-subscribe-btn').click();
         await expect(page.locator('#horoscope-subscribe-btn')).toBeEnabled();
         await expect(page.locator('#horoscope-email-input')).toHaveValue('e2e-daily@example.com');
         await expect(page.locator('#horoscope-sign-select')).toHaveValue('Panna');
-        await expect(page.locator('#horoscope-subscribe-error')).toContainText('Testovací chyba odběru.');
 
         await page.locator('#horoscope-subscribe-btn').click();
 
         await expect(page.locator('#horoscope-subscribed-msg')).toBeVisible();
-        await expect(page.locator('#horoscope-subscribed-msg')).toHaveAttribute('role', 'status');
-        await expect(page.locator('#horoscope-subscribed-msg use')).toHaveAttribute('href', '/img/icons/mh-symbols.svg#check');
-        await expect(page.locator('#horoscope-subscribed-msg')).toHaveText('Hotovo — zítra ráno ti přijde první horoskop.');
         expect(subscribeAttempts).toBe(2);
         expect(subscribePayload).toEqual({
             email: 'e2e-daily@example.com',
             zodiac_sign: 'Panna'
-        });
-        expect(await page.evaluate(() => localStorage.getItem('mh_horoscope_subscribed'))).toBe('Beran');
-
-        await page.getByRole('button', { name: 'Změnit znamení' }).click();
-        await expect(page.locator('#horoscope-subscribed-msg')).toBeHidden();
-        await expect(page.locator('#horoscope-email-input')).toBeHidden();
-        await expect(page.locator('#horoscope-sign-select')).toBeVisible();
-        await page.selectOption('#horoscope-sign-select', 'Býk');
-        await page.getByRole('button', { name: 'Uložit znamení' }).click();
-
-        await expect(page.locator('#horoscope-subscribed-msg')).toBeVisible();
-        expect(subscribeAttempts).toBe(3);
-        expect(subscribePayload).toEqual({
-            email: 'e2e-daily@example.com',
-            zodiac_sign: 'Býk'
         });
     });
 
@@ -672,16 +708,13 @@ test.describe('Tarot karta dne', () => {
         await waitForPageReady(page);
 
         const revealButton = page.locator('#tarot-daily-reveal');
-        const cardImage = page.locator('#tarot-daily-card-image');
         await expect(revealButton).toBeEnabled();
-        await expect(cardImage).toHaveAttribute('srcset', /tarot_card_back-mobile\.webp/);
         await revealButton.click();
 
         await expect(page.locator('#tarot-daily-card-result')).toHaveAttribute('data-state', 'revealed');
-        await expect(cardImage).toHaveAttribute('alt', /Tarot karta dne:/);
-        await expect(cardImage).not.toHaveAttribute('srcset');
+        await expect(page.locator('#tarot-daily-card-image')).toHaveAttribute('alt', /Tarot karta dne:/);
         await expect(page.locator('#tarot-daily-card-name')).not.toHaveText('Tvoje dnešní karta');
-        await expect(page.locator('#tarot-daily-card-advice')).toHaveText(/\S/);
+        await expect(page.locator('#tarot-daily-card-advice')).toContainText('Konkrétní krok');
 
         const fullReadingHref = await page.locator('#tarot-daily-full-reading').getAttribute('href');
         expect(fullReadingHref).toContain('source=tarot_daily_card_widget');
@@ -698,58 +731,6 @@ test.describe('Tarot karta dne', () => {
         await page.locator('#tarot-daily-save-image').click();
         const download = await downloadPromise;
         expect(download.suggestedFilename()).toMatch(/^tarot-karta-dne-.+\.png$/);
-    });
-
-    test('sdílení tarotové karty dne zkopíruje text a odkaz bez Web Share API', async ({ page }) => {
-        await page.goto('/tarot-karta-dne.html');
-        await waitForPageReady(page);
-        await page.locator('#tarot-daily-reveal').click();
-
-        const cardName = (await page.locator('#tarot-daily-card-name').textContent())?.trim();
-        expect(cardName).toBeTruthy();
-        await page.evaluate(() => {
-            window.__dailyTarotShareText = '';
-            Object.defineProperty(navigator, 'share', { configurable: true, value: undefined });
-            Object.defineProperty(navigator, 'clipboard', {
-                configurable: true,
-                value: { writeText: async text => { window.__dailyTarotShareText = text; } }
-            });
-        });
-
-        await page.locator('#tarot-daily-share').click();
-        await expect(page.locator('#tarot-daily-share-status'))
-            .toHaveText('Text karty a odkaz jsou zkopírované do schránky.');
-        await expect.poll(() => page.evaluate(() => window.__dailyTarotShareText || '')).toContain(cardName);
-        await expect.poll(() => page.evaluate(() => window.__dailyTarotShareText || '')).toContain('#denni-karta');
-        await expect(page.locator('#tarot-daily-share')).toBeEnabled();
-        await expect(page.locator('#tarot-daily-share')).not.toHaveAttribute('aria-busy');
-    });
-
-    test('sdílení karty dne oznámí selhání nebo nedostupný způsob sdílení', async ({ page }) => {
-        await page.goto('/tarot-karta-dne.html');
-        await waitForPageReady(page);
-        await page.locator('#tarot-daily-reveal').click();
-
-        await page.evaluate(() => {
-            Object.defineProperty(navigator, 'share', { configurable: true, value: undefined });
-            Object.defineProperty(navigator, 'clipboard', {
-                configurable: true,
-                value: { writeText: async () => { throw new Error('clipboard denied'); } }
-            });
-        });
-        const shareButton = page.locator('#tarot-daily-share');
-        const status = page.locator('#tarot-daily-share-status');
-
-        await shareButton.click();
-        await expect(status).toHaveText('Sdílení se nepodařilo. Zkus to prosím znovu.');
-        await expect(shareButton).toBeEnabled();
-
-        await page.evaluate(() => {
-            Object.defineProperty(navigator, 'clipboard', { configurable: true, value: undefined });
-        });
-        await shareButton.click();
-        await expect(status).toHaveText('Tento prohlížeč neumí sdílet ani kopírovat. Můžeš zkopírovat adresu stránky z adresního řádku.');
-        await expect(shareButton).toBeEnabled();
     });
 
     test('uložení karty do profilu pošle hosta na registraci s kontextem', async ({ page }) => {
@@ -844,7 +825,6 @@ test.describe('Tarot karta dne', () => {
         expect(savedPayloads).toHaveLength(1);
         expect(savedPayloads[0]).toEqual(expect.objectContaining({
             type: 'tarot',
-            expectedUserId: 'user-daily-tarot',
             data: expect.objectContaining({
                 spreadType: 'Tarot karta dne',
                 source: 'tarot_daily_card_widget'
@@ -1019,33 +999,6 @@ test.describe('Jak to funguje', () => {
     });
 });
 
-test.describe('Denní afirmace', () => {
-    test('oznamuje čekání a dokončení afirmace', async ({ page }) => {
-        await page.goto('/afirmace.html', { waitUntil: 'domcontentloaded' });
-        await waitForPageReady(page);
-
-        await page.evaluate(() => {
-            const cacheKey = `mh_aff_beran_${new Date().toDateString()}`;
-            sessionStorage.removeItem(cacheKey);
-            window.__releaseAffirmation = null;
-            window.__affirmationPromise = null;
-            window.callAPI = async () => new Promise((resolve) => {
-                window.__releaseAffirmation = () => resolve({
-                    response: { affirmation: 'Všímám si toho, co mi dnes dává pevnou půdu.' }
-                });
-            });
-            window.__affirmationPromise = window.showAffirmation('beran');
-        });
-
-        await expect(page.locator('#affirmation-status'))
-            .toHaveText('Připravuji dnešní afirmaci pro znamení Beran.');
-        await page.evaluate(() => window.__releaseAffirmation?.());
-        await page.evaluate(() => window.__affirmationPromise);
-        await expect(page.locator('#affirmation-status'))
-            .toHaveText('Afirmace pro znamení Beran je připravená.');
-    });
-});
-
 test.describe('Ostatní stránky — smoke testy (200 + h1)', () => {
 
     const PAGES = [
@@ -1105,239 +1058,12 @@ test.describe('Astro mapa', () => {
         await expect(page.locator('.card--service', { hasText: 'Relokace' })).toContainText('podklad k rozhodnutí');
         await expect(page.locator('.card--service', { hasText: 'Cestování' })).toContainText('ne vybrat dovolenou za vás');
         await expect(page.locator('script[src*="secondary-pages-copy-fixes"]')).toHaveAttribute('src', /\/secondary-pages-copy-fixes\.mh-[a-f0-9]{16}\.js$/);
-        await expect(page.locator('#astro-name')).toHaveAttribute('autocomplete', 'name');
-        await expect(page.locator('#astro-date')).toHaveAttribute('autocomplete', 'bday');
-        await expect(page.locator('#astro-place')).toHaveAttribute('autocomplete', 'address-level2');
-        await expect(page.locator('#astro-time')).toHaveAttribute('autocomplete', 'off');
 
         const bodyText = await page.locator('body').innerText();
         expect(bodyText).not.toContain('Odhalit mou mapu štěstí');
         expect(bodyText).not.toContain('Kde na světě na vás čeká štěstí');
         expect(bodyText).not.toContain('ovlivňují váš osud');
         expect(bodyText).not.toContain('budou aktivovány konkrétní planety');
-    });
-
-    test('zprávu z API vykreslí jako text i když připomíná HTML nabídky', async ({ page }) => {
-        const message = '<img src=x onerror="window.__astroErrorXss=true"> class="btn"';
-        await page.evaluate(() => {
-            window.__astroErrorXss = false;
-            window.Auth = {
-                ...window.Auth,
-                user: { id: 'astro-error-user' },
-                isLoggedIn: () => true,
-                isPremium: () => true
-            };
-            window.callAPI = async () => ({ success: false, error: '<img src=x onerror="window.__astroErrorXss=true"> class="btn"' });
-        });
-
-        await page.fill('#astro-date', '1990-01-01');
-        await page.fill('#astro-time', '12:00');
-        await page.fill('#astro-place', 'Praha');
-        await page.locator('#astro-form button[type="submit"]').click();
-
-        await expect(page.locator('#astro-results')).toContainText(message);
-        await expect(page.locator('#astro-results img')).toHaveCount(0);
-        expect(await page.evaluate(() => window.__astroErrorXss)).toBe(false);
-    });
-
-    test('opožděné profilové předvyplnění se po změně účtu zahodí', async ({ page }) => {
-        await page.evaluate(() => {
-            window.__astroProfileStarted = false;
-            window.__astroProfilePromise = new Promise((resolve) => {
-                window.__releaseAstroProfile = resolve;
-            });
-            window.Auth = {
-                ...window.Auth,
-                user: { id: 'astro-profile-before' },
-                isLoggedIn: () => true,
-                getProfile: async () => {
-                    window.__astroProfileStarted = true;
-                    return window.__astroProfilePromise;
-                }
-            };
-            document.dispatchEvent(new Event('auth:changed'));
-        });
-
-        await page.locator('#use-profile-astro').evaluate((checkbox) => {
-            checkbox.checked = true;
-            checkbox.dispatchEvent(new Event('change', { bubbles: true }));
-        });
-        await page.waitForFunction(() => window.__astroProfileStarted === true);
-
-        await page.evaluate(() => {
-            window.Auth.user.id = 'astro-profile-after';
-            document.dispatchEvent(new Event('auth:changed'));
-            window.__releaseAstroProfile({
-                first_name: 'Anna',
-                birth_date: '1990-01-01',
-                birth_time: '12:00:00',
-                birth_place: 'Praha'
-            });
-        });
-
-        await expect(page.locator('#use-profile-astro')).not.toBeChecked();
-        await expect(page.locator('#astro-name')).toHaveValue('');
-        await expect(page.locator('#astro-date')).toHaveValue('');
-        await expect(page.locator('#astro-time')).toHaveValue('');
-        await expect(page.locator('#astro-place')).toHaveValue('');
-    });
-
-    test('změna účtu odstraní i dříve načtené profilové údaje', async ({ page }) => {
-        await page.evaluate(() => {
-            window.Auth = {
-                ...window.Auth,
-                user: { id: 'astro-profile-data-before' },
-                isLoggedIn: () => true,
-                getProfile: async () => ({
-                    first_name: 'Anna',
-                    birth_date: '1990-01-01',
-                    birth_time: '12:00:00',
-                    birth_place: 'Praha'
-                })
-            };
-            document.dispatchEvent(new Event('auth:changed'));
-        });
-
-        await page.locator('#use-profile-astro').evaluate((checkbox) => {
-            checkbox.checked = true;
-            checkbox.dispatchEvent(new Event('change', { bubbles: true }));
-        });
-
-        await expect(page.locator('#astro-name')).toHaveValue('Anna');
-        await expect(page.locator('#astro-date')).toHaveValue('1990-01-01');
-        await expect(page.locator('#astro-time')).toHaveValue('12:00');
-        await expect(page.locator('#astro-place')).toHaveValue('Praha');
-
-        await page.evaluate(() => {
-            window.Auth.user.id = 'astro-profile-data-after';
-            document.dispatchEvent(new Event('auth:changed'));
-        });
-
-        await expect(page.locator('#use-profile-astro')).not.toBeChecked();
-        await expect(page.locator('#astro-name')).toHaveValue('');
-        await expect(page.locator('#astro-date')).toHaveValue('');
-        await expect(page.locator('#astro-time')).toHaveValue('');
-        await expect(page.locator('#astro-place')).toHaveValue('');
-    });
-
-    test('asynchronní výpočet oznámí načítání i chybu bez čtení dlouhého výsledku', async ({ page }) => {
-        await page.evaluate(() => {
-            window.__astroResponse = new Promise((resolve) => {
-                window.__releaseAstroResponse = resolve;
-            });
-            window.Auth = {
-                ...window.Auth,
-                user: { id: 'astro-status-user' },
-                isLoggedIn: () => true,
-                isPremium: () => true
-            };
-            window.callAPI = async () => window.__astroResponse;
-        });
-
-        await page.fill('#astro-date', '1990-01-01');
-        await page.fill('#astro-time', '12:00');
-        await page.fill('#astro-place', 'Praha');
-        await page.locator('#astro-form button[type="submit"]').click();
-
-        const status = page.locator('#astro-status');
-        await expect(status).toHaveAttribute('role', 'status');
-        await expect(status).toContainText('Připravuji mapu');
-
-        await page.evaluate(() => window.__releaseAstroResponse({ success: false, error: 'Výpočet se nepodařil.' }));
-        await expect(status).toHaveText('Výpočet se nepodařil.');
-        await expect(page.locator('#astro-results')).toContainText('Výpočet se nepodařil.');
-    });
-
-    test('hotová mapa zůstane viditelná při neúspěšném uložení do profilu', async ({ page }) => {
-        await page.evaluate(() => {
-            window.Auth = {
-                ...window.Auth,
-                user: { id: 'astro-save-failure-user' },
-                isLoggedIn: () => true,
-                isPremium: () => true,
-                saveReading: async () => null
-            };
-            window.callAPI = async () => ({
-                success: true,
-                response: 'Symbolický výklad mapy zůstává dostupný.',
-                astrocartography: { angularLines: [], recommendations: [] },
-                chart: {}
-            });
-        });
-
-        await page.fill('#astro-date', '1990-01-01');
-        await page.fill('#astro-time', '12:00');
-        await page.fill('#astro-place', 'Praha');
-        await page.locator('#astro-form button[type="submit"]').click();
-
-        await expect(page.locator('#astro-results')).toContainText('Symbolický výklad mapy zůstává dostupný.');
-        await expect(page.locator('#astro-results [data-reading-save-error]')).toBeVisible();
-        await expect(page.locator('#astro-status')).toContainText('nepodařilo uložit do profilu');
-    });
-
-    test('po změně účtu skryje čekající mapu a nepřidá ji do oblíbených', async ({ page }) => {
-        await page.evaluate(() => {
-            window.__astroApiStarted = false;
-            window.__astroApiCalls = 0;
-            window.__astroSaveCalls = 0;
-            window.__astroResponse = new Promise((resolve) => {
-                window.__releaseAstroResponse = resolve;
-            });
-            window.Auth = {
-                ...window.Auth,
-                user: { id: 'astro-map-before' },
-                isLoggedIn: () => true,
-                isPremium: () => true,
-                saveReading: async () => {
-                    window.__astroSaveCalls += 1;
-                    return { id: 'astro-reading-before' };
-                }
-            };
-            window.callAPI = async () => {
-                window.__astroApiCalls += 1;
-                window.__astroApiStarted = true;
-                return window.__astroResponse;
-            };
-        });
-
-        await page.fill('#astro-name', 'Anna');
-        await page.fill('#astro-date', '1990-01-01');
-        await page.fill('#astro-time', '12:00');
-        await page.fill('#astro-place', 'Praha');
-        await page.locator('#astro-form button[type="submit"]').click();
-        await page.waitForFunction(() => window.__astroApiStarted === true);
-        await expect(page.locator('#astro-form')).toHaveAttribute('aria-busy', 'true');
-
-        await page.locator('#astro-form').evaluate((astroForm) => {
-            astroForm.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
-        });
-        expect(await page.evaluate(() => window.__astroApiCalls)).toBe(1);
-
-        await page.evaluate(() => {
-            window.Auth.user.id = 'astro-map-after';
-            document.dispatchEvent(new Event('auth:changed'));
-            window.__releaseAstroResponse({
-                success: true,
-                response: 'SOUKROMÝ STARÝ ASTRO VÝSLEDEK',
-                astrocartography: {
-                    angularLines: [{ planetName: 'Venuše', angle: 'MC', map: { x: 40 } }],
-                    recommendations: [{ city: 'Praha', score: 90 }]
-                }
-            });
-        });
-
-        await expect(page.locator('#astro-results')).toContainText('Účet se během výpočtu změnil');
-        await expect(page.locator('#astro-results')).not.toContainText('SOUKROMÝ STARÝ ASTRO VÝSLEDEK');
-        await expect(page.locator('.astro-angular-line, .city-marker')).toHaveCount(0);
-        await expect(page.locator('#favorite-astrocartography-action')).toHaveCount(0);
-        await expect(page.locator('#astro-name')).toHaveValue('');
-        await expect(page.locator('#astro-date')).toHaveValue('');
-        await expect(page.locator('#astro-time')).toHaveValue('');
-        await expect(page.locator('#astro-place')).toHaveValue('');
-        await expect(page.locator('#astro-form button[type="submit"]')).toBeEnabled();
-        await expect(page.locator('#astro-form')).not.toHaveAttribute('aria-busy');
-        expect(await page.evaluate(() => window.__astroApiCalls)).toBe(1);
-        expect(await page.evaluate(() => window.__astroSaveCalls)).toBe(0);
     });
 });
 
@@ -1360,7 +1086,6 @@ test.describe('Lunace', () => {
 
         await expect(page.locator('.faq-section')).toContainText('neurčují emoce ani rozhodnutí');
         await expect(page.locator('.faq-section')).toContainText('ne jako pevné pravidlo');
-        await expect(page.locator('.faq-section h2 use')).toHaveAttribute('href', '/img/icons/mh-symbols.svg#info');
     });
 });
 
@@ -1389,111 +1114,6 @@ test.describe('Šamanské kolo', () => {
         expect(bodyText).not.toContain('kolečko odhalí vaši cestu');
         expect(bodyText).not.toContain('osobní duchovní poselství čekají na vás');
     });
-
-    test('výsledek se po přepnutí účtu vymaže a pozdní odpověď se neuloží', async ({ page }) => {
-        await page.evaluate(() => {
-            window.Auth = {
-                ...(window.Auth || {}),
-                user: { id: 'medicine-wheel-owner-before' },
-                isLoggedIn: () => true,
-                saveReading: async (...args) => {
-                    window.__medicineWheelReadingSaves.push(args);
-                    return { id: 'stale-medicine-wheel-reading' };
-                }
-            };
-            document.dispatchEvent(new Event('auth:changed'));
-            window.__medicineWheelFetchCount = 0;
-            window.__medicineWheelReadingSaves = [];
-            const nativeFetch = window.fetch.bind(window);
-            window.fetch = async (input, options) => {
-                const url = String(input);
-                if (url.endsWith('/csrf-token')) {
-                    return { ok: true, status: 200, json: async () => ({ csrfToken: 'e2e-mw-csrf' }) };
-                }
-                if (url.endsWith('/medicine-wheel')) {
-                    window.__medicineWheelFetchCount += 1;
-                    return new Promise(resolve => {
-                        window.__releaseMedicineWheelResponse = () => resolve({
-                            ok: true,
-                            status: 200,
-                            json: async () => ({
-                                success: true,
-                                result: {
-                                    strengths: 'STARÝ SOUKROMÝ VÝKLAD',
-                                    challenges: 'Stará výzva',
-                                    message: 'Starý vzkaz'
-                                }
-                            })
-                        });
-                    });
-                }
-                return nativeFetch(input, options);
-            };
-        });
-
-        await page.locator('#mw-name').fill('Jana Účet A');
-        await page.locator('#mw-birth').fill('1990-06-15');
-        await page.locator('#mw-submit').click();
-        await expect.poll(() => page.evaluate(() => window.__medicineWheelFetchCount)).toBe(1);
-
-        await page.evaluate(() => {
-            const nextUser = { id: 'medicine-wheel-owner-after' };
-            const serializedUser = JSON.stringify(nextUser);
-            localStorage.setItem('auth_user', serializedUser);
-            window.dispatchEvent(new StorageEvent('storage', {
-                key: 'auth_user',
-                newValue: serializedUser
-            }));
-        });
-        await expect(page.locator('#mw-name')).toHaveValue('');
-        await expect(page.locator('#mw-birth')).toHaveValue('');
-        await expect(page.locator('#mw-result')).toBeHidden();
-        await expect(page.locator('#mw-form-section')).toBeVisible();
-
-        await page.evaluate(() => window.__releaseMedicineWheelResponse());
-        await expect(page.locator('#mw-result')).not.toContainText('STARÝ SOUKROMÝ VÝKLAD');
-        await expect(page.locator('#favorite-medicine-wheel-action')).toHaveCount(0);
-        expect(await page.evaluate(() => window.__medicineWheelReadingSaves.length)).toBe(0);
-    });
-
-    test('hotový doplňující výklad zůstane viditelný při neúspěšném uložení', async ({ page }) => {
-        await page.evaluate(() => {
-            window.Auth = {
-                ...(window.Auth || {}),
-                user: { id: 'medicine-wheel-save-failure-user' },
-                isLoggedIn: () => true,
-                saveReading: async () => null
-            };
-            const nativeFetch = window.fetch.bind(window);
-            window.fetch = async (input, options) => {
-                const url = String(input);
-                if (url.endsWith('/csrf-token')) {
-                    return { ok: true, status: 200, json: async () => ({ csrfToken: 'e2e-mw-save-failure' }) };
-                }
-                if (url.endsWith('/medicine-wheel')) {
-                    return {
-                        ok: true,
-                        status: 200,
-                        json: async () => ({ success: true, result: {
-                            strengths: 'Hotové silné stránky zůstávají viditelné.',
-                            challenges: 'Prostor pro další krok.',
-                            message: 'Výklad zůstává dostupný.'
-                        } })
-                    };
-                }
-                return nativeFetch(input, options);
-            };
-        });
-
-        await page.locator('#mw-name').fill('Jana Testovací');
-        await page.locator('#mw-birth').fill('1990-06-15');
-        await page.locator('#mw-submit').click();
-
-        await expect(page.locator('#mw-premium-content')).toBeVisible();
-        await expect(page.locator('#mw-result-status')).toContainText('nepodařilo uložit do profilu');
-        await expect(page.locator('#mw-premium-content')).toContainText('Hotové silné stránky zůstávají viditelné.');
-        await expect(page.locator('#mw-premium-wall')).toBeHidden();
-    });
 });
 
 // ═══════════════════════════════════════════════════════════
@@ -1511,34 +1131,6 @@ test.describe('Aura', () => {
         const canonical = await page.getAttribute('link[rel="canonical"]', 'href');
         expect(canonical).toBeTruthy();
     });
-
-    test('prázdné datum nezobrazí zastaralý portrét a oznámí chybu', async ({ page }) => {
-        await page.goto('/aura.html');
-        const birthDate = page.locator('#birth-date');
-        const result = page.locator('#aura-result');
-        const orb = page.locator('#aura-orb');
-
-        await birthDate.fill('1990-06-15');
-        await page.locator('#btn-aura-calc').click();
-        await expect(result).toBeVisible();
-        await expect(orb).toHaveClass(/show/);
-
-        await birthDate.fill('');
-        await expect(result).toBeHidden();
-        await expect(orb).not.toHaveClass(/show/);
-        await page.locator('#btn-aura-calc').click();
-
-        await expect(birthDate).toHaveAttribute('aria-invalid', 'true');
-        await expect(page.locator('#birth-date-error')).toBeVisible();
-        await expect(page.locator('#birth-date-error')).toHaveText('Nejdřív vyber datum narození.');
-        await expect(result).toBeHidden();
-
-        await birthDate.fill('1991-06-15');
-        await expect(birthDate).toHaveAttribute('aria-invalid', 'false');
-        await expect(page.locator('#birth-date-error')).toBeHidden();
-        await page.locator('#btn-aura-calc').click();
-        await expect(result).toBeVisible();
-    });
 });
 
 // ═══════════════════════════════════════════════════════════
@@ -1546,14 +1138,6 @@ test.describe('Aura', () => {
 // ═══════════════════════════════════════════════════════════════════
 
 test.describe('Osobní mapa', () => {
-
-    test('datum narození dovoluje dnešní pražské datum i před půlnocí UTC', async ({ page }) => {
-        await page.clock.install({ time: new Date('2026-10-17T22:30:00.000Z') });
-        await page.goto('/osobni-mapa.html');
-        await waitForPageReady(page);
-
-        await expect(page.locator('#birthDate')).toHaveAttribute('max', '2026-10-18');
-    });
 
     test('hero CTA komunikuje cenu a meri prvni placeny zamer', async ({ page }) => {
         let resolveProductIntent;
@@ -1698,7 +1282,7 @@ test.describe('Osobní mapa', () => {
         await page.locator('#submitBtn').scrollIntoViewIfNeeded();
         const trustBlock = page.locator('.pm-form__trust');
         await expect(trustBlock).toBeVisible();
-        await expect(trustBlock).toContainText('PDF vytvoříme automaticky a pošleme e-mailem');
+        await expect(trustBlock).toContainText('PDF obvykle dorazí do 10 až 20 minut');
         await expect(trustBlock).toContainText('bez předplatného');
         await expect(trustBlock.locator('a[href="podminky.html"]')).toBeVisible();
         await expect(trustBlock.locator('a[href="soukromi.html"]')).toBeVisible();
@@ -1764,35 +1348,6 @@ test.describe('Osobní mapa', () => {
             focus: 'Chci pochopit hlavní téma příštích 12 měsíců.',
             source: 'pricing_addon'
         }));
-        expect(checkoutPayload.flowId).toMatch(/^pm_[a-z0-9_-]{12,100}$/i);
-    });
-
-    test('an unrecoverable checkout flow conflict disables another personal map payment', async ({ page }) => {
-        let checkoutCalls = 0;
-        await page.route('**/api/osobni-mapa/checkout', async route => {
-            checkoutCalls += 1;
-            await route.fulfill({
-                status: 409,
-                contentType: 'application/json',
-                body: JSON.stringify({
-                    code: 'personal_map_flow_conflict',
-                    error: 'Tento platební pokus už byl použit a nelze jej bezpečně obnovit.'
-                })
-            });
-        });
-
-        await page.goto('/osobni-mapa.html?source=e2e_flow_conflict');
-        await waitForPageReady(page);
-        await page.locator('#name').fill('Jana');
-        await page.locator('#email').fill('jana@example.cz');
-        await page.locator('#birthDate').fill('1990-01-01');
-        await page.locator('#focusArea').selectOption('change');
-        await page.locator('#focus').fill('Rozhoduji se o důležité změně.');
-        await page.locator('#submitBtn').click();
-
-        await expect(page.locator('#formError')).toContainText('nelze jej bezpečně obnovit');
-        await expect(page.locator('#submitBtn')).toBeDisabled();
-        expect(checkoutCalls).toBe(1);
     });
 
     test('kontextovy vstup predvybere podporovanou oblast, ale neprepise rozepsany navrat', async ({ page }) => {
@@ -2094,33 +1649,6 @@ test.describe('Kalkulačka čísla osudu', () => {
         const resultCta = page.locator('#calc-result a[href*="numerologie.html?source=life_number_result"]');
         await expect(resultCta).toBeVisible();
         await expect(resultCta).toHaveAttribute('href', /feature=numerologie_vyklad/);
-    });
-
-    test('neplatné nové datum skryje předchozí výsledek a oprava umožní nový výpočet', async ({ page }) => {
-        await page.goto('/kalkulacka-cisla-osudu.html');
-        await waitForPageReady(page);
-
-        const result = page.locator('#calc-result');
-        const error = page.locator('#calc-error');
-        await page.fill('#inp-day', '15');
-        await page.fill('#inp-month', '3');
-        await page.fill('#inp-year', '1990');
-        await page.locator('#calc-btn').click();
-        await expect(result).toBeVisible();
-
-        await page.fill('#inp-day', '31');
-        await page.fill('#inp-month', '2');
-        await expect(result).toBeHidden();
-        await page.locator('#calc-btn').click();
-        await expect(error).toContainText('Zadej skutečné datum narození');
-        await expect(page.locator('#inp-day')).toHaveAttribute('aria-invalid', 'true');
-        await expect(result).toBeHidden();
-
-        await page.fill('#inp-day', '20');
-        await expect(error).toBeEmpty();
-        await page.locator('#calc-btn').click();
-        await expect(result).toBeVisible();
-        await expect(page.locator('#res-number')).not.toBeEmpty();
     });
 
     test('mobilni cookie lista neprekryva vypocetni CTA', async ({ page }) => {

@@ -109,7 +109,7 @@ test.describe('Homepage CTA smoke', () => {
 
             const quickDecision = page.locator('[data-analytics-cta="homepage_quick_decision"]');
             const quickDaily = page.locator('[data-analytics-cta="homepage_quick_daily"]');
-            const quickTarotDaily = page.locator('[data-analytics-cta="homepage_quick_tarot_daily"]');
+            const quickDream = page.locator('[data-analytics-cta="homepage_quick_dream"]');
 
             expectQuery(await quickDecision.getAttribute('href'), {
                 source: 'homepage_quick_decision',
@@ -121,9 +121,9 @@ test.describe('Homepage CTA smoke', () => {
                 feature: 'horoskopy',
                 variant: 'audience_intent_v1'
             });
-            expectQuery(await quickTarotDaily.getAttribute('href'), {
-                source: 'homepage_quick_tarot_daily',
-                feature: 'tarot',
+            expectQuery(await quickDream.getAttribute('href'), {
+                source: 'homepage_quick_dream',
+                feature: 'dream_dictionary',
                 variant: 'audience_intent_v1'
             });
 
@@ -143,17 +143,28 @@ test.describe('Homepage CTA smoke', () => {
                 });
             }
 
-            await page.locator('#karta-dne-widget').scrollIntoViewIfNeeded();
-            const dailyDetail = page.locator('#kdd-lexicon-link');
-            const dailyDeep = page.locator('#kdd-full-reading-link');
-            expectQuery(await dailyDetail.getAttribute('href'), {
-                source: 'homepage_daily_card_detail',
-                feature: 'daily_angel_card'
+            const dailyCard = page.locator('#denni-karta');
+            await dailyCard.scrollIntoViewIfNeeded();
+            const revealDailyCard = dailyCard.locator('#tarot-daily-reveal');
+            await expectWithinViewport(page, revealDailyCard);
+            await revealDailyCard.click();
+            await expect(dailyCard.locator('#tarot-daily-card-result')).toHaveAttribute('data-state', 'revealed');
+
+            const dailyFullReading = dailyCard.locator('#tarot-daily-full-reading');
+            await expectWithinViewport(page, dailyFullReading);
+            const dailyReadingUrl = expectQuery(await dailyFullReading.getAttribute('href'), {
+                source: 'tarot_daily_card_widget',
+                feature: 'tarot',
+                intent: 'daily_card'
             });
-            expectQuery(await dailyDeep.getAttribute('href'), {
-                source: 'homepage_daily_card_full_reading',
-                feature: 'andelske_karty_hluboky_vhled'
+            expect(dailyReadingUrl.pathname).toBe('/tarot.html');
+            expect(dailyReadingUrl.searchParams.get('card')).toBeTruthy();
+
+            const dailyCardDetail = dailyCard.locator('#tarot-daily-card-detail');
+            const dailyDetailUrl = expectQuery(await dailyCardDetail.getAttribute('href'), {
+                source: 'tarot_daily_card_widget'
             });
+            expect(dailyDetailUrl.pathname).toMatch(/^\/tarot-vyznam\/.+\.html$/);
 
             const freePlan = page.locator('[data-plan="poutnik"]');
             const paidPlan = page.locator('[data-plan="pruvodce"]');

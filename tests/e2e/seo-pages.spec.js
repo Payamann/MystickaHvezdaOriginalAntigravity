@@ -98,6 +98,30 @@ test.describe('SEO horoskop stránky — struktura', () => {
         expect(title.length).toBeGreaterThan(5);
     });
 
+    test('datovaný horoskop používá atlasové pozadí bez staré mlhoviny', async ({ page }) => {
+        for (const width of [1280, 390]) {
+            await page.setViewportSize({ width, height: width < 500 ? 844 : 900 });
+            await page.goto(`/horoskop/beran/${getTodayStr()}`);
+            await page.waitForLoadState('domcontentloaded');
+
+            await expect(page.locator('.stars')).toHaveCount(0);
+            await expect(page.locator('body')).toHaveClass(/atlas-page/);
+            const pageBackground = await page.locator('body').evaluate(element => getComputedStyle(element).backgroundColor);
+            const heroBackground = await page.locator('.horoscope-day-hero').evaluate(element => getComputedStyle(element).backgroundImage);
+            expect(pageBackground).toBe('rgb(11, 25, 41)');
+            expect(heroBackground).toContain('01-astrolab.webp');
+
+            const signPicker = page.locator('.horoscope-day-sign-picker');
+            await expect(signPicker.locator('summary')).toHaveText('Změnit znamení');
+            await expect(signPicker).not.toHaveAttribute('open', '');
+            await expect(signPicker.locator('.zodiac-card')).toHaveCount(11);
+            await expect(signPicker.locator('.zodiac-card').first()).toBeHidden();
+            await signPicker.locator('summary').click();
+            await expect(signPicker.locator('.zodiac-card')).toHaveCount(11);
+            await expect(signPicker.locator('.zodiac-card').first()).toBeVisible();
+        }
+    });
+
     test('sdílené komponenty používají root-relative logo cestu', async ({ page }) => {
         await page.goto(`/horoskop/beran/${getTodayStr()}`);
         await page.waitForLoadState('domcontentloaded');
@@ -113,6 +137,28 @@ test.describe('SEO horoskop stránky — struktura', () => {
         for (const src of logoSrcs) {
             expect(src).toMatch(/^\/img\/logo-3d\.webp/);
         }
+    });
+
+    test('mobilní patička sbalí rozcestníky a po rozbalení zachová odkazy', async ({ page }) => {
+        await page.setViewportSize({ width: 1280, height: 900 });
+        await page.goto('/horoskopy.html');
+
+        const footer = page.locator('.footer');
+        const groups = footer.locator('.footer__disclosure');
+        await expect(groups).toHaveCount(4);
+        await expect(groups.first()).toHaveAttribute('open', '');
+
+        await page.setViewportSize({ width: 390, height: 844 });
+        await expect(groups.first()).not.toHaveAttribute('open', '');
+        await expect(groups).toHaveCount(4);
+        expect(await footer.locator('.footer__links a').count()).toBe(34);
+
+        const footerHeight = await footer.evaluate((element) => element.getBoundingClientRect().height);
+        expect(footerHeight).toBeLessThan(900);
+
+        await groups.first().locator('summary').click();
+        await expect(groups.first()).toHaveAttribute('open', '');
+        await expect(footer.locator('a[href="/horoskopy.html"]').first()).toBeVisible();
     });
 
     test('včerejší datum vrátí 200 (cached obsah)', async ({ page }) => {

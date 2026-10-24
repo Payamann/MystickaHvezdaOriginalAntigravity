@@ -6,8 +6,9 @@
  * Run from anywhere with:
  *   node scripts/generate-og-horoscope-cards.mjs
  *
- * Source artwork and fonts are project owned. The output stays at the URLs
- * already referenced by the horoscope pages: img/og/horoskop-{slug}.jpg.
+ * Source artwork and fonts are project owned. Each card combines the shared
+ * night landscape with its matching portrait from the zodiac art atlas.
+ * Output: img/og/horoskop-{slug}.jpg.
  */
 
 import { mkdir, readFile } from 'node:fs/promises';
@@ -17,6 +18,7 @@ import sharp from 'sharp';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const ART = path.join(ROOT, 'img', 'atlas', 'tools-v1', '02-mesicni-krajina.webp');
+const ZODIAC_ATLAS = path.join(ROOT, 'img', 'atlas', 'western-zodiac-v1.webp');
 const OUTPUT = path.join(ROOT, 'img', 'og');
 const WIDTH = 1200;
 const HEIGHT = 630;
@@ -122,10 +124,31 @@ const background = await sharp(ART)
   .jpeg({ quality: 94, chromaSubsampling: '4:4:4' })
   .toBuffer();
 
+const atlasMetadata = await sharp(ZODIAC_ATLAS).metadata();
+if (!atlasMetadata.width || !atlasMetadata.height || atlasMetadata.width % 4 || atlasMetadata.height % 3) {
+  throw new Error(`Unexpected zodiac atlas dimensions: ${atlasMetadata.width}x${atlasMetadata.height}`);
+}
+const cellWidth = atlasMetadata.width / 4;
+const cellHeight = atlasMetadata.height / 3;
+
 for (const [index, [slug, name, symbol]] of SIGNS.entries()) {
   const target = path.join(OUTPUT, `horoskop-${slug}.jpg`);
+  const portrait = await sharp(ZODIAC_ATLAS)
+    .extract({
+      left: (index % 4) * cellWidth,
+      top: Math.floor(index / 4) * cellHeight,
+      width: cellWidth,
+      height: cellHeight,
+    })
+    .resize({ height: 580 })
+    .png()
+    .toBuffer();
+
   await sharp(background)
-    .composite([{ input: overlay(name, symbol, index + 1) }])
+    .composite([
+      { input: overlay(name, symbol, index + 1) },
+      { input: portrait, left: 860, top: 25 },
+    ])
     .jpeg({ quality: 91, chromaSubsampling: '4:4:4', mozjpeg: true })
     .toFile(target);
   console.log(`Generated ${path.relative(ROOT, target)}`);

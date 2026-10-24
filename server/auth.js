@@ -831,7 +831,7 @@ router.get('/reset-password/validate', passwordRecoveryCheckLimiter, async (req,
     }
 });
 
-// Reset Password - update password with reset token
+// Reset Password - update password with verified recovery token
 router.post('/reset-password', passwordResetLimiter, async (req, res) => {
     const { password } = req.body;
     const authHeader = req.headers['authorization'];
@@ -849,9 +849,8 @@ router.post('/reset-password', passwordResetLimiter, async (req, res) => {
     }
 
     try {
-        // Verify the recovery bearer with Supabase Auth, then use the verified
-        // user ID for the privileged update. The shared service-role client has
-        // no user session, so auth.updateUser() cannot authenticate this token.
+        // Verify the recovery bearer, then update the verified account through
+        // the service-role client. A service-role client has no user session.
         const { data: verified, error: verifyError } = await supabase.auth.getUser(token);
         const userId = verified?.user?.id;
         if (verifyError || typeof userId !== 'string' || !userId) {
@@ -933,32 +932,24 @@ router.put('/profile', authenticateToken, async (req, res) => {
         const updateData = {};
 
         if (first_name !== undefined && first_name !== null) {
-            try {
-                updateData.first_name = validateName(first_name);
-            } catch (validationError) {
-                const message = validationError.message === 'Name contains only invalid characters'
-                    ? 'Jméno obsahuje znaky, které nelze použít.'
-                    : validationError.message.startsWith('Name too long')
-                        ? 'Jméno může mít nejvýše 100 znaků.'
-                        : 'Jméno se nepodařilo uložit. Zkontroluj jeho podobu.';
-                return res.status(400).json({ error: message });
-            }
+            updateData.first_name = validateName(first_name);
         }
 
         if (birth_date !== undefined) {
-            try {
-                updateData.birth_date = birth_date === null || birth_date === '' ? null : validateBirthDate(birth_date);
-            } catch {
-                return res.status(400).json({ error: 'Zadej platné datum narození od roku 1900, které není v budoucnosti.' });
-            }
+            updateData.birth_date = birth_date === null || birth_date === ''
+                ? null
+                : validateBirthDate(birth_date);
         }
 
         if (birth_time !== undefined) {
-            // Basic format check for HH:MM
-            if (birth_time !== null && birth_time !== '' && (!/^\d{2}:\d{2}$/.test(birth_time) || Number(birth_time.slice(0, 2)) > 23 || Number(birth_time.slice(3)) > 59)) {
+            if (birth_time === null || birth_time === '') {
+                updateData.birth_time = null;
+            } else if (typeof birth_time !== 'string' || !/^\d{2}:\d{2}$/.test(birth_time)
+                || Number(birth_time.slice(0, 2)) > 23 || Number(birth_time.slice(3)) > 59) {
                 return res.status(400).json({ error: 'Zadej platný čas narození ve formátu HH:MM.' });
+            } else {
+                updateData.birth_time = birth_time;
             }
-            updateData.birth_time = birth_time || null;
         }
 
         if (birth_place !== undefined && birth_place !== null) {

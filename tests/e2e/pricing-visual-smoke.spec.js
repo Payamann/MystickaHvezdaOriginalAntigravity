@@ -106,11 +106,15 @@ async function getCookieOverlapMetrics(page, selectors) {
 }
 
 test.describe('Pricing visual smoke', () => {
-    test('annual link preserves new-tab context and does not intercept modified clicks', async ({ page }) => {
+    test('monthly membership link preserves signup context and does not intercept modified clicks', async ({ page }) => {
         await preparePricingPage(page, DESKTOP_VIEWPORT, '?source=seo_tarot&feature=tarot&utm_source=google&utm_medium=organic');
-        await page.locator('#toggle-yearly').click();
-        const cta = page.locator('.plan-checkout-btn[data-plan="pruvodce-rocne"]');
+        const cta = page.locator('.plan-checkout-btn[data-plan="pruvodce"]');
+        await expectWithinViewport(page, cta);
         const href = await cta.getAttribute('href');
+        expectQuery(href, {
+            mode: 'register', redirect: '/cenik.html', plan: 'pruvodce', billing_interval: 'monthly',
+            source: 'seo_tarot', feature: 'tarot', utm_source: 'google', utm_medium: 'organic'
+        });
         for (const modifier of ['ctrlKey', 'metaKey', 'shiftKey']) {
             const intercepted = await cta.evaluate((link, key) => {
                 let wasPrevented;
@@ -127,7 +131,7 @@ test.describe('Pricing visual smoke', () => {
         const popup = await page.context().newPage();
         await popup.goto(new URL(href, page.url()).href);
         expectQuery(popup.url(), {
-            plan: 'pruvodce-rocne', billing_interval: 'yearly', source: 'seo_tarot',
+            mode: 'register', redirect: '/cenik.html', plan: 'pruvodce', billing_interval: 'monthly', source: 'seo_tarot',
             feature: 'tarot', utm_source: 'google', utm_medium: 'organic'
         });
         expect(new URL(page.url()).pathname).toBe('/cenik.html');
@@ -139,12 +143,15 @@ test.describe('Pricing visual smoke', () => {
             await mockFunnelTracking(page);
             await preparePricingPage(page, viewport);
 
-            const monthlyToggle = page.locator('#toggle-monthly');
-            const yearlyToggle = page.locator('#toggle-yearly');
-            await expectWithinViewport(page, monthlyToggle);
-            await expectWithinViewport(page, yearlyToggle);
-            await expect(monthlyToggle).toHaveAttribute('aria-pressed', 'true');
-            await expect(yearlyToggle).toHaveAttribute('aria-pressed', 'false');
+            const membershipGrid = page.locator('.pricing-grid');
+            await expect(membershipGrid).toHaveClass(/pricing-grid--single/);
+            await expect(membershipGrid.locator('.card--pricing')).toHaveCount(1);
+            const membershipPrice = membershipGrid.locator('.card__price[data-price-plan="pruvodce"]');
+            await expectWithinViewport(page, membershipPrice);
+            await expect(membershipPrice).toContainText('199 Kč');
+            await expect(membershipPrice).toContainText('/měsíc');
+            await expect(membershipGrid.locator('.pricing-trial-note')).toContainText(/Po 7 dnech 199 Kč\/měsíc/i);
+            await expect(page.locator('.pricing-checkout-disclaimer')).toContainText(/každý měsíc za 199 Kč/i);
 
             expectQuery(await page.locator('[data-pricing-free-cta]').getAttribute('href'), {
                 mode: 'register',
@@ -160,30 +167,9 @@ test.describe('Pricing visual smoke', () => {
                 mode: 'register',
                 redirect: '/cenik.html',
                 plan: 'pruvodce',
+                billing_interval: 'monthly',
                 source: 'pricing_page',
                 feature: 'premium_membership'
-            });
-
-            await yearlyToggle.click();
-            await expect(yearlyToggle).toHaveAttribute('aria-pressed', 'true');
-            const yearlyGuideCta = page.locator('.plan-checkout-btn[data-plan="pruvodce-rocne"]');
-            await expect(yearlyGuideCta).toBeVisible();
-            expectQuery(await yearlyGuideCta.getAttribute('href'), {
-                mode: 'register',
-                redirect: '/cenik.html',
-                plan: 'pruvodce-rocne',
-                billing_interval: 'yearly',
-                source: 'pricing_page',
-                feature: 'premium_membership'
-            });
-
-            await monthlyToggle.click();
-            await expect(monthlyToggle).toHaveAttribute('aria-pressed', 'true');
-            const monthlyGuideCta = page.locator('.plan-checkout-btn[data-plan="pruvodce"]');
-            await expect(monthlyGuideCta).toBeVisible();
-            expectQuery(await monthlyGuideCta.getAttribute('href'), {
-                plan: 'pruvodce',
-                billing_interval: 'monthly'
             });
 
             await Promise.all([
@@ -196,6 +182,7 @@ test.describe('Pricing visual smoke', () => {
             expect(authUrl.searchParams.get('redirect')).toBe('/cenik.html');
             expect(authUrl.searchParams.get('plan')).toBe('pruvodce');
             expect(authUrl.searchParams.get('source')).toBe('pricing_page');
+            expect(authUrl.searchParams.get('billing_interval')).toBe('monthly');
 
             await preparePricingPage(page, viewport, '?source=inline_paywall&feature=numerologie_vyklad&plan=pruvodce');
             const recommendation = page.locator('#pricing-plan-recommendation');
@@ -220,8 +207,8 @@ test.describe('Pricing visual smoke', () => {
         await page.locator('.pricing-grid').scrollIntoViewIfNeeded();
 
         const metrics = await getCookieOverlapMetrics(page, [
-            '.plan-checkout-btn[data-plan="pruvodce"]',
-            '.plan-checkout-btn[data-plan="osviceni"]'
+            '.card__price[data-price-plan="pruvodce"]',
+            '.plan-checkout-btn[data-plan="pruvodce"]'
         ]);
 
         expect(metrics.cookieHeight).toBeLessThanOrEqual(72);
@@ -232,28 +219,15 @@ test.describe('Pricing visual smoke', () => {
         }
     });
 
-    test('mobile cookie banner stays compact around billing and visible CTAs', async ({ page }) => {
+    test('mobile cookie banner stays compact around the monthly membership and CTA', async ({ page }) => {
         await preparePricingPageWithCookieBanner(page, MOBILE_VIEWPORT);
 
         const banner = page.locator('#cookie-banner');
         await expect(banner).toBeVisible({ timeout: 4_000 });
-        await page.locator('#toggle-monthly').scrollIntoViewIfNeeded();
-
-        const toggleMetrics = await getCookieOverlapMetrics(page, [
-            '#toggle-monthly',
-            '#toggle-yearly'
-        ]);
-
-        expect(toggleMetrics.cookieHeight).toBeLessThan(190);
-        expect(toggleMetrics.cookieWidth).toBeLessThanOrEqual(MOBILE_VIEWPORT.width);
-        expect(toggleMetrics.overflow).toBeLessThanOrEqual(2);
-        for (const item of toggleMetrics.overlaps) {
-            expect(item.visible, `${item.selector} should be visible`).toBe(true);
-            expect(item.overlap, `${item.selector} should not overlap cookie banner`).toBe(false);
-        }
-
+        await page.locator('.card__price[data-price-plan="pruvodce"]').scrollIntoViewIfNeeded();
         await page.locator('.plan-checkout-btn[data-plan="pruvodce"]').scrollIntoViewIfNeeded();
         const ctaMetrics = await getCookieOverlapMetrics(page, [
+            '.card__price[data-price-plan="pruvodce"]',
             '.plan-checkout-btn[data-plan="pruvodce"]'
         ]);
         expect(ctaMetrics.cookieHeight).toBeLessThan(190);
@@ -267,11 +241,11 @@ test.describe('Pricing visual smoke', () => {
 
         const banner = page.locator('#cookie-banner');
         const recommendation = page.locator('#pricing-plan-recommendation');
-        const recommendationAction = recommendation.locator('[data-recommended-plan="osviceni"]');
+        const recommendationAction = recommendation.locator('[data-recommended-plan="pruvodce"]');
 
         await expect(banner).toBeVisible({ timeout: 4_000 });
         await expect(recommendation).toBeVisible();
-        await expect(recommendation).toContainText(/Osv/i);
+        await expect(recommendation).toContainText('Členství Mystické Hvězdy');
         await expect(recommendationAction).toBeVisible();
 
         // Visibility in the DOM does not imply intersection with a small mobile
@@ -280,7 +254,7 @@ test.describe('Pricing visual smoke', () => {
 
         const metrics = await getCookieOverlapMetrics(page, [
             '#pricing-plan-recommendation',
-            '#pricing-plan-recommendation [data-recommended-plan="osviceni"]'
+            '#pricing-plan-recommendation [data-recommended-plan="pruvodce"]'
         ]);
 
         expect(metrics.cookieHeight).toBeLessThan(190);
@@ -309,6 +283,6 @@ test.describe('Pricing visual smoke', () => {
         await waitForPageReady(page);
         const vipCopy = await page.locator('main').innerText();
         expect(vipCopy).not.toMatch(TRIAL_COPY);
-        expect(vipCopy).toMatch(/cenu a období.*stripe/i);
+        expect(vipCopy).toContain('Kartu zadáš až ve Stripe checkoutu, kde před potvrzením uvidíš cenu i období.');
     });
 });

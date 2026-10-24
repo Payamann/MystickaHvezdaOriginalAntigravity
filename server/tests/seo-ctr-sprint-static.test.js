@@ -31,6 +31,60 @@ function expectCoreMetadata(html) {
 }
 
 describe('CTR sprint static SEO pages', () => {
+  it('keeps one contextual continuation on tool pages while the main navigation retains the catalog', async () => {
+    const expectedNextSteps = [
+      ['tarot.html', 'tarot-karta-dne.html?source=tarot_crosslink&amp;intent=daily_card'],
+      ['numerologie.html', '/natalni-karta.html'],
+      ['andelske-karty.html', '/tarot-tri-karty.html'],
+      ['natalni-karta.html', '/horoskopy.html'],
+      ['astro-mapa.html', '/natalni-karta.html'],
+      ['runy.html', '/shamansko-kolo.html'],
+      ['kristalova-koule.html', '/tarot-ano-ne.html'],
+      ['mentor.html', '/horoskopy.html']
+    ];
+
+    for (const [pagePath, expectedHref] of expectedNextSteps) {
+      const html = await readPage(pagePath);
+      const section = html.match(/<section\b[^>]*\batlas-next-step\b[^>]*>[\s\S]*?<\/section>/i)?.[0];
+
+      if (!section) {
+        throw new Error(`${pagePath} should have one contextual next-step section`);
+      }
+      expect(section.match(/<a\b/gi) || []).toHaveLength(1);
+      expect(section).toContain(`href="${expectedHref}"`);
+      expect(html).not.toContain('section--cross-linking');
+      expect(html).not.toContain('grid--cross-linking');
+      expect(html).toMatch(/\/css\/atlas-web\.css\?v=\d+/);
+    }
+
+    const synastry = await readPage('partnerska-shoda.html');
+    const resultStep = synastry.match(/<section\s+id="synastry-next-step"[\s\S]*?<\/section>/i)?.[0];
+    expect(resultStep).toBeTruthy();
+    expect(resultStep.split('<details')[0].match(/<a\b/gi) || []).toHaveLength(2);
+    expect(resultStep).toContain('data-relationship-tarot-offer');
+    expect(resultStep).toContain('data-synastry-upgrade');
+    expect(resultStep).toContain('<summary>Další možnosti po výpočtu</summary>');
+
+    const relationshipOptions = synastry.match(/<details\s+class="synastry-directory-disclosure synastry-related-disclosure"[\s\S]*?<\/details>/i)?.[0];
+    expect(relationshipOptions).toBeTruthy();
+    expect(relationshipOptions).toContain('href="tarot-laska.html?source=synastry_intent_cluster&amp;feature=tarot&amp;intent=love_question"');
+    expect(relationshipOptions.match(/<a\b/gi) || []).toHaveLength(6);
+    expect(synastry).not.toContain('section--cross-linking');
+    expect(synastry).not.toContain('grid--cross-linking');
+    expect(synastry).toMatch(/\/css\/atlas-web\.css\?v=\d+/);
+
+    const navigation = await readPage('components/header.html');
+    [
+      '/tarot.html', '/andelske-karty.html', '/numerologie.html', '/natalni-karta.html',
+      '/partnerska-shoda.html', '/astro-mapa.html', '/runy.html', '/kristalova-koule.html',
+      '/mentor.html', '/shamansko-kolo.html', '/horoskopy.html'
+    ].forEach((href) => expect(navigation).toContain(`href="${href}"`));
+
+    const angelPage = await readPage('andelske-karty.html');
+    expect(angelPage).toContain('id="vyznamy-andelskych-karet"');
+    expect(angelPage.match(/class="related-chip"/g) || []).toHaveLength(44);
+  });
+
   it('keeps Beran / Aries optimized for the GSC query intent', async () => {
     const html = await readPage('horoskop/beran.html');
 
@@ -58,13 +112,14 @@ describe('CTR sprint static SEO pages', () => {
 
     expectCoreMetadata(html);
     expect(html).toContain('Tarot ano/ne zdarma: výklad z jedné karty');
-    expect(html).toContain('Tarot ano/ne zdarma a bez registrace. Kartu losujeme náhodně');
+    expect(html).toContain('Tarot ano ne zdarma a bez registrace');
     expect(html).toContain('id="btn-save-reading"');
-    expect(html).toContain('Jedna náhodně vybraná karta má předem přiřazenou kategorii ANO, NE nebo NEJASNÉ');
+    expect(html).toContain('Tarot ano ne, karty ano ne i věštba ano ne označují stejný rychlý výklad.');
     expect(html).toContain('Nejlepší otázka je konkrétní a dnešní');
-    expect(html).toContain('Co znamená ANO, NE a NEJASNÉ?');
+    expect(html).toContain('Věštba ano ne funguje nejlépe');
+    expect(html).toContain('Co znamená ano, ne a ještě ne');
     expect(html).toContain('Kam pokračovat');
-    expect(html).toContain('Co znamená odpověď NEJASNÉ?');
+    expect(html).toContain('Co znamená odpověď ještě ne?');
     expect(html).toContain('Je to stejné jako karty ano ne?');
     ['reading_start', 'reading_complete', 'save_click', 'reading_save_clicked', 'reading_saved', 'login_click', 'mh_pending_reading'].forEach((needle) => {
       expect(js).toContain(needle);
@@ -103,20 +158,19 @@ describe('CTR sprint static SEO pages', () => {
     const html = await readPage('partnerska-shoda.html');
 
     expect(html).toContain('id="synastry-priority-links"');
-    expect(html).toContain('Vybrané dvojice znamení');
+    expect(html).toContain('Nejhledanější dvojice');
     [
       ['partnerska-shoda/sagittarius-pisces.html', 'Střelec a Ryby ve vztahu'],
       ['partnerska-shoda/aquarius-taurus.html', 'Vodnář a Býk ve vztahu'],
       ['partnerska-shoda/capricorn-leo.html', 'Kozoroh a Lev ve vztahu'],
       ['partnerska-shoda/virgo-leo.html', 'Panna a Lev ve vztahu'],
       ['partnerska-shoda/aries-aries.html', 'Beran a Beran ve vztahu'],
-      ['partnerska-shoda/scorpio-cancer.html', 'Štír a Rak'],
-      ['partnerska-shoda/leo-scorpio.html', 'Lev a Štír / Skorpion'],
+      ['partnerska-shoda/scorpio-cancer.html', 'Štír a Rak ve vztahu'],
+      ['partnerska-shoda/leo-scorpio.html', 'Lev a Štír / Skorpion ve vztahu'],
       ['partnerska-shoda/aries-virgo.html', 'Beran a Panna ve vztahu'],
       ['partnerska-shoda/cancer-aquarius.html', 'Rak a Vodnář ve vztahu'],
-      ['partnerska-shoda/scorpio-pisces.html', 'Štír a Ryby'],
+      ['partnerska-shoda/scorpio-pisces.html', 'Štír a Ryby ve vztahu'],
       ['partnerska-shoda/gemini-sagittarius.html', 'Blíženci a Střelec ve vztahu'],
-      ['partnerska-shoda/leo-scorpio.html?source=synastry_scorpio_cluster&amp;feature=compatibility&amp;intent=leo_scorpio', 'Lev a Štír / Skorpion'],
       ['partnerska-shoda/taurus-scorpio.html?source=synastry_scorpio_cluster&amp;feature=compatibility&amp;intent=taurus_scorpio', 'Býk a Štír'],
       ['partnerska-shoda/aries-scorpio.html?source=synastry_scorpio_cluster&amp;feature=compatibility&amp;intent=aries_scorpio', 'Beran a Štír'],
       ['tarot-ano-ne.html?source=synastry_intent_cluster&amp;feature=tarot_yes_no&amp;intent=relationship_yes_no', 'Zeptat se jednou kartou']
@@ -126,7 +180,7 @@ describe('CTR sprint static SEO pages', () => {
     });
 
     expect(html).toContain('id="synastry-scorpio-cluster"');
-    expect(html).toContain('Štír se někdy píše i jako Skorpion');
+    expect(html).toContain('Štír se v dotazech často píše i jako Skorpion');
     expect(html).toContain('partnerska-shoda/aries-taurus.html');
     expect(html).toContain('partnerska-shoda/leo-scorpio.html');
     expect(html).not.toContain('href="kompatibilita/');
@@ -152,10 +206,10 @@ describe('CTR sprint static SEO pages', () => {
     expect(html).toContain('Navazující témata');
     expect(html).toContain('blog/andelska-cisla-1111.html?source=angel_topic_links&amp;feature=angel_numbers&amp;intent=1111');
     expect(html).toContain('Andělské číslo 1111: význam a poselství');
-    expect(html).toContain('data-analytics-cta="angel_intent_how_it_works"');
-    expect(html).toContain('data-analytics-cta="angel_intent_protection"');
-    expect(html).toContain('data-analytics-cta="angel_intent_crystal_ball"');
-    expect((html.match(/data-analytics-cta="angel_topic_/g) || [])).toHaveLength(1);
+    expect(html).toContain('blog/jak-funguji-andelske-karty.html?source=angel_topic_links');
+    expect(html).toContain('Jak fungují andělské karty');
+    expect(html).toContain('blog/pruvodce-energie-ochrana.html?source=angel_topic_links');
+    expect(html).toContain('kristalova-koule.html?source=angel_topic_links&amp;feature=kristalova_koule&amp;intent=yes_no_question');
   });
 
   it.each([
@@ -205,10 +259,14 @@ describe('CTR sprint static SEO pages', () => {
     expect(html).toContain('Královna pohárů spojuje citlivost, empatii a pozornost k vlastním hranicím');
     expect(html).toContain('Královna pohárů obráceně');
     expect(html).toContain('Příklad výkladu karty Královna pohárů');
-    expect(html).toContain('/tarot.html?source=tarot_card_detail&amp;card=Kr%C3%A1lovna%20poh%C3%A1r%C5%AF');
-    // The current detail page links to a related-card cluster; subscription capture
-    // was removed from this page and should not be required by its SEO contract.
-    expect(html).toContain('class="tarot-related-card-grid"');
+    expect(html).toContain('/tarot-karta-dne.html?source=tarot_card_detail_next_step');
+    expect(html).not.toContain('tarot_card_detail_next_reading');
+    expect(html).not.toContain('tarot_card_detail_panel');
+    expect(html).toContain('data-analytics-cta="tarot_card_detail_next_daily"');
+    // Most na denní horoskop e-mailem — sběr kontaktu na 78 stránkách clusteru
+    expect(html).toContain('data-analytics-source="tarot_card_detail"');
+    expect(html).toContain('horoscope-subscribe-btn');
+    expect(html).toContain('/js/dist/horoscope-subscribe.js');
   });
 
   it.each([

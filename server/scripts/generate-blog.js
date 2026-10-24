@@ -3,48 +3,21 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { supabase } from '../db-supabase.js';
 import DUMMY_DATA from '../data/blog-posts.js';
+import { atlasShell } from '../../scripts/atlas-shell.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const TEMPLATE_PATH = path.join(__dirname, '../../templates/blog-post.html');
 const OUTPUT_DIR = path.join(__dirname, '../../blog');
-const USE_DUMMY_DATA_FLAG = '--use-dummy-data';
-const POST_SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
-
-function normalizeMembershipCtaLabels(contentHtml) {
-    if (typeof contentHtml !== 'string') return '';
-
-    // A pricing link now opens one membership, so do not publish the stale plural label.
-    return contentHtml.replace(
-        /(<a\b(?=[^>]*\bhref=["'][^"']*cenik\.html[^"']*["'])[^>]*>)(\s*)Zobrazit plány(\s*)(<\/a>)/gi,
-        (_match, openTag, leadingSpace, trailingSpace, closeTag) =>
-            `${openTag}${leadingSpace}Prohlédnout členství${trailingSpace}${closeTag}`
-    );
-}
-
-function validatePosts(posts) {
-    if (!Array.isArray(posts) || posts.length === 0) {
-        throw new Error('Blog source must contain at least one published post. No output was written.');
-    }
-
-    const slugs = new Set();
-    for (const [index, post] of posts.entries()) {
-        if (!post || typeof post !== 'object' || Array.isArray(post)) {
-            throw new Error(`Blog post at index ${index} is invalid. No output was written.`);
-        }
-        if (typeof post.slug !== 'string' || !POST_SLUG_PATTERN.test(post.slug)) {
-            throw new Error(`Blog post at index ${index} has an invalid slug. No output was written.`);
-        }
-        if (slugs.has(post.slug)) {
-            throw new Error(`Duplicate blog post slug: ${post.slug}. No output was written.`);
-        }
-        slugs.add(post.slug);
-    }
-}
 
 async function generateBlog() {
     console.log('📝 Zahajuji generování Blogu...');
+
+    // Create output directory if it doesn't exist
+    if (!fs.existsSync(OUTPUT_DIR)) {
+        fs.mkdirSync(OUTPUT_DIR, { recursive: true });
+    }
 
     // Load template
     const templatePath = path.resolve(TEMPLATE_PATH);
@@ -55,39 +28,21 @@ async function generateBlog() {
     const template = fs.readFileSync(templatePath, 'utf8');
 
     let posts = [];
-    let fallbackReason = null;
     try {
         const { data, error } = await supabase.from('blog_posts').select('*').eq('is_published', true);
         if (error) {
-            fallbackReason = `Chyba databáze blogu: ${error.message}`;
+            console.warn('⚠️ Nastala chyba DB (blog), používám testovací data.', error.message);
+            posts = DUMMY_DATA;
         } else if (!data || data.length === 0) {
-            fallbackReason = 'Tabulka blog_posts je prázdná nebo chybí.';
+            console.warn('⚠️ Supabase tabulka blog_posts je prázdná nebo chybí. Používám testovací data.');
+            posts = DUMMY_DATA;
         } else {
             posts = data;
             console.log(`📡 Načteno ${posts.length} článků ze Supabase.`);
         }
     } catch (err) {
-        fallbackReason = `Supabase není dostupné: ${err?.message || 'neznámá chyba'}`;
-    }
-
-    if (fallbackReason) {
-        const allowLocalDemoData = process.argv.includes(USE_DUMMY_DATA_FLAG)
-            && process.env.NODE_ENV !== 'production'
-            && !process.env.RAILWAY_ENVIRONMENT_NAME;
-
-        if (!allowLocalDemoData) {
-            throw new Error(`${fallbackReason} Generování zastaveno, aby se na web nezapsala ukázková data. Pro lokální náhled použijte ${USE_DUMMY_DATA_FLAG} mimo produkční prostředí.`);
-        }
-
-        console.warn(`⚠️ Výslovně spuštěný lokální náhled používá ukázková data. ${fallbackReason}`);
+        console.warn('⚠️ Chyba sítě, používám testovací data pro blog.');
         posts = DUMMY_DATA;
-    }
-
-    validatePosts(posts);
-
-    // Do not create or modify output paths until the content source is accepted.
-    if (!fs.existsSync(OUTPUT_DIR)) {
-        fs.mkdirSync(OUTPUT_DIR, { recursive: true });
     }
 
     const allPosts = [];
@@ -126,7 +81,7 @@ async function generateBlog() {
         html = html.replace(/{{TITLE}}/g, post.title || 'Nový článek');
         html = html.replace(/{{DESCRIPTION}}/g, post.short_description || `Článek o ${post.title}`);
         html = html.replace(/{{CATEGORY}}/g, post.category || 'Všeobecné');
-        html = html.replace(/{{CONTENT_HTML}}/g, normalizeMembershipCtaLabels(post.content_html || '<p>Obsah se připravuje.</p>'));
+        html = html.replace(/{{CONTENT_HTML}}/g, post.content_html || '<p>Obsah se připravuje.</p>');
         html = html.replace(/{{AUTHOR}}/g, post.author || 'Mystická Hvězda');
         html = html.replace(/{{PUBLISHED_AT}}/g, publishedDate.toISOString());
         html = html.replace(/{{PUBLISHED_DATE_FORMATTED}}/g, formattedDate);
@@ -171,7 +126,7 @@ async function generateBlog() {
         html = html.replace(/{{SCHEMA_JSON}}/g, JSON.stringify(schema, null, 4));
 
         const outPath = path.join(OUTPUT_DIR, `${post.slug}.html`);
-        fs.writeFileSync(outPath, html, 'utf8');
+        fs.writeFileSync(outPath, atlasShell(html, 'atlas-blog', 'atlas-blog.css'), 'utf8');
         console.log(`✅ Vygenerováno: /blog/${post.slug}.html`);
 
         allPosts.push({
@@ -200,7 +155,4 @@ async function generateBlog() {
     process.exit(0);
 }
 
-generateBlog().catch(error => {
-    console.error(`❌ Generování blogu selhalo: ${error?.message || 'neznámá chyba'}`);
-    process.exitCode = 1;
-});
+generateBlog();

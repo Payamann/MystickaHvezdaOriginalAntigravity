@@ -3,14 +3,15 @@
  * Provides offline caching with stale-while-revalidate strategy
  */
 
-const CACHE_NAME = 'mysticka-hvezda-8ce821779331';
+const CACHE_NAME = 'mysticka-hvezda-03f9ec2dc2f6';
 const MAX_RUNTIME_CACHE_SIZE = 150;
 const STATIC_ASSETS = [
-    '/img/icons/mh-symbols.svg',
-    '/img/icons/moon-phases.svg',
-    '/js/dist/moon-art.js',
-    '/data/tarot-card-hub.json',
     '/img/icons/mh-favicon.svg',
+    '/img/icons/mh-symbols.svg',
+    '/css/atlas-polish-v1.css',
+    '/js/dist/moon-phase-illustration.js',
+    '/img/atlas/chinese-zodiac-v1.webp',
+    '/img/atlas/western-zodiac-v1.webp',
     '/fonts/local-fonts.css',
     '/fonts/cinzel-latin-ext.woff2',
     '/fonts/cinzel-latin.woff2',
@@ -21,6 +22,8 @@ const STATIC_ASSETS = [
     '/css/site.min.css',
     '/css/profile-refresh.css',
     '/css/pages/index.css',
+    '/css/pages/horoskop-index.css',
+    '/css/pages/horoskop-znameni-art-v1.css',
     '/css/pages/tarot-karta-dne.css',
     '/css/tarot-atlas.css',
     '/css/atlas-web.css',
@@ -31,6 +34,7 @@ const STATIC_ASSETS = [
     '/css/atlas-angels.css',
     '/css/pages/andelske-karty.css',
     '/css/atlas-remaining.css',
+    '/css/pages/offline.css',
     '/css/atlas-art.css',
     '/css/pages/cenik.css',
     '/css/pages/rocni-horoskop.css',
@@ -41,14 +45,19 @@ const STATIC_ASSETS = [
     '/js/dist/main.js',
     '/js/dist/components.js',
     '/js/dist/api-config.js',
+    '/js/dist/favorites-helper.js',
+    '/js/dist/localized-natal-chart.js',
     '/js/dist/templates.js',
     '/js/dist/auth-client.js',
     '/js/dist/cenik.js',
     '/js/dist/cookie-handler.js',
     '/js/dist/crystal-ball.js',
+    '/js/dist/daily-card.js',
     '/js/dist/angel-cards.js',
     '/js/dist/horoscope-share.js',
     '/js/dist/share-image-canvas.js',
+    '/js/dist/tarot-ano-ne.js',
+    '/js/dist/tarot-ano-nie-sk.js',
     '/js/dist/tarot-karta-dne.js',
     '/js/dist/index-lazy-load.js',
     '/js/gemini-service.js',
@@ -58,36 +67,20 @@ const STATIC_ASSETS = [
     '/js/dist/retention.js',
     '/js/dist/prihlaseni.js',
     '/js/dist/profile/dashboard.js',
-    '/js/dist/profile/chunks/chunk-EBU7PMLI.js',
-    '/js/dist/profile/chunks/modal-KJAG6SAS.js',
     '/js/dist/rocni-horoskop.js',
     '/js/dist/osobni-mapa.js',
     '/img/logo-3d.webp',
     '/img/atlas/01-lucerna-na-rozcesti.webp',
-    '/img/atlas/tools-v1/02-mesicni-krajina-480.webp',
-    '/img/atlas/tools-v1/02-mesicni-krajina-800.webp',
-    '/img/atlas/western-zodiac-v1-grid-mobile-192.webp',
-    '/img/atlas/western-zodiac-v1-grid.webp',
     '/img/atlas/tools-v1/02-mesicni-krajina.webp',
     '/img/atlas/angels-v1/back.webp',
-    '/img/atlas/angels-v1/back-240.webp',
-    '/img/atlas/angels-v1/back-480.webp',
     '/img/atlas/angels-v1/abundance.webp',
-    '/img/atlas/angels-v1/abundance-360.webp',
     '/img/atlas/angels-v1/guidance.webp',
-    '/img/atlas/angels-v1/guidance-360.webp',
     '/img/atlas/angels-v1/healing.webp',
-    '/img/atlas/angels-v1/healing-360.webp',
     '/img/atlas/angels-v1/love.webp',
-    '/img/atlas/angels-v1/love-360.webp',
     '/img/atlas/angels-v1/nature.webp',
-    '/img/atlas/angels-v1/nature-360.webp',
     '/img/atlas/angels-v1/peace.webp',
-    '/img/atlas/angels-v1/peace-360.webp',
     '/img/atlas/angels-v1/purpose.webp',
-    '/img/atlas/angels-v1/purpose-360.webp',
     '/img/atlas/angels-v1/strength.webp',
-    '/img/atlas/angels-v1/strength-360.webp',
     '/img/icon-192.webp',
     '/img/icon-192.png',
     '/img/personal-map/personal-map-soft-v3.webp',
@@ -125,6 +118,34 @@ function getPrecachedAssetKey(request) {
     return STATIC_ASSETS.includes(pathname) ? pathname : null;
 }
 
+async function precacheVersionedOfflineAssets(cache, offlineResponse) {
+    if (!offlineResponse) return;
+
+    const html = await offlineResponse.clone().text();
+    const references = [...html.matchAll(/\b(?:src|href)\s*=\s*(["'])([^"']+\.mh-[a-f0-9]{16}\.(?:js|css)(?:\?[^"']*)?)\1/gi)];
+    const assets = new Map();
+
+    for (const [, , value] of references) {
+        const url = new URL(value.replace(/&amp;/g, '&'), self.location.origin);
+        if (url.origin !== self.location.origin) continue;
+
+        const match = url.pathname.match(/^(.*)\.mh-[a-f0-9]{16}\.(js|css)$/i);
+        if (!match) continue;
+
+        const sourceAsset = `${match[1]}.${match[2]}`;
+        if (STATIC_ASSETS.includes(sourceAsset)) assets.set(url.href, sourceAsset);
+    }
+
+    await Promise.all([...assets.entries()].map(async ([versionedUrl, sourceAsset]) => {
+        const request = new Request(versionedUrl, { cache: 'reload' });
+        const response = await fetch(request);
+        if (!isCacheableResponse(response)) {
+            throw new Error(`Precache failed for versioned offline dependency ${sourceAsset}: ${response.status}`);
+        }
+        await cache.put(versionedUrl, response);
+    }));
+}
+
 async function matchCachedRequest(request) {
     const cache = await caches.open(CACHE_NAME);
     const exactMatch = await cache.match(request);
@@ -145,6 +166,10 @@ async function precacheFreshAssets(cache) {
         }
         await cache.put(asset, response);
     }));
+
+    // Production HTML rewrites CSS/JS references to immutable content hashes.
+    // Cache those exact URLs too, so the offline shell can load its own styles/scripts.
+    await precacheVersionedOfflineAssets(cache, await cache.match('/offline.html'));
 }
 
 // Install - cache static assets
@@ -214,7 +239,7 @@ self.addEventListener('fetch', (event) => {
                 // Start network fetch regardless (for revalidation)
                 const pathname = new URL(event.request.url).pathname;
                 // Editorial index must agree with the freshly rendered article art.
-                const shouldRevalidateStaticCode = /\.(?:css|js)$/i.test(pathname) || pathname === '/data/blog-index.json' || pathname === '/data/tarot-cards.json' || pathname === '/data/tarot-card-hub.json';
+                const shouldRevalidateStaticCode = /\.(?:css|js)$/i.test(pathname) || pathname === '/data/blog-index.json' || pathname === '/data/tarot-cards.json';
                 const networkFetch = fetch(event.request, shouldRevalidateStaticCode ? { cache: 'no-cache' } : undefined)
                     .then((response) => {
                         // Don't cache non-successful, non-basic or explicitly private responses

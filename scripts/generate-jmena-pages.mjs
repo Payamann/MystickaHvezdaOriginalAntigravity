@@ -4,26 +4,53 @@
  * from data/jmena.json, plus a static link hub inside jmena/index.html
  * between the JMENA-LINKS markers so crawlers can reach every page.
  *
- * Usage: node scripts/generate-jmena-pages.mjs [--check]
- * --check compares generated output without writing to the site.
- * Normal runs only write files whose contents actually changed.
+ * Usage: node scripts/generate-jmena-pages.mjs
+ * Idempotent: re-running overwrites generated pages in place.
  */
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { atlasShell } from './atlas-shell.mjs';
+import { refreshCssAssetReferences } from './lib/release-css-versions.mjs';
+import { prepareGeneratedPage } from './lib/generated-page-metadata.mjs';
+import { refreshRuntimeAssetReferences } from './lib/release-runtime-versions.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..');
 const DATA_PATH = path.join(ROOT, 'data', 'jmena.json');
 const NUMEROLOGY_DATA_PATH = path.join(ROOT, 'data', 'numerology-numbers.json');
 const OUTPUT_DIR = path.join(ROOT, 'jmena');
+const CHECK_ONLY = process.argv.includes('--check');
+const checkDrift = [];
+let checkExample = null;
+
+function writeGenerated(filePath, content) {
+    content = refreshCssAssetReferences(content);
+    content = refreshRuntimeAssetReferences(content);
+    if (CHECK_ONLY) {
+        const current = fs.existsSync(filePath) ? fs.readFileSync(filePath, 'utf8') : null;
+        if (current !== content) {
+            checkDrift.push(path.relative(ROOT, filePath));
+            if (!checkExample && current !== null) {
+                const before = current.split(/\r?\n/);
+                const after = content.split(/\r?\n/);
+                const index = before.findIndex((line, i) => line !== after[i]);
+                const sameNonblank = before.filter((line) => line.trim()).join('\n') === after.filter((line) => line.trim()).join('\n');
+                checkExample = `${path.relative(ROOT, filePath)} around line ${index + 1}: current=${before.slice(index, index + 4).map((line) => line.trim()).join(' | ')} | expected=${after.slice(index, index + 4).map((line) => line.trim()).join(' | ')}; nonblank-lines-match=${sameNonblank}, line-counts=${before.length}/${after.length}`;
+            }
+        }
+        return;
+    }
+    fs.writeFileSync(filePath, content, 'utf8');
+}
+
+function finishCheck() {
+    if (CHECK_ONLY && checkDrift.length) throw new Error(`[jmena] ${checkDrift.length} generated file(s) differ: ${checkDrift.join(', ')}. Example: ${checkExample}`);
+    if (CHECK_ONLY) console.log(`[jmena] Check passed: generated pages and link hub are current; no files written.`);
+}
 const INDEX_PATH = path.join(OUTPUT_DIR, 'index.html');
 const CANONICAL_ORIGIN = 'https://www.mystickahvezda.cz';
 const LASTMOD = '2026-07-11';
-const ASSET_VERSIONS = Object.freeze({
-    atlasWeb: '20261020-02-mobile-hero-padding-dedup',
-    main: '20261018-status-icons'
-});
 
 const NUMEROLOGY_MEANINGS = {
     1: 'číslo lídra. Nese energii nových začátků, samostatnosti a odvahy jít vlastní cestou.',
@@ -216,7 +243,7 @@ function buildFaqEntries(name, entry, nameday, zodiac) {
     });
     faq.push({
         question: `Jaké numerologické číslo má jméno ${name}?`,
-        answer: `Jméno ${name} nese numerologické číslo ${entry.numerology}${profile ? ` — ${profile.title}: ${profile.short.toLowerCase()}` : ''}. Vibrace jména je jen jedna část numerologického profilu; číslo životní cesty se počítá z data narození.`
+        answer: `Jméno ${name} nese numerologické číslo ${entry.numerology}${profile ? ` — ${profile.title}: ${profile.short.toLowerCase()}` : ''}. Vibrace jména je jen část profilu, číslo osudu vychází z data narození.`
     });
     faq.push({
         question: `Jakou auru a živel má jméno ${name}?`,
@@ -281,25 +308,25 @@ function renderPage(name, entry, allEntries) {
                     <h2>Numerologie čísla ${entry.numerology} do hloubky</h2>
                     <p>${escapeHtml(numerologyOpener)}</p>
                     <p>${escapeHtml(profile.meaning)}</p>
-                    <h3>Silné stránky</h3>
+                    <h3>✨ Silné stránky</h3>
                     <p>${escapeHtml(profile.strengths)}</p>
-                    <h3>Stín čísla</h3>
+                    <h3>🌑 Stín čísla</h3>
                     <p>${escapeHtml(profile.shadow)}</p>
-                    <h3>Ve vztazích</h3>
+                    <h3>🤝 Ve vztazích</h3>
                     <p>${escapeHtml(profile.relationships)}</p>
-                    <h3>Rada pro nositele jména</h3>
+                    <h3>🧭 Rada pro nositele jména</h3>
                     <p>${escapeHtml(profile.advice)}</p>
                     <p>
-                        Jméno je jedna část numerologického profilu; číslo životní cesty se počítá z data narození.
-                        <a href="../kalkulacka-cisla-osudu.html?source=jmena_detail&feature=numerologie_vyklad">Spočítej si číslo životní cesty zdarma &rarr;</a>
+                        Jméno je jen část příběhu — celý numerologický profil vychází z data narození.
+                        <a href="../kalkulacka-cisla-osudu.html?source=jmena_detail&feature=numerologie_vyklad">Spočítej si své číslo osudu zdarma &rarr;</a>
                     </p>
                 </div>` : `
                 <div class="card">
                     <h2>Numerologie čísla ${entry.numerology}</h2>
                     <p>${entry.numerology} je ${escapeHtml(numerologyMeaning)}</p>
                     <p>
-                        Jméno je jedna část numerologického profilu; číslo životní cesty se počítá z data narození.
-                        <a href="../kalkulacka-cisla-osudu.html?source=jmena_detail&feature=numerologie_vyklad">Spočítej si číslo životní cesty zdarma &rarr;</a>
+                        Jméno je jen část příběhu — celý numerologický profil vychází z data narození.
+                        <a href="../kalkulacka-cisla-osudu.html?source=jmena_detail&feature=numerologie_vyklad">Spočítej si své číslo osudu zdarma &rarr;</a>
                     </p>
                 </div>`;
 
@@ -331,7 +358,7 @@ function renderPage(name, entry, allEntries) {
                         jak působí navenek, s tím, co ho pohání zevnitř.
                     </p>` : ''}
                     <p>
-                        Celý rozbor — včetně čísla životní cesty vypočítaného z data narození — najdeš v
+                        Celý rozbor — včetně čísla osudu z data narození — najdeš v
                         <a href="../numerologie.html?source=jmena_detail&feature=numerologie_vyklad">numerologickém výkladu</a>.
                     </p>
                 </div>` : '';
@@ -366,23 +393,17 @@ function renderPage(name, entry, allEntries) {
     <script type="application/ld+json">${breadcrumbLd}</script>
     <script type="application/ld+json">${faqLd}</script>
     <link rel="stylesheet" href="/fonts/local-fonts.css">
-    <link rel="stylesheet" href="../css/style.v2.min.css?v=20261018-release-candidate">
+    <link rel="stylesheet" href="../css/style.v2.min.css?v=20261023-release-todo">
     <link rel="stylesheet" href="../css/pages/jmena-index.css">
 <script src="/js/dist/analytics-init.js" defer></script>
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta name="twitter:image" content="${CANONICAL_ORIGIN}/img/search-preview/names.webp">
-<meta property="og:image:alt" content="Jméno ${safeName} — původ, význam a numerologie | Mystická Hvězda">
-<meta name="twitter:image:alt" content="Jméno ${safeName} — původ, význam a numerologie | Mystická Hvězda">
-
-    <link rel="stylesheet" href="/css/atlas-web.css?v=20261020-03-horoscope-day-switcher-atlas">
-    <link rel="stylesheet" href="/css/atlas-content.css?v=2">
+    <link rel="stylesheet" href="/css/atlas-web.css?v=20261023-release-todo">
+    <link rel="stylesheet" href="/css/atlas-content.css?v=20261023-release-todo">
 </head>
 <body class="atlas-page atlas-content-page atlas-content-detail">
     <a href="#main-content" class="skip-link">Přeskočit na obsah</a>
     <div id="header-placeholder"></div>
 
-    <main id="main-content" tabindex="-1">
+    <main id="main-content">
         <section class="section">
             <div class="container">
                 <span class="section__badge">Lexikon Duší</span>
@@ -408,13 +429,13 @@ function renderPage(name, entry, allEntries) {
                 <div class="card">
                     <h2>Osobnost</h2>
                     <p>${escapeHtml(entry.personality)}</p>
-                    <h3>Láska a vztahy</h3>
+                    <h3>❤️ Láska a vztahy</h3>
                     <p>${escapeHtml(entry.love)}</p>
-                    <h3>Kariéra</h3>
+                    <h3>💼 Kariéra</h3>
                     <p>Vhodná povolání: ${escapeHtml(entry.career)}.</p>
                 </div>
 
-${deepNumerologyBlock.replace(/^\n/, '')}
+${deepNumerologyBlock}
 ${zodiacBlock}
 ${hiddenNumbersBlock}
 ${faqBlock}
@@ -440,14 +461,14 @@ ${faqBlock}
 
     <div id="footer-placeholder"></div>
 
-    <script src="../js/dist/core.js?v=20261021-footer-support-locale" defer></script>
-    <script type="module" src="../js/dist/main.js?v=${ASSET_VERSIONS.main}"></script>
+    <script src="../js/dist/core.js?v=1" defer></script>
+    <script type="module" src="../js/dist/main.js?v=10"></script>
 </body>
 </html>
 `;
 }
 
-function renderIndexLinks(entries) {
+function updateIndexLinks(entries) {
     const startMarker = '<!-- JMENA-LINKS:START -->';
     const endMarker = '<!-- JMENA-LINKS:END -->';
     let html = fs.readFileSync(INDEX_PATH, 'utf8');
@@ -476,18 +497,15 @@ function renderIndexLinks(entries) {
         html = html.replace(anchor, `${section}\n\n    ${anchor}`);
     }
 
-    return html;
+    writeGenerated(INDEX_PATH, atlasShell(prepareGeneratedPage(html, 'jmena/index.html'), 'atlas-content-page', 'atlas-content.css'));
 }
 
 function main() {
-    const checkOnly = process.argv.includes('--check');
     const data = JSON.parse(fs.readFileSync(DATA_PATH, 'utf8'));
     const entries = Object.entries(data).sort(([a], [b]) => a.localeCompare(b, 'cs'));
 
     const seenSlugs = new Map();
-    const staleFiles = [];
-    let updated = 0;
-    let generated = 0;
+    let written = 0;
 
     for (const [name, entry] of entries) {
         const slug = slugify(name);
@@ -501,58 +519,20 @@ function main() {
         }
         seenSlugs.set(slug, name);
 
-        const outputPath = path.join(OUTPUT_DIR, `${slug}.html`);
-        const expected = renderPage(name, entry, entries);
-        generated++;
-
-        if (checkOnly) {
-            if (!fs.existsSync(outputPath) || fs.readFileSync(outputPath, 'utf8') !== expected) {
-                staleFiles.push(path.relative(ROOT, outputPath));
-                if (staleFiles.length === 1 && fs.existsSync(outputPath)) {
-                    const currentLines = fs.readFileSync(outputPath, 'utf8').split(/\r?\n/);
-                    const expectedLines = expected.split(/\r?\n/);
-                    let shown = 0;
-                    for (let index = 0; index < Math.max(currentLines.length, expectedLines.length) && shown < 8; index++) {
-                        if (currentLines[index] !== expectedLines[index]) {
-                            const current = currentLines[index] === undefined ? '(missing)' : currentLines[index].trim().slice(0, 160) || '(blank)';
-                            const generatedLine = expectedLines[index] === undefined ? '(missing)' : expectedLines[index].trim().slice(0, 160) || '(blank)';
-                            console.log(`[jmena] ${slug}.html line ${index + 1}: current=${current} | expected=${generatedLine}`);
-                            shown++;
-                        }
-                    }
-                }
-            }
-        } else if (!fs.existsSync(outputPath) || fs.readFileSync(outputPath, 'utf8') !== expected) {
-            fs.writeFileSync(outputPath, expected, 'utf8');
-            updated++;
-        }
+        writeGenerated(
+            path.join(OUTPUT_DIR, `${slug}.html`),
+            atlasShell(
+                prepareGeneratedPage(renderPage(name, entry, entries), `jmena/${slug}.html`),
+                'atlas-content-page atlas-content-detail',
+                'atlas-content.css'
+            )
+        );
+        written++;
     }
 
-    const expectedIndex = renderIndexLinks(entries.filter(([name]) => seenSlugs.get(slugify(name)) === name));
-    if (checkOnly) {
-        if (!fs.existsSync(INDEX_PATH) || fs.readFileSync(INDEX_PATH, 'utf8') !== expectedIndex) {
-            staleFiles.push(path.relative(ROOT, INDEX_PATH));
-        }
-
-        if (staleFiles.length) {
-            const preview = staleFiles.slice(0, 20).join(', ');
-            const remaining = staleFiles.length > 20 ? ` and ${staleFiles.length - 20} more` : '';
-            console.error(`[jmena] Check failed: ${staleFiles.length} generated file(s) need updates: ${preview}${remaining}`);
-            process.exitCode = 1;
-            return;
-        }
-
-        console.log(`[jmena] Check passed: ${generated} name pages and link hub are current; no files written.`);
-        return;
-    }
-
-    let indexUpdated = false;
-    if (!fs.existsSync(INDEX_PATH) || fs.readFileSync(INDEX_PATH, 'utf8') !== expectedIndex) {
-        fs.writeFileSync(INDEX_PATH, expectedIndex, 'utf8');
-        indexUpdated = true;
-    }
-
-    console.log(`[jmena] Updated ${updated} of ${generated} name pages; link hub ${indexUpdated ? 'updated' : 'unchanged'}.`);
+    updateIndexLinks(entries.filter(([name]) => seenSlugs.get(slugify(name)) === name));
+    finishCheck();
+    if (!CHECK_ONLY) console.log(`[jmena] Generated ${written} name pages + link hub in index.html.`);
 }
 
 main();

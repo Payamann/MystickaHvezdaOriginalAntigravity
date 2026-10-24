@@ -15,26 +15,28 @@
 
     <meta name="description"
 
-        content="Vyber si znamení a přečti si denní afirmaci. Na stránce uvidíš také aktuální fázi Měsíce.">
+        content="Vaše dnešní afirmace podle znamení zvěrokruhu a fáze Měsíce. Personalizované pozitivní afirmace pro každý den — zdarma.">
 
     <link rel="canonical" href="https://www.mystickahvezda.cz/afirmace.html">
 
-    <meta property="og:title" content="Denní afirmace pro tvé znamení | Mystická Hvězda">
+    <meta property="og:title" content="Denní afirmace pro váš horoskop | Mystická Hvězda">
 
-    <meta property="og:description" content="Zvol znamení a zobraz si denní afirmaci i aktuální fázi Měsíce.">
+    <meta property="og:description" content="Dnešní afirmace podle vašeho znamení zvěrokruhu a fáze Měsíce.">
 
     <meta property="og:image" content="https://www.mystickahvezda.cz/img/search-preview/other.webp">
 
     <link rel="stylesheet" href="/fonts/local-fonts.css">
-    <link rel="stylesheet" href="css/style.v2.min.css?v=20261018-release-candidate">
-    <link rel="stylesheet" href="css/pages/afirmace.css?v=20261020-01-atlas-sign-picker">
+    <link rel="stylesheet" href="css/style.v2.min.css?v=20261023-release-todo">
+    <link rel="stylesheet" href="css/pages/afirmace.css?v=2">
+<!-- DOMPurify for XSS protection (must load synchronously before other scripts use it) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js" integrity="sha384-XQqX/4yiUGu+oyr87jvWzRuqBUK/adrY0DunhL+tID9m/9dwSpV8h9Fk/Sg6ifVQ" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
     <script type="application/ld+json">
     {
         "@context": "https://schema.org",
         "@type": "WebPage",
         "name": "Denní afirmace podle znamení zvěrokruhu",
-        "description": "Denní afirmace podle vybraného znamení zvěrokruhu; stránka zobrazuje také aktuální fázi Měsíce.",
+        "description": "Personalizované denní afirmace pro každé znamení zvěrokruhu. Pozitivní mantry pro váš den.",
         "url": "https://www.mystickahvezda.cz/afirmace.html",
         "isPartOf": {
             "@type": "WebSite",
@@ -51,11 +53,12 @@
 <meta property="og:image:alt" content="Denní afirmace podle znamení zvěrokruhu | Mystická Hvězda">
 <meta name="twitter:image:alt" content="Denní afirmace podle znamení zvěrokruhu | Mystická Hvězda">
 
-    <link rel="stylesheet" href="/css/atlas-web.css?v=20261020-03-horoscope-day-switcher-atlas">
-    <link rel="stylesheet" href="/css/atlas-remaining.css?v=20261020-01-remaining-surface-polish">
+    <link rel="stylesheet" href="/css/atlas-web.css?v=20261023-release-todo">
+    <link rel="stylesheet" href="/css/atlas-remaining.css?v=20261023-release-todo">
+<link rel="stylesheet" href="/css/atlas-polish-v1.css?v=20261009">
 </head>
 
-<body class="atlas-page atlas-remaining-page">
+<body class="atlas-page atlas-remaining-page" data-atlas-polish="afirmace">
     <a href="#main-content" class="skip-link">Přeskočit na obsah</a>
 
     <div id="header-placeholder"></div>
@@ -72,7 +75,7 @@
 
                     <h1 class="section__title">Denní <span class="text-gradient">Afirmace</span></h1>
 
-                    <p class="section__text">Vyber si znamení a přečti si dnešní afirmaci. Pod ní uvidíš také aktuální fázi Měsíce.
+                    <p class="section__text">Vyberte své znamení a získejte dnešní osobní afirmaci naladěnou na hvězdy.
 
                     </p>
 
@@ -88,7 +91,7 @@
 
                     <button class="zodiac-btn" data-sign="byk"
 
-                        aria-label="Býk"><span>♉</span>Býk</button>
+                        aria-label="Byk"><span>♉</span>Byk</button>
 
                     <button class="zodiac-btn" data-sign="blizenci"
 
@@ -132,16 +135,11 @@
 
                 </div>
 
-                <p id="affirmation-status" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></p>
-
                 <!-- Karta s afirmací -->
 
                 <div class="affirmation-card" id="affirmation-card">
 
-                    <div class="moon-badge" id="moon-badge">
-                        <span class="moon-badge__icon" data-moon-icon aria-hidden="true"></span>
-                        <span data-moon-label>Fáze Měsíce</span>
-                    </div>
+                    <div class="moon-badge" id="moon-badge">🌙 Fáze Měsíce</div>
 
                     <div id="sign-emoji" class="mh-inline-c41fbcc356"></div>
 
@@ -159,33 +157,35 @@
 
                         <button id="btn-copy-affirmation" class="btn btn--ghost mh-inline-5d4d7ad749"
 
-                           ><svg class="mh-symbol mh-symbol--inline" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg?v=20261018#copy"></use></svg>Kopírovat</button>
+                           >📋 Kopírovat</button>
 
                         <button id="btn-share-affirmation" class="btn btn--ghost mh-inline-5d4d7ad749"
 
-                           ><svg class="mh-symbol mh-symbol--inline" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg?v=20261018#share"></use></svg>Sdílet</button>
+                           >📤 Sdílet</button>
 
                         <a id="btn-horoskop-link" href="horoskopy.html" class="btn btn--primary mh-inline-5d4d7ad749"
 
-                           ><svg class="mh-symbol mh-symbol--inline" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg?v=20261018#star"></use></svg>Horoskop dnes</a>
+                           >🌌 Horoskop dnes</a>
 
                     </div>
 
-                    <p id="affirmation-action-status" class="mh-inline-6aabc89df3 affirmation-action-status" role="status" aria-live="polite" hidden><svg class="mh-symbol mh-symbol--inline" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg?v=20261018#check"></use></svg>
+                    <p id="copy-confirm" class="mh-inline-6aabc89df3">✓
 
-                        <span id="affirmation-action-message">Zkopírováno!</span></p>
+                        Zkopírováno!</p>
 
                 </div>
 
                 <!-- CTA -->
 
-                <div class="mh-inline-09c9f48879"
+                <div class="mh-inline-09c9f48879 atlas-affirmation-cta"
 
                     data-animate>
 
-                    <p class="mh-inline-75e0992588">Chceš dostávat afirmace každé ráno e-mailem spolu s horoskopem?</p>
+                    <p class="mh-inline-75e0992588">Chcete afirmace každé ráno přímo do
 
-                    <a href="/cenik.html?plan=pruvodce&source=affirmations_page_cta&feature=daily_guidance" class="btn btn--primary">Prohlédnout členství</a>
+                        e-mailu, spolu s personalizovaným horoskopem?</p>
+
+                    <a href="/cenik.html?plan=pruvodce&source=affirmations_page_cta&feature=daily_guidance" class="btn btn--primary"> Vyzkoušet Premium</a>
 
                 </div>
 
@@ -199,21 +199,20 @@
 
     <script src="js/dist/api-config.js?v=5" defer></script>
 
-    <script src="js/dist/templates.js?v=20261021-celtic-footer-star-svg" defer></script>
+    <script src="js/dist/templates.js?v=14" defer></script>
     <script src="js/dist/auth-client.js?v=20261020-02-register-password-policy" defer></script>
 <script src="js/dist/auth-copy-fixes.js" defer></script>
-    <script src="js/dist/secondary-pages-copy-fixes.js?v=20261019-snar-affirmation-claims" defer></script>
+    <script src="js/dist/secondary-pages-copy-fixes.js?v=4" defer></script>
 
-    <script src="js/dist/components.js?v=20261021-footer-support-locale" defer></script>
+    <script src="js/dist/components.js?v=20260522-premium-gate-cache" defer></script>
 
     
 
     <script src="js/dist/exit-intent.js" defer></script>
 
-    <script type="module" src="js/dist/main.js?v=20261018-status-icons"></script>
+    <script type="module" src="js/dist/main.js?v=10"></script>
 
-    <script src="js/dist/moon-art.js?v=20261020-moon-art-safe-fallback" defer></script>
-    <script type="module" src="js/dist/afirmace.js?v=20261019-honest-daily-copy" defer></script>
+    <script src="js/dist/afirmace.js" defer></script>
 
 </body>
 

@@ -170,8 +170,7 @@ function isQuickOnboardingFlow() {
 
 function getSafeLocalRedirect(value) {
     const redirect = typeof value === 'string' ? value.trim() : '';
-    if (!redirect || !redirect.startsWith('/') || redirect.startsWith('//')
-        || redirect.includes('\\') || /[\u0000-\u001F\u007F]/.test(redirect)) return '';
+    if (!redirect || !redirect.startsWith('/') || redirect.startsWith('//')) return '';
 
     try {
         const parsed = new URL(redirect, window.location.origin);
@@ -404,13 +403,13 @@ function updateFinishCta() {
     const resumesCheckout = completionTarget !== destinationHref;
 
     if (finishBtn) {
-        finishBtn.textContent = resumesCheckout ? 'Pokračovat k vybranému plánu' : destination.label();
+        finishBtn.textContent = resumesCheckout ? 'Pokračovat k vybranému plánu ✨' : `${destination.label()} ✨`;
     }
     if (quickFinishBtn) {
         const quickLabel = selectedSign && getPrimaryInterestKey() === 'horoskopy'
             ? `Horoskop pro ${SIGN_LABELS[selectedSign]}`
             : destination.label();
-        quickFinishBtn.textContent = quickLabel;
+        quickFinishBtn.textContent = `${quickLabel} ✨`;
     }
     if (finishCopy) {
         finishCopy.textContent = resumesCheckout
@@ -473,7 +472,7 @@ function activateQuickOnboardingFlow() {
     }
 
     setNextButtonEnabled(Boolean(selectedSign));
-    goStep(2, { focusStep: false });
+    goStep(2);
 
     trackOnboardingEvent('onboarding_quick_flow_viewed', {
         entry_source: getOnboardingContext().source || null,
@@ -584,16 +583,9 @@ function scrollOnboardingStepIntoView(stepNumber) {
     });
 }
 
-function goStep(n, { focusStep = true } = {}) {
+function goStep(n) {
     document.querySelectorAll('.step-view').forEach((step) => step.classList.remove('active'));
-    const nextStep = document.getElementById(`step-${n}`);
-    nextStep?.classList.add('active');
-
-    const progressBar = document.querySelector('.progress-bar');
-    if (progressBar) {
-        progressBar.setAttribute('aria-valuenow', String(n));
-        progressBar.setAttribute('aria-valuetext', `Krok ${n} ze 3`);
-    }
+    document.getElementById(`step-${n}`)?.classList.add('active');
 
     for (let i = 1; i <= 3; i += 1) {
         const progress = document.getElementById(`prog-${i}`);
@@ -602,7 +594,6 @@ function goStep(n, { focusStep = true } = {}) {
     }
 
     if (n === 3) updateFinishCta();
-    if (focusStep) nextStep?.querySelector('.step-title')?.focus({ preventScroll: true });
     scrollOnboardingStepIntoView(n);
 
     trackOnboardingEvent('onboarding_step_viewed', {

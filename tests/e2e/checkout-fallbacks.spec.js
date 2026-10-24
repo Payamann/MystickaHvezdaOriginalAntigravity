@@ -62,7 +62,7 @@ test.describe('Checkout fallbacks without Auth client', () => {
         });
     });
 
-    test('astro map auth gate redirects to Osviceni pricing context', async ({ page }) => {
+    test('astro map auth gate redirects to single membership pricing context', async ({ page }) => {
         await disableAuthClient(page);
         await page.goto('/astro-mapa.html');
         await waitForPageReady(page);
@@ -73,7 +73,7 @@ test.describe('Checkout fallbacks without Auth client', () => {
         await page.locator('#astro-form button[type="submit"]').click();
 
         await expectUrlParams(page, '/cenik.html', {
-            plan: 'osviceni',
+            plan: 'pruvodce',
             source: 'astro_map_auth_gate',
             feature: 'astrocartography',
             entry_source: 'astro_map_auth_gate',

@@ -109,14 +109,6 @@ import { getDailyCardPractice } from './utils/daily-tarot.js';
         };
     }
 
-    function applyResponsiveCardSources(image, source, sizes) {
-        const path = String(source || '');
-        const match = path.match(/^(\/?img\/tarot-v2\/tarot_[a-z0-9_-]+)\.webp$/i);
-        if (!match) return;
-        image.srcset = `${match[1]}-240.webp 240w, ${match[1]}-360.webp 360w, ${path} 600w`;
-        image.sizes = sizes;
-    }
-
     let cardPool = [];
     let cardDataLoaded = false;
     let used = false;
@@ -1031,7 +1023,6 @@ import { getDailyCardPractice } from './utils/daily-tarot.js';
         const cardImage = document.createElement('img');
         cardImage.className = 'card-front-image';
         applyCardImageFallback(cardImage);
-        applyResponsiveCardSources(cardImage, drawnCard.image, '(max-width: 492px) 64px, (max-width: 861px) 13vw, 112px');
         cardImage.src = drawnCard.image;
         cardImage.alt = drawnCard.name;
         cardImage.width = 600;
@@ -1061,7 +1052,6 @@ import { getDailyCardPractice } from './utils/daily-tarot.js';
             const resultImage = document.getElementById('result-card-image');
             if (resultImage) {
                 applyCardImageFallback(resultImage);
-                applyResponsiveCardSources(resultImage, drawnCard.image, '(max-width: 600px) 78px, 155px');
                 resultImage.src = drawnCard.image;
                 resultImage.alt = `Tarotová karta: ${drawnCard.name}`;
                 resultImage.hidden = false;

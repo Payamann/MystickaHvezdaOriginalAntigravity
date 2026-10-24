@@ -3,97 +3,12 @@ import {
     calculateDestiny,
     calculateSoul,
     calculatePersonality,
-    getTodayIsoDate,
-    isValidBirthDate,
     NUMBER_MEANINGS
 } from './utils/numerology-logic.js';
-import { getFallbackMessage, showFallbackNotice, formatReadingHtml } from './utils/reading-display.js';
 
 const NUMEROLOGY_RESULT_SOURCE = 'numerology_result';
 let lastNumerologyShareResult = null;
 let personalMapOfferViewed = false;
-let latestNumerologySubmissionId = 0;
-let latestNumerologyProfileRequestId = 0;
-let numerologyAbortController = null;
-let observedNumerologySession = null;
-
-function captureNumerologySession() {
-    const isLoggedIn = Boolean(window.Auth?.isLoggedIn?.());
-    return { isLoggedIn, userId: isLoggedIn ? window.Auth?.user?.id : null };
-}
-
-function hasSameNumerologySession(session) {
-    const current = captureNumerologySession();
-    if (current.isLoggedIn !== session?.isLoggedIn) return false;
-    if (!current.isLoggedIn) return true;
-    return typeof session.userId === 'string' && session.userId.length > 0 && current.userId === session.userId;
-}
-
-function clearNumerologySessionData() {
-    latestNumerologyProfileRequestId += 1;
-    clearNumerologyResults();
-
-    for (const id of ['num-name', 'num-date', 'num-time']) {
-        const input = document.getElementById(id);
-        if (input) input.value = '';
-    }
-    const useProfileCheckbox = document.getElementById('use-profile-num');
-    if (useProfileCheckbox) useProfileCheckbox.checked = false;
-}
-
-function clearNumerologyResults({ clearCycles = true } = {}) {
-    latestNumerologySubmissionId += 1;
-    numerologyAbortController?.abort();
-    numerologyAbortController = null;
-
-    const results = document.getElementById('numerology-results');
-    if (results) {
-        results.hidden = true;
-        results.classList.remove('mh-block-visible');
-    }
-    for (const id of ['card-lifepath', 'card-destiny', 'card-soul', 'card-personality']) {
-        document.getElementById(id)?.replaceChildren();
-    }
-    const interpretation = document.getElementById('num-interpretation');
-    interpretation?.replaceChildren();
-    setNumerologyStatus('');
-    const resultActions = document.getElementById('numerology-result-actions');
-    if (resultActions) resultActions.hidden = true;
-    if (clearCycles) {
-        const cycles = document.getElementById('daily-cycles');
-        if (cycles) {
-            cycles.hidden = true;
-            cycles.classList.remove('mh-block-visible');
-        }
-        for (const id of ['val-py', 'val-pm', 'val-pd']) {
-            const value = document.getElementById(id);
-            if (value) value.textContent = '';
-        }
-    }
-    lastNumerologyShareResult = null;
-    personalMapOfferViewed = false;
-    window.__lastNumerologyShareResult = null;
-}
-
-function invalidateNumerologySessionChange() {
-    const current = captureNumerologySession();
-    const changed = observedNumerologySession && !hasSameNumerologySession(observedNumerologySession);
-    observedNumerologySession = current;
-    if (changed) clearNumerologySessionData();
-}
-
-function isCurrentNumerologySubmission(submissionId, session) {
-    if (submissionId !== latestNumerologySubmissionId) return false;
-    if (hasSameNumerologySession(session)) return true;
-    invalidateNumerologySessionChange();
-    return false;
-}
-
-document.addEventListener('auth:changed', invalidateNumerologySessionChange);
-window.addEventListener('storage', (event) => {
-    if (event.key === 'auth_user') invalidateNumerologySessionChange();
-});
-observedNumerologySession = captureNumerologySession();
 
 function buildPersonalMapOfferMarkup() {
     return `
@@ -184,10 +99,10 @@ function getFirstNameForShare(name) {
 function buildNumerologyShareResult(name, lifePath, destiny, soul, personality) {
     const lifeMeaning = NUMBER_MEANINGS[lifePath] || {};
     const numbers = [
-        { key: 'life_path', label: 'Životní cesta', number: lifePath, color: '#d0b17c' },
-        { key: 'destiny', label: 'Osud', number: destiny, color: '#a7bed2' },
-        { key: 'soul', label: 'Duše', number: soul, color: '#b5c8ae' },
-        { key: 'personality', label: 'Osobnost', number: personality, color: '#d0b17c' }
+        { key: 'life_path', label: 'Životní cesta', number: lifePath, color: '#bd9b65' },
+        { key: 'destiny', label: 'Osud', number: destiny, color: '#6bb7ff' },
+        { key: 'soul', label: 'Duše', number: soul, color: '#8ee6aa' },
+        { key: 'personality', label: 'Osobnost', number: personality, color: '#f1c40f' }
     ];
 
     return {
@@ -196,13 +111,17 @@ function buildNumerologyShareResult(name, lifePath, destiny, soul, personality) 
         destiny,
         soul,
         personality,
-        title: lifeMeaning.title || 'Osobní téma',
+        title: lifeMeaning.title || 'Osobní vibrace',
         short: lifeMeaning.short || 'Vnitřní rytmus a směr',
         numbers
     };
 }
 
 function wrapCanvasText(ctx, text, maxWidth) {
+    if (window.MH_SHARE_IMAGE?.wrapText) {
+        return window.MH_SHARE_IMAGE.wrapText(ctx, text, maxWidth);
+    }
+
     const words = String(text || '').split(/\s+/).filter(Boolean);
     const lines = [];
     let current = '';
@@ -221,33 +140,15 @@ function wrapCanvasText(ctx, text, maxWidth) {
     return lines;
 }
 
-function ellipsizeCanvasLine(ctx, line, maxWidth) {
-    const characters = Array.from(String(line || '').trimEnd());
-    while (characters.length > 0 && ctx.measureText(`${characters.join('')}…`).width > maxWidth) {
-        characters.pop();
-    }
-    return `${characters.join('').trimEnd()}…`;
-}
-
-function limitCanvasLines(ctx, lines, maxLines, maxWidth) {
-    const visibleLines = lines.slice(0, maxLines);
-    if (visibleLines.length > 0 && Number.isFinite(maxWidth) && maxWidth > 0) {
-        const lastIndex = visibleLines.length - 1;
-        const omittedLines = lines.length > visibleLines.length;
-        const lastLineOverflows = ctx.measureText(visibleLines[lastIndex]).width > maxWidth;
-        if (omittedLines || lastLineOverflows) {
-            visibleLines[lastIndex] = ellipsizeCanvasLine(ctx, visibleLines[lastIndex], maxWidth);
-        }
-    }
-    return visibleLines;
-}
-
 function drawCenteredLines(ctx, lines, centerX, startY, lineHeight, maxLines = lines.length, maxWidth = Infinity) {
-    const visibleLines = limitCanvasLines(ctx, lines, maxLines, maxWidth);
-    visibleLines.forEach((line, index) => {
+    if (window.MH_SHARE_IMAGE?.drawCenteredLines) {
+        return window.MH_SHARE_IMAGE.drawCenteredLines(ctx, lines, centerX, startY, lineHeight, maxLines, maxWidth);
+    }
+
+    lines.slice(0, maxLines).forEach((line, index) => {
         ctx.fillText(line, centerX, startY + index * lineHeight);
     });
-    return startY + visibleLines.length * lineHeight;
+    return startY + Math.min(lines.length, maxLines) * lineHeight;
 }
 
 function drawRoundRect(ctx, x, y, width, height, radius) {
@@ -266,17 +167,17 @@ function drawRoundRect(ctx, x, y, width, height, radius) {
 }
 
 function drawNumerologyTile(ctx, tile, x, y, width, height) {
-    drawRoundRect(ctx, x, y, width, height, 18);
-    ctx.fillStyle = 'rgba(16,38,56,0.92)';
+    drawRoundRect(ctx, x, y, width, height, 28);
+    ctx.fillStyle = 'rgba(11,25,41,0.78)';
     ctx.fill();
-    ctx.strokeStyle = 'rgba(208,177,124,0.44)';
-    ctx.lineWidth = 2;
+    ctx.strokeStyle = `${tile.color}cc`;
+    ctx.lineWidth = 3;
     ctx.stroke();
 
     ctx.textAlign = 'left';
-    ctx.fillStyle = '#c0c8ca';
+    ctx.fillStyle = 'rgba(255,255,255,0.74)';
     ctx.font = '600 29px Inter, Arial, sans-serif';
-    ctx.fillText(tile.label, x + 34, y + 54);
+    ctx.fillText(tile.label, x + 34, y + 54, width - 68);
 
     ctx.fillStyle = tile.color;
     ctx.font = '700 82px Cinzel, Georgia, serif';
@@ -285,48 +186,40 @@ function drawNumerologyTile(ctx, tile, x, y, width, height) {
     const meaning = NUMBER_MEANINGS[tile.number]?.short || '';
     ctx.fillStyle = '#e9e3d7';
     ctx.font = '500 27px Inter, Arial, sans-serif';
-    limitCanvasLines(ctx, wrapCanvasText(ctx, meaning, width - 68), 2, width - 68).forEach((line, index) => {
+    wrapCanvasText(ctx, meaning, width - 68).slice(0, 2).forEach((line, index) => {
         ctx.fillText(line, x + 34, y + 188 + index * 34);
     });
 }
 
-function drawNumerologyResultCard(result) {
+async function drawNumerologyResultCard(result) {
     const canvas = document.createElement('canvas');
     canvas.width = 1080;
     canvas.height = 1350;
     const ctx = canvas.getContext('2d');
     const centerX = canvas.width / 2;
-
-    const shareImage = window.MH_SHARE_IMAGE;
     ctx.textAlign = 'center';
-    if (shareImage?.drawBrandBackground) {
-        shareImage.drawBrandBackground(ctx, canvas);
+    ctx.textBaseline = 'alphabetic';
+
+    if (window.MH_SHARE_IMAGE?.drawBrandBackground) {
+        await window.MH_SHARE_IMAGE.drawBrandBackground(ctx, canvas);
     } else {
-        // Keep export usable when the shared helper failed to load.
-        ctx.fillStyle = '#102638';
+        ctx.fillStyle = '#0b1929';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.strokeStyle = 'rgba(208,177,124,0.5)';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(54, 54, canvas.width - 108, canvas.height - 108);
-        ctx.textAlign = 'center';
-        ctx.fillStyle = '#d0b17c';
-        ctx.font = '600 38px Inter, Arial, sans-serif';
-        ctx.fillText('Mystická Hvězda', centerX, 130);
     }
 
-    ctx.fillStyle = 'rgba(208,177,124,0.12)';
+    ctx.fillStyle = 'rgba(11,25,41,0.74)';
     ctx.beginPath();
-    ctx.arc(centerX, 366, 188, 0, Math.PI * 2);
+    ctx.arc(centerX, 366, 168, 0, Math.PI * 2);
     ctx.fill();
-    ctx.strokeStyle = 'rgba(208,177,124,0.68)';
-    ctx.lineWidth = 3;
+    ctx.strokeStyle = 'rgba(189,155,101,0.8)';
+    ctx.lineWidth = 4;
     ctx.beginPath();
-    ctx.arc(centerX, 366, 154, 0, Math.PI * 2);
+    ctx.arc(centerX, 366, 140, 0, Math.PI * 2);
     ctx.stroke();
 
     ctx.fillStyle = '#d0b17c';
-    ctx.font = '700 38px Cinzel, Georgia, serif';
-    ctx.fillText('SYMBOLICKÝ NUMEROLOGICKÝ PŘEHLED', centerX, 264, canvas.width - 108);
+    ctx.font = '700 46px Cinzel, Georgia, serif';
+    ctx.fillText('NUMEROLOGICKÝ OTISK', centerX, 190);
 
     ctx.fillStyle = '#e9e3d7';
     ctx.font = '700 92px Cinzel, Georgia, serif';
@@ -334,30 +227,31 @@ function drawNumerologyResultCard(result) {
 
     ctx.fillStyle = '#d0b17c';
     ctx.font = '700 40px Cinzel, Georgia, serif';
-    ctx.fillText(result.title.toUpperCase(), centerX, 462);
+    ctx.fillText(result.title.toUpperCase(), centerX, 462, 920);
 
-    ctx.fillStyle = '#c0c8ca';
+    ctx.fillStyle = 'rgba(233,227,215,0.76)';
     ctx.font = '500 32px Inter, Arial, sans-serif';
     const subject = result.displayName ? `Pro ${result.displayName}` : 'Tvoje čísla';
-    ctx.fillText(subject, centerX, 522, canvas.width - 108);
+    ctx.fillText(subject, centerX, 548, 820);
 
-    drawNumerologyTile(ctx, result.numbers[0], 116, 595, 398, 238);
-    drawNumerologyTile(ctx, result.numbers[1], 566, 595, 398, 238);
-    drawNumerologyTile(ctx, result.numbers[2], 116, 872, 398, 238);
-    drawNumerologyTile(ctx, result.numbers[3], 566, 872, 398, 238);
+    drawNumerologyTile(ctx, result.numbers[0], 116, 575, 398, 238);
+    drawNumerologyTile(ctx, result.numbers[1], 566, 575, 398, 238);
+    drawNumerologyTile(ctx, result.numbers[2], 116, 848, 398, 238);
+    drawNumerologyTile(ctx, result.numbers[3], 566, 848, 398, 238);
 
+    ctx.textAlign = 'center';
     ctx.fillStyle = '#e9e3d7';
-    ctx.font = '500 35px Inter, Arial, sans-serif';
-    const guidance = `${result.short}. Ber to jako námět k zamyšlení.`;
-    drawCenteredLines(ctx, wrapCanvasText(ctx, guidance, 820), centerX, 1170, 46, 2, 820);
+    ctx.font = '500 33px Inter, Arial, sans-serif';
+    const guidance = `${result.short}. Vezmi si z toho jeden konkrétní krok pro dnešní den.`;
+    drawCenteredLines(ctx, wrapCanvasText(ctx, guidance, 820), centerX, 1130, 42, 2, 820);
 
-    ctx.fillStyle = '#c0c8ca';
+    ctx.fillStyle = 'rgba(255,255,255,0.78)';
     ctx.font = '500 31px Inter, Arial, sans-serif';
     ctx.fillText('mystickahvezda.cz/numerologie.html', centerX, 1244);
 
-    ctx.fillStyle = '#c0c8ca';
-    ctx.font = '600 23px Inter, Arial, sans-serif';
-    ctx.fillText('Témata k zamyšlení, ne popis osobnosti ani předpověď. Bez data narození.', centerX, 1284, canvas.width - 108);
+    ctx.fillStyle = 'rgba(189,155,101,0.9)';
+    ctx.font = '600 27px Inter, Arial, sans-serif';
+    ctx.fillText('Bez data narození. Jen tvůj numerologický podpis.', centerX, 1284);
 
     return canvas;
 }
@@ -365,10 +259,14 @@ function drawNumerologyResultCard(result) {
 async function saveNumerologyResultImage() {
     if (!lastNumerologyShareResult) return;
 
-    const canvas = drawNumerologyResultCard(lastNumerologyShareResult);
+    const canvas = await drawNumerologyResultCard(lastNumerologyShareResult);
     const fileName = `numerologie-zivotni-cesta-${lastNumerologyShareResult.lifePath}.png`;
     const metadata = {
-        source: NUMEROLOGY_RESULT_SOURCE
+        source: NUMEROLOGY_RESULT_SOURCE,
+        life_path: lastNumerologyShareResult.lifePath,
+        destiny: lastNumerologyShareResult.destiny,
+        soul: lastNumerologyShareResult.soul,
+        personality: lastNumerologyShareResult.personality
     };
 
     if (window.MH_SHARE_IMAGE?.shareOrDownload) {
@@ -376,7 +274,7 @@ async function saveNumerologyResultImage() {
             canvas,
             fileName,
             shareTitle: 'Moje numerologie',
-            shareText: `V symbolické numerologii mi vyšla životní cesta ${lastNumerologyShareResult.lifePath}. Spočítej si tu svoji na mystickahvezda.cz`,
+            shareText: `Moje životní cesta je číslo ${lastNumerologyShareResult.lifePath}. Spočítej si tu svoji na mystickahvezda.cz`,
             eventBase: 'numerology_result_image',
             metadata
         });
@@ -395,59 +293,23 @@ async function saveNumerologyResultImage() {
 }
 
 // === FORM HANDLING ===
-function refreshNumerologyBirthDateMaximum() {
-    const birthDateInput = document.getElementById('num-date');
-    if (birthDateInput) birthDateInput.max = getTodayIsoDate();
-}
-
 document.addEventListener('DOMContentLoaded', async () => {
     const form = document.getElementById('numerology-form');
     const useProfileCheckbox = document.getElementById('use-profile-num');
     const saveResultButton = document.getElementById('btn-save-numerology-result');
-    const initialCyclesRequestId = latestNumerologySubmissionId;
-    const initialProfileRequestId = latestNumerologyProfileRequestId;
-    const initialSession = captureNumerologySession();
-
-    refreshNumerologyBirthDateMaximum();
-    if (form) {
-        form.addEventListener('focusin', refreshNumerologyBirthDateMaximum);
-        form.addEventListener('pointerdown', refreshNumerologyBirthDateMaximum, true);
-        form.addEventListener('keydown', refreshNumerologyBirthDateMaximum, true);
-        form.addEventListener('input', (event) => {
-            if (event.target?.id === 'num-name' && (lastNumerologyShareResult || numerologyAbortController)) {
-                clearNumerologyResults({ clearCycles: false });
-            }
-            if (event.target?.id === 'num-date') {
-                clearNumerologyResults();
-                latestNumerologyProfileRequestId += 1;
-                if (useProfileCheckbox?.checked) useProfileCheckbox.checked = false;
-            }
-        });
-    }
-    window.addEventListener('focus', refreshNumerologyBirthDateMaximum);
-    document.addEventListener('visibilitychange', () => {
-        if (!document.hidden) refreshNumerologyBirthDateMaximum();
-    });
 
     // Auto-load Daily Vibrations if logged in
     if (window.Auth && window.Auth.isLoggedIn()) {
         try {
             const profile = await window.Auth.getProfile();
-            if (!hasSameNumerologySession(initialSession)
-                || initialCyclesRequestId !== latestNumerologySubmissionId
-                || initialProfileRequestId !== latestNumerologyProfileRequestId) {
-                invalidateNumerologySessionChange();
-            } else if (profile && profile.birth_date) {
+            if (profile && profile.birth_date) {
                 // Pre-calculate daily vibes without form submission
                 let bDate = profile.birth_date;
                 if (bDate.includes('T')) bDate = bDate.split('T')[0];
 
                 // Import logic and display
                 import('./utils/numerology-logic.js').then(module => {
-                    if (module.calculatePersonalCycles
-                        && initialCyclesRequestId === latestNumerologySubmissionId
-                        && initialProfileRequestId === latestNumerologyProfileRequestId
-                        && hasSameNumerologySession(initialSession)) {
+                    if (module.calculatePersonalCycles) {
                         const cycles = module.calculatePersonalCycles(bDate);
                         displayPersonalCycles(cycles);
                     }
@@ -475,7 +337,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Auto-fill from profile
     if (useProfileCheckbox) {
         useProfileCheckbox.addEventListener('change', async (e) => {
-            const requestId = ++latestNumerologyProfileRequestId;
             if (e.target.checked) {
                 if (!window.Auth || !window.Auth.isLoggedIn()) {
                     window.Auth?.showToast?.('Přihlášení vyžadováno', 'Pro tuto funkci se musíte přihlásit.', 'info');
@@ -483,27 +344,21 @@ document.addEventListener('DOMContentLoaded', async () => {
                     return;
                 }
 
-                clearNumerologyResults();
-                const requestSession = captureNumerologySession();
-                try {
-                    const profile = await window.Auth.getProfile();
-                    if (requestId !== latestNumerologyProfileRequestId || !e.target.checked) return;
-                    if (!hasSameNumerologySession(requestSession)) {
-                        invalidateNumerologySessionChange();
-                        return;
+                const profile = await window.Auth.getProfile();
+                if (profile) {
+                    document.getElementById('num-name').value = profile.first_name || '';
+
+                    if (profile.birth_date) {
+                        let bDate = profile.birth_date;
+                        if (bDate.includes('T')) bDate = bDate.split('T')[0];
+                        document.getElementById('num-date').value = bDate;
                     }
-                    if (profile?.birth_date) {
-                        const birthDate = profile.birth_date.includes('T')
-                            ? profile.birth_date.split('T')[0]
-                            : profile.birth_date;
-                        document.getElementById('num-date').value = birthDate;
+
+                    if (profile.birth_time) {
+                        let bTime = profile.birth_time;
+                        if (bTime.length > 5) bTime = bTime.substring(0, 5);
+                        document.getElementById('num-time').value = bTime;
                     }
-                } catch (error) {
-                    if (requestId === latestNumerologyProfileRequestId && e.target.checked && hasSameNumerologySession(requestSession)) {
-                        e.target.checked = false;
-                        window.Auth?.showToast?.('Datum se nepodařilo načíst', 'Zkus ho zadat ručně.', 'error');
-                    }
-                    console.warn('Numerology profile date could not be loaded:', error);
                 }
             }
         });
@@ -520,29 +375,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 async function handleFormSubmit(e) {
     e.preventDefault();
-    const readingSession = captureNumerologySession();
-    const readingOwnerId = readingSession.userId;
 
     const name = document.getElementById('num-name').value.trim();
     const birthDate = document.getElementById('num-date').value;
+    const birthTime = document.getElementById('num-time').value;
 
     if (!name || !birthDate) {
-        window.Auth?.showToast?.('Chybějící údaje', 'Doplň jméno a datum narození.', 'error');
+        window.Auth?.showToast?.('Chybějící údaje', 'Vyplňte prosím jméno a datum narození.', 'error');
         return;
     }
-
-    if (!isValidBirthDate(birthDate)) {
-        const message = birthDate > getTodayIsoDate()
-            ? 'Datum narození nemůže být v budoucnosti.'
-            : 'Zkontroluj zadané datum narození.';
-        window.Auth?.showToast?.('Neplatné datum', message, 'error');
-        return;
-    }
-
-    const submissionId = ++latestNumerologySubmissionId;
-    const requestAbortController = new AbortController();
-    numerologyAbortController?.abort();
-    numerologyAbortController = requestAbortController;
 
     // Calculate numbers
     const lifePath = calculateLifePath(birthDate);
@@ -554,7 +395,6 @@ async function handleFormSubmit(e) {
     // We import this dynamically or assume it's available via the updated logic file
     import('./utils/numerology-logic.js')
         .then(module => {
-            if (!isCurrentNumerologySubmission(submissionId, readingSession)) return;
             if (module.calculatePersonalCycles) {
                 const cycles = module.calculatePersonalCycles(birthDate);
                 displayPersonalCycles(cycles);
@@ -567,15 +407,15 @@ async function handleFormSubmit(e) {
     window.MH_ANALYTICS?.trackAction?.('numerology_result_viewed', {
         feature: 'numerologie_vyklad',
         source: new URLSearchParams(window.location.search).get('source') || NUMEROLOGY_RESULT_SOURCE,
-        auth_state: window.Auth?.isLoggedIn?.() ? 'logged_in' : 'anonymous'
+        auth_state: window.Auth?.isLoggedIn?.() ? 'logged_in' : 'anonymous',
+        life_path: String(lifePath),
+        destiny: String(destiny),
+        soul: String(soul),
+        personality: String(personality)
     });
 
     // Show AI interpretation (with premium gate)
-    try {
-        await displayInterpretation(name, birthDate, lifePath, destiny, soul, personality, submissionId, readingOwnerId, readingSession, requestAbortController.signal);
-    } finally {
-        if (numerologyAbortController === requestAbortController) numerologyAbortController = null;
-    }
+    await displayInterpretation(name, birthDate, birthTime, lifePath, destiny, soul, personality);
 }
 
 function displayPersonalCycles(cycles) {
@@ -585,7 +425,6 @@ function displayPersonalCycles(cycles) {
     if (!section) return;
 
     const { personalYear, personalMonth, personalDay } = cycles;
-    section.hidden = false;
 
     // Update Values
     document.getElementById('val-pd').textContent = personalDay;
@@ -595,7 +434,7 @@ function displayPersonalCycles(cycles) {
     // Update Date Display
     const dateDisplay = document.getElementById('current-date-display');
     if (dateDisplay) {
-        dateDisplay.textContent = new Date().toLocaleDateString('cs-CZ', { timeZone: 'Europe/Prague' });
+        dateDisplay.textContent = new Date().toLocaleDateString('cs-CZ');
     }
 
     // Show Section
@@ -621,9 +460,9 @@ function displayResults(name, lifePath, destiny, soul, personality) {
     // Scroll to results (or daily cycles if visible)
     const dailySection = document.getElementById('daily-cycles');
     if (dailySection && !dailySection.hidden) {
-        dailySection.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+        dailySection.scrollIntoView({ behavior: 'smooth', block: 'start' });
     } else {
-        resultsSection.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'nearest' });
+        resultsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
     // Populate cards
@@ -651,9 +490,9 @@ function displayResults(name, lifePath, destiny, soul, personality) {
     });
 }
 
-async function displayInterpretation(name, birthDate, lifePath, destiny, soul, personality, submissionId, readingOwnerId, readingSession, abortSignal) {
+async function displayInterpretation(name, birthDate, birthTime, lifePath, destiny, soul, personality) {
     const interpretationContainer = document.getElementById('num-interpretation');
-    if (!interpretationContainer || !isCurrentNumerologySubmission(submissionId, readingSession)) return;
+    if (!interpretationContainer) return;
 
     // ==============================================
     // PREMIUM GATE: AI Interpretation
@@ -664,7 +503,7 @@ async function displayInterpretation(name, birthDate, lifePath, destiny, soul, p
         // FREE: Show numbers only + paywall for AI interpretation
         interpretationContainer.innerHTML = `
             <div class="interpretation-section">
-                <h3>Tvoje čísla</h3>
+                <h3>✨ Vaše Čísla</h3>
                 <div class="numerology-summary-grid">
                     <div class="number-card number-card--summary number-card--summary-life">
                       <div class="number-card__summary-label">Životní Cesta</div>
@@ -686,22 +525,21 @@ async function displayInterpretation(name, birthDate, lifePath, destiny, soul, p
 
                 <div class="numerology-premium-shell">
                     <div class="premium-locked numerology-premium-preview">
-                        <h4>AI výklad čtyř čísel</h4>
-                        <p>Základní čísla už máš. Rozšířený AI výklad propojí životní cestu, osud, duši a osobnost do symbolického čtení s otázkami k zamyšlení a malým praktickým podnětem.</p>
-                        <p class="numerology-premium-preview__muted">Nejde o výpočet osobního cyklu ani doporučení načasování. Výklad nezná tvoji aktuální situaci; výsledek proto ber jako obecný námět, ne jako osobní předpověď.</p>
+                        <h4>Plný numerologický rozbor</h4>
+                        <p>Základní čísla už máte. Plný rozbor propojí životní cestu, osud, duši a osobnost do jednoho doporučení pro aktuální období.</p>
+                        <p class="numerology-premium-preview__muted">Pro životní cestu ${lifePath} by se odemkl konkrétní další krok, osobní cyklus a doporučení pro načasování.</p>
                         <p class="numerology-premium-preview__muted">Základní výpočet proběhl v prohlížeči. Plný AI výklad se odemyká až po pokračování.</p>
                     </div>
 
                     <div class="premium-lock-overlay">
-                        <div class="lock-icon" aria-hidden="true"><svg class="mh-symbol premium-lock-icon" viewBox="0 0 48 48" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false"><use href="/img/icons/mh-symbols.svg#lock"></use></svg></div>
-                        <p class="lock-text">AI výklad čtyř čísel je funkcí členství</p>
-                        <button class="btn btn--gold unlock-btn numerology-upgrade-btn">Odemknout AI výklad</button>
+                        <div class="lock-icon">🔒</div>
+                        <p class="lock-text">Detailní rozbor je Premium funkce</p>
+                        <button class="btn btn--gold unlock-btn numerology-upgrade-btn">Odemknout plný rozbor</button>
                     </div>
                 </div>
                 ${buildPersonalMapOfferMarkup()}
             </div>
         `;
-        setNumerologyStatus('Základní čísla jsou vypočtená. Výsledek je zobrazen pod formulářem; rozšířený AI výklad je součástí členství.');
 
         wirePersonalMapOffer(interpretationContainer);
 
@@ -723,11 +561,10 @@ async function displayInterpretation(name, birthDate, lifePath, destiny, soul, p
     }
 
     // PREMIUM: Show full AI interpretation
-    setNumerologyStatus('Připravuji symbolický výklad čtyř čísel.');
     interpretationContainer.innerHTML = `
         <div class="interpretation-loading">
             <div class="spinner"></div>
-            <p class="interpretation-loading__text">Připravuji výklad čtyř čísel...</p>
+            <p class="interpretation-loading__text">Generuji hloubkovou interpretaci...</p>
         </div>
     `;
 
@@ -735,12 +572,9 @@ async function displayInterpretation(name, birthDate, lifePath, destiny, soul, p
         // Call AI API for interpretation
         const apiUrl = window.API_CONFIG?.BASE_URL || '/api';
         const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
-        if (!isCurrentNumerologySubmission(submissionId, readingSession)) return;
-
         const response = await fetch(`${apiUrl}/numerology`, {
             method: 'POST',
             credentials: 'include',
-            signal: abortSignal,
             headers: {
                 'Content-Type': 'application/json',
                 ...(csrfToken && { 'X-CSRF-Token': csrfToken })
@@ -748,6 +582,7 @@ async function displayInterpretation(name, birthDate, lifePath, destiny, soul, p
             body: JSON.stringify({
                 name,
                 birthDate,
+                birthTime,
                 lifePath,
                 destiny,
                 soul,
@@ -755,76 +590,46 @@ async function displayInterpretation(name, birthDate, lifePath, destiny, soul, p
             })
         });
 
-        if (!isCurrentNumerologySubmission(submissionId, readingSession)) return;
         if (!response.ok) {
             throw new Error(`API error: ${response.status}`);
         }
 
         const data = await response.json();
-        if (!isCurrentNumerologySubmission(submissionId, readingSession)) return;
 
         // Display AI interpretation
         interpretationContainer.innerHTML = `
             <div class="interpretation-section">
+                ${(data.cached || data.fromCache) ? '<span class="badge badge--cache">📦 Z cache (deterministic result)</span>' : ''}
                 <div class="interpretation-content">
-                    ${formatReadingHtml(data.response)}
+                    ${data.response.replace(/```html/g, '').replace(/```/g, '')}
                 </div>
                 ${buildPersonalMapOfferMarkup()}
             </div>
         `;
-        setNumerologyStatus(data.fallback
-            ? getFallbackMessage(document.documentElement.lang)
-            : 'Výklad je hotový. Je zobrazený pod vypočtenými čísly.');
         wirePersonalMapOffer(interpretationContainer);
-        showFallbackNotice(interpretationContainer, data.fallback);
 
-        // Save the generated numerology result to the member's reading history.
-        if (isCurrentNumerologySubmission(submissionId, readingSession)
-            && readingSession.isLoggedIn
-            && window.Auth?.saveReading) {
-            let saveResult = null;
-            try {
-                saveResult = await window.Auth.saveReading('numerology', {
-                    name,
-                    birthDate,
-                    lifePath,
-                    destiny,
-                    soul,
-                    personality,
-                    response: data.response,
-                    fallback: !!data.fallback
-                }, readingOwnerId);
-            } catch (saveError) {
-                if (!isCurrentNumerologySubmission(submissionId, readingSession)) return;
-                console.warn('Numerology reading could not be saved:', saveError);
-            }
-            if (!isCurrentNumerologySubmission(submissionId, readingSession)) return;
+        // Save reading to history (with birth time)
+        if (window.Auth && window.Auth.saveReading) {
+            const saveResult = await window.Auth.saveReading('numerology', {
+                name,
+                birthDate,
+                birthTime,
+                lifePath,
+                destiny,
+                soul,
+                personality,
+                response: data.response
+            });
             if (window.MH_DEBUG) console.debug('Reading saved:', saveResult);
-            if (!saveResult?.id) {
-                const message = 'Výklad je hotový, ale nepodařilo se ho uložit do profilu. Zůstává zobrazený tady.';
-                const notice = document.createElement('p');
-                notice.dataset.numerologySaveError = 'true';
-                notice.className = 'result-context-notice';
-                notice.textContent = message;
-                interpretationContainer.appendChild(notice);
-                setNumerologyStatus(message);
-            }
         }
     } catch (error) {
-        if (error?.name === 'AbortError' || !isCurrentNumerologySubmission(submissionId, readingSession)) return;
         console.error('AI interpretation error:', error);
         interpretationContainer.innerHTML = `
             <div class="error-message error-message--inline">
-                <p class="error-message__text" role="alert">Výklad se nepodařilo načíst. Vypočtená čísla zůstávají dostupná; zkus požadavek znovu.</p>
+                <p class="error-message__text">❌ Nepodařilo se načíst interpretaci. Zkuste to prosím znovu.</p>
             </div>
         `;
-        setNumerologyStatus('Výklad se nepodařilo načíst. Vypočtená čísla zůstávají dostupná; zkus požadavek znovu.');
     }
-}
-
-function setNumerologyStatus(message) {
-    const status = document.getElementById('num-status');
-    if (status) status.textContent = String(message || '');
 }
 
 // Global listener for auth refresh

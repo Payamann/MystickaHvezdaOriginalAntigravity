@@ -16,52 +16,7 @@ body.atlas-content-detail .card { margin-block:16px; text-align:left; }
 body.atlas-content-detail .card :is(ul,ol) { padding-left:1.3em; }
 body.atlas-content-detail .card :is(h2,h3) { font-size:clamp(24px,3vw,32px); font-weight:400; margin-bottom:16px; }
 body.atlas-content-detail .card :is(p,ul,ol) { max-width:68ch; }
-body.atlas-content-detail .dream-interpretations {
-  margin-block:16px;
-  border:1px solid #bd9b6548;
-  border-radius:6px;
-  background:var(--atlas-surface);
-}
-body.atlas-content-detail .dream-interpretations > summary {
-  min-height:48px;
-  padding:14px clamp(18px,3vw,28px);
-  color:var(--atlas-ivory);
-  cursor:pointer;
-  font-weight:600;
-}
-body.atlas-content-detail .dream-interpretations > summary::marker { color:var(--atlas-gold); }
-body.atlas-content-detail .dream-interpretations__content { padding:0 clamp(18px,3vw,28px) 18px; }
-body.atlas-content-detail .dream-interpretations__content section { padding-block:16px; }
-body.atlas-content-detail .dream-interpretations__content section + section {
-  border-top:1px solid #bd9b6538;
-}
-body.atlas-content-detail .dream-interpretations__content h2 {
-  margin:0 0 8px;
-  color:var(--atlas-ivory);
-  font-size:1.1rem;
-  font-weight:500;
-}
-body.atlas-content-detail .dream-interpretations__content p {
-  margin:0;
-  max-width:68ch;
-  color:var(--atlas-muted);
-  line-height:1.8;
-}
 body.atlas-content-detail .section__title { font-weight:400; }
-body.atlas-content-detail .angel-detail-title-icon {
-  width:1.15em;
-  height:1.15em;
-  margin-inline-end:.12em;
-  vertical-align:-.16em;
-  color:var(--atlas-gold);
-}
-body.atlas-content-detail .angel-detail-section-icon {
-  width:.9em;
-  height:.9em;
-  margin-inline-end:.34em;
-  vertical-align:-.08em;
-  color:var(--atlas-gold);
-}
 body.atlas-content-page .text-gradient { color:#e9e3d7; background:none; -webkit-text-fill-color:currentColor; }
 body.atlas-content-page main > .section:first-child { padding-top:128px; }
 body.atlas-content-page :is(.dream-of-day,.dream-card,.dictionary-card) { background:#102638; border-color:#b3955e55; box-shadow:none; }
@@ -79,6 +34,31 @@ body.atlas-content-page :is(.hero__title, .section__title, .dream-hero h1, .dict
 body.atlas-content-page :is(.hero__subtitle, .section__text, .dream-hero p, .dictionary-header p) {
   color: var(--atlas-muted);
   line-height: 1.8;
+}
+body.atlas-content-page .dictionary-badge {
+  padding: .4rem .75rem;
+  color: var(--atlas-gold);
+  background: var(--atlas-navy);
+  border: 1px solid #bd9b6570;
+  border-radius: 3px;
+  font-size: .75rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+body.atlas-content-detail .dictionary-content {
+  background: var(--atlas-surface);
+  border: 1px solid #bd9b6548;
+  border-radius: 6px;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+body.atlas-content-detail .dictionary-content .atlas-dictionary-callout {
+  padding: clamp(1rem, 3vw, 1.5rem);
+  background: var(--atlas-navy);
+  border: 1px solid #bd9b6555;
+  border-left: 3px solid var(--atlas-gold);
+  border-radius: 5px;
+  box-shadow: none;
 }
 body.atlas-content-page :is(.card, .term-card, .name-card, .result, .detail-item, .faq-item, .search-container, .name-search) {
   background: var(--atlas-surface);

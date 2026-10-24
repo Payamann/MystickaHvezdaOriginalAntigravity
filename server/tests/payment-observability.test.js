@@ -95,6 +95,9 @@ describe('Checkout observability', () => {
             status: 'active',
             pauseUntil: null,
             canResume: false,
+            canReactivate: false,
+            canManageBilling: true,
+            hasStripeSubscription: true,
             needsPaymentUpdate: false
         });
     });
@@ -175,6 +178,35 @@ describe('Checkout observability', () => {
         expect(events[0].metadata.path).toBeUndefined();
     });
 
+    test('retired paid plan checkout records the public-availability rejection', async () => {
+        const csrfToken = await getCsrfToken();
+        const userId = `checkout-retired-plan-${Date.now()}`;
+        const token = makeToken(userId);
+
+        const res = await request(app)
+            .post('/api/payment/create-checkout-session')
+            .set('x-csrf-token', csrfToken)
+            .set('Authorization', `Bearer ${token}`)
+            .send({
+                planId: 'osviceni-rocne',
+                source: 'legacy_pricing_link',
+                feature: 'premium_membership'
+            });
+
+        expect(res.status).toBe(400);
+        expect(res.body.error).toMatch(/plán už není dostupný/i);
+
+        const events = await getEvents(userId, 'checkout_validation_failed');
+        expect(events).toHaveLength(1);
+        expect(events[0]).toMatchObject({
+            source: 'legacy_pricing_link',
+            feature: 'premium_membership',
+            plan_id: 'osviceni-rocne',
+            plan_type: 'exclusive_monthly'
+        });
+        expect(events[0].metadata).toMatchObject({ reason: 'plan_not_publicly_available' });
+    });
+
     test('duplicate subscription checkout block returns 409 with null portalUrl fallback and logs blocked reason', async () => {
         const csrfToken = await getCsrfToken();
         const userId = `checkout-duplicate-blocked-${Date.now()}`;
@@ -229,7 +261,7 @@ describe('Checkout observability', () => {
         });
     });
 
-    test('duplicate subscription checkout block returns portalUrl when billing portal session succeeds', async () => {
+    test('legacy plan request for an active member still returns the billing portal', async () => {
         const csrfToken = await getCsrfToken();
         const userId = `checkout-duplicate-portal-${Date.now()}`;
         const token = makeToken(userId);
@@ -262,7 +294,7 @@ describe('Checkout observability', () => {
                 .set('x-csrf-token', csrfToken)
                 .set('Authorization', `Bearer ${token}`)
                 .send({
-                    planId: 'pruvodce',
+                    planId: 'pruvodce-rocne',
                     source: 'pricing_upgrade_cta',
                     feature: 'premium_membership'
                 });

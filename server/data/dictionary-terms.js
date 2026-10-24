@@ -1,18 +1,16 @@
-import { symbolMarkup } from '../../scripts/lib/ui-symbols.mjs';
-
 const DICTIONARY_TERMS = [
     // ── ASTROLOGIE ──────────────────────────────────────────────────────────
     {
         slug: 'ascendent',
         title: 'Ascendent',
         category: 'Astrologie',
-        short_description: 'Bod horoskopu vypočítaný z času a místa narození. Astrologie jej spojuje s vystupováním navenek, neurčuje ale, jak tě druzí skutečně vnímají.',
+        short_description: 'Znamení vycházející na východním obzoru v okamžiku vašeho narození. Určuje vaši masku pro vnější svět – jak vás vidí ostatní na první pohled.',
         content_html: `
-            <p><strong>Ascendent</strong> je bod horoskopu, který v astrologickém výpočtu označuje východní obzor v čase a místě narození. Pro jeho určení je důležitý co nejpřesnější údaj o čase i místě; pokud narození připadá blízko hranice znamení, může nejistota v čase změnit výsledek.</p>
-            <p>V astrologických výkladech se Ascendent často spojuje s prvním dojmem nebo způsobem, jak člověk vstupuje do nových situací. Jde o symbolickou interpretaci, ne ověřený popis osobnosti.</p>
+            <p>Ascendent (latinsky <em>Ascendens</em> – „vystupující") je jeden z nejdůležitějších bodů celé vaší Natální mapy. Zatímco Sluneční znamení říká, kdo jste ve svém jádru, Ascendent odráží to, jak se <strong>prezentujete světu kolem sebe</strong>. Je to vaše první vrstva – osobnost, kterou nasazujete při setkání s cizím člověkem, u pracovního pohovoru nebo na první schůzce.</p>
+            <p>Ascendent je extrémně citlivý na přesný čas a místo narození. Koteč zodiaku se otočí za 24 hodin, takže každé 2 hodiny se na obzoru vynoří nové znamení. Rozdíl pouhých 4 minut v čase narození může z Panny udělat Vahu.</p>
             <h2>Ascendent vs. Sluneční znamení</h2>
-            <p>Sluneční znamení a Ascendent jsou v astrologii dvě různé části natální mapy. Například některé výklady spojují Slunce ve Štíru s intenzitou a Ascendent ve Lvu s výraznějším vystupováním. Takové asociace ale nezaručují, jak konkrétního člověka uvidí okolí.</p>
-            <p>Pokud čteš horoskop, který vychází jen ze Slunce, může být Ascendent dalším symbolem k prozkoumání. Ani jeden z těchto prvků však nevystihuje celou osobnost.</p>
+            <p>Pokud je vaše Sluneční znamení Štír, ale Ascendent Lev, lidé vás budou považovat za sebejistého, teatrálního a veselého člověka (Lví maska). Teprve při bližším poznání odhalí hloubku, intenzitu a tajnůstkářství Štíra, který se skrývá uvnitř.</p>
+            <p>Právě proto mnozí lidé říkají, že jejich horoskop jim „nesedí" – čtou Sluneční popis, ale žijí Ascendentovou osobností. Ascendent je obálka knihy; Slunce je samotný příběh uvnitř.</p>
         `,
         related_slugs: ['nativni-karta', 'slunecni-znameni', 'aspekty'],
         linked_blog_slug: 'tajemstvi-12-astrologickych-domu'
@@ -21,17 +19,16 @@ const DICTIONARY_TERMS = [
         slug: 'retrogradi-planeta',
         title: 'Retrográdní planeta',
         category: 'Astrologie',
-        short_description: 'Zdánlivý zpětný pohyb planety pozorovaný ze Země. Astrologie mu přiřazuje symbolické významy; nejde o příčinu jistých komplikací.',
+        short_description: 'Zdánlivý pohyb planety pozpátku (od Země) po obloze. Každý retrográd spouští zpomalení a přehodnocení dané sféry života.',
         content_html: `
-            <p>Retrográdní pohyb je zdánlivé obrácení směru planety při pozorování ze Země. Planeta ve skutečnosti nezastaví ani se na své dráze neotočí; tento jev souvisí s relativním pohybem Země a planety kolem Slunce.</p>
-            <p>Astrologie k retrográdním obdobím přiřazuje různé symbolické výklady. Není doloženo, že by samotný retrográd způsoboval potíže v komunikaci, vztazích, technice nebo rozhodování. Důležitou smlouvu či cestu proto posuzuj podle skutečných okolností, ne pouze podle kalendáře planet.</p>
-            <h2>Časté astrologické asociace</h2>
+            <p>Z pohledu Země se planety čas od času zdánlivě zastaví a začnou se pohybovat opačným směrem. Toto je optický klam způsobený různými rychlostmi oběhu planet kolem Slunce, ale <strong>v astrologii má retrográd velmi reálné dopady</strong> na naši psychiku a události.</p>
+            <p>Každá planeta vládne konkrétní sférou života. Když je retrográdní, tato sféra přechází z aktivity do reflexe. Vnitřní procesy nabývají na síle, vnější akce se komplikují.</p>
+            <h2>Nejzásadnější retrogrády</h2>
             <ul>
-                <li><strong>Merkur:</strong> V moderních výkladech témata komunikace, informací a plánování.</li>
-                <li><strong>Venuše:</strong> Často vztahy, hodnoty a to, čemu přikládáš cenu.</li>
-                <li><strong>Mars:</strong> Někdy iniciativa, energie a způsob jednání.</li>
+                <li><strong>Merkur Rx (3x ročně, 3 týdny):</strong> Komunikace, technologie, smlouvy, cestování. Klasický „nepodepisujte nic, nezačínejte nové projekty".</li>
+                <li><strong>Venuše Rx (každých 18 měsíců):</strong> Vztahy, hodnoty, finance. Staří partneři se vracejí, přehodnocujeme, co pro nás láska znamená.</li>
+                <li><strong>Mars Rx (každé 2 roky):</strong> Energie, vůle, akce. Tlačit na pilu je kontraproduktivní – ideální na strategické plánování.</li>
             </ul>
-            <p>Tyto asociace jsou tradicí, ne pokynem rušit plány ani předpovědí, že se někdo z minulosti vrátí.</p>
         `,
         related_slugs: ['merkur', 'tranizty'],
         linked_blog_slug: null
@@ -40,18 +37,17 @@ const DICTIONARY_TERMS = [
         slug: 'aspekty',
         title: 'Aspekty',
         category: 'Astrologie',
-        short_description: 'Úhlové vztahy mezi planetami v horoskopu. Astrologické tradice je vykládají různými způsoby; samy o sobě nedokazují osobnostní vlastnosti ani události.',
+        short_description: 'Úhly, které svírají planety mezi sebou v Natální mapě. Harmonické aspekty (triny, sekstily) přinášejí dar; napjaté (opozice, kvadratury) přinášejí výzvy.',
         content_html: `
-            <p>Aspekty jsou úhlové vzdálenosti mezi planetami v horoskopu. Astrologie je tradičně rozděluje do skupin a přiřazuje jim symbolické významy. Jde o jeden ze způsobů čtení mapy, nikoli o prokázaný mechanismus, který určuje povahu nebo životní události.</p>
+            <p>Aspekty jsou geometrické úhly, které spolu svírají planety na horoskopu. Dva Štíři se mohou setkávat úplně jinak, pokud má jeden Slunce v trigonu k Jupiteru (štěstí a expanze) a druhý v kvadratuře k Saturnu (překážky a zkoušky). <strong>Aspekty jsou „dialog" mezi energiemi planet</strong>.</p>
             <h2>Hlavní aspekty</h2>
             <ul>
-                <li><strong>Konjunkce (přibližně 0°):</strong> V řadě systémů se chápe jako propojení témat planet.</li>
-                <li><strong>Trigon (přibližně 120°):</strong> Často se vykládá jako plynulejší soulad.</li>
-                <li><strong>Opozice (přibližně 180°):</strong> Bývá spojována s polaritou nebo hledáním rovnováhy.</li>
-                <li><strong>Kvadratura (přibližně 90°):</strong> Některé směry ji čtou jako napětí či otázku k řešení.</li>
-                <li><strong>Sextil (přibližně 60°):</strong> V moderní astrologii se často popisuje jako možnost spolupráce mezi tématy.</li>
+                <li><strong>Konjunkce (0°):</strong> Dvě energie splývají. Výsledek záleží na planetách – Slunce + Jupiter = velkorysost, Slunce + Saturn = závažnost a disciplína.</li>
+                <li><strong>Trigon (120°):</strong> Harmonický tok. Schopnosti přicházejí přirozeně, bez velké námahy.</li>
+                <li><strong>Opozice (180°):</strong> Napětí, hledání rovnováhy mezi dvěma protichůdnými silami.</li>
+                <li><strong>Kvadratura (90°):</strong> Třecí plocha, motivace přes frustraci. Nejsilnější motor osobního růstu.</li>
+                <li><strong>Sextil (60°):</strong> Lehce harmonický, přináší příležitosti – ale je třeba z nich záměrně těžit.</li>
             </ul>
-            <p>Názvy aspektů označují geometrii; jejich psychologický význam je součástí astrologického výkladu a může se lišit podle školy.</p>
         `,
         related_slugs: ['nativni-karta', 'tranizty'],
         linked_blog_slug: 'tajemstvi-12-astrologickych-domu'
@@ -60,17 +56,17 @@ const DICTIONARY_TERMS = [
         slug: 'nativni-karta',
         title: 'Natální karta (Horoskop)',
         category: 'Astrologie',
-        short_description: 'Astrologický diagram polohy nebeských těles pro čas a místo narození. Astrologie jej vykládá symbolicky; není vědecky ověřeným popisem osobnosti ani osudu.',
+        short_description: 'Mapa oblohy zachycená v okamžiku vašeho narození. Kompletní energetický otisk vaší duše, ukazující potenciály, výzvy i dary, se kterými jste přišli na svět.',
         content_html: `
-            <p>Natální karta (nebo natální horoskop) je astrologický diagram polohy Slunce, Měsíce, planet a dalších bodů pro datum, čas a místo narození. Astrologové jej interpretují pomocí znamení, domů a vzájemných aspektů. Přesnost času narození může ovlivnit výpočet některých částí mapy.</p>
-            <p>Jde o rozsáhlejší symbolický systém než horoskop založený pouze na slunečním znamení. Jeho výklady mohou nabídnout témata k zamyšlení, ale nejde o vědecky ověřený test osobnosti ani spolehlivou předpověď budoucnosti.</p>
-            <h2>Jaká témata v ní astrologie sleduje?</h2>
+            <p>Natální karta (nebo natální horoskop) je kruhový diagram zachycující přesné rozmístění Slunce, Měsíce a všech planet Sluneční soustavy ve chvíli, kdy jste se narodili. Každá planeta visí v určitém znamení (energie) a v konkrétním domě (sféra života) – a tyto kombinace spolu tvoří neopakovatelný kosmický otisk.</p>
+            <p>Jde o nejpodrobnější astrlogický nástroj, jaký existuje. Zatímco populární „horoskop podle znamení" říká jen část pravdy (Sluneční znamení), natální karta pracuje s desítkami různých bodů a vztahů mezi nimi.</p>
+            <h2>Co natální karta odhaluje?</h2>
             <ul>
-                <li><strong>Identita a odpovědnost</strong> (například Slunce a Saturn)</li>
-                <li><strong>Prožívání a vztahy</strong> (v astrologické symbolice například Měsíc, Venuše a 7. dům)</li>
-                <li><strong>Práce a veřejná role</strong> (například 10. dům a střed nebe)</li>
-                <li><strong>Návyky a osobní směr</strong> (Dračí uzly; jejich karmický výklad je otázkou duchovní víry, ne ověřený údaj o minulosti)</li>
-                <li><strong>Tvořivost a růst</strong> (v některých výkladech Jupiter a 5. dům)</li>
+                <li><strong>Životní poslání a výzvy</strong> (poloha Slunce a Saturnu)</li>
+                <li><strong>Emoční a vztahový vzorec</strong> (Měsíc, Venuše, 7. dům)</li>
+                <li><strong>Kariéra a veřejný obraz</strong> (10. dům, MC)</li>
+                <li><strong>Karmická břemena z minulých životů</strong> (Dračí uzly, Chiron)</li>
+                <li><strong>Talenty a skryté dary</strong> (Jupiter, 5. dům)</li>
             </ul>
         `,
         related_slugs: ['ascendent', 'aspekty'],
@@ -80,11 +76,11 @@ const DICTIONARY_TERMS = [
         slug: 'saturnosky-navrat',
         title: 'Saturnský návrat',
         category: 'Astrologie',
-        short_description: 'Astrologický název pro období, kdy se Saturn vrací přibližně na svou polohu v natální mapě, zhruba po 29,5 letech. Jeho symbolický význam nepředpovídá konkrétní události.',
+        short_description: 'Okamžik, kdy Saturn ve svém 29letém cyklu dosáhne stejné pozice jako při vašem narození. Bývá nemilosrdnou zkouškou dospělosti.',
         content_html: `
-            <p>Saturn oběhne Slunce přibližně za 29,5 roku. V astrologii se Saturnský návrat označuje období, kdy se Saturn vrací k poloze, kterou měl v natální mapě při tvém narození. Další návraty přicházejí přibližně v podobném odstupu; přesné načasování závisí na použitém výpočtu.</p>
-            <p>Astrologická tradice tento cyklus často používá jako symbol pro bilancování, odpovědnost a změny priorit. Je to interpretační rámec, ne předpověď: nezaručuje krizi, rozchod, svatbu ani jinou konkrétní událost.</p>
-            <p>Pokud je pro tebe tento motiv užitečný, můžeš ho využít jako podnět k otázkám: Které závazky si chceš ponechat? Co už ti neslouží? Odpovědi i rozhodnutí zůstávají na tobě.</p>
+            <p>Saturn obíhá Slunci přibližně 29,5 roku. Saturnský návrat nastane, když se vrátí na přesné místo, kde stál při vašem zrození – zpravidla okolo 28.–30. roku věku. A podruhé kolem 57.–60. roku.</p>
+            <p>Lidé v astrologické komunitě říkají, že Saturnský návrat je <strong>"kosmická inventura"</strong>: co jste si postavili v životě, to se prověří. Co stojí na pevných základech, přežije a posílí. Co bylo stavěno ze strachu, ze socizálního tlaku nebo ze sebeklamání, se rozpadne.</p>
+            <p>Typická témata: krize identity, změna kariéry, rozchod nebo sňatek, ztráta blízkého, stěhování. Saturnský návrat nebývá příjemný, ale je extrémně transformativní – a zpravidla vede k autentičtějšímu životu.</p>
         `,
         related_slugs: ['aspekty', 'nativni-karta'],
         linked_blog_slug: null
@@ -95,12 +91,12 @@ const DICTIONARY_TERMS = [
         slug: 'velka-arkana',
         title: 'Velká Arkána',
         category: 'Tarot',
-        short_description: '22 karet, které v běžném tarotovém balíčku tvoří Velkou Arkánu. V mnoha výkladech se spojují s širšími životními tématy; jejich význam závisí na systému a kontextu.',
+        short_description: '22 hlavních karet tarotového balíčku zobrazující velké životní archetypy – od naivního Blázna přes Smrt až po osvícení Světa.',
         content_html: `
-            <p>Běžný tarotový balíček se skládá ze 78 karet: Velkou Arkánu tvoří 22 karet a Malou Arkánu 56. Velká Arkána bývá v mnoha výkladových systémech spojována s výraznějšími životními tématy, ale její význam není ve všech tradicích stejný.</p>
-            <p>Někteří autoři vykládají tarot pomocí archetypů a propojují jej s myšlenkami C. G. Junga. Jde o jeden z interpretačních přístupů, ne o vědecky potvrzený popis společné psychiky všech lidí.</p>
+            <p>Standardní tarotový balík se skládá ze 78 karet rozdělených na Velkou Arkánu (22 karet) a Malou Arkánu (56 karet). <strong>Velká Arkána je srdcem celého systému</strong>. Každá z 22 karet reprezentuje jeden z archetypů kolektivního nevědomí lidstva.</p>
+            <p>Archetypem rozumíme vzorce psychiky, které jsou společné všem lidem bez ohledu na kulturu a dobu. C. G. Jung tyto vzorce popsal jako usazeniny v hlubokém nevědomí – a tarotové karty jsou jejich vizuálním slovníkem.</p>
             <h2>Cesta Bláznova</h2>
-            <p>„Cesta Bláznova“ je oblíbený moderní způsob, jak spojit pořadí karet Velké Arkány do symbolického příběhu. Čtenář v něm může sledovat motivy začátku, zkušeností a završení; nejde o závaznou strukturu všech tarotových tradic ani předpis, jak má probíhat lidský život.</p>
+            <p>22 karet Velké Arkány sleduje „Cestu Bláznova" – putování duše od nevědomé naivity (Blázen 0) přes setkání se silami světa (Moc, Spravedlnost, Smrt) až po absolutní integraci a osvícení (Svět XXI). Je to mytologická cestovní mapa lidského vývoje.</p>
         `,
         related_slugs: ['mala-arkana', 'tarot-blazen', 'spreads'],
         linked_blog_slug: 'lekce-padajici-veze-tarot'
@@ -109,16 +105,16 @@ const DICTIONARY_TERMS = [
         slug: 'mala-arkana',
         title: 'Malá Arkána',
         category: 'Tarot',
-        short_description: '56 karet ve čtyřech barvách: Hůlky, Meče, Číše a Pentakly. V mnoha tarotových systémech se jejich symboly používají k zamyšlení nad každodenními tématy.',
+        short_description: '56 karet rozdělených do 4 suit (Hůlky, Meče, Číše, Pentakly). Odráží každodenní situace a konkrétní životní oblasti.',
         content_html: `
-            <p>Malá Arkána má čtyři barvy, každou se 14 kartami: eso, karty 2–10 a čtyři dvorní karty (Páže, Rytíř, Královna a Král). V řadě současných tarotových systémů se barvy propojují se čtyřmi živly a různými oblastmi života; podrobnosti se mohou lišit podle balíčku a tradice.</p>
+            <p>Malá Arkána se dělí na čtyři suity, z nichž každá obsahuje 14 karet (esa, číslované 2–10, a čtyři dvorní karty: Kluk, Rytíř, Královna, Král). Každá suita odpovídá jednomu ze čtyř elementů a jedné oblasti lidského prožívání.</p>
             <ul>
-                <li><strong>Hůlky (často Oheň):</strong> V některých výkladech inspirace, tvořivost a iniciativa.</li>
-                <li><strong>Meče (často Vzduch):</strong> Myšlení, komunikace a rozhodování.</li>
-                <li><strong>Číše (často Voda):</strong> Emoce, vztahy a představivost.</li>
-                <li><strong>Pentakly (často Země):</strong> Zdroje, práce a praktické záležitosti.</li>
+                <li><strong>Hůlky (Oheň):</strong> Vůle, kreativita, podnikání, vášeň, energie, inspirace.</li>
+                <li><strong>Meče (Vzduch):</strong> Mysl, komunikace, konflikty, rozhodnutí, pravda.</li>
+                <li><strong>Číše (Voda):</strong> Emoce, vztahy, intuice, sny, spiritualita.</li>
+                <li><strong>Pentakly (Země):</strong> Hmota, peníze, práce, zdraví, stabilita.</li>
             </ul>
-            <p>Tyto asociace mohou posloužit jako slovník symbolů při sebereflexi. Samotná karta ale nepotvrzuje, že se konkrétní hádka, pracovní nabídka nebo vztahová událost skutečně stane.</p>
+            <p>Zatímco Velká Arkána ukazuje velké životní arény a duchovní lekce, Malá Arkána se zaměřuje na konkrétní situace každodenního života – hádku s kolegou (Meče), pracovní nabídku (Pentakly) nebo začátek vztahu (Číše).</p>
         `,
         related_slugs: ['velka-arkana'],
         linked_blog_slug: null
@@ -127,11 +123,12 @@ const DICTIONARY_TERMS = [
         slug: 'tarot-blazen',
         title: 'Blázen (Tarot)',
         category: 'Tarot',
-        short_description: 'Nultá karta Velké Arkány. V mnoha současných výkladech se spojuje s novým začátkem, otevřeností a nejistotou; sama o sobě nepředpovídá výsledek.',
+        short_description: 'Nultá karta Velké Arkány. Symbol neohroženého začátku, čisté naivity a odevzdání se vesmírné cestě bez záruky výsledku.',
         content_html: `
-            <p>Blázen je v běžném tarotovém balíčku označen číslem 0. Jeho obraz se v různých balíčcích liší; často se vykládá jako symbol otevřenosti, začátku a vykročení do neznáma.</p>
-            <p>V konkrétním výkladu může karta otevřít otázky kolem nové zkušenosti nebo nejistoty. Neznamená ale, že se nový projekt či vztah určitě objeví nebo dobře dopadne. Význam závisí na položené otázce, okolních kartách a použité tradici.</p>
-            <p><strong>Obrácený Blázen</strong> se v některých systémech spojuje s neuvážeností nebo naopak váháním. Ber to jako jednu z možností k zamyšlení, ne jako varování před jistou událostí.</p>
+            <p>Blázen nese číslo 0 – číslo nekonečna, potenciálu a absolutního počátku. Stojí na okraji útesu s malým batohem na rameni a dívá se vstříc obloze. Nespočítával rizika, nečetl mapu, neptal se zkušených. Zkrátka vykročil.</p>
+            <p>Ve výkladu karet Blázen téměř vždy signalizuje nový začátek. Výzvu, která vás volá, aniž byste tušili, kam povede. Nástup do neznáma s ryzí důvěrou. Prvotní zapálení pro projekt, vztah nebo cestu.</p>
+            <blockquote>Nejlepšími kroky v životě jsou ty, které podnikáme ještě před tím, než „víme jak na to".</blockquote>
+            <p><strong>Blázen obrácený</strong> naopak varuje před lehkomyslností přecházející v hazardérství, nebo před strachem vykročit, který nás drží zahnízděné v komfortní zóně.</p>
         `,
         related_slugs: ['velka-arkana'],
         linked_blog_slug: 'lekce-padajici-veze-tarot'
@@ -142,13 +139,13 @@ const DICTIONARY_TERMS = [
         slug: 'zivotni-cislo',
         title: 'Životní číslo',
         category: 'Numerologie',
-        short_description: 'Číslo, které některé numerologické směry odvozují z data narození. Naše kalkulačka redukuje den, měsíc a rok zvlášť a v mezikrocích ponechává 11, 22 a 33; výklad je symbolický.',
+        short_description: 'Nejzákladnější numerologický ukazatel. Získáte ho redukcí data narození na jednu číslici (1–9, výjimky 11, 22, 33). Odráží vaši životní cestu.',
         content_html: `
-            <p>Životní číslo, označované také jako číslo životní cesty, je pojem používaný v numerologii. Různé školy mohou postupovat odlišně. Naše kalkulačka redukuje den, měsíc a rok narození zvlášť, přičemž v mezikrocích zachovává 11, 22 a 33, a pak redukuje jejich součet.</p>
+            <p>Životní číslo (nebo „číslo životní cesty") je alfou numerologického systému. Získáte ho tak, že sečtete všechny číslice svého data narození a výsledek opakovaně redukujete, až dorazíte k jediné číslici – nebo k tzv. Mistrovskému číslu (11, 22 nebo 33).</p>
             <h2>Příklad výpočtu</h2>
-            <p>Pro datum 15. 8. 1992: den 1+5 = 6; měsíc = 8; rok 1+9+9+2 = 21 → 2+1 = 3. Součet 6+8+3 = 17 → 1+7 = <strong>8</strong>.</p>
-            <p>Některé numerologické výklady spojují osmičku s tématy odpovědnosti, zdrojů nebo vlivu. Nejde o ověřený popis člověka. Jako podnět k zamyšlení může posloužit otázka: Jak zacházím se svou odpovědností a tím, co mám k dispozici?</p>
-            <p>Číslo proto ber jako symbolický rámec pro vlastní úvahu, ne jako pevný popis osobnosti, životní úkol nebo předpověď.</p>
+            <p>Datum: 15. 8. 1992 → 1+5 = 6 (den) + 8 (měsíc) + 1+9+9+2 = 21 → 2+1 = 3 (rok) → 6+8+3 = 17 → 1+7 = <strong>8</strong></p>
+            <p>Životní číslo 8 nese energii moci, hojnosti, karmické vyrovnanosti a zodpovědnosti za materiální svět.</p>
+            <p>Životní číslo není rozsudek. Je to <em>vibrace</em>, se kterou jste přišli – paleta barev, se kterou malujete svůj obraz. Naplnění tohoto čísla (a nikoliv jeho negace nebo přehánění) je cílem numerologické cesty.</p>
         `,
         related_slugs: ['mistrovska-cisla'],
         linked_blog_slug: 'zivotni-cislo-odhaleni-kodu-vasi-duse'
@@ -157,16 +154,14 @@ const DICTIONARY_TERMS = [
         slug: 'mistrovska-cisla',
         title: 'Mistrovská čísla (11, 22, 33)',
         category: 'Numerologie',
-        short_description: 'Některé numerologické směry označují 11, 22 a 33 za mistrovská čísla a při redukci je ponechávají. Jejich významy jsou symbolické, ne ověřené vlastnosti člověka.',
+        short_description: 'Čísla s dvojitou silou, která se při numerologické redukci neredukují dál. Nositelé nesou výjimečný potenciál, ale i těžší životní lekce.',
         content_html: `
-            <p>V některých numerologických směrech se čísla 11, 22 a 33 označují jako <strong>mistrovská čísla</strong> a při redukci se ponechávají. Jiné postupy se mohou lišit; i naše kalkulačka je zachovává v mezikrocích. Samotné označení ani tradiční výklady nejsou vědecky ověřeným měřením schopností nebo povahy.</p>
-            <h2>Tradiční symbolická témata</h2>
+            <p>Tři výjimky z pravidla numerologické redukce jsou čísla 11, 22 a 33 – tzv. <strong>Mistrovská čísla</strong>. Pokud vám předposlední součet dá právě jedno z těchto čísel, neredukujete je na 2, 4 nebo 6.</p>
             <ul>
-                <li><strong>11:</strong> V některých výkladech se spojuje s inspirací a intuicí. Může otevřít otázku, kterým nápadům chceš věnovat pozornost.</li>
-                <li><strong>22:</strong> Tradičně se spojuje s plánováním a uskutečňováním záměrů. Může připomenout otázku, jak převést důležitý záměr do malého konkrétního kroku.</li>
-                <li><strong>33:</strong> Bývá spojováno s péčí a předáváním zkušeností. Může otevřít otázku, jak podporovat druhé a přitom respektovat vlastní hranice.</li>
+                <li><strong>11 – Vizionář:</strong> Intuice a duchovní vnímání za hranicí běžného chápání. Slouží jako most mezi vyšší pravdou a lidstvem. Hluboce empatiký, snadno přetížitelný emocemi okolí.</li>
+                <li><strong>22 – Mistr Stavitel:</strong> Schopnost přetavit velké vize do reálných struktur, které mění životy tisíců lidí. Obrovská zodpovědnost a riziko přetíženosti.</li>
+                <li><strong>33 – Mistr Učitel:</strong> Nejřidší a nejnáročnější vibrace. Obětavost, soucit a léčení v globálním měřítku. Pokud nositel toto číslo nenaplňuje, žije redukovanou trojkou.</li>
             </ul>
-            <p>Jde o náměty z numerologické tradice, nikoli o předpoklady o tom, kdo má dané číslo, ani o měřítko jeho hodnoty.</p>
         `,
         related_slugs: ['zivotni-cislo'],
         linked_blog_slug: 'zivotni-cislo-odhaleni-kodu-vasi-duse'
@@ -177,12 +172,13 @@ const DICTIONARY_TERMS = [
         slug: 'karma',
         title: 'Karma',
         category: 'Spiritualita',
-        short_description: 'Pojem pro jednání a jeho důsledky v různých indických náboženských a filozofických tradicích. Význam se mezi směry liší; nejde o ověřitelný zákon, že se každému vše vrátí stejnou měrou.',
+        short_description: 'Zákon příčiny a následku přesahující hranice jednoho života. Vše, co vysíláme (myšlenky, slova, činy), se k nám vrátí – v tomto nebo budoucím životě.',
         content_html: `
-            <p>Slovo karma pochází ze sanskrtu a souvisí s činem či jednáním. V hinduistických, buddhistických, džinistických a dalších indických náboženských a filozofických tradicích se pojem vztahuje k jednání a jeho důsledkům. Konkrétní výklad se mezi směry liší.</p>
-            <p>V populárním podání se karma někdy zjednodušuje na větu „co vyšleš, to se ti vrátí“. Tu můžeš brát jako osobní připomínku, že na jednání záleží; není to ale měřitelný ani pro každého ověřený zákon. Karmou proto nelze spolehlivě vysvětlovat, proč někdo trpí, ani jeho situaci označovat za zasloužený trest.</p>
-            <h2>Karma a astrologie</h2>
-            <p>V karmické astrologii se Severní a Jižní lunární uzel vykládají jako symbolická témata osobního příběhu. Jde o astrologickou interpretaci, ne o ověřitelný záznam minulých životů nebo předpověď toho, co se musí stát.</p>
+            <p>Slovo karma pochází ze sanskrtu a znamená prostě „čin" nebo „jednání". V rámci hinduistické a buddhistické filosofie ale nese mnohem hlubší smysl: je to zákon přesné příčiny a následku, který přesahuje hranice jednoho pozemského života.</p>
+            <p>Karma neznamená trest nebo odplatu. Je to <strong>energetická rovnováha</strong>. Každá naše akce vytváří vlnění, které musí dojít ke svému přirozenému závěru – ať v tomto nebo v některém z budoucích životů.</p>
+            <h2>Pozitivní karma vs. karmický dluh</h2>
+            <p>Pozitivní karma (dárcovství, soucit, pravdivost) vysvětluje, proč se jedni lidé rodí do příznivých podmínek zdánlivě bez námahy. Karmický dluh naopak vysvětluje, proč jiní lidé opakovaně narážejí na stejný typ bolesti – mají nevyrovnanou emisi energie z minulých životů.</p>
+            <p>Astrologie umisťuje karmické informace do polohy Severního a Jižního dračího uzlu v Natální mapě.</p>
         `,
         related_slugs: ['reinkarnace', 'draci-uzly'],
         linked_blog_slug: 'iluze-spriznene-duse-karmicke-vztahy'
@@ -191,12 +187,12 @@ const DICTIONARY_TERMS = [
         slug: 'reinkarnace',
         title: 'Reinkarnace',
         category: 'Spiritualita',
-        short_description: 'Duchovní představa, že život po smrti pokračuje novým zrozením. Výklady se mezi tradicemi liší; astrologie ji nedokládá jako ověřenou skutečnost.',
+        short_description: 'Víra v opakované zrození duše v novém těle. Každý život přináší specifické lekce a příležitosti k duchovnímu růstu.',
         content_html: `
-            <p>Reinkarnace označuje představu, že se život po smrti znovu rodí v novém těle. Související učení o znovuzrození se objevuje v hinduistických, džinistických a buddhistických tradicích, ale přesná představa o tom, co pokračuje, se liší. Nelze ji jednoduše shrnout jako stejnou víru v neměnnou duši.</p>
-            <p>Někteří lidé chápou znovuzrození jako součást duchovní cesty a vycházejí přitom ze své víry. Není to obecně ověřená skutečnost. Výklad karet ani horoskop proto nemůže spolehlivě určit, kým jsi byl v minulém životě nebo jaké si z něj neseš „dluhy“.</p>
+            <p>Reinkarnace (z latiny „vtělení znovu do masa") je přesvědčení, že duše přežívá smrt fyzického těla a rodí se v novém. Tato idea je jádrem hinduismu, buddhismu, džinismu i mnoha dalších duchovních tradic světa.</p>
+            <p>Z pohledu reinkarnace je každý pozemský život jako jedna třída ve velké škole. Přicházíme s konkrétním učebním plánem (kartou), s karmickými dluhy z minulých lekcí i s dary, které jsme si přinesli ze zkušeností předchozích vtělení.</p>
             <h2>Reinkarnace a astrologie</h2>
-            <p>V karmické astrologii mohou lunární uzly sloužit jako symboly témat, která chceš prozkoumat v současném životě. Jde o astrologickou interpretaci, ne o důkaz minulých vtělení. Můžeš ji využít jako podnět k otázce: které svoje návyky chceš zachovat a které už ti neslouží?</p>
+            <p>Karmičtí astrologové věří, že poloha Dračích uzlů v Natální mapě odráží orientaci celého vtělení: <strong>Jižní uzel</strong> ukazuje, co jsme zvládli v minulých životech (přirozené talenty, ale i tendence k regresi), zatímco <strong>Severní uzel</strong> ukazuje směr, kam nás toto vtělení volá – naší životní výzvu a duchovní cíl.</p>
         `,
         related_slugs: ['karma', 'draci-uzly'],
         linked_blog_slug: null
@@ -205,14 +201,14 @@ const DICTIONARY_TERMS = [
         slug: 'draci-uzly',
         title: 'Dračí uzly (Severní a Jižní)',
         category: 'Astrologie',
-        short_description: 'Dva matematické body v horoskopu. Astrologie je někdy vykládá jako symbol minulých návyků a směru osobního rozvoje; nejde o důkaz minulých životů.',
+        short_description: 'Dva matematické body (ne planety) v Natální mapě. Jižní uzel = karmická minulost a vrozené způsoby reakcí. Severní uzel = duchovní výzva tohoto vtělení.',
         content_html: `
-            <p>Dračí uzly nejsou planety, ale dva matematické body: místa, kde dráha Měsíce protíná ekliptiku, tedy zdánlivou dráhu Slunce. V horoskopu leží proti sobě.</p>
+            <p>Dračí uzly nejsou planety, ale matematické body: průsečíky dráhy Měsíce s ekliptikou (dráhou Slunce). Vždy stojí přesně naproti sobě v kruhu Natální mapy.</p>
             <ul>
-                <li><strong>Jižní uzel:</strong> V některých astrologických výkladech symbolizuje známé vzorce, návyky nebo témata minulosti. Karmická astrologie jej může spojovat s minulými životy, ale tato interpretace je otázkou víry, ne ověřitelným údajem o tvé minulosti.</li>
-                <li><strong>Severní uzel:</strong> Astrologie jej někdy používá jako symbol směru, který můžeš zkoumat při osobním rozvoji. Neurčuje jediný správný cíl ani nezaručuje, že určitá cesta přinese naplnění.</li>
+                <li><strong>Jižní uzel (Ocas Draka):</strong> Označuje to, co je vám přirozené – protože jste to již prožívali. Minulé životy, vrozené reflexy, komfortní zóna duše. Pobývat neustále u Jižního uzlu znamená stagnaci.</li>
+                <li><strong>Severní uzel (Hlava Draka):</strong> Směr duchovního růstu pro toto vtělení. Věci, které vám zpočátku nepřijdou přirozené, ale přinášejí největší naplnění, jakmile na jejich cestě vytrváte.</li>
             </ul>
-            <p>Tranzity přes uzly ani zatmění samy o sobě nedokládají, že se blíží přelomová událost. Pokud ti tento symbolický rámec sedí, může posloužit k zamyšlení: který známý návyk ti pomáhá a který bys chtěl změnit?</p>
+            <p>Planetární tranzity přes Dračí uzly (zejména zatmění) bývají přelomovými životními událostmi – obratovými body, které nás buď silou okolností, nebo skrze magickou synchronicitu, tlačí ke Světelné straně Severního uzlu.</p>
         `,
         related_slugs: ['karma', 'reinkarnace', 'nativni-karta'],
         linked_blog_slug: 'iluze-spriznene-duse-karmicke-vztahy'
@@ -223,11 +219,11 @@ const DICTIONARY_TERMS = [
         slug: 'synchronicita',
         title: 'Synchronicita',
         category: 'Spiritualita',
-        short_description: 'Pojem pro události, které člověk vnímá jako smysluplnou shodu, i když mezi nimi není zřejmá příčinná souvislost.',
+        short_description: 'Pojem zavedený C. G. Jungem pro „smysluplné náhody" – kdy vnější události a vnitřní stavy spolu zdánlivě nesouvisí, ale přesto tvoří soudržný celek.',
         content_html: `
-            <p><em>Synchronicita</em> označuje události, které člověku připadají smysluplně propojené, přestože mezi nimi není zřejmý příčinný vztah. Osobní význam si můžeš všimnout, ale samotná shoda nedokazuje zprávu zvenčí.</p>
-            <p>Například na někoho myslíš a on ti krátce poté napíše. Načasování může působit zvláštně; z jedné situace ale nelze určit, zda šlo o něco víc než náhodu.</p>
-            <p>V duchovních tradicích se tarot, runy nebo numerologie někdy používají jako symbolická zrcadla pro otázku. Neověřují budoucnost a jejich výklad nemusí přesně popsat tvoji situaci.</p>
+            <p>Psycholog Carl Gustav Jung zavedl pojem <em>synchronicita</em> jako alternativu k mechanistickému pohledu na kauzalitu. Jde o princip, kdy dvě nebo více událostí nemají kauzální (příčinný) vztah, ale jsou propojeny <strong>smysluplností</strong>.</p>
+            <p>Klasický příklad: myslíte intenzivně na starého přítele, se kterým jste se léta neviděli, a ten vám v ten samý okamžik napíše. Vědecký materialismus to pojmenuje jako statistickou shodu. Jung řekl: vesmír vám posílá zprávu.</p>
+            <p>Synchronicita je fundamentálním mechanismem fungování věšteckých systémů – Tarotu, Rún, Numerologie i věštění z křišťálové koule. Věština nefunguje proto, že „čte budoucnost". Funguje proto, že naše podvědomí rezonuje s tím, co v daný moment potřebuje vidět – a náhoda výběru karet, rún nebo čísel tuto synchronicitu zprostředkuje.</p>
         `,
         related_slugs: ['akasicke-zaznamy'],
         linked_blog_slug: 'andelska-cisla-1111'
@@ -236,12 +232,12 @@ const DICTIONARY_TERMS = [
         slug: 'akasicke-zaznamy',
         title: 'Akášické záznamy',
         category: 'Spiritualita',
-        short_description: 'Ezoterický pojem pro představu duchovního archivu všech událostí. Jde o duchovní tradici, ne ověřenou databázi informací.',
+        short_description: 'Ezoterický pojem pro „kosmickou paměť" – nefyzickou databázi všech myšlenek, slov, činů a událostí, jaké se kdy odehrály ve vesmíru.',
         content_html: `
-            <p>V některých ezoterických směrech se <em>Akášické záznamy</em> popisují jako nehmotný archiv všech událostí. Jde o duchovní představu, ne o ověřený zdroj, ze kterého lze nezávisle zjišťovat fakta.</p>
-            <p>Autoři a praktikující někdy mluví o přístupu přes meditaci, sny, regresi nebo channeling. Prožitek ani vzpomínku z těchto postupů ale nelze samy o sobě ověřit jako záznam minulého života nebo budoucnosti.</p>
-            <h2>Jak s touto představou pracovat</h2>
-            <p>Pokud tě tento pojem inspiruje, můžeš ho použít jako rámec k zamyšlení a přitom rozlišovat vlastní interpretaci od ověřitelných informací. U důležitých rozhodnutí se opři o konkrétní skutečnosti.</p>
+            <p>Slovo <em>Akáša</em> pochází ze sanskrtu a označuje „éter" nebo „prostor". Akášické záznamy jsou podle ezoteriků součástí tohoto éterického prostoru – obrovský, nefyzický archiv veškerých informací o všem, co kdy existovalo nebo existuje.</p>
+            <p>Alice Bailey, Helena Blavatská a Edgar Cayce (slavný americký medium 20. století) popsali Akášické záznamy jako živou knihovnu přesně dostupnou těm, kteří dokáží rozšířit vědomí za hranice běžné racionální percepce.</p>
+            <h2>Přístup k Akášickým záznamům</h2>
+            <p>Meditace, práce se sny, hypnotická regrese do minulých životů, hluboký scrying nebo channeling jsou techniky, skrze které zkušení adepti tvrdí, že k těmto záznamům přistupují. Z nich pak čerpají informace o minulých životech, karmických vazbách nebo budoucích pravděpodobnostech.</p>
         `,
         related_slugs: ['synchronicita', 'reinkarnace'],
         linked_blog_slug: 'tajemstvi-kristalove-koule-scrying'
@@ -252,12 +248,13 @@ const DICTIONARY_TERMS = [
         slug: 'fehu',
         title: 'Fehu (Runa)',
         category: 'Runosloví',
-        short_description: 'První runa staršího Futharku se zvukovou hodnotou „f“. Její jméno se pojí s dobytkem či majetkem; dnešní věštecké významy jsou symbolické interpretace.',
+        short_description: 'První runa staršího Futharku. Symbolizuje dobytek, majetek a pohybující se bohatství. Energie plodnosti, hojnosti a sílu manifestace.',
         content_html: `
-            <p><strong>Fehu</strong> je první runou staršího Futharku a označuje zvuk „f“. Její rekonstruované jméno souvisí s dobytkem či majetkem. Runy sloužily především jako písmo; jejich význam v dnešním věšteckém výkladu nelze odvodit jen z názvu.</p>
-            <h2>Současné symbolické asociace</h2>
-            <p>Některé moderní výklady spojují Fehu se zdroji, majetkem nebo péčí o to, co člověk vlastní. Je to podnět k úvaze, ne předpověď příjmu, úspěchu podnikání ani doporučení investovat.</p>
-            <p>Obrácená poloha se v některých systémech čte jako otázka plýtvání či zacházení se zdroji. Ani ona sama nepředpovídá finanční ztrátu.</p>
+            <p>Fehu (výslovnost „fe-hu") je první z 24 run staršího Futharku. Vizuálně připomíná písmeno F s oběma větvemi skloněnými doprava – evokuje rohy dobytka, který v germánské kultuře představoval pohyblivé, živé bohatství.</p>
+            <p>Na rozdíl od pevného majetku (pole, dům) je Fehu energií peněz, které cirkulují, rostou a plodí další plodnost. To je klíčový rozdíl – Fehu není o hromadění, ale o zdravém toku hojnosti.</p>
+            <h2>Ve výkladu</h2>
+            <p>Fehu vzpřímená: Čas sklizně. Příchod financí, úspěšný projekt, plodná práce přináší výsledky. Dobré znamení pro zahájení podnikání nebo investice.</p>
+            <p>Fehu obrácená: Ztráta, plýtvání, chamtivost vedoucí k úpadku. Výzva k přehodnocení vztahu k penězům a hojnosti.</p>
         `,
         related_slugs: ['hagalaz', 'tiwaz'],
         linked_blog_slug: 'runy-severska-magie-v-modernim-svete'
@@ -266,12 +263,12 @@ const DICTIONARY_TERMS = [
         slug: 'hagalaz',
         title: 'Hagalaz (Runa)',
         category: 'Runosloví',
-        short_description: 'Runa staršího Futharku spojená s hláskou „h“ a názvem pro krupobití. Její moderní věštecké významy neoznamují jistou krizi ani změnu.',
+        short_description: 'Devátá runa – runa krupobití, chaosu a náhlé destrukce. Přichází nevyzvaná a bez ohledu na vaše plány. Je zároveň zárodkem budoucí transformace.',
         content_html: `
-            <p><strong>Hagalaz</strong> je runa staršího Futharku se zvukovou hodnotou „h“; její jméno souvisí s krupobitím. Z tohoto původu vycházejí některé dnešní symbolické výklady, nejde však o předpověď událostí.</p>
-            <h2>Možný podnět k zamyšlení</h2>
-            <p>V moderní runové symbolice se Hagalaz někdy spojuje s narušením plánů nebo změnou. Vytažená runa ale neznamená, že přijde krize, ani že těžká událost byla „nutná“ nebo zasloužená.</p>
-            <p>Můžeš si položit otázku: Kterou změnu skutečně řeším a co je v mé moci udělat? Význam zůstává osobní interpretací, ne jistou zprávou o budoucnosti.</p>
+            <p>Hagalaz je deváto runa Futharku a jedinou, která nemá obrácenou polohu (je symetrická). Symbolizuje krupobití – zuřivou sílu přírody, která nelze kontrolovat, vyjednávat s ní ani ji odvrátit. Prostě přijde.</p>
+            <p>V kontextu věštby přináší Hagalaz zprávu o nadcházejícím (nebo probíhajícím) rušivém průlomu: neočekávané změně, krizi nebo šoku, který rozbíjí zavedené pořádky. Není to „trest" – je to nutnost, která přichází v momentech, kdy se zbytečně upínáme na zastaralé struktury.</p>
+            <blockquote>Za každou bouří přichází úleva a prostor pro nové setí. Hagalaz ničí to, co by nás stejně dříve nebo později udusilo.</blockquote>
+            <p>Pracovat s Hegalaz znamená naučit se uvolnit kontrolu a důvěřovat transformačnímu procesu – i když je bolestivý.</p>
         `,
         related_slugs: ['fehu', 'tiwaz'],
         linked_blog_slug: 'runy-severska-magie-v-modernim-svete'
@@ -280,12 +277,11 @@ const DICTIONARY_TERMS = [
         slug: 'tiwaz',
         title: 'Tiwaz (Runa)',
         category: 'Runosloví',
-        short_description: 'Runa staršího Futharku pro zvuk „t“, jejíž jméno se spojuje s bohem Týrem. Dnešní výklady ji někdy pojí s odvahou a férovostí; nejsou věštbou výsledku.',
+        short_description: 'Runa boha Týra, spravedlnosti a mužské oběti. Šipka ukazující vskyř – symbol nezlomné vůle a ochoty obětovat osobní zisk pro vyšší dobro.',
         content_html: `
-            <p><strong>Tiwaz</strong> označuje runu pro zvuk „t“ ve starším Futharku. Její jméno se spojuje se severským bohem Týrem. Příběhy o Týrovi, včetně jeho vztahu k vlku Fenrirovi, patří do mytologie.</p>
-            <h2>Současné výklady</h2>
-            <p>V dnešních esoterických výkladech se Tiwaz někdy pojí s odvahou, odpovědností nebo férovostí. Nejde o doloženou věštbu ani záruku, že spor dopadne spravedlivě.</p>
-            <p>Jako symbol si ji můžeš vzít k otázce: Které rozhodnutí odpovídá mým hodnotám a co potřebuji vědět, než jednám? Odpověď hledej také v konkrétních okolnostech, ne pouze v runě.</p>
+            <p>Tiwaz je runou boha Týra (anglosaské Tiw nebo Tiu – po něm pojmenované úterý, Tuesday). Týr byl severskym bohem spravedlnosti a zákona. Podle ságy obětoval vlastní pravou ruku, aby stvůra Fenrir neohrožovala svět – a přijal tuto ztrátu s naprostou odvahou a klidem.</p>
+            <p>Tiwaz ve výkladu proto hovoří o odvaze dělat správnou věc i za cenu osobní oběti. O schopnosti upřednostnit čestnost a integritu před pohodlím nebo ziskem. Bývá runovou patronkou vojáků, soudců a všech, kdo nesou tíhu obtížných rozhodnutí.</p>
+            <p><strong>Tiwaz ve věštbě:</strong> Čas soustředěného odhodlání. Výzva k čestnosti, disciplíně a plnění závazků bez výmluv. Hledáte-li spravedlnost, Tiwaz vám fandí.</p>
         `,
         related_slugs: ['fehu', 'hagalaz'],
         linked_blog_slug: 'runy-severska-magie-v-modernim-svete'
@@ -296,16 +292,16 @@ const DICTIONARY_TERMS = [
         slug: 'muladhara',
         title: 'Muladhara – Kořenová čakra',
         category: 'Energie',
-        short_description: 'Čakra v některých tantrických a moderních duchovních systémech. V často používaném sedmičkovém schématu se spojuje se stabilitou; nejde o anatomickou strukturu ani zdravotní měření.',
+        short_description: 'První čakra sídlící u kostrče. Vládne bezpečí, přežití a fyzickému uzemění. Asociována s červenou barvou a elementem Země.',
         content_html: `
-            <p>Muladhara se objevuje v některých indických tantrických a jógových tradicích i v dnešních duchovních výkladech. Počet, umístění a významy čaker se mezi systémy liší; známé schéma sedmi čaker není jedinou podobou těchto učení.</p>
-            <p>V současných výkladech se Muladhara často spojuje se stabilitou, bezpečím, červenou barvou nebo elementem země. Jde o symbolické asociace, nikoli o anatomický orgán, měřitelnou energii nebo ukazatel tělesného zdraví.</p>
-            <h2>Otázky k zamyšlení</h2>
-            <p>Pokud ti tento symbolický jazyk vyhovuje, můžeš si položit otázku: Co mi v běžném životě dává pocit opory? Odpověď může být konkrétní vztah, návyk nebo praktický plán; není třeba vysvětlovat nejistotu „blokovanou čakrou“.</p>
+            <p>Muladhara je první ze sedmi hlavních čaker – energetický základ celého systému. Slovo pochází ze sanskrtu: <em>mula</em> = kořen, <em>adhara</em> = podpora, základ. Je to místo, odkud vyrůstáme jako stromy – bez pevných kořenů nelze zdravě vzrůst do výše.</p>
+            <p>Governs: fyzická bezpečnost, bydlení, peníze, přežití, zdraví těla, pocit sounáležitosti k rodině a kmenu. Zdravá Muladhara se projevuje jako fundamentální pocit „jsem v pořádku, o mě bude postaráno".</p>
+            <h2>Jak Muladharu uvolnit</h2>
             <ul>
-                <li>Zapsat si, o co se můžeš opřít právě teď.</li>
-                <li>Všímat si, které malé každodenní návyky ti vyhovují.</li>
-                <li>Pokud používáš meditaci nebo mantru, chápat ji jako osobní praxi, ne záruku bezpečí či léčby.</li>
+                <li>Chůze naboso po přírodě (doslova uzemnění)</li>
+                <li>Fyzická práce s tělem (jóga, silový trénink, zahradničení)</li>
+                <li>Červené potraviny a minerály (granát, červený jaspis)</li>
+                <li>Mantramé opakování: <em>„Jsem uzemen. Jsem v bezpečí."</em></li>
             </ul>
         `,
         related_slugs: ['svadhisthana', 'anahata'],
@@ -315,11 +311,10 @@ const DICTIONARY_TERMS = [
         slug: 'svadhisthana',
         title: 'Svadhisthana – Sakrální čakra',
         category: 'Energie',
-        short_description: 'Čakra v některých duchovních systémech. V moderním sedmičkovém výkladu se symbolicky pojí s tvořivostí a emocemi; nejde o diagnózu ani tělesný orgán.',
+        short_description: 'Druhá čakra, sídlící pod pupíkem. Centrum smyslnosti, kreativity, radosti a emocí. Asociována s oranžovou barvou a elementem Vody.',
         content_html: `
-            <p>Svadhisthana se řadí do některých schémat čaker, ale jejich počet i podoba se podle tradice liší. V současném sedmičkovém výkladu se často kreslí v oblasti podbřišku a spojuje s vodou, oranžovou barvou, emocemi a tvořivostí. Jde o symboliku, ne o skutečné centrum, jehož „blokace“ by vysvětlovala psychické potíže.</p>
-            <h2>Symbol tvořivosti a emocí</h2>
-            <p>Motiv může posloužit jako podnět k zamyšlení: Která činnost ti dělá radost? Které emoce chceš bezpečně pojmenovat? Odpovědi ani případné obtíže nelze určit podle polohy čakry.</p>
+            <p>Svadhisthana, druhá čakra, leží asi 5 cm pod pupíkem. Její element je Voda – a stejně jako voda, tato čakra touží po volném toku, fluiditě a pohybu. Blokovaná Svadhisthana ucpané emoce, tvůrčí blok nebo neschopnost si dovolit radost.</p>
+            <p>Zdravá sakrální čakra se projevuje jako přirozená chuť do tvoření: malovat, psát, tancovat, vařit, milovat. Je také zdrojem emočního bohatství – schopnosti cítit radost, smutek, vášeň a touhu bez studu nebo přepínání.</p>
         `,
         related_slugs: ['muladhara', 'anahata'],
         linked_blog_slug: 'zaklady-sedmi-caker-anatomie'
@@ -328,11 +323,11 @@ const DICTIONARY_TERMS = [
         slug: 'anahata',
         title: 'Anahata – Srdeční čakra',
         category: 'Energie',
-        short_description: 'Čakra ve vybraných duchovních systémech, často symbolicky spojovaná se srdcem, soucitem a vztahy. Její výklad neurčuje zdraví ani schopnost milovat.',
+        short_description: 'Čtvrtá čakra, most mezi nižšími a vyššími energiemi. Centrum lásky, soucitu, léčení a schopnosti otevřít se druhým lidem. Barva: zelená / růžová.',
         content_html: `
-            <p>Anahata je součástí některých čakerových systémů. V běžném moderním sedmičkovém schématu se řadí jako čtvrtá a spojuje se se srdcem, soucitem a vztahy. Jiné tradice mohou čakerám přiřazovat odlišné významy, barvy nebo uspořádání.</p>
-            <p>Tyto asociace můžeš použít jako symbolický podnět k otázce, jak chceš pečovat o vztahy a své hranice. Poloha čaker ale neměří zdraví, neurčuje schopnost milovat ani neodhaluje rodinné trauma.</p>
-            <p>Pokud ti vyhovuje meditace nebo práce s obrazem zeleného světla, může jít o osobní duchovní praxi. Není to náhrada odborné péče ani slib, že se vyřeší psychické nebo tělesné obtíže.</p>
+            <p>Anahata stojí přesně uprostřed sedmičkového systému – je to most. Propojuje tři nižší čakry (zemité, přežívající, tvořivé) se třemi vyššími (komunikační, intuitivní, duchovní). Bezhybnost srdce paralyzuje celý systém v obou směrech.</p>
+            <p>Anahata vládne nejen romantické lásce, ale především <strong>nepodmínečnému přijetí</strong> – sebe sama i ostatních. Lidé se zdravou Anahata dokáží odpustit bez vymazání hranic, pomoci bez sebezničení a milovat bez posedlosti.</p>
+            <p>Léčení Anahata: různé formy laskavosti (i k sobě), práce s rodovými traumaty, meditace na zelené světlo, objetí, příroda, hugging (fyzický kontakt), práce s dýcháním.</p>
         `,
         related_slugs: ['muladhara', 'svadhisthana'],
         linked_blog_slug: 'zaklady-sedmi-caker-anatomie'
@@ -343,16 +338,15 @@ const DICTIONARY_TERMS = [
         slug: 'lucidni-sen',
         title: 'Lucidní sen',
         category: 'Snář',
-        short_description: 'Ve snu si uvědomíš, že sníš. Někdy můžeš ovlivnit jeho průběh, ale kontrola obsahu není podmínkou lucidního snu.',
+        short_description: 'Stav, kdy si ve snu uvědomujete, že sníte, a dokážete záměrně ovlivňovat obsah snu. Starověká praxe i moderní vědecky ověřitelný fenomén.',
         content_html: `
-            <p>Lucidní sen je sen, ve kterém si během snění uvědomíš, že právě sníš. Někdy se podaří ovlivnit, co se bude dít, ale míra kontroly se liší a není nutnou podmínkou lucidity. Samotný živý nebo neobvyklý sen tedy ještě neznamená, že byl lucidní.</p>
-            <p>Ve spánkových studiích se někteří účastníci domluvili na jednoduchém pohybu očí, kterým dali vědcům během snu signál. Přístroje tento signál zachytily v průběhu REM spánku; lucidní snění se tak zkoumá i laboratorně.</p>
-            <h2>Co někteří lidé zkoušejí</h2>
-            <p>Následující postupy se používají pro lepší vybavení snů nebo jako pokus o rozpoznání snu. Nezaručují lucidní sen a výsledky se mohou lišit.</p>
+            <p>Lucidní sen je stav vědomí, kdy spíte, ale vaše mysl je vědomá faktum, že se nacházíte ve snu – a dokáže s tímto prostorem záměrně interagovat. Letěli jste ve snu? Mluvili s mrtvým příbuzným? Prozkoumali neexistující město? To byly pravděpodobně záblesky lucidity.</p>
+            <p>Výzkumy z 80. let (Stephen LaBerge, Stanford) prokázaly, že lucidní sny jsou reálný, měřitelný neurologický stav – snívač a výzkumník se dohodli na signálním pohybu očí, který snívač provedl zevnitř snu, a přístroje to zaznamenaly.</p>
+            <h2>Jak luciditu natrénovat</h2>
             <ul>
-                <li><strong>Zápis snů:</strong> Po probuzení si poznamenej, co si pamatuješ. Pomůže ti sledovat vlastní vzpomínky a opakující se motivy.</li>
-                <li><strong>Všímání během dne:</strong> Někteří lidé si v bdělém stavu připomínají otázku „Sním právě teď?“. Přenos tohoto návyku do snu není jistý.</li>
-                <li><strong>MILD:</strong> Před usnutím si můžeš připomenout záměr všimnout si, že sníš. Ani tato technika nezaručuje výsledek.</li>
+                <li><strong>Deník snů:</strong> Zapisovat sny ráno ihned po probuzení. Mozek si na udržení snové paměti „zvykne".</li>
+                <li><strong>Realitní testy:</strong> Přes den si opakovaně klást otázku „Sním právě teď?" a provést test (narušená fyzika snu vs. bdění). Zvyk se přenese do snu.</li>
+                <li><strong>MILD technika:</strong> Před usnutím opakovat záměr „Uvědomím si, že sním" a vizualizovat probuzení vědomí ve snu.</li>
             </ul>
         `,
         related_slugs: [],
@@ -364,21 +358,19 @@ const DICTIONARY_TERMS = [
         slug: 'andelska-cisla',
         title: 'Andělská čísla',
         category: 'Numerologie',
-        short_description: 'Některé duchovní směry vykládají opakující se čísla (111, 222, 333…) jako symboly. Jde o osobní interpretace, ne ověřené zprávy nebo předpovědi.',
+        short_description: 'Opakující se číselné posloupnosti (111, 222, 333...) interpretované jako poselství z vyšších vědomí nebo duchovních průvodců.',
         content_html: `
-            <p>V některých numerologických a duchovních směrech se opakující čísla na hodinách, účtenkách nebo jinde vykládají jako takzvaná <strong>andělská čísla</strong>. Tyto významy jsou symbolickou tradicí, ne důkazem, že ti někdo posílá zprávu nebo předpovídá budoucnost.</p>
-            <p>Číselný vzor si můžeš vzít jako připomínku zastavit se a všimnout si, co právě řešíš. Konkrétní výklady se mezi směry liší a žádný z nich nemůže sám potvrdit, co se stane.</p>
-            <h2>Časté symbolické asociace</h2>
-            <p>Následující témata jsou jen možné podněty k zamyšlení. Nejde o pevná poselství ani doporučení jednat bez ohledu na skutečné okolnosti.</p>
+            <p>Andělská čísla jsou číselné sekvence, které se s neobvyklou frekvencí opakují v každodenním životě: čas na hodinkách, číslo domu, účet v restauraci. Esoterika je interpretuje jako záměrnou komunikaci duchovních průvodců nebo vyšší dimenze.</p>
+            <p>Základní interpretační rámec vychází z numerologie: každé číslo nese vibraci a trojité (nebo čtyřné) opakování tuto vibraci zesiluje na úroveň nevyhnutelné zprávy.</p>
             <ul>
-                <li><strong>111:</strong> Začátek nebo iniciativa – jaký malý první krok je teď proveditelný?</li>
-                <li><strong>222:</strong> Spolupráce a trpělivost – čemu potřebuješ dát čas nebo jakou domluvu otevřít?</li>
-                <li><strong>333:</strong> Podpora a tvořivost – na koho se můžeš obrátit nebo co chceš vyjádřit?</li>
-                <li><strong>444:</strong> Stabilita – o jaký konkrétní fakt nebo návyk se můžeš opřít?</li>
-                <li><strong>555:</strong> Změna – co máš ve své moci ovlivnit a co zatím nevíš?</li>
-                <li><strong>777:</strong> Zkoumání a učení – co si chceš ověřit, než se rozhodneš?</li>
-                <li><strong>888:</strong> Zdroje a rovnováha – jak zacházíš se svým časem, energií nebo penězi?</li>
-                <li><strong>999:</strong> Dokončení – co můžeš uzavřít a co si ještě potřebuješ promyslet?</li>
+                <li><strong>111:</strong> Okamžik silné tvorby. Vaše myšlenky se zhmotňují – myslete záměrně.</li>
+                <li><strong>222:</strong> Přijde čas. Trpělivost, semínko teprve klíčí.</li>
+                <li><strong>333:</strong> Jste obklopeni ochranou. Mistrové vás provází.</li>
+                <li><strong>444:</strong> Pevná půda, anděl za každým rohem. Jste v bezpečí.</li>
+                <li><strong>555:</strong> Masivní změna na obzoru.</li>
+                <li><strong>777:</strong> Duchovní zarovnání. Jdete správnou cestou.</li>
+                <li><strong>888:</strong> Finanční hojnost, karma se vrací k dobru.</li>
+                <li><strong>999:</strong> Uzavření cyklu. Konec jedné éry.</li>
             </ul>
         `,
         related_slugs: ['synchronicita', 'zivotni-cislo'],
@@ -388,36 +380,55 @@ const DICTIONARY_TERMS = [
         slug: 'lilith-cerna-luna',
         title: 'Lilith (Černá Luna)',
         category: 'Astrologie',
-        short_description: 'Černá Luna Lilith je astrologický výpočtový bod spojený s apogeem Měsíce. Výklad je symbolický a může se lišit podle použité metody i astrologické školy.',
+        short_description: 'Lilith nebo Černá Luna představuje naši temnou stránku duše, potlačené touhy a skrytou sílu. Bod na oběžné dráze Měsíce, kde je nejdále od Země.',
         content_html: `
-            <p><strong>Černá Luna Lilith</strong> není planeta ani fyzické těleso. V astrologických mapách označuje vypočítaný bod spojený s apogeem Měsíce. Používají se různé varianty, například střední a pravé/oskulující apogeum, které nemusí mít stejnou polohu.</p>
-            <p>Někteří astrologové spojují Lilith s autonomií, osobními hranicemi nebo tématy, o nichž se obtížně mluví. Jde o symbolické asociace, které se mezi školami liší; výpočet nedokládá trauma, skrytou povahu ani budoucí události.</p>
-            <h2>Otázka k zamyšlení</h2>
-            <p>Pokud ti tento symbolický jazyk vyhovuje, můžeš se zeptat: Kterou vlastní potřebu nebo hranici chci pojmenovat jasněji? Horoskop za tebe neurčí odpověď.</p>
-        `,
+            <p><strong>Lilith (Černá Luna)</strong> není skutečná fyzická planeta, ale matematický bod na oběžné dráze Měsíce – místo, kde je Měsíc vizuálně nejdále od Země (tzv. lunární apogeum). V astrologii představuje Lilith naši nejhlubší, často potlačovanou a zkoušenou přirozenost.</p>
+            
+            <h2>Témata spojená s Lilith</h2>
+            <p>Ve vašem natálním horoskopu ukazuje umístění Lilith na oblast, ve které čelíte extrémům. Je to místo, kde jste rebely, kde se odmítáte podřídit očekávání společnosti a kde leží sice velká bolest, ale také obrovská síla.</p>
+            <ul>
+                <li><strong>Skryté touhy:</strong> Sexualita, fascinace tabu a tajemstvím.</li>
+                <li><strong>Stín a odmítnutí:</strong> Místa, kde se cítíte nepochopeni nebo vyloučeni.</li>
+                <li><strong>Autonomie a vzdor:</strong> Extrémní potřeba svobody a odmítnutí kompromisů.</li>
+                <li><strong>Vnitřní síla:</strong> Když pochopíte svou Lilith, získáte moc čelit svým největším strachům.</li>
+            </ul>
+
+            <p>Zatímco společnost nás učí své stíny skrývat, integrace energie Černé Luny vede k obrovské osobní svobodě. Zkoumání Lilith je procesem přijetí sebe sama i s těmi vlastnostmi, které ostatní považují za kontroverzní.</p>
+
+        <div style="margin-top:2rem; padding: 1.5rem; background: rgba(155,89,182,0.08); border-left: 3px solid var(--color-primary); border-radius:0 12px 12px 0;">
+        <p style="margin:0; font-size:1.1rem; color:var(--color-mystic-gold); font-family: 'Cinzel', serif;">✨ <strong>Kde máte svou Lilith vy?</strong></p>
+        <p style="margin:0.5rem 0 0 0; font-size:0.9rem; color:var(--color-text-mutated);">Zjistěte umístění své Černé Luny a její vliv na vaši osobnost v naší detailní analýze.</p>
+        <div style="margin-top: 1rem;">
+            <a href="../natalni-karta.html" class="btn btn--primary" style="font-size:0.9rem; padding: 0.5rem 1rem;">Zjistit mou Lilith v Natální Kartě →</a>
+        </div>
+    </div>`,
         related_slugs: ['nativni-karta', 'ascendent'],
-        linked_blog_slug: 'lilith-v-natalni-karte'
+        linked_blog_slug: null
     },
     {
         slug: 'descendent',
         title: 'Descendent (DC)',
         category: 'Astrologie',
-        short_description: 'Bod v horoskopu naproti Ascendentu, který označuje začátek 7. domu. Astrologie jej spojuje s blízkými vztahy; neurčuje partnera ani kompatibilitu.',
+        short_description: 'Descendent leží přesně naproti Ascendentu a reprezentuje naše partnerské vztahy, sňatky a typ lidí, ke kterým jsme přitahováni. Zjistěte více o 7. domě v astrologii.',
         content_html: `
-            <p><strong>Descendent (DC)</strong> leží v horoskopu naproti Ascendentu a označuje začátek 7. domu. Astrologie jej symbolicky propojuje s blízkými vztahy a spoluprací. Výpočet závisí mimo jiné na čase a místě narození.</p>
-            <h2>Jak se Descendent vykládá?</h2>
-            <p>V astrologických tradicích může znamení Descendentu otevřít témata, nad kterými se chceš ve vztazích zamyslet. Samo o sobě ale neodhaluje, koho potkáš, jaké bude manželství ani zda se k sobě dva lidé hodí.</p>
+            <p><strong>Descendent (DC)</strong> je bod v natálním horoskopu, který leží přesně naproti Ascendentu. Označuje začátek 7. domu a stojí na samotném západním obzoru v době vašeho narození. Zatímco Ascendent ukazuje "Já" (sebeobraz, vnější projev), Descendent ukazuje "My" a reprezentuje sféru vážných partnerských a obchodních vztahů.</p>
+            
+            <h2>Vliv Descendentu na Vztahy</h2>
+            <p>Znamení, ve kterém se nachází váš Descendent, odhaluje obrovské množství informací o vašem milostném životě:</p>
             <ul>
-                <li><strong>Vzájemnost:</strong> Jak ve vztazích hledáš rovnováhu mezi vlastními potřebami a potřebami druhého?</li>
-                <li><strong>Spolupráce:</strong> Jaké dohody, hranice a očekávání chceš ve vztazích pojmenovat?</li>
-                <li><strong>Rozdílnost:</strong> Co tě na druhých přitahuje nebo překvapuje, aniž by to muselo být předem dané horoskopem?</li>
+                <li><strong>Osobnostní Stín:</strong> Znamení na Descendentu často zosobňuje kvality, které popíráme sami u sebe nebo které neumíme projevit, a tak je hledáme u partnera, aby nás "doplnil".</li>
+                <li><strong>Osudová Přitažlivost:</strong> Ukazuje na vlastnosti, ke kterým jsme přirozeně a mnohdy až magicky přitahováni u druhých. Lidé s výraznými planetami ve stejném znamení, jako je náš Descendent, nám často připadají fascinující.</li>
+                <li><strong>Manželství a Partnerství:</strong> Odkrývá, jak vnímáme manželství, co od dlouhodobého svazku očekáváme a s jakými typy výzev se můžeme v partnerství potýkat.</li>
+                <li><strong>Otevření nepřátelé:</strong> Zatímco 12. dům vládne skrytým nepřátelům, 7. dům s Descendentem pokrývá ty lidi, u kterých je nám jejich rivalita otevřeně známa.</li>
             </ul>
-            <p>Někteří astrologové porovnávají při synastrii dvě natální mapy. Jde o symbolický výklad, který nedokáže spolehlivě změřit kvalitu ani budoucnost vztahu.</p>
-        <div style="margin-top:2rem; padding: 1.5rem; background: rgba(91,132,151,0.12); border-left: 3px solid #bd9b65; border-radius:0 4px 4px 0;">
-        <p style="margin:0; font-size:1.1rem; color:var(--color-mystic-gold); font-family: 'Cinzel', serif;">${symbolMarkup('partner', true)} <strong>Chceš prozkoumat partnerskou shodu?</strong></p>
-        <p style="margin:0.5rem 0 0 0; font-size:0.9rem; color:var(--color-text-mutated);">Otevři nástroj Partnerská shoda a podívej se na astrologický pohled na vaše data narození.</p>
+
+            <p>Pochopení Descendentu je nezbytných prvkem ve vztahové astrologii (Synastrii), kde se zkoumá, nakolik vaše "Já" zapadá do partnerova "My" a naopak.</p>
+
+        <div style="margin-top:2rem; padding: 1.5rem; background: rgba(155,89,182,0.08); border-left: 3px solid var(--color-primary); border-radius:0 12px 12px 0;">
+        <p style="margin:0; font-size:1.1rem; color:var(--color-mystic-gold); font-family: 'Cinzel', serif;">💞 <strong>Hodíte se k sobě?</strong></p>
+        <p style="margin:0.5rem 0 0 0; font-size:0.9rem; color:var(--color-text-mutated);">Otestujte si kompatibilitu a prozkoumejte své i partnerovy hvězdné body v naší aplikaci Partnerská Shoda.</p>
         <div style="margin-top: 1rem;">
-            <a href="../partnerska-shoda.html" class="btn btn--primary" style="font-size:0.9rem; padding: 0.5rem 1rem;">Otevřít Partnerskou shodu →</a>
+            <a href="../partnerska-shoda.html" class="btn btn--primary" style="font-size:0.9rem; padding: 0.5rem 1rem;">Vypočítat Partnerskou Shodu →</a>
         </div>
     </div>`,
         related_slugs: ['ascendent', 'nativni-karta'],
@@ -425,49 +436,54 @@ const DICTIONARY_TERMS = [
     },
     {
         slug: 'chiron',
-        title: 'Chiron („Zraněný léčitel“)',
+        title: 'Chiron ("Zraněný léčitel")',
         category: 'Astrologie',
-        short_description: 'Malé těleso ve Sluneční soustavě, které astrologie symbolicky spojuje s citlivostí a osobním růstem. Horoskop ale neurčuje trauma ani léčebný postup.',
+        short_description: 'Chiron symbolizuje naše nejhlubší karmické rány a schopnost je proměnit v největší dar léčení. Zjistěte význam Chirona ve vašem natálním horoskopu.',
         content_html: `
-            <p><strong>Chiron</strong> je malé těleso Sluneční soustavy. V astrologii se mu říká „Zraněný léčitel“ podle postavy z řecké mytologie. Astrologické významy jsou symbolické a mezi autory se mohou lišit.</p>
-            <h2>Symbolický výklad</h2>
-            <p>V některých výkladech může Chiron představovat citlivé téma, nejistotu nebo zkušenost, které člověk věnuje pozornost. Z jeho polohy ale nelze určit, zda někdo prožil trauma, jaké má psychické potíže ani jakou podporu potřebuje.</p>
+            <p><strong>Chiron</strong> je planetka (nebo kometa), obíhající mezi Saturnem a Uranem. V astrologii reprezentuje "Zraněného léčitele" (The Wounded Healer). Jedná se o oblast našeho života, kde jsme byli kdysi hluboce, často bezdůvodně, zraněni a s tímto zraněním se musíme během života vyrovnat.</p>
+            
+            <h2>Mytologie a Význam</h2>
+            <p>Podle řecké mytologie byl kentaur Chiron vynikajícím léčitelem a učitelem. Byl nesmrtelný, ale po zásahu otráveným šípem utrpěl zranění, které si nedokázal sám vyléčit a musel tak žít v neustálých bolestech. Právě proto, že poznal utrpení, měl neuvěřitelnou empatii a dokázal mistrně léčit druhé.</p>
+            
             <ul>
-                <li><strong>Citlivost:</strong> Jaké téma v tobě vyvolává nejistotu a co ti pomáhá cítit se bezpečněji?</li>
-                <li><strong>Zkušenost a empatie:</strong> Minulá zkušenost může ovlivnit, jak rozumíš druhým, ale není povinností proměnit bolest v „dar“.</li>
-                <li><strong>Podpora:</strong> Astrologický symbol nenahrazuje rozhovor s odborníkem ani péči, kterou si sám zvolíš.</li>
+                <li><strong>Karmické Zranění:</strong> Znamení a dům, ve kterém máte Chirona, ukazuje vaši největší slabinu nebo místo nedůvěry (např. strach z odmítnutí, potlačená asertivita).</li>
+                <li><strong>Empatie jako Dar:</strong> Naše největší trauma se paradoxně může proměnit v naši nejsilnější zbraň. To, čím jsme trpěli, nás učí, jak být skvělými průvodci pro lidi s podobným problémem.</li>
+                <li><strong>Cesta K Uzdravení:</strong> Chironské rány obvykle nikdy nezmizí beze stopy (jizva zůstává), ale jakmile to přijmeme, přestane nás zranění bolet a začne z nás čišet zvláštní životní moudrost.</li>
             </ul>
 
-        <div style="margin-top:2rem; padding: 1.5rem; background: rgba(91,132,151,0.12); border-left: 3px solid #bd9b65; border-radius:0 4px 4px 0;">
-        <p style="margin:0; font-size:1.1rem; color:var(--color-mystic-gold); font-family: 'Cinzel', serif;">${symbolMarkup('chart', true)} <strong>Chceš se podívat na svou natální mapu?</strong></p>
-        <p style="margin:0.5rem 0 0 0; font-size:0.9rem; color:var(--color-text-mutated);">Prozkoumej astrologický diagram a jeho symbolické souvislosti. Nejde o diagnózu ani jistý popis tvé osobnosti.</p>
+        <div style="margin-top:2rem; padding: 1.5rem; background: rgba(155,89,182,0.08); border-left: 3px solid var(--color-primary); border-radius:0 12px 12px 0;">
+        <p style="margin:0; font-size:1.1rem; color:var(--color-mystic-gold); font-family: 'Cinzel', serif;">✨ <strong>Kde se nachází váš Chiron?</strong></p>
+        <p style="margin:0.5rem 0 0 0; font-size:0.9rem; color:var(--color-text-mutated);">Podívejte se do svého osobního horoskopu. Znamení a dům vašeho Chirona vám přesně určí vaši životní ránu i váš největší léčitelský dar.</p>
         <div style="margin-top: 1rem;">
-            <a href="../natalni-karta.html" class="btn btn--primary" style="font-size:0.9rem; padding: 0.5rem 1rem;">Otevřít natální kartu →</a>
+            <a href="../natalni-karta.html" class="btn btn--primary" style="font-size:0.9rem; padding: 0.5rem 1rem;">Vypočítat Natální Kartu →</a>
         </div>
     </div>`,
         related_slugs: ['karma', 'karmicky-uzel'],
-        linked_blog_slug: 'chiron-raneny-lecitel-natalni-karta'
+        linked_blog_slug: null
     },
     {
         slug: 'spankova-paralyza',
         title: 'Spánková Paralýza',
         category: 'Snář',
-        short_description: 'Krátká neschopnost pohnout se nebo promluvit při usínání či probouzení. Může být spojena se živými vjemy; nejde o důkaz nadpřirozeného dění.',
+        short_description: 'Spánková paralýza: Fenomén na pomezí spánku a bdění. Co znamená, proč vzniká a jaký má duchovní a snový přesah.',
         content_html: `
-            <p><strong>Spánková paralýza</strong> je krátkodobá neschopnost pohnout se nebo promluvit při usínání či probouzení. Člověk si přitom může uvědomovat okolí. Epizodu někdy doprovází pocit přítomnosti, tlak na hrudi nebo jiné živé vjemy a může působit děsivě.</p>
-            <p>Dochází k ní při přechodu mezi spánkem a bděním, když se vědomí probouzí, zatímco dočasné znehybnění svalů spojené s REM spánkem ještě trvá. Přesná příčina není vždy jasná. S epizodami se pojí například nedostatek spánku, nepravidelný režim nebo spaní na zádech; nejde však o jistou příčinu každého případu. Pokud se opakují a výrazně narušují spánek nebo tě znepokojují, prober je s lékařem.</p>
-            <h2>Jak se na zážitek dívat</h2>
-            <p>Různé kultury si podobné vjemy vykládaly duchovně. Tyto příběhy mohou být součástí tradice, samy o sobě však nedokládají astrální cestování ani přítomnost bytosti.</p>
+            <p><strong>Spánková paralýza</strong> je fascinující, ale často děsivý stav, ke kterému dochází na hranici mezi spánkem (nejčastěji fází REM) a bděním. Vaše vědomí ("mysl") se probudí, uvědomujete si své okolí, ale vaše tělo zůstává hluboce spící a paralyzované. Tento stav může trvat několik sekund až minut.</p>
+            
+            <h2>Vědecký vs. Spirituální pohled</h2>
+            <p>Z vědeckého hlediska je to ochranný mechanismus evoluce. Během REM spánku, kdy se nám zdají sny, mozek vyplavuje látky uvolňující svaly, abychom ve spánku nereagovali na dění ve snech a nezranili se. Když se mozek probudí dříve než vyprchá tento svalový "zámek", vnímáme paralýzu. Způsobuje ji stres, nedostatek spánku či spaní v poloze na zádech.</p>
+            
+            <p><strong>Ve spirituálním a esoterickém světě</strong> má spánková paralýza mnohem hlubší výklad:</p>
             <ul>
-                <li><strong>Vjemy při probouzení:</strong> Někomu se může zdát, že je v místnosti další člověk, nebo může cítit tlak či pohyb. Vjem může být skutečně intenzivní, ale není spolehlivým důkazem, že tam někdo byl.</li>
-                <li><strong>Osobní význam:</strong> Pokud si chceš zážitek symbolicky vyložit, odděl vlastní asociace od toho, co lze o spánkové paralýze doložit.</li>
+                <li><strong>Brána do astrálu:</strong> Pro mnoho lidí cvičících vědomé (lucidní) snění a astrální cestování je stav paralýzy vědomým cílem a startovní čárou k vystoupení z fyzického těla (OOBE).</li>
+                <li><strong>"Návštěvníci" a Bytosti:</strong> Mozek se ze stavu strachu a neschopnosti hýbat se často začne bránit halucinacemi (např. tmavé stíny, pocit tíhy na hrudi – "dusivý démon / incubus"). Různé kultury si tento pocit v historii vysvětlovaly útoky zlých duchů.</li>
+                <li><strong>Zkouška strachu:</strong> Pokud se při spánkové paralýze naučíte nepodléhat panice, dýchat a přijmout stav uvolnění, obvykle se snové démonické výjevy promění ve velmi klidný a barevný lucidní sen.</li>
             </ul>
 
-        <div style="margin-top:2rem; padding: 1.5rem; background: rgba(91,132,151,0.12); border-left: 3px solid #bd9b65; border-radius:0 4px 4px 0;">
-        <p style="margin:0; font-size:1.1rem; color:var(--color-mystic-gold); font-family: 'Cinzel', serif;">${symbolMarkup('dream', true)} <strong>Chceš si zážitek zapsat?</strong></p>
-        <p style="margin:0.5rem 0 0 0; font-size:0.9rem; color:var(--color-text-mutated);">Digitální Snář může nabídnout možné symbolické asociace. Neurčí diagnózu ani jediný správný význam snu.</p>
+        <div style="margin-top:2rem; padding: 1.5rem; background: rgba(155,89,182,0.08); border-left: 3px solid var(--color-primary); border-radius:0 12px 12px 0;">
+        <p style="margin:0; font-size:1.1rem; color:var(--color-mystic-gold); font-family: 'Cinzel', serif;">🌙 <strong>Zdálo se vám něco zvláštního?</strong></p>
+        <p style="margin:0.5rem 0 0 0; font-size:0.9rem; color:var(--color-text-mutated);">Pokud jste zažili živý nebo děsivý sen po probuzení z paralýzy, vložte ho do našeho Snáře. Magická inteligence odhalí podvědomou symboliku vašich vizí.</p>
         <div style="margin-top: 1rem;">
-            <a href="../snar.html" class="btn btn--primary" style="font-size:0.9rem; padding: 0.5rem 1rem;">Otevřít Digitální Snář →</a>
+            <a href="../snar.html" class="btn btn--primary" style="font-size:0.9rem; padding: 0.5rem 1rem;">Vyložit si sen přes Snář →</a>
         </div>
     </div>`,
         related_slugs: ['lucidni-sen', 'akasicke-zaznamy'],
@@ -477,22 +493,22 @@ const DICTIONARY_TERMS = [
         slug: 'andelske-cislo-1111',
         title: 'Andělské Číslo 11:11',
         category: 'Numerologie',
-        short_description: 'V některých numerologických směrech se 11:11 vykládá jako symbol pozornosti, záměru a synchronicity. Jde o duchovní interpretaci, ne o důkaz nebo předpověď.',
+        short_description: 'Andělské číslo 11:11 je mocný symbol synchronicity, probuzení a potvrzení z vesmíru, že vaše myšlenky se rychle manifestují do reality.',
         content_html: `
-            <p>Opakovaný čas <strong>11:11</strong> někteří lidé vnímají jako smysluplnou shodu a spojují ho s takzvanými <strong>andělskými čísly</strong>. Samotný vzorec ale nedokazuje, že jde o zprávu, předpověď nebo zásah zvenčí.</p>
-
-            <h2>Jak se 11:11 vykládá</h2>
-            <p>V některých numerologických a duchovních směrech se jednička spojuje se začátkem a záměrem, zatímco 11 bývá označováno za mistrovské číslo. Výklad čtyř jedniček jako „energetického portálu“ je symbolická představa, ne ověřený jev.</p>
-
+            <p>Máte pocit, že pokaždé, když se podíváte na telefon nebo na hodinky, ukazuje čas zrovna <strong>11:11</strong>? Tento časový vzorec je zdaleka nejznámějším z tzv. <strong>Andělských čísel</strong>. Nejde o náhodu, ale o fenomén zvaný <em>synchronicita</em>.</p>
+            
+            <h2>Poselství a Význam 11:11</h2>
+            <p>V numerologii vládne číslu 1 začátek, stvoření, touha a myšlenka. Mistrovské číslo 11 tuto energii znásobuje do roviny intuice a osvícení. Při pohledu na čtyři jedničky vedle sebe (11:11) se před vámi otevírá energetický portál.</p>
+            
             <ul>
-                <li><strong>Pozornost k záměru:</strong> Zastav se a všimni si, čemu právě věnuješ pozornost. Čas na hodinách sám o sobě nemění události, ale může připomenout, jaký krok chceš udělat.</li>
-                <li><strong>Osobní souvislost:</strong> Pokud se ti 11:11 často připomíná, můžeš si zapsat, co se v tu chvíli děje a co je pro tebe důležité. Význam si vykládá každý po svém; není to potvrzení zvláštního stavu vědomí.</li>
-                <li><strong>Duchovní interpretace:</strong> Některé směry spojují 11:11 s intuicí nebo podporou. Z čísla ale nelze ověřit, že ti někdo posílá zprávu nebo že jsi na určité životní cestě.</li>
+                <li><strong>Okamžitá manifestace:</strong> Vesmír jako by "fotil" to, na co zrovna myslíte. Vaše myšlenky se v tu chvíli velmi rychle stávají realitou. Zaměřte se na to, co chcete, nikoli na to, čeho se bojíte.</li>
+                <li><strong>Duchovní probuzení:</strong> Pokud tuto řadu čísel začnete vídat často, znamená to, že se vaše vědomí probouzí a začínáte vnímat víc, než jen materiální realitu 3D světa.</li>
+                <li><strong>Andělské potvrzení:</strong> Vaši duchovní strážci vám tímto říkají: "Jsi na správné cestě. Stojíme při tobě." Často to přichází po těžkém životním rozhodnutí.</li>
             </ul>
 
-        <div style="margin-top:2rem; padding: 1.5rem; background: rgba(91,132,151,0.12); border-left: 3px solid #bd9b65; border-radius:0 4px 4px 0;">
-        <p style="margin:0; font-size:1.1rem; color:var(--color-mystic-gold); font-family: 'Cinzel', serif;">${symbolMarkup('angel', true)} <strong>Zajímají tě výklady andělských karet?</strong></p>
-        <p style="margin:0.5rem 0 0 0; font-size:0.9rem; color:var(--color-text-mutated);">V Andělské poště můžeš prozkoumat tradiční duchovní výklady čísel. Ber je jako symbolický podnět, ne jako ověřenou zprávu zvenčí.</p>
+        <div style="margin-top:2rem; padding: 1.5rem; background: rgba(155,89,182,0.08); border-left: 3px solid var(--color-primary); border-radius:0 12px 12px 0;">
+        <p style="margin:0; font-size:1.1rem; color:var(--color-mystic-gold); font-family: 'Cinzel', serif;">👼 <strong>Zajímají vás vzkazy od Strážných andělů?</strong></p>
+        <p style="margin:0.5rem 0 0 0; font-size:0.9rem; color:var(--color-text-mutated);">Otevřete si Andělskou Poštu a odhalte, jaká další čísla a poselství k vám z vesmíru aktuálně proudí.</p>
         <div style="margin-top: 1rem;">
             <a href="../andelske-karty.html" class="btn btn--primary" style="font-size:0.9rem; padding: 0.5rem 1rem;">Otevřít Andělskou Poštu →</a>
         </div>
@@ -507,7 +523,7 @@ const DICTIONARY_TERMS = [
         short_description: 'Fáze Měsíce s maximální světelnou a energetickou silou, ovlivňující emoce, spánek i duchovní projevy.',
         content_html: `
             <p><strong>Úplněk</strong>, známý z latinského plenilunium, je astronomicky momentem, kdy se Země ocitne přesně mezi Sluncem a Měsícem. Měsíční disk je plně osvětlen a svítí na obloze svou největší intenzitou. Astrologicky jde ale o velmi náročný aspekt – aspekt takzvané Opozice (napětí 180°) mezi Sluncem a Lunou.</p>
-
+            
             <h2>Vliv Úplňku na Tělo a Psychiku</h2>
             <p>I vědecké studie prokazují, že gravitace fáze úplňku ovlivňuje lidské tělo. V mytologii a astrologii jde o čas napětí i zázraků:</p>
             <ul>
@@ -516,8 +532,8 @@ const DICTIONARY_TERMS = [
                 <li><strong>Dokončování a Propouštění:</strong> Úplněk je časem sklizně a uvolňování. Zatímco za novoluní si tvoříme nové cíle, o úplňku bychom měli odpouštět a opouštět návyky, ty které nám už neslouží.</li>
             </ul>
 
-        <div style="margin-top:2rem; padding: 1.5rem; background: rgba(91,132,151,0.12); border-left: 3px solid #bd9b65; border-radius:0 4px 4px 0;">
-        <p style="margin:0; font-size:1.1rem; color:var(--color-mystic-gold); font-family: 'Cinzel', serif;">${symbolMarkup('wave', true)} <strong>Cítíte se rozhození?</strong></p>
+        <div style="margin-top:2rem; padding: 1.5rem; background: rgba(155,89,182,0.08); border-left: 3px solid var(--color-primary); border-radius:0 12px 12px 0;">
+        <p style="margin:0; font-size:1.1rem; color:var(--color-mystic-gold); font-family: 'Cinzel', serif;">📉 <strong>Cítíte se rozhození?</strong></p>
         <p style="margin:0.5rem 0 0 0; font-size:0.9rem; color:var(--color-text-mutated);">Ověřte si, v jaké fázi se právě nachází Měsíc, a zkontrolujte si svou emocionální, fyzickou a intelektuální křivku v naší sekci Biorytmy.</p>
         <div style="margin-top: 1rem;">
             <a href="../biorytmy.html" class="btn btn--primary" style="font-size:0.9rem; padding: 0.5rem 1rem;">Zjistit moji aktuální křivku a fázi měsíce →</a>

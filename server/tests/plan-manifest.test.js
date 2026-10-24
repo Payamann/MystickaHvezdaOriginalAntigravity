@@ -48,7 +48,7 @@ describe('Public plan manifest', () => {
         expect(manifest.plans.find(plan => plan.id === 'pruvodce').description).not.toMatch(/neomezen/i);
     });
 
-    test('keeps historical plans available to checkout and webhook lookups', () => {
+    test('keeps historical plans available for existing access and webhook lookups', () => {
         expect(Object.keys(SUBSCRIPTION_PLANS)).toEqual([
             'poutnik',
             'pruvodce',

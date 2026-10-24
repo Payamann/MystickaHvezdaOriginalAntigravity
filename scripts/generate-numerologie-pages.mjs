@@ -5,12 +5,14 @@
  * plus a static link hub inside kalkulacka-cisla-osudu.html between the
  * NUMEROLOGIE-LINKS markers.
  *
- * Usage: node scripts/generate-numerologie-pages.mjs [--check]
- * --check compares generated output without writing to the site.
- * Normal runs only write files whose contents actually changed.
+ * Usage: node scripts/generate-numerologie-pages.mjs
+ * Idempotent: re-running overwrites generated pages in place.
  */
 import fs from 'fs';
 import {atlasShell} from './atlas-shell.mjs';
+import { prepareGeneratedPage } from './lib/generated-page-metadata.mjs';
+import { refreshCssAssetReferences } from './lib/release-css-versions.mjs';
+import { refreshRuntimeAssetReferences } from './lib/release-runtime-versions.mjs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -18,9 +20,25 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(__dirname, '..');
 const DATA_PATH = path.join(ROOT, 'data', 'numerology-numbers.json');
 const OUTPUT_DIR = path.join(ROOT, 'numerologie');
+const CHECK_ONLY = process.argv.includes('--check');
+const checkDrift = [];
+
+function writeGenerated(filePath, content) {
+    content = refreshRuntimeAssetReferences(refreshCssAssetReferences(content));
+    if (CHECK_ONLY) {
+        if (!fs.existsSync(filePath) || fs.readFileSync(filePath, 'utf8') !== content) checkDrift.push(path.relative(ROOT, filePath));
+        return;
+    }
+    fs.writeFileSync(filePath, content, 'utf8');
+}
+
+function finishCheck() {
+    if (CHECK_ONLY && checkDrift.length) throw new Error(`[numerologie] ${checkDrift.length} generated file(s) differ: ${checkDrift.slice(0, 20).join(', ')}`);
+    if (CHECK_ONLY) console.log('[numerologie] Check passed: generated pages and hub links are current; no files written.');
+}
 const HUB_PATH = path.join(ROOT, 'kalkulacka-cisla-osudu.html');
 const CANONICAL_ORIGIN = 'https://www.mystickahvezda.cz';
-const LASTMOD = '2026-10-18';
+const LASTMOD = '2026-07-04';
 
 function escapeHtml(value) {
     return String(value)
@@ -31,7 +49,7 @@ function escapeHtml(value) {
 }
 
 function buildDescription(number, entry) {
-    return `Životní číslo ${number} — ${entry.title}: ${entry.short}. Symbolické téma k zamyšlení, ne popis osobnosti ani předpověď.`;
+    return `Životní číslo ${number} — ${entry.title}: ${entry.short}. ${entry.meaning}`.slice(0, 158);
 }
 
 function renderPage(number, entry, allNumbers) {
@@ -61,7 +79,7 @@ function renderPage(number, entry, allNumbers) {
         ]
     }, null, 2);
 
-    return atlasShell(`<!DOCTYPE html>
+    return atlasShell(prepareGeneratedPage(`<!DOCTYPE html>
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
@@ -83,7 +101,7 @@ function renderPage(number, entry, allNumbers) {
     <script type="application/ld+json">${jsonLd}</script>
     <script type="application/ld+json">${breadcrumbLd}</script>
     <link rel="stylesheet" href="/fonts/local-fonts.css">
-    <link rel="stylesheet" href="../css/style.v2.min.css?v=20261018-release-candidate">
+    <link rel="stylesheet" href="../css/style.v2.min.css?v=20261023-release-todo">
 <script src="/js/dist/analytics-init.js" defer></script>
 </head>
 <body>
@@ -91,38 +109,37 @@ function renderPage(number, entry, allNumbers) {
     <div class="stars" aria-hidden="true"></div>
     <div id="header-placeholder"></div>
 
-    <main id="main-content" tabindex="-1">
+    <main id="main-content">
         <section class="section">
             <div class="container">
                 <span class="section__badge">Numerologie</span>
                 <h1 class="section__title">Životní číslo <span class="text-gradient">${number}</span> — ${escapeHtml(entry.title)}</h1>
                 <p class="section__text"><strong>${escapeHtml(entry.short)}.</strong> ${escapeHtml(entry.meaning)}</p>
-                <p>Numerologické výklady jsou symbolické. Neověřují osobnost, vztahovou shodu ani budoucnost; ber si z nich jen témata, která dávají smysl ve světle tvé skutečné zkušenosti.</p>
 
                 <div class="card">
-                    <h2>Symbolická témata</h2>
+                    <h2>Silné stránky čísla ${number}</h2>
                     <p>${escapeHtml(entry.strengths)}</p>
-                    <h3>Druhá strana tématu</h3>
+                    <h3>Stinná stránka</h3>
                     <p>${escapeHtml(entry.shadow)}</p>
                 </div>
 
                 <div class="card">
-                    <h2>Otázka pro vztahy</h2>
+                    <h2>❤️ Vztahy</h2>
                     <p>${escapeHtml(entry.relationships)}</p>
-                    <h3>Otázka pro práci a směr</h3>
+                    <h3>💼 Kariéra</h3>
                     <p>${escapeHtml(entry.career)}</p>
                 </div>
 
                 <div class="card">
-                    <h2>Malý další krok</h2>
+                    <h2>Doporučení pro číslo ${number}</h2>
                     <p>${escapeHtml(entry.advice)}</p>
                 </div>
 
                 <div class="card">
                     <h2>Nevíš, jaké je tvoje životní číslo?</h2>
-                    <p>Naše kalkulačka redukuje den, měsíc a rok zvlášť, v mezikrocích ponechává 11, 22 a 33 a pak redukuje jejich součet. Jiné numerologické školy mohou počítat jinak.</p>
+                    <p>Spočítá se z celého data narození. Zabere to pár vteřin a je to zdarma.</p>
                     <p>
-                        <a href="../kalkulacka-cisla-osudu.html?source=numerology_number_detail&feature=numerologie_vyklad" class="btn btn--primary">Spočítat číslo životní cesty zdarma</a>
+                        <a href="../kalkulacka-cisla-osudu.html?source=numerology_number_detail&feature=numerologie_vyklad" class="btn btn--primary">Spočítat číslo osudu zdarma</a>
                         <a href="../numerologie.html?source=numerology_number_detail&feature=numerologie_vyklad" class="btn btn--secondary">Kompletní numerologický rozbor</a>
                     </p>
                 </div>
@@ -139,14 +156,14 @@ function renderPage(number, entry, allNumbers) {
 
     <div id="footer-placeholder"></div>
 
-    <script src="../js/dist/core.js?v=20261021-footer-support-locale" defer></script>
+    <script src="../js/dist/core.js?v=1" defer></script>
     <script type="module" src="../js/dist/main.js?v=10"></script>
 </body>
 </html>
-`, 'atlas-content-page atlas-content-detail', 'atlas-content.css');
+`, `numerologie/zivotni-cislo-${number}.html`), 'atlas-content-page atlas-content-detail', 'atlas-content.css');
 }
 
-function renderHubLinks(numbers, data) {
+function updateHubLinks(numbers, data) {
     const startMarker = '<!-- NUMEROLOGIE-LINKS:START -->';
     const endMarker = '<!-- NUMEROLOGIE-LINKS:END -->';
     let html = fs.readFileSync(HUB_PATH, 'utf8');
@@ -175,60 +192,25 @@ function renderHubLinks(numbers, data) {
         html = html.replace(anchor, `${section}\n\n    ${anchor}`);
     }
 
-    return html;
+    writeGenerated(HUB_PATH, html);
 }
 
 function main() {
-    const checkOnly = process.argv.includes('--check');
     const data = JSON.parse(fs.readFileSync(DATA_PATH, 'utf8'));
-    if (!data || typeof data !== 'object' || Array.isArray(data)) {
-        throw new Error('data/numerology-numbers.json must contain an object keyed by life-path number.');
-    }
-
     const numbers = Object.keys(data).sort((a, b) => Number(a) - Number(b));
-    if (!checkOnly) fs.mkdirSync(OUTPUT_DIR, { recursive: true });
-    const staleFiles = [];
-    let updated = 0;
+
+    if (!CHECK_ONLY) fs.mkdirSync(OUTPUT_DIR, { recursive: true });
 
     for (const number of numbers) {
-        const outputPath = path.join(OUTPUT_DIR, `zivotni-cislo-${number}.html`);
-        const expected = renderPage(number, data[number], numbers);
-
-        if (checkOnly) {
-            if (!fs.existsSync(outputPath) || fs.readFileSync(outputPath, 'utf8') !== expected) {
-                staleFiles.push(path.relative(ROOT, outputPath));
-            }
-        } else if (!fs.existsSync(outputPath) || fs.readFileSync(outputPath, 'utf8') !== expected) {
-            fs.writeFileSync(outputPath, expected, 'utf8');
-            updated++;
-        }
+        writeGenerated(
+            path.join(OUTPUT_DIR, `zivotni-cislo-${number}.html`),
+            renderPage(number, data[number], numbers)
+        );
     }
 
-    const expectedHub = renderHubLinks(numbers, data);
-    if (checkOnly) {
-        if (!fs.existsSync(HUB_PATH) || fs.readFileSync(HUB_PATH, 'utf8') !== expectedHub) {
-            staleFiles.push(path.relative(ROOT, HUB_PATH));
-        }
-
-        if (staleFiles.length) {
-            const preview = staleFiles.slice(0, 20).join(', ');
-            const remaining = staleFiles.length > 20 ? ` and ${staleFiles.length - 20} more` : '';
-            console.error(`[numerologie] Check failed: ${staleFiles.length} generated file(s) need updates: ${preview}${remaining}`);
-            process.exitCode = 1;
-            return;
-        }
-
-        console.log(`[numerologie] Check passed: ${numbers.length} life-path pages and link hub are current; no files written.`);
-        return;
-    }
-
-    let hubUpdated = false;
-    if (!fs.existsSync(HUB_PATH) || fs.readFileSync(HUB_PATH, 'utf8') !== expectedHub) {
-        fs.writeFileSync(HUB_PATH, expectedHub, 'utf8');
-        hubUpdated = true;
-    }
-
-    console.log(`[numerologie] Updated ${updated} of ${numbers.length} life-path pages; link hub ${hubUpdated ? 'updated' : 'unchanged'}.`);
+    updateHubLinks(numbers, data);
+    finishCheck();
+    if (!CHECK_ONLY) console.log(`[numerologie] Generated ${numbers.length} life-path pages + link hub in kalkulacka-cisla-osudu.html.`);
 }
 
 main();

@@ -51,27 +51,21 @@
 
 
 
-                    const data = await response.json();
+                    const data = await response.json().catch(() => ({}));
 
-
-
-                    if (data.success) {
-
-                        alert(data.message || 'Zpráva byla odeslána!');
-
-                        contactForm.reset();
-
-                    } else {
-
-                        alert(data.error || 'Chyba při odesílání zprávy.');
-
+                    if (!response.ok || data.success !== true) {
+                        alert(data.error || 'Nepodařilo se potvrdit odeslání zprávy. Vyplněný text zůstává ve formuláři.');
+                        return;
                     }
+
+                    alert(data.message || 'Zpráva byla odeslána!');
+                    contactForm.reset();
 
                 } catch (error) {
 
                     console.error('Contact Form Error:', error);
 
-                    alert('Chyba při odesílání zprávy. Zkuste to prosím později.');
+                    alert('Nepodařilo se potvrdit odeslání zprávy. Vyplněný text zůstává ve formuláři; zkuste to prosím později.');
 
                 } finally {
 

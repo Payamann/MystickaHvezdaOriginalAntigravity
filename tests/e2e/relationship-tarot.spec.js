@@ -32,7 +32,7 @@ test('sample, images, legal links and mobile layout are usable before purchase',
             source: new URL(el.currentSrc).pathname
         }));
         expect(imageState.loaded).toBe(true);
-        expect(imageState.source).toMatch(/tarot_(?:milenci|mirnost|spravedlnost)-mobile(?:-480)?\.webp$/);
+        expect(imageState.source).toMatch(/tarot_(?:milenci|mirnost|spravedlnost)(?:-mobile(?:-480)?)?\.webp$/);
     }
     for (const href of ['/podminky.html', '/soukromi.html', '/kontakt.html']) {
         expect((await request.get(href)).status()).toBe(200);
@@ -167,6 +167,10 @@ test('tarot entry is gated by availability and carries only source in the URL', 
 
 test('yes/no free result leads to the one-time relationship offer without a membership upsell', async ({ page }) => {
     const funnelEvents = [];
+    const missingCardImages = [];
+    page.on('response', response => {
+        if (response.status() === 404 && /\/img\/tarot-v2\//.test(response.url())) missingCardImages.push(response.url());
+    });
     await prepare(page, true, funnelEvents);
     await page.addInitScript(() => {
         sessionStorage.setItem('mh_relationship_draft', JSON.stringify({ question: 'Staré zadání, které již nechci řešit.', at: Date.now() }));
@@ -190,9 +194,17 @@ test('yes/no free result leads to the one-time relationship offer without a memb
     await expect(offer.locator('.relationship-offer__preview')).toContainText('UKÁZKA PODOBY VÝKLADU');
     await expect(offer.locator('.relationship-offer__preview-list')).toContainText('Blízkost, ve které může zaznít i nesouhlas.');
     await expect(offer.locator('.relationship-offer__preview-note')).toContainText('Modelový příklad pro otázku o opakovaných hádkách.');
-    await expect(offer).toContainText('Na další stránce si nejprve prohlédneš ukázku');
+    await expect(offer).toContainText('Nejdřív si prohlédneš ukázku výkladu');
     await expect(offer).toContainText('vznikne automaticky podle otázky a tří náhodně vybraných karet');
     const cardName = await page.locator('#result-card-name').textContent();
+    const resultImage = page.locator('#result-card-image');
+    await expect(resultImage).toBeVisible();
+    await expect.poll(() => resultImage.evaluate(img => img.complete && img.naturalWidth > 0)).toBe(true);
+    const resultSource = await resultImage.evaluate(img => ({ current: new URL(img.currentSrc).pathname, source: new URL(img.src).pathname }));
+    expect(resultSource.current).toBe(resultSource.source);
+    expect(resultSource.current).toMatch(/\/img\/tarot-v2\/tarot_[^/]+\.webp$/);
+    expect(resultSource.current).not.toMatch(/-(?:240|360)\.webp$/);
+    expect(missingCardImages).toEqual([]);
     const answerLabel = await page.locator('#result-title').textContent();
     expect(await page.evaluate(() => window.relationshipQAEvents)).not.toContain('tarot_yes_no_upgrade_bridge_viewed');
     await offer.scrollIntoViewIfNeeded();

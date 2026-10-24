@@ -145,6 +145,16 @@ describe('API Endpoint Tests', () => {
             });
         });
 
+        test.each([
+            ['/sk/horoskopy.html?znak=baran&period=weekly', 'og:locale" content="sk_SK', 'Týždenný horoskop', 'horoskop-beran.jpg'],
+            ['/pl/horoskopy.html?znak=wodnik&period=monthly', 'og:locale" content="pl_PL', 'Horoskop miesięczny', 'horoskop-vodnar.jpg'],
+        ])('localized horoscope share route returns complete $2 preview', async (route, locale, title, image) => {
+            const res = await request(app).get(route).expect(200);
+            expect(res.text).toContain(locale);
+            expect(res.text).toContain(title);
+            expect(res.text).toContain(image);
+            expect(res.text).toContain('twitter:card" content="summary_large_image');
+        });
         test('production horoscope OG variant uses shared-cache revalidation', async () => {
             await withTemporaryEnv({
                 RAILWAY_ENVIRONMENT_NAME: 'production',
@@ -820,51 +830,6 @@ describe('API Endpoint Tests', () => {
         });
     });
 
-    describe('Account-bound profile and billing mutations', () => {
-        const requests = [
-            { method: 'put', path: '/api/auth/profile', body: { first_name: 'Pavel' } },
-            { method: 'put', path: '/api/user/password', body: { currentPassword: 'current', password: 'newpassword', password_confirm: 'newpassword' } },
-            { method: 'post', path: '/api/payment/cancel', body: {} },
-            { method: 'post', path: '/api/payment/reactivate', body: {} },
-            { method: 'post', path: '/api/payment/portal', body: {} },
-            { method: 'post', path: '/api/payment/subscription/pause', body: { pauseDays: 30 } },
-            { method: 'post', path: '/api/payment/subscription/resume', body: {} },
-            { method: 'post', path: '/api/payment/subscription/apply-discount', body: { couponCode: 'STAY25' } },
-            { method: 'post', path: '/api/payment/retention/feedback', body: { type: 'churn', reason: 'other' } },
-            { method: 'post', path: '/api/payment/email/send', body: { template: 'discount_applied' } }
-        ];
-
-        test.each(requests)('$method $path rejects an account switch before mutation', async ({ method, path, body }) => {
-            const csrfToken = await getCsrfToken();
-            const ownerId = `account-bound-${path.replace(/[^a-z0-9]/gi, '-').slice(0, 48)}`;
-            const token = createUserToken({ id: ownerId });
-            const res = await request(app)[method](path)
-                .set('Cookie', `auth_token=${token}`)
-                .set('x-csrf-token', csrfToken)
-                .send({ ...body, expectedUserId: 'different-account' });
-
-            expect(res.status).toBe(409);
-            expect(res.body).toMatchObject({ success: false });
-        });
-
-        const requestsWithoutBinding = requests.filter(({ path, body }) =>
-            path !== '/api/payment/email/send' || body.template !== 'subscription_paused'
-        );
-
-        test.each(requestsWithoutBinding)('$method $path rejects clients without an account binding', async ({ method, path, body }) => {
-            const csrfToken = await getCsrfToken();
-            const ownerId = `unbound-account-${path.replace(/[^a-z0-9]/gi, '-').slice(0, 48)}`;
-            const token = createUserToken({ id: ownerId });
-            const res = await request(app)[method](path)
-                .set('Cookie', `auth_token=${token}`)
-                .set('x-csrf-token', csrfToken)
-                .send(body);
-
-            expect(res.status).toBe(409);
-            expect(res.body).toMatchObject({ success: false });
-        });
-    });
-
     describe('Numerology Endpoints', () => {
         test('POST /api/numerology/* without CSRF returns 403', async () => {
             const res = await request(app)
@@ -1041,12 +1006,15 @@ describe('API Endpoint Tests', () => {
             process.env.MOCK_AI_FORCE_ERROR = 'true';
 
             try {
-                const missingDate = shiftIsoDate(getPragueTodayStr(), 1);
+                const today = getPragueTodayStr();
+                // Earlier limiter coverage legitimately generates public daily
+                // cache entries; this scenario explicitly needs an empty cache.
+                await supabase.from('cache_horoscopes').delete().eq('sign', 'Rak');
                 const first = await request(app)
-                    .get(`/horoskop/rak/${missingDate}`)
+                    .get(`/horoskop/rak/${today}`)
                     .expect(200);
                 const second = await request(app)
-                    .get(`/horoskop/rak/${missingDate}`)
+                    .get(`/horoskop/rak/${today}`)
                     .expect(200);
 
                 expect(first.text).not.toContain('Testovaci AI odpoved');

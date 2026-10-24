@@ -37,3 +37,25 @@ test('returning clients receive fresh tarot artwork metadata instead of stale ca
     expect(await response).toBe(h.fresh);
     expect(h.fetch).toHaveBeenCalledWith(expect.any(Request), { cache: 'no-cache' });
 });
+
+test('offline fallback precaches its exact production-hashed stylesheets', async () => {
+    const h = harness();
+    const versionedOfflineStyles = [
+        '/fonts/local-fonts.mh-0123456789abcdef.css?theme=atlas',
+        '/css/pages/offline.mh-1123456789abcdef.css',
+        '/css/atlas-web.mh-2123456789abcdef.css?v=1',
+        '/css/atlas-remaining.mh-3123456789abcdef.css?v=2'
+    ];
+    h.context.offlineCache = h.cache;
+    h.context.offlinePage = {
+        clone: () => ({ text: async () => versionedOfflineStyles.map(href => `<link rel="stylesheet" href="${href}">`).join('') })
+    };
+
+    await vm.runInContext('precacheVersionedOfflineAssets(offlineCache, offlinePage)', h.context);
+
+    const requestedUrls = h.fetch.mock.calls.map(([request]) => request.url);
+    expect(requestedUrls).toEqual(versionedOfflineStyles.map(href => `https://example.com${href}`));
+    for (const href of versionedOfflineStyles) {
+        expect(h.cache.put).toHaveBeenCalledWith(`https://example.com${href}`, h.fresh);
+    }
+});

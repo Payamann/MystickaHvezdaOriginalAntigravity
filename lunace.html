@@ -45,7 +45,7 @@
 
     <meta name="twitter:card" content="summary_large_image">
 
-    <meta name="twitter:title" content="Dnešní lunární fáze | Mystická Hvězda">
+    <meta name="twitter:title" content="🌙 Dnešní Lunární Fáze | Mystická Hvězda">
 
     <meta name="twitter:description" content="Aktuální fáze Měsíce jako symbolický rytmus pro dnešní krok.">
 
@@ -53,8 +53,8 @@
 
     <!-- Fonts & Styles -->
     <link rel="stylesheet" href="/fonts/local-fonts.css">
-    <link rel="stylesheet" href="css/style.v2.min.css?v=20261018-release-candidate">
-    <link rel="stylesheet" href="css/pages/lunace.css?v=20261018-atlas-lunar-polish">
+    <link rel="stylesheet" href="css/style.v2.min.css?v=20261023-release-todo">
+<link rel="stylesheet" href="css/pages/lunace.css?v=20261022-moon-phase">
 
     <!-- FAQ Schema -->
 
@@ -121,6 +121,8 @@
     }
 
     </script>
+<!-- DOMPurify for XSS protection (must load synchronously before other scripts use it) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js" integrity="sha384-XQqX/4yiUGu+oyr87jvWzRuqBUK/adrY0DunhL+tID9m/9dwSpV8h9Fk/Sg6ifVQ" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <link rel="canonical" href="https://www.mystickahvezda.cz/lunace.html">
     <script src="/js/dist/analytics-init.js" defer></script>
 <meta property="og:image:width" content="1200">
@@ -128,12 +130,13 @@
 <meta property="og:image:alt" content="Lunární fáze dnes | Energie Měsíce | Mystická Hvězda">
 <meta name="twitter:image:alt" content="Lunární fáze dnes | Energie Měsíce | Mystická Hvězda">
 
-    <link rel="stylesheet" href="/css/atlas-web.css?v=20261020-03-horoscope-day-switcher-atlas">
+    <link rel="stylesheet" href="/css/atlas-web.css?v=20261023-release-todo">
     <link rel="stylesheet" href="/css/atlas-tools.css?v=1">
-    <link rel="stylesheet" href="/css/atlas-art.css?v=20261020-01-mobile-image-set">
+    <link rel="stylesheet" href="/css/atlas-art.css?v=20261023-release-todo">
+<link rel="stylesheet" href="/css/atlas-polish-v1.css?v=20261022-moon-phase">
 </head>
 
-<body class="atlas-page page-lunace">
+<body class="atlas-page page-lunace" data-atlas-polish="lunace">
 
     <!-- Skip to main content -->
 
@@ -145,11 +148,11 @@
 
     <main id="main-content" tabindex="-1">
 
-        <section class="lunar-hero atlas-art-hero atlas-art-moon">
+        <section class="lunar-hero">
 
             <div class="container">
 
-                <span class="section__badge"><svg class="mh-symbol mh-symbol--inline" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg?v=20261018#dream"></use></svg>Měsíční kalendář</span>
+                <span class="section__badge">Měsíční kalendář</span>
 
                 <h1 class="hero__title">Dnešní <span class="text-gradient">Lunární Fáze</span></h1>
 
@@ -157,7 +160,7 @@
 
                 <div class="moon-container">
 
-                    <div class="moon-display" id="moonEmoji" aria-label="Dnešní fáze Měsíce"></div>
+                    <div class="moon-display" id="moonEmoji" aria-hidden="true"></div>
 
                     <div class="phase-name" id="phaseName">Načítám...</div>
 
@@ -175,24 +178,23 @@
 
         <div class="mh-inline-5e4075d76a" id="lunar-countdown-wrap">
             <div id="next-new-moon-box" class="mh-inline-565de43b2c">
-                <div class="mh-inline-aa10f4832e"><svg class="mh-moon-art" viewBox="0 0 120 120" width="120" height="120" aria-hidden="true" focusable="false"><use href="/img/icons/moon-phases.svg#moon-0"></use></svg></div>
+                <div class="lunar-countdown-symbol mh-inline-aa10f4832e" data-moon-phase="0" aria-hidden="true"></div>
                 <div class="mh-inline-60dd39b693">Příští Novolunění</div>
                 <div id="countdown-new" class="mh-inline-d07104dab6">--</div>
                 <div id="countdown-new-date" class="mh-inline-4b13259c5e"></div>
             </div>
             <div id="next-full-moon-box" class="mh-inline-565de43b2c">
-                <div class="mh-inline-aa10f4832e"><svg class="mh-moon-art" viewBox="0 0 120 120" width="120" height="120" aria-hidden="true" focusable="false"><use href="/img/icons/moon-phases.svg#moon-4"></use></svg></div>
+                <div class="lunar-countdown-symbol mh-inline-aa10f4832e" data-moon-phase="0.5" aria-hidden="true"></div>
                 <div class="mh-inline-60dd39b693">Příští Úplněk</div>
                 <div id="countdown-full" class="mh-inline-d07104dab6">--</div>
                 <div id="countdown-full-date" class="mh-inline-4b13259c5e"></div>
                 <div class="mh-inline-4cf588778a">
                     <div class="mh-inline-e81d7578c8">
-                        <span class="mh-inline-f5c37c93a5"><svg class="mh-symbol mh-symbol--inline" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg?v=20261018#hourglass"></use></svg></span>
+                        <span class="mh-inline-f5c37c93a5"><svg class="mh-symbol mh-symbol--inline" viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#clock"></use></svg></span>
                         <span id="full-moon-time" class="mh-inline-2e40daa533">--</span>
                     </div>
                     <div class="mh-inline-e81d7578c8">
-                        <span class="mh-inline-f5c37c93a5">♎</span>
-                        Zobrazený čas: <span id="full-moon-znameni" class="mh-inline-46cc32ebed">--</span>
+                        Znamení: <span id="full-moon-znameni" class="mh-inline-46cc32ebed">--</span>
                     </div>
                     <div class="mh-inline-f697697fcd">
                         <span id="full-moon-lidovy-nazev">--</span>
@@ -201,7 +203,7 @@
             </div>
         </div>
 
-        <script type="module" src="js/dist/lunace-countdown.js" defer></script>
+        <script src="js/dist/lunace-countdown.js" defer></script>
 
         </div>
 
@@ -262,13 +264,34 @@
                 </section>
 
                 <!-- CTA: Lunární Rituál -->
-                <div class="mh-inline-5180d3dcc2">
+                <div class="mh-inline-5180d3dcc2 atlas-lunar-ritual">
                     <div class="mh-inline-96a3ecece8">
                         <div class="mh-inline-3f4a341640">Nová funkce</div>
                         <h2 class="mh-inline-098b66c834">Dnešní Lunární Rituál</h2>
                         <p class="mh-inline-f1c160186c">Personalizovaný rituál pro vaše znamení a tuto fázi — 7–12 minut.</p>
                     </div>
-                    <a href="ritualy/" class="btn btn--primary mh-inline-f8094c3d80"><svg class="mh-symbol mh-symbol--inline" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg?v=20261018#dream"></use></svg>Vstoupit do rituálu →</a>
+                    <a href="ritualy/" class="btn btn--primary mh-inline-f8094c3d80">Vstoupit do rituálu →</a>
+                </div>
+
+                <!-- CTA Box -->
+
+                <div
+
+                    class="mh-inline-27753b61e7 atlas-lunar-next-step">
+
+                    <h2 class="mh-inline-3b6c2f9634">Měsíc je jen začátek</h2>
+
+                    <p class="mh-inline-695a26f59f">Lunární fáze dává dni symbolický rytmus. Natální karta přidá osobní
+                        kontext podle vašeho narození a horoskopy pomohou zasadit dnešní fázi do širšího období.</p>
+
+                    <div class="mh-inline-4e3af88a74">
+
+                        <a href="natalni-karta.html?source=lunar_cta&amp;feature=natalni_interpretace" class="btn btn--primary mh-inline-27ef801a9c" data-analytics-cta="lunar_cta_natal" data-analytics-feature="natalni_interpretace">Vygenerovat
+                            Natální Kartu</a>
+                        <a href="horoskopy.html?source=lunar_cta&amp;feature=horoskopy" class="btn btn--secondary mh-inline-27ef801a9c" data-analytics-cta="lunar_cta_horoscopes" data-analytics-feature="horoskopy">Horoskopy</a>
+
+                    </div>
+
                 </div>
 
                 <!-- Full Lunar Cycle -->
@@ -288,9 +311,7 @@
                 <div class="faq-section">
 
                         <h2 class="mh-inline-72a7f6bd27">
-                            <svg class="mh-symbol mh-symbol--inline" width="18" height="18" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#info"></use></svg>
-                            <span>Časté otázky</span>
-                        </h2>
+                        ❓ Časté otázky</h2>
 
                     <details class="faq-item">
 
@@ -339,24 +360,24 @@
     <div id="footer-placeholder"></div>
 
     <script src="js/dist/api-config.js?v=5" defer></script>
-    <script src="js/dist/templates.js?v=20261021-celtic-footer-star-svg" defer></script>
+    <script src="js/dist/templates.js?v=14" defer></script>
     <script src="js/dist/auth-client.js?v=20261020-02-register-password-policy" defer></script>
 <script src="js/dist/auth-copy-fixes.js" defer></script>
     <script src="js/dist/landing-pages-copy-fixes.js?v=3" defer></script>
-    <script src="js/dist/share-result.js?v=20261017-icons" defer></script>
+    <script src="js/dist/share-result.js?v=3" defer></script>
     
     <script src="js/dist/exit-intent.js" defer></script>
-    <script src="js/dist/components.js?v=20261021-footer-support-locale" defer></script>
-    <script src="js/dist/retention.js?v=20261018-retention-close" defer></script>
-    <script type="module" src="js/dist/personalization.js?v=20261018-sign-picker-pen"></script>
-    <script type="module" src="js/dist/main.js?v=20261018-status-icons"></script>
+    <script src="js/dist/components.js?v=20260522-premium-gate-cache" defer></script>
+    <script src="js/dist/retention.js?v=6" defer></script>
+    <script type="module" src="js/dist/personalization.js?v=5"></script>
+    <script type="module" src="js/dist/main.js?v=10"></script>
 
-    <script src="js/dist/moon-art.js?v=20261020-moon-art-safe-fallback" defer></script>
-    <script type="module" src="js/dist/lunace.js?v=20261018-moon-svg" defer></script>
+    <script src="js/dist/moon-phase-illustration.js" defer></script>
+    <script src="js/dist/lunace.js" defer></script>
 
     <script src="js/dist/newsletter-popup.js?v=20260706-sign-step" defer></script>
 
-    <script src="js/dist/push-notifications.js?v=20261021-subscription-state" defer></script>
+    <script src="js/dist/push-notifications.js" defer></script>
 
 </body>
 

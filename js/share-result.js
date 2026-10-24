@@ -11,7 +11,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
             Sdílet výsledek
         </button>
-        <div class="share-toast" role="status" aria-live="polite"><svg class="mh-symbol mh-symbol--inline" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#check"></use></svg><span>Odkaz zkopírován do schránky!</span></div>
+        <div class="share-toast" role="status" aria-live="polite"><svg class="share-toast__icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#check"></use></svg>Odkaz zkopírován do schránky!</div>
     `;
 
     const SHARE_BTN_STYLES = `
@@ -38,14 +38,22 @@
             bottom: 2rem;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(12,31,47,0.97);
-            border: 1px solid rgba(212,175,55,0.4);
+            background: rgba(16,38,56,0.98);
+            border: 1px solid rgba(189,155,101,0.7);
             padding: 0.75rem 1.5rem;
-            border-radius: 50px;
-            color: white;
+            border-radius: 4px;
+            color: #e9e3d7;
             font-size: 0.9rem;
             z-index: 9999;
-            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 28px rgba(3,12,23,0.36);
+        }
+        .share-toast__icon {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            margin-right: 0.45rem;
+            color: #d0b17c;
+            vertical-align: -4px;
         }
         .share-toast.visible {
             display: block;

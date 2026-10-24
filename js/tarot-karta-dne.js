@@ -1,5 +1,3 @@
-import { getPragueDateKey, getDailyCardIndex, getDailyCardPractice } from './utils/daily-tarot.js';
-
 (() => {
     const DATA_URL = 'data/tarot-cards.json?v=20261007-deck-v2';
     const SOURCE = 'tarot_daily_card_widget';
@@ -8,8 +6,21 @@ import { getPragueDateKey, getDailyCardIndex, getDailyCardPractice } from './uti
     const PROFILE_SAVE_INTENT = 'save_daily_card';
     const PROFILE_SAVE_PENDING_KEY = 'mh_pending_tarot_daily_profile_save';
 
-    const getLocalDateKey = getPragueDateKey;
-    const getDailyIndex = getDailyCardIndex;
+    function getLocalDateKey(date = new Date()) {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    function getDailyIndex(cardCount) {
+        const key = getLocalDateKey();
+        let hash = 0;
+        for (let i = 0; i < key.length; i += 1) {
+            hash = ((hash << 5) - hash + key.charCodeAt(i)) | 0;
+        }
+        return Math.abs(hash) % cardCount;
+    }
 
     function slugify(value) {
         return String(value || '')
@@ -64,13 +75,6 @@ import { getPragueDateKey, getDailyCardIndex, getDailyCardPractice } from './uti
         }
     }
 
-    function setDailyShareStatus(message) {
-        const status = document.getElementById('tarot-daily-share-status');
-        if (!status) return;
-        status.textContent = message;
-        status.hidden = !message;
-    }
-
     async function trackFirstDailyValue() {
         const metadata = {
             source: SOURCE,
@@ -113,7 +117,7 @@ import { getPragueDateKey, getDailyCardIndex, getDailyCardPractice } from './uti
     function rememberProfileSaveIntent(card) {
         try {
             sessionStorage.setItem(PROFILE_SAVE_PENDING_KEY, JSON.stringify({
-                dateKey: card.dateKey || getLocalDateKey(),
+                dateKey: getLocalDateKey(),
                 card: card.name
             }));
         } catch {
@@ -130,22 +134,10 @@ import { getPragueDateKey, getDailyCardIndex, getDailyCardPractice } from './uti
     }
 
     function dailyAdvice(card) {
-        return getDailyCardPractice(card.name).action;
-    }
-
-    function formatDateKey(dateKey) {
-        const parsedDate = new Date(`${dateKey || ''}T12:00:00Z`);
-        const validDateKey = /^\d{4}-\d{2}-\d{2}$/.test(dateKey || '')
-            && Number.isFinite(parsedDate.getTime())
-            && parsedDate.toISOString().slice(0, 10) === dateKey
-            ? dateKey
-            : getLocalDateKey();
-        return new Intl.DateTimeFormat('cs-CZ', {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric',
-            timeZone: 'Europe/Prague'
-        }).format(new Date(`${validDateKey}T12:00:00Z`));
+        const meaning = String(card.meaning || '').toLowerCase();
+        return meaning
+            ? `Konkrétní krok: všimni si dnes tématu „${meaning}“ a udělej jednu malou věc, která s ním bude v souladu.`
+            : 'Konkrétní krok: vezmi kartu jako jemnou připomínku a vyber si jednu věc, kterou dnes nebudeš odkládat.';
     }
 
     function isProfileSaveReturn() {
@@ -155,6 +147,9 @@ import { getPragueDateKey, getDailyCardIndex, getDailyCardPractice } from './uti
     }
 
     function shouldAutoSaveProfileReturn(card) {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('source') === PROFILE_SAVE_RETURN_SOURCE) return true;
+
         const pending = readPendingProfileSave();
         return pending?.dateKey === getLocalDateKey()
             && (!pending.card || pending.card === card.name);
@@ -164,18 +159,21 @@ import { getPragueDateKey, getDailyCardIndex, getDailyCardPractice } from './uti
         return {
             spreadType: 'Tarot karta dne',
             source: SOURCE,
-            dateKey: card.dateKey || getLocalDateKey(),
+            dateKey: getLocalDateKey(),
             cards: [{
                 name: card.name,
                 position: 'Karta dne',
                 meaning: card.meaning || ''
             }],
-            reflectionQuestion: getDailyCardPractice(card.name).question,
-            response: `${getDailyCardPractice(card.name).observation}\n\nOtázka k zamyšlení: ${getDailyCardPractice(card.name).question}\n\nKonkrétní krok: ${dailyAdvice(card)}`
+            response: `${card.meaning || 'Symbol pro dnešní energii.'}\n\n${dailyAdvice(card)}`
         };
     }
 
     function wrapCanvasText(ctx, text, maxWidth) {
+        if (window.MH_SHARE_IMAGE?.wrapText) {
+            return window.MH_SHARE_IMAGE.wrapText(ctx, text, maxWidth);
+        }
+
         const words = String(text || '').split(/\s+/).filter(Boolean);
         const lines = [];
         let current = '';
@@ -194,28 +192,15 @@ import { getPragueDateKey, getDailyCardIndex, getDailyCardPractice } from './uti
         return lines;
     }
 
-    function ellipsizeCanvasLine(ctx, line, maxWidth) {
-        const characters = Array.from(String(line || '').trimEnd());
-        while (characters.length > 0 && ctx.measureText(`${characters.join('')}…`).width > maxWidth) {
-            characters.pop();
-        }
-        return `${characters.join('').trimEnd()}…`;
-    }
-
     function drawCenteredLines(ctx, lines, x, y, lineHeight, maxLines = lines.length, maxWidth = Infinity) {
-        const visibleLines = lines.slice(0, maxLines);
-        if (visibleLines.length > 0 && Number.isFinite(maxWidth) && maxWidth > 0) {
-            const lastIndex = visibleLines.length - 1;
-            const omittedLines = lines.length > visibleLines.length;
-            const lastLineOverflows = ctx.measureText(visibleLines[lastIndex]).width > maxWidth;
-            if (omittedLines || lastLineOverflows) {
-                visibleLines[lastIndex] = ellipsizeCanvasLine(ctx, visibleLines[lastIndex], maxWidth);
-            }
+        if (window.MH_SHARE_IMAGE?.drawCenteredLines) {
+            return window.MH_SHARE_IMAGE.drawCenteredLines(ctx, lines, x, y, lineHeight, maxLines, maxWidth);
         }
-        visibleLines.forEach((line, index) => {
+
+        lines.slice(0, maxLines).forEach((line, index) => {
             ctx.fillText(line, x, y + index * lineHeight);
         });
-        return y + visibleLines.length * lineHeight;
+        return y + Math.min(lines.length, maxLines) * lineHeight;
     }
 
     function loadCanvasImage(src) {
@@ -242,38 +227,20 @@ import { getPragueDateKey, getDailyCardIndex, getDailyCardPractice } from './uti
         canvas.height = 1350;
         const ctx = canvas.getContext('2d');
         const centerX = canvas.width / 2;
-        const shareImage = window.MH_SHARE_IMAGE;
-        if (shareImage?.drawBrandBackground) {
-            shareImage.drawBrandBackground(ctx, canvas);
+        if (window.MH_SHARE_IMAGE?.drawBrandBackground) {
+            await window.MH_SHARE_IMAGE.drawBrandBackground(ctx, canvas);
         } else {
-            // Keep export available if the shared helper did not load.
-            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-            gradient.addColorStop(0, '#132b3c');
-            gradient.addColorStop(0.46, '#0b1929');
-            gradient.addColorStop(1, '#081420');
-            ctx.fillStyle = gradient;
+            ctx.fillStyle = '#0b1929';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.strokeStyle = 'rgba(208,177,124,0.36)';
-            ctx.lineWidth = 2;
-            ctx.strokeRect(54, 54, canvas.width - 108, canvas.height - 108);
-
-            ctx.textAlign = 'center';
-            ctx.fillStyle = '#d0b17c';
-            ctx.font = '600 42px Inter, Arial, sans-serif';
-            ctx.fillText('Mystická Hvězda', centerX, 142);
         }
 
-        ctx.textAlign = 'center';
-
-        ctx.fillStyle = '#e9e3d7';
+        ctx.fillStyle = '#d0b17c';
         ctx.font = '700 48px Cinzel, Georgia, serif';
         ctx.fillText('TAROT KARTA DNE', centerX, 224);
 
-        ctx.fillStyle = '#c0c8ca';
+        ctx.fillStyle = 'rgba(233,227,215,0.72)';
         ctx.font = '500 30px Inter, Arial, sans-serif';
-        const dateKey = card.dateKey || getLocalDateKey();
-        const displayDate = formatDateKey(dateKey);
-        ctx.fillText(displayDate, centerX, 272);
+        ctx.fillText(getLocalDateKey(), centerX, 272);
 
         let cardImage = null;
         try {
@@ -282,7 +249,12 @@ import { getPragueDateKey, getDailyCardIndex, getDailyCardPractice } from './uti
             console.warn('[Tarot karta dne] Image export fallback:', error.message);
         }
 
-        const cardBox = { x: 362, y: 330, width: 356, height: 520 };
+        const cardBox = { x: 362, y: 310, width: 356, height: 460 };
+        ctx.fillStyle = 'rgba(189,155,101,0.12)';
+        ctx.fillRect(cardBox.x - 18, cardBox.y - 18, cardBox.width + 36, cardBox.height + 36);
+        ctx.strokeStyle = 'rgba(189,155,101,0.58)';
+        ctx.lineWidth = 3;
+        ctx.strokeRect(cardBox.x - 18, cardBox.y - 18, cardBox.width + 36, cardBox.height + 36);
         if (cardImage) {
             drawImageContain(ctx, cardImage, cardBox.x, cardBox.y, cardBox.width, cardBox.height);
         } else {
@@ -291,18 +263,27 @@ import { getPragueDateKey, getDailyCardIndex, getDailyCardPractice } from './uti
         }
 
         ctx.fillStyle = '#e9e3d7';
-        ctx.font = '700 50px Cinzel, Georgia, serif';
-        let y = drawCenteredLines(ctx, wrapCanvasText(ctx, card.name, 840), centerX, 900, 58, 2, 840);
-        ctx.font = '500 30px Inter, Arial, sans-serif';
-        y = drawCenteredLines(ctx, wrapCanvasText(ctx, card.meaning, 840), centerX, y + 14, 38, 2, 840);
-        ctx.fillStyle = 'rgba(208,177,124,0.88)';
-        ctx.fillRect(180, y + 12, 720, 2);
+        ctx.font = '700 54px Cinzel, Georgia, serif';
+        ctx.fillText(String(card.name || ''), centerX, 838, 820);
+
         ctx.fillStyle = '#e9e3d7';
-        ctx.font = '500 28px Inter, Arial, sans-serif';
-        drawCenteredLines(ctx, wrapCanvasText(ctx, dailyAdvice(card), 840), centerX, y + 54, 36, 3, 840);
-        ctx.fillStyle = 'rgba(192,200,202,0.76)';
-        ctx.font = '500 24px Inter, Arial, sans-serif';
-        ctx.fillText('mystickahvezda.cz/tarot-karta-dne.html', centerX, 1270);
+        ctx.font = '500 32px Inter, Arial, sans-serif';
+        const meaning = card.meaning || 'Symbol pro dnešní energii.';
+        const meaningBottomY = drawCenteredLines(ctx, wrapCanvasText(ctx, meaning, 820), centerX, 915, 40, 2, 820);
+
+        ctx.fillStyle = 'rgba(189,155,101,0.88)';
+        ctx.fillRect(180, meaningBottomY + 18, 720, 3);
+
+        ctx.fillStyle = 'rgba(233,227,215,0.8)';
+        ctx.font = '500 29px Inter, Arial, sans-serif';
+        drawCenteredLines(ctx, wrapCanvasText(ctx, dailyAdvice(card), 820), centerX, meaningBottomY + 58, 36, 3, 820);
+
+        ctx.fillStyle = 'rgba(233,227,215,0.78)';
+        ctx.font = '500 30px Inter, Arial, sans-serif';
+        ctx.fillText('mystickahvezda.cz/tarot-karta-dne.html', centerX, 1244);
+        ctx.fillStyle = 'rgba(208,177,124,0.94)';
+        ctx.font = '600 26px Inter, Arial, sans-serif';
+        ctx.fillText('Ulož si dnešní symbol nebo ho pošli někomu, kdo ho potřebuje.', centerX, 1282);
 
         return canvas;
     }
@@ -316,13 +297,12 @@ import { getPragueDateKey, getDailyCardIndex, getDailyCardPractice } from './uti
 
         try {
             const canvas = await drawDailyTarotResultCard(card);
-            const fileName = `tarot-karta-dne-${slugify(card.name)}-${card.dateKey || getLocalDateKey()}.png`;
+            const fileName = `tarot-karta-dne-${slugify(card.name)}-${getLocalDateKey()}.png`;
 
             if (window.MH_SHARE_IMAGE?.shareOrDownload) {
                 const outcome = await window.MH_SHARE_IMAGE.shareOrDownload({
                     canvas,
                     fileName,
-                    preferDownload: true,
                     shareTitle: `Tarot karta dne: ${card.name}`,
                     shareText: `Moje tarot karta dne je ${card.name}. Vytáhni si tu svoji na mystickahvezda.cz`,
                     eventBase: 'tarot_daily_card_image',
@@ -330,10 +310,10 @@ import { getPragueDateKey, getDailyCardIndex, getDailyCardPractice } from './uti
                         source: SOURCE,
                         feature: FEATURE,
                         card: card.name,
-                        date_key: card.dateKey || getLocalDateKey()
+                        date_key: getLocalDateKey()
                     }
                 });
-                saveButton.textContent = outcome === 'shared' ? 'Sdíleno' : outcome === 'cancelled' ? previousText : 'Obrázek uložen';
+                saveButton.textContent = outcome === 'shared' ? 'Sdíleno' : 'Obrázek uložen';
             } else {
                 const link = document.createElement('a');
                 link.download = fileName;
@@ -357,45 +337,35 @@ import { getPragueDateKey, getDailyCardIndex, getDailyCardPractice } from './uti
         const response = await fetch(DATA_URL, { credentials: 'same-origin', cache: 'no-cache' });
         if (!response.ok) throw new Error(`Tarot data failed: ${response.status}`);
         const cards = await response.json();
-        return Object.entries(cards).map(([name, card]) => ({ name, ...card, meaning: getDailyCardPractice(name).meaning }));
+        return Object.entries(cards).map(([name, card]) => ({ name, ...card }));
     }
 
     function setupShareButton(shareButton, cardName, card) {
         if (!shareButton) return;
 
-        setDailyShareStatus('');
         shareButton.hidden = false;
         shareButton.onclick = async () => {
             const text = `Moje tarot karta dne: ${cardName}. ${card.meaning || ''}`.trim();
             const shareUrl = new URL(window.location.href);
             shareUrl.hash = 'denni-karta';
-            const wasDisabled = shareButton.disabled;
-            shareButton.disabled = true;
-            shareButton.setAttribute('aria-busy', 'true');
 
             try {
-                if (typeof navigator.share === 'function') {
+                if (navigator.share) {
                     await navigator.share({
                         title: `Tarot karta dne: ${cardName}`,
                         text,
                         url: shareUrl.toString()
                     });
-                    trackDailyCard('tarot_daily_card_shared', cardName, { share_method: 'native' });
-                } else if (typeof navigator.clipboard?.writeText === 'function') {
+                } else if (navigator.clipboard?.writeText) {
                     await navigator.clipboard.writeText(`${text} ${shareUrl}`);
-                    setDailyShareStatus('Text karty a odkaz jsou zkopírované do schránky.');
-                    trackDailyCard('tarot_daily_card_shared', cardName, { share_method: 'clipboard' });
-                } else {
-                    setDailyShareStatus('Tento prohlížeč neumí sdílet ani kopírovat. Můžeš zkopírovat adresu stránky z adresního řádku.');
+                    shareButton.textContent = 'Zkopírováno';
+                    setTimeout(() => { shareButton.textContent = 'Sdílet kartu'; }, 1800);
                 }
+                trackDailyCard('tarot_daily_card_shared', cardName);
             } catch (error) {
                 if (error.name !== 'AbortError') {
                     console.warn('[Tarot karta dne] Share failed:', error.message);
-                    setDailyShareStatus('Sdílení se nepodařilo. Zkus to prosím znovu.');
                 }
-            } finally {
-                shareButton.disabled = wasDisabled;
-                shareButton.removeAttribute('aria-busy');
             }
         };
     }
@@ -433,16 +403,13 @@ import { getPragueDateKey, getDailyCardIndex, getDailyCardPractice } from './uti
             return false;
         }
 
-        const readingOwnerId = auth.user?.id;
-        if (typeof readingOwnerId !== 'string' || !readingOwnerId) return false;
-
         const previousText = profileButton.textContent;
         profileButton.dataset.saving = 'true';
         profileButton.disabled = true;
         profileButton.textContent = isAutoSave ? 'Dokončuji uložení...' : 'Ukládám...';
 
         try {
-            const savedReading = await auth.saveReading('tarot', buildProfileReadingPayload(card), readingOwnerId);
+            const savedReading = await auth.saveReading('tarot', buildProfileReadingPayload(card));
             if (!savedReading) {
                 profileButton.textContent = 'Zkusit znovu';
                 trackDailyCard('tarot_daily_card_profile_save_failed', card.name, {
@@ -457,7 +424,7 @@ import { getPragueDateKey, getDailyCardIndex, getDailyCardPractice } from './uti
             profileButton.textContent = 'Uloženo v profilu';
             auth.showToast?.(
                 'Karta dne je uložená',
-                'Najdeš ji v profilu mezi svými výklady.',
+                'Najdete ji v profilu mezi svými výklady.',
                 'success'
             );
             trackDailyCard('tarot_daily_card_profile_saved', card.name, {
@@ -505,14 +472,11 @@ import { getPragueDateKey, getDailyCardIndex, getDailyCardPractice } from './uti
         elements.result.dataset.state = 'revealed';
         const horoscopeBridge = document.querySelector('.mh-email-bridge[data-analytics-source="tarot_daily_card_result"]');
         if (horoscopeBridge) horoscopeBridge.hidden = false;
-        elements.image.removeAttribute('srcset');
         elements.image.src = card.image || 'img/tarot-v2/tarot_card_back.webp';
         elements.image.alt = `Tarot karta dne: ${card.name}`;
-        elements.date.textContent = `Karta pro ${formatDateKey(card.dateKey || getLocalDateKey())}`;
+        elements.date.textContent = `Karta pro ${getLocalDateKey()}`;
         elements.name.textContent = card.name;
-        const practice = getDailyCardPractice(card.name);
-        elements.meaning.textContent = practice.observation;
-        if (elements.question) elements.question.textContent = practice.question;
+        elements.meaning.textContent = card.meaning || 'Symbol pro dnešní energii.';
         elements.advice.textContent = dailyAdvice(card);
         elements.fullReading.href = buildToolUrl(card.name);
         elements.detail.href = buildDetailUrl(card.name);
@@ -522,7 +486,7 @@ import { getPragueDateKey, getDailyCardIndex, getDailyCardPractice } from './uti
         setupSaveImageButton(elements.saveImage, card);
         setupShareButton(elements.share, card.name, card);
         trackDailyCard('tarot_daily_card_revealed', card.name, {
-            reveal_reason: options.reason || 'manual', date_key: card.dateKey || getLocalDateKey()
+            reveal_reason: options.reason || 'manual'
         });
     }
 
@@ -535,7 +499,6 @@ import { getPragueDateKey, getDailyCardIndex, getDailyCardPractice } from './uti
             name: document.getElementById('tarot-daily-card-name'),
             meaning: document.getElementById('tarot-daily-card-meaning'),
             advice: document.getElementById('tarot-daily-card-advice'),
-            question: document.getElementById('tarot-daily-card-question'),
             fullReading: document.getElementById('tarot-daily-full-reading'),
             detail: document.getElementById('tarot-daily-card-detail'),
             profileSave: document.getElementById('tarot-daily-save-profile'),
@@ -550,23 +513,13 @@ import { getPragueDateKey, getDailyCardIndex, getDailyCardPractice } from './uti
             elements.button.textContent = 'Načítám kartu...';
             const cards = await loadCards();
             if (cards.length === 0) throw new Error('Tarot data is empty');
-            const chooseToday = () => {
-                const date = new Date();
-                return { ...cards[getDailyIndex(cards.length, date)], dateKey: getLocalDateKey(date) };
-            };
-            let card = chooseToday();
+            const card = cards[getDailyIndex(cards.length)];
             elements.button.disabled = false;
             elements.button.textContent = 'Otočit kartu dne';
             let revealed = false;
             const revealOnce = (reason = 'manual', revealOptions = {}) => {
-                if (reason === 'manual' && card.dateKey !== getLocalDateKey()) {
-                    if (elements.profileSave?.dataset.saving === 'true') return;
-                    card = chooseToday();
-                    revealed = false;
-                    if (elements.profileSave) { delete elements.profileSave.dataset.saved; elements.profileSave.disabled = false; }
-                }
                 if (revealed) {
-                    if (reason === 'manual') elements.result.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'center' });
+                    if (reason === 'manual') elements.result.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     return;
                 }
                 revealed = true;
@@ -577,7 +530,7 @@ import { getPragueDateKey, getDailyCardIndex, getDailyCardPractice } from './uti
             elements.button.addEventListener('click', () => revealOnce('manual'));
             if (isProfileSaveReturn()) {
                 revealOnce('profile_save_return', { autoSave: true });
-                elements.result.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'center' });
+                elements.result.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
         } catch (error) {
             console.warn('[Tarot karta dne] Could not load daily card:', error.message);

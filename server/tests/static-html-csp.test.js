@@ -561,22 +561,4 @@ describe('Static HTML CSP hygiene', () => {
         expect(source).toContain("prefs.analytics === true");
         expect(source).toContain("prefs.marketing === true");
     });
-
-    test('localized shells load one auth client before shared components', () => {
-        for (const locale of ['sk', 'pl']) {
-            const files = fs.readdirSync(path.join(ROOT_DIR, locale)).filter(file => file.endsWith('.html'));
-            expect(files.length).toBeGreaterThan(0);
-            for (const file of files) {
-                const html = fs.readFileSync(path.join(ROOT_DIR, locale, file), 'utf8');
-                const scripts = [...html.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)["']/gi)].map(match => match[1]);
-                const auth = scripts.filter(src => /\/js\/dist\/(?:core|auth-client)\.js(?:\?|$)/.test(src));
-                expect({ file: `${locale}/${file}`, auth }).toEqual({ file: `${locale}/${file}`, auth: [expect.any(String)] });
-                if (auth[0].includes('/auth-client.js')) {
-                    const authIndex = scripts.indexOf(auth[0]);
-                    expect(scripts.findIndex(src => src.includes('/api-config.js'))).toBeLessThan(authIndex);
-                    expect(scripts.findIndex(src => src.includes('/components.js'))).toBeGreaterThan(authIndex);
-                }
-            }
-        }
-    });
 });

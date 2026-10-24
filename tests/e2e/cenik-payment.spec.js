@@ -37,19 +37,21 @@ test.describe('Ceník — platební tlačítka', () => {
         expect(res.status()).toBe(200);
     });
 
-    test('title obsahuje "Ceník"', async ({ page }) => {
+    test('title jasne popisuje jedno clenstvi a jeho cenu', async ({ page }) => {
         const title = await page.title();
-        expect(title.toLowerCase()).toContain('cen');
+        expect(title.toLowerCase()).toContain('členství');
+        expect(title).toContain('199 Kč');
     });
 
     // ── Checkout tlačítka — struktura ────────────────────────────────────────
 
-    test('existuji 2 hlavni checkout tlacitka s tridou plan-checkout-btn', async ({ page }) => {
+    test('cenik nabizi jednu hlavni checkout variantu clenstvi', async ({ page }) => {
         const btns = page.locator('.plan-checkout-btn');
-        await expect(btns).toHaveCount(2);
+        await expect(btns).toHaveCount(1);
+        await expect(btns.first()).toHaveAttribute('data-plan', 'pruvodce');
         await expect(btns.first()).toContainText('Začít 7 dní za 0 Kč');
-        await expect(btns.last()).toContainText('Začít 7 dní za 0 Kč');
-        await expect(page.locator('.pricing-card-note').first()).toContainText('K aktivaci je potřeba karta');
+        await expect(page.locator('.membership-card__terms')).toContainText('K aktivaci zkoušky je potřeba platební karta');
+        await expect(page.locator('.membership-card__terms')).toContainText('Stripe');
     });
 
     test('tlačítko Průvodce má data-plan="pruvodce"', async ({ page }) => {
@@ -57,9 +59,8 @@ test.describe('Ceník — platební tlačítka', () => {
         await expect(btn).toBeVisible();
     });
 
-    test('tlačítko Osvícení má data-plan="osviceni"', async ({ page }) => {
-        const btn = page.locator('[data-plan="osviceni"]');
-        await expect(btn).toBeVisible();
+    test('stare placene plany se na ceniku nezobrazuji', async ({ page }) => {
+        await expect(page.locator('[data-plan="osviceni"], [data-plan="vip-majestrat"], [data-plan$="-rocne"]')).toHaveCount(0);
     });
 
     test('placene CTA maji prihlasovaci fallback i bez cenik.js', async ({ page }) => {
@@ -107,8 +108,9 @@ test.describe('Ceník — platební tlačítka', () => {
         await expect(btn).toHaveCount(0);
     });
 
-    test('runtime copy update zachova check ikony ve vsech cenikovych benefitech', async ({ page }) => {
-        await expect(page.locator('.card--pricing .card__features li .feature-icon')).toHaveCount(7);
+    test('runtime copy zachova ikony u vsech ctyr benefitu clenstvi', async ({ page }) => {
+        await expect(page.locator('.card--pricing .card__features li')).toHaveCount(4);
+        await expect(page.locator('.card--pricing .card__features li .feature-icon')).toHaveCount(4);
     });
 
     test('free CTA nese aktivacni kontext pro rychlou prvni hodnotu', async ({ page }) => {
@@ -119,13 +121,13 @@ test.describe('Ceník — platební tlačítka', () => {
         expect(href).toContain('feature=daily_guidance');
     });
 
-    test('cenik vede primo ke dvema placenym planum bez duplicitniho rozhodovaciho mezikroku', async ({ page }) => {
+    test('cenik vede primo k jedinemu clenstvi bez duplicitniho rozhodovaciho mezikroku', async ({ page }) => {
         await expect(page.locator('.pricing-decision')).toHaveCount(0);
         await expect(page.locator('#pricing-plan-recommendation')).toHaveCount(0);
-        await expect(page.locator('.pricing-grid .card--pricing')).toHaveCount(2);
+        await expect(page.locator('.pricing-grid .card--pricing')).toHaveCount(1);
         await expect(page.locator('.pricing-grid .btn--primary')).toHaveCount(1);
-        await expect(page.locator('.pricing-grid .card--pricing').first()).toContainText('Hvězdný Průvodce');
-        await expect(page.locator('.pricing-grid .card--pricing').nth(1)).toContainText('Osvícení');
+        await expect(page.locator('.pricing-grid .card--pricing').first()).toContainText('Členství Mystické Hvězdy');
+        await expect(page.locator('.pricing-grid .card--pricing')).not.toContainText('Osvícení');
     });
 
     test('cenik ukazuje duverove odkazy pred platbou', async ({ page }) => {
@@ -137,13 +139,10 @@ test.describe('Ceník — platební tlačítka', () => {
         await expect(trustLinks.locator('a[href="kontakt.html"]')).toBeVisible();
     });
 
-    test('cenik zkracuje cestu na tri obsahove sekce a schovava detailni srovnani', async ({ page }) => {
+    test('cenik drzi tri obsahove sekce bez stareho srovnani planu a prepinace', async ({ page }) => {
         await expect(page.locator('#main-content > section')).toHaveCount(3);
         await expect(page.locator('.pricing-first-week')).toHaveCount(0);
-        const comparison = page.locator('.pricing-comparison');
-        await expect(comparison).toBeVisible();
-        await expect(comparison).not.toHaveAttribute('open', '');
-        await expect(comparison.locator('summary')).toContainText('Zobrazit srovnání plánů');
+        await expect(page.locator('.pricing-comparison, #toggle-monthly, #toggle-yearly')).toHaveCount(0);
     });
 
     test('bezplatny ucet zustava tichou alternativou mimo placene karty', async ({ page }) => {
@@ -153,16 +152,18 @@ test.describe('Ceník — platební tlačítka', () => {
         await expect(page.locator('.pricing-grid [data-pricing-free-cta]')).toHaveCount(0);
     });
 
-    test('placene karty respektuji aktualni rocni billing', async ({ page }) => {
-        await page.locator('#toggle-yearly').click();
-        await expect(page.locator('.plan-checkout-btn[data-plan="pruvodce-rocne"]')).toBeVisible();
-        await expect(page.locator('.plan-checkout-btn[data-plan="osviceni-rocne"]')).toBeVisible();
+    test('jedine clenstvi pouziva mesicni cenu bez prepinace rocniho planu', async ({ page }) => {
+        await expect(page.locator('#toggle-yearly, #toggle-monthly')).toHaveCount(0);
+        await expect(page.locator('.plan-checkout-btn[data-plan="pruvodce"]')).toBeVisible();
+        await expect(page.locator('.price-suffix')).toContainText('/měsíc');
+        await expect(page.locator('.plan-checkout-btn[data-plan$="-rocne"]')).toHaveCount(0);
     });
 
-    test('jednorazovou alternativou je pouze Osobni mapa PDF', async ({ page }) => {
+    test('jednorazovou alternativou je vztahovy vyklad za 149 Kc', async ({ page }) => {
         await expect(page.locator('.pricing-addon')).toBeVisible();
-        await expect(page.locator('[data-product="osobni_mapa_2026"]')).toBeVisible();
-        await expect(page.locator('[data-product="osobni_mapa_2026"]')).toContainText('299 Kč');
+        await expect(page.locator('[data-product="relationship_tarot"]')).toBeVisible();
+        await expect(page.locator('[data-product="relationship_tarot"]')).toContainText('149 Kč');
+        await expect(page.locator('[data-product="osobni_mapa_2026"]')).toHaveCount(0);
         await expect(page.locator('[data-product="rocni_horoskop_2026"]')).toHaveCount(0);
     });
 
@@ -194,21 +195,15 @@ test.describe('Ceník — platební tlačítka', () => {
 
         const banner = page.locator('#cookie-banner');
         await expect(banner).toBeVisible({ timeout: 4000 });
+        await expect(banner).toHaveClass(/visible/, { timeout: 3000 });
 
         const box = await banner.boundingBox();
         expect(box?.height || 0).toBeLessThan(190);
         expect(box?.width || 0).toBeLessThanOrEqual(366);
 
         const metrics = await page.evaluate(() => {
-            const cta = document.querySelector('.plan-checkout-btn[data-plan="pruvodce"]')?.getBoundingClientRect();
             const cookieEl = document.getElementById('cookie-banner');
             const cookie = cookieEl?.getBoundingClientRect();
-            const overlapsCookie = !!(cta && cookie && !(
-                cookie.right < cta.left
-                || cookie.left > cta.right
-                || cookie.bottom < cta.top
-                || cookie.top > cta.bottom
-            ));
             const visibleControlOverlaps = [...document.querySelectorAll('a,button,input[type="submit"],.cta,.btn')]
                 .filter((el) => {
                     if (cookieEl?.contains(el)) return false;
@@ -234,26 +229,13 @@ test.describe('Ceník — platební tlačítka', () => {
                 .filter((item) => item.overlap);
 
             return {
-                ctaBottom: Math.round(cta?.bottom || 9999),
-                cookieTop: Math.round(cookie?.top || window.innerHeight),
-                overlapsCookie,
                 visibleControlOverlaps,
                 overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth
             };
         });
 
         expect(metrics.overflow).toBe(false);
-        expect(metrics.overlapsCookie).toBe(false);
         expect(metrics.visibleControlOverlaps).toEqual([]);
-
-        await page.goto('/cenik.html?source=e2e_pricing_cookie&feature=mentor');
-        await waitForPageReady(page);
-
-        await expect.poll(() => page.evaluate(() => {
-            const cta = document.querySelector('.plan-checkout-btn[data-plan="pruvodce"]')?.getBoundingClientRect();
-            const cookie = document.getElementById('cookie-banner')?.getBoundingClientRect();
-            return Math.round(cta?.bottom || 9999) <= Math.round(cookie?.top || window.innerHeight);
-        }), { timeout: 6000 }).toBe(true);
     });
 
     test('desktopni cookie lista neprekryva cenove CTA', async ({ page }) => {
@@ -299,16 +281,16 @@ test.describe('Ceník — platební tlačítka', () => {
         }
     });
 
-    test('feature kontext zobrazi doporuceny plan a umi ho zvyraznit', async ({ page }) => {
+    test('feature kontext doporuci jednotne clenstvi a umi ho zvyraznit', async ({ page }) => {
         await page.goto('/cenik.html?source=inline_paywall&feature=astrocartography');
         await waitForPageReady(page);
 
         const banner = page.locator('#pricing-plan-recommendation');
         await expect(banner).toBeVisible();
-        await expect(banner).toContainText('Osvícení');
+        await expect(banner).toContainText('Členství Mystické Hvězdy');
 
-        await banner.locator('[data-recommended-plan="osviceni"]').click();
-        await expect(page.locator('.card--pricing', { has: page.locator('[data-plan="osviceni"]') })).toHaveClass(/pricing-card--recommended/);
+        await banner.locator('[data-recommended-plan="pruvodce"]').click();
+        await expect(page.locator('.card--pricing', { has: page.locator('[data-plan="pruvodce"]') })).toHaveClass(/pricing-card--recommended/);
     });
 
     test('feature kontext nabizi navrat na relevantni bezplatny nahled', async ({ page }) => {
@@ -383,7 +365,7 @@ test.describe('Ceník — platební tlačítka', () => {
         expect(href).toContain('entry_feature=tarot_multi_card');
     });
 
-    test('tarot keltsky kriz pricing kontext smeruje na vip a preview se vraci na rozklad', async ({ page }) => {
+    test('tarot keltsky kriz kontext doporuci clenstvi a preview se vraci na rozklad', async ({ page }) => {
         await page.goto('/cenik.html?plan=vip-majestrat&source=tarot_celtic_cross_landing&feature=tarot_celtic_cross');
         await waitForPageReady(page);
 
@@ -391,7 +373,7 @@ test.describe('Ceník — platební tlačítka', () => {
         await expect(banner).toBeVisible();
         await expect(banner).toContainText('Navazuje na Keltský kříž');
         await expect(banner).toContainText('Odemknout Keltský kříž');
-        await expect(banner.locator('[data-recommended-plan="vip-majestrat"]')).toBeVisible();
+        await expect(banner.locator('[data-recommended-plan="pruvodce"]')).toBeVisible();
 
         const previewLink = banner.locator('[data-preview-destination]');
         await expect(previewLink).toBeVisible();
@@ -405,7 +387,7 @@ test.describe('Ceník — platební tlačítka', () => {
         expect(href).toContain('entry_feature=tarot_celtic_cross');
     });
 
-    test('tarot keltsky kriz doporuceni spusti skryty vip checkout s kontextem', async ({ page }) => {
+    test('tarot keltsky kriz zachova kontext pri prihlasenem checkoutu clenstvi', async ({ page }) => {
         let checkoutPayload = null;
 
         await page.route('**/api/payment/create-checkout-session', async (route) => {
@@ -414,8 +396,8 @@ test.describe('Ceník — platební tlačítka', () => {
                 status: 200,
                 contentType: 'application/json',
                 body: JSON.stringify({
-                    id: 'cs_test_celtic_cross_vip',
-                    url: '/profil.html?payment=success&plan=vip-majestrat&session_id=cs_test_celtic_cross_vip'
+                    id: 'cs_test_celtic_cross_membership',
+                    url: '/profil.html?payment=success&plan=pruvodce&session_id=cs_test_celtic_cross_membership'
                 })
             });
         });
@@ -440,14 +422,15 @@ test.describe('Ceník — platební tlačítka', () => {
         const banner = page.locator('#pricing-plan-recommendation');
         await expect(banner).toBeVisible();
         await expect(page.locator('.plan-checkout-btn[data-plan="vip-majestrat"]')).toHaveCount(0);
+        await expect(banner.locator('[data-recommended-plan="pruvodce"]')).toBeVisible();
 
         await Promise.all([
             waitForPath(page, '/profil.html'),
-            banner.locator('[data-recommended-plan="vip-majestrat"]').click(),
+            page.locator('.plan-checkout-btn[data-plan="pruvodce"]').click(),
         ]);
 
         expect(checkoutPayload).toEqual(expect.objectContaining({
-            planId: 'vip-majestrat',
+            planId: 'pruvodce',
             source: 'tarot_celtic_cross_landing',
             feature: 'tarot_celtic_cross',
             billingInterval: 'monthly',
@@ -697,8 +680,8 @@ test.describe('Ceník — platební tlačítka', () => {
 
         const gate = page.locator('#login-gate-test-host .login-gate');
         await expect(gate).toBeVisible();
-        await expect(gate).toContainText('Placený plán potvrdíte');
-        await expect(gate.locator('.login-gate-btn')).toContainText('Pokračovat k odemčení');
+        await expect(gate.locator('.login-gate__hint')).toContainText('Členství a jeho cenu potvrdíš až v zabezpečené platební bráně');
+        await expect(gate.locator('.login-gate-btn')).toContainText('Pokračovat k členství');
         await expect(gate).not.toContainText('Přihlásit se zdarma');
 
         await Promise.all([
@@ -904,7 +887,7 @@ test.describe('Ceník — platební tlačítka', () => {
         }));
     });
 
-    test('produktovy doplnek zapise serverovy funnel intent pred navigaci', async ({ page }) => {
+    test('jednorazovy vztahovy vyklad zapise serverovy funnel intent pred navigaci', async ({ page }) => {
         let resolveProductIntent;
         const productIntent = new Promise((resolve) => {
             resolveProductIntent = resolve;
@@ -936,8 +919,8 @@ test.describe('Ceník — platební tlačítka', () => {
 
         await Promise.all([
             productIntent,
-            page.waitForURL(/osobni-mapa\.html/),
-            page.locator('[data-product="osobni_mapa_2026"]').click()
+            page.waitForURL(/vztahovy-vyklad\.html/),
+            page.locator('[data-product="relationship_tarot"]').click()
         ]);
 
         await expect.poll(async () => {
@@ -946,14 +929,14 @@ test.describe('Ceník — platební tlačítka', () => {
         }).toEqual(expect.objectContaining({
             eventName: 'pricing_product_cta_clicked',
             source: 'pricing_addon',
-            feature: 'osobni_mapa_2026',
+            feature: 'relationship_tarot',
             metadata: expect.objectContaining({
                 path: '/cenik.html',
-                product_id: 'osobni_mapa_2026',
-                label: 'Osobní mapa PDF',
+                product_id: 'relationship_tarot',
+                label: 'Osobní vztahový výklad',
                 entry_source: 'pricing_page',
                 entry_feature: 'premium_membership',
-                destination: 'osobni-mapa.html?source=pricing_addon'
+                destination: 'vztahovy-vyklad.html?source=pricing_addon'
             })
         }));
     });
@@ -973,23 +956,23 @@ test.describe('Ceník — platební tlačítka', () => {
         expect(previewHref).toContain('entry_feature=tarot_multi_card');
 
         const downsellHref = await recovery.locator('[data-cancel-downsell]').getAttribute('href');
-        await expect(recovery.locator('[data-cancel-downsell]')).toContainText('Jednorázová Osobní mapa');
-        expect(downsellHref).toContain('/osobni-mapa.html');
+        await expect(recovery.locator('[data-cancel-downsell]')).toContainText('Osobní vztahový výklad za 149 Kč bez účtu');
+        expect(downsellHref).toContain('/vztahovy-vyklad.html');
         expect(downsellHref).toContain('source=checkout_cancel_recovery');
         expect(downsellHref).toContain('entry_plan=pruvodce');
         expect(page.url()).not.toContain('payment=cancel');
     });
 
-    test('zruseny checkout z horoskopu nabizi Osobni mapu jako nizsi zavazek', async ({ page }) => {
+    test('zruseny checkout z horoskopu nabizi jednorazovy vztahovy vyklad', async ({ page }) => {
         await page.goto('/cenik.html?payment=cancel&plan=pruvodce&source=inline_paywall&feature=daily_guidance');
         await waitForPageReady(page);
 
         const recovery = page.locator('#pricing-cancel-recovery');
         await expect(recovery).toBeVisible();
-        await expect(recovery.locator('[data-cancel-downsell]')).toContainText('Jednorázová Osobní mapa');
+        await expect(recovery.locator('[data-cancel-downsell]')).toContainText('Osobní vztahový výklad za 149 Kč bez účtu');
 
         const downsellHref = await recovery.locator('[data-cancel-downsell]').getAttribute('href');
-        expect(downsellHref).toContain('/osobni-mapa.html');
+        expect(downsellHref).toContain('/vztahovy-vyklad.html');
         expect(downsellHref).toContain('entry_feature=daily_guidance');
     });
 
@@ -1148,7 +1131,7 @@ test.describe('Ceník — platební tlačítka', () => {
         }));
     });
 
-    test('retry po selhani rocniho planu drzi yearly kontext i billing interval', async ({ page }) => {
+    test('navrat po starem rocním checkoutu zachova kontext a pokracuje mesicne', async ({ page }) => {
         let checkoutPayload = null;
 
         await page.route('**/api/payment/create-checkout-session', async (route) => {
@@ -1157,7 +1140,7 @@ test.describe('Ceník — platební tlačítka', () => {
                 status: 200,
                 contentType: 'application/json',
                 body: JSON.stringify({
-                    url: '/profil.html?payment=success&plan=pruvodce-rocne&session_id=cs_test_recovery_retry_yearly'
+                    url: '/profil.html?payment=success&plan=pruvodce&session_id=cs_test_recovery_retry_monthly'
                 })
             });
         });
@@ -1170,8 +1153,8 @@ test.describe('Ceník — platební tlačítka', () => {
 
         await page.addInitScript(() => {
             localStorage.setItem('auth_user', JSON.stringify({
-                id: 'retry-yearly-user',
-                email: 'retry-yearly@example.com',
+                id: 'retry-membership-user',
+                email: 'retry-membership@example.com',
                 role: 'user'
             }));
         });
@@ -1179,7 +1162,8 @@ test.describe('Ceník — platební tlačítka', () => {
         await page.goto('/cenik.html?payment=failure&reason=session_failed&plan=pruvodce-rocne&source=annual_horoscope_success&feature=premium_membership&utm_source=email&utm_campaign=annual_return', { waitUntil: 'domcontentloaded' });
         await waitForPageReady(page);
 
-        await expect(page.locator('#toggle-yearly')).toHaveAttribute('aria-pressed', 'true');
+        await expect(page.locator('#toggle-yearly, #toggle-monthly')).toHaveCount(0);
+        await expect(page.locator('.plan-checkout-btn[data-plan="pruvodce"]')).toBeVisible();
 
         const recovery = page.locator('#pricing-cancel-recovery');
         await expect(recovery).toBeVisible();
@@ -1187,16 +1171,16 @@ test.describe('Ceník — platební tlačítka', () => {
         await Promise.all([
             page.waitForURL(url => (
                 url.pathname === '/profil.html'
-                && url.searchParams.get('session_id') === 'cs_test_recovery_retry_yearly'
+                && url.searchParams.get('session_id') === 'cs_test_recovery_retry_monthly'
             ), { timeout: 10000 }),
             recovery.locator('[data-cancel-retry]').click()
         ]);
 
         expect(checkoutPayload).toEqual(expect.objectContaining({
-            planId: 'pruvodce-rocne',
+            planId: 'pruvodce',
             source: 'annual_horoscope_success',
             feature: 'premium_membership',
-            billingInterval: 'yearly',
+            billingInterval: 'monthly',
             metadata: expect.objectContaining({
                 entry_source: 'annual_horoscope_success',
                 entry_feature: 'premium_membership',
@@ -1381,28 +1365,26 @@ test.describe('Ceník — platební tlačítka', () => {
         expect(hasCenikScript).toBe(true);
     });
 
-    // ── Billing toggle ───────────────────────────────────────────────────────
+    // ── Single monthly membership ───────────────────────────────────────────
 
     test('výchozí zobrazení je měsíční ceny', async ({ page }) => {
         const pruvodcePrice = await page.locator('[data-price-plan="pruvodce"] .price-amount').textContent();
         expect(pruvodcePrice).toContain('199');
     });
 
-    test('prepnuti na rocni zobrazi rocni cenu', async ({ page }) => {
-        await page.locator('#toggle-yearly').click();
-        const pruvodcePrice = await page.locator('[data-price-plan="pruvodce"] .price-amount').textContent();
-        expect(pruvodcePrice).toContain('1 990');
-        await expect(page.locator('[data-price-plan="pruvodce"]')
-            .locator('xpath=ancestor::*[contains(@class, "card--pricing")]')
-            .locator('.pricing-trial-note'))
-            .toContainText('Po 7 dnech 1 990 Kč/rok');
+    test('stary rocni plan zpetne smeruje na jedine mesicni clenstvi', async ({ page }) => {
+        await page.goto('/cenik.html?plan=pruvodce-rocne&source=legacy_yearly_link');
+        await waitForPageReady(page);
+        await expect(page.locator('#toggle-yearly, #toggle-monthly')).toHaveCount(0);
+        await expect(page.locator('.plan-checkout-btn[data-plan="pruvodce"]')).toBeVisible();
+        await expect(page.locator('[data-plan="pruvodce-rocne"]')).toHaveCount(0);
+        await expect(page.locator('[data-price-plan="pruvodce"] .price-amount')).toContainText('199');
     });
 
-    test('přepnutí zpět na měsíční obnoví původní ceny', async ({ page }) => {
-        await page.locator('#toggle-yearly').click();
-        await page.locator('#toggle-monthly').click();
-        const pruvodcePrice = await page.locator('[data-price-plan="pruvodce"] .price-amount').textContent();
-        expect(pruvodcePrice).toContain('199');
+    test('clenstvi zobrazuje jen mesicni cenu a platebni interval', async ({ page }) => {
+        await expect(page.locator('[data-price-plan="pruvodce"] .price-amount')).toContainText('199');
+        await expect(page.locator('[data-price-plan="pruvodce"] .price-suffix')).toContainText('/měsíc');
+        await expect(page.locator('#toggle-yearly, #toggle-monthly')).toHaveCount(0);
     });
 
     // ── pending_plan se uloží do sessionStorage ───────────────────────────────
@@ -1435,7 +1417,7 @@ test.describe('Ceník — platební tlačítka', () => {
                 contentType: 'application/json',
                 body: JSON.stringify({
                     id: 'cs_test_funnel_context',
-                    url: '/profil.html?payment=success&plan=pruvodce-rocne&session_id=cs_test_funnel_context'
+                    url: '/profil.html?payment=success&plan=pruvodce&session_id=cs_test_funnel_context'
                 })
             });
         });
@@ -1456,18 +1438,16 @@ test.describe('Ceník — platební tlačítka', () => {
 
         await page.goto('/cenik.html?source=inline_paywall&feature=numerologie_vyklad&plan=pruvodce', { waitUntil: 'domcontentloaded' });
         await waitForPageReady(page);
-        await page.locator('#toggle-yearly').click();
-
         await Promise.all([
             waitForPath(page, '/profil.html'),
-            page.locator('[data-plan="pruvodce-rocne"]').click(),
+            page.locator('[data-plan="pruvodce"]').click(),
         ]);
 
         expect(checkoutPayload).toEqual(expect.objectContaining({
-            planId: 'pruvodce-rocne',
+            planId: 'pruvodce',
             source: 'inline_paywall',
             feature: 'numerologie_vyklad',
-            billingInterval: 'yearly',
+            billingInterval: 'monthly',
             metadata: expect.objectContaining({
                 entry_source: 'inline_paywall',
                 entry_feature: 'numerologie_vyklad'

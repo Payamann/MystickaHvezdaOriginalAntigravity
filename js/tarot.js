@@ -10,13 +10,8 @@ import { getPragueDateKey } from './utils/prague-date.js';
 // Tarot Card Data (Loaded from JSON)
 let TAROT_CARDS = {};
 // Convert to array for backward compatibility
-let TAROT_CARDS_ARRAY = [];
-let tarotDataLoading = false;
+let TAROT_CARDS_ARRAY = [];let tarotDataLoading = false;
 let tarotInitialized = false;
-let originalTarotDeckMarkup = null;
-let tarotSpreadButtonDisabledStates = null;
-let tarotDeckHint = null;
-let originalTarotDeckHintText = '';
 let tarotReadingInProgress = false;
 let tarotReadingGeneration = 0;
 let tarotReadingOwnerId = null;
@@ -428,98 +423,24 @@ function renderRequestedCardContext(cardName) {
     sectionContainer.prepend(context);
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    const deckContainer = document.querySelector('.tarot-deck');
-    originalTarotDeckMarkup = deckContainer?.innerHTML ?? null;
-    tarotDeckHint = deckContainer?.previousElementSibling?.matches('p')
-        ? deckContainer.previousElementSibling
-        : null;
-    originalTarotDeckHintText = tarotDeckHint?.textContent || '';
-    const spreadButtons = [...document.querySelectorAll('.spread-trigger')];
-    tarotSpreadButtonDisabledStates = spreadButtons.map((button) => button.disabled);
-    void initializeTarotData();
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadTarotData();
+    initTarot();
 });
-
-async function initializeTarotData() {
-    if (tarotDataLoading || tarotInitialized) return;
-
-    tarotDataLoading = true;
-    const spreadButtons = [...document.querySelectorAll('.spread-trigger')];
-    if (tarotSpreadButtonDisabledStates === null) {
-        tarotSpreadButtonDisabledStates = spreadButtons.map((button) => button.disabled);
-    }
-    spreadButtons.forEach((button) => { button.disabled = true; });
-    document.querySelector('.tarot-deck')?.setAttribute('aria-busy', 'true');
-    if (tarotDeckHint) tarotDeckHint.textContent = 'Načítám balíček karet…';
-    setTarotReadingStatus('Načítám tarotové karty.');
-
-    try {
-        const loaded = await loadTarotData();
-        if (!loaded) return;
-
-        const deckContainer = document.querySelector('.tarot-deck');
-        if (deckContainer && originalTarotDeckMarkup !== null) {
-            deckContainer.innerHTML = originalTarotDeckMarkup;
-        }
-        if (!tarotInitialized) {
-            initTarot();
-            tarotInitialized = true;
-        }
-        spreadButtons.forEach((button, index) => {
-            button.disabled = tarotSpreadButtonDisabledStates[index] ?? false;
-        });
-        document.querySelector('.tarot-deck')?.removeAttribute('aria-busy');
-        if (tarotDeckHint) tarotDeckHint.textContent = originalTarotDeckHintText;
-        setTarotReadingStatus('');
-    } finally {
-        tarotDataLoading = false;
-    }
-}
 
 async function loadTarotData() {
     try {
         const response = await fetch('/data/tarot-cards.json?v=20261007-deck-v2', { cache: 'no-cache' });
         if (!response.ok) throw new Error('Failed to load tarot data');
-        const cards = await response.json();
-        const cardNames = cards && typeof cards === 'object' && !Array.isArray(cards)
-            ? Object.keys(cards)
-            : [];
-        const cardsWithImages = cardNames.filter((name) => typeof cards[name]?.image === 'string' && cards[name].image.trim());
-        if (cardsWithImages.length < 10) throw new Error('Tarot card data is insufficient for every spread');
-
-        TAROT_CARDS = cards;
-        TAROT_CARDS_ARRAY = cardNames;
+        TAROT_CARDS = await response.json();
+        TAROT_CARDS_ARRAY = Object.keys(TAROT_CARDS);
         if (window.MH_DEBUG) console.debug('Tarot data loaded:', TAROT_CARDS_ARRAY.length, 'cards');
-        return true;
     } catch (error) {
-        console.error('Failed to load tarot cards:', error);
+        console.error('CRITICAL: Failed to load tarot cards:', error);
         const container = document.querySelector('.tarot-deck');
-        if (tarotDeckHint) tarotDeckHint.textContent = 'Balíček se nepodařilo načíst.';
         if (container) {
-            container.removeAttribute('aria-busy');
-            const alert = document.createElement('div');
-            alert.className = 'text-center tarot-load-error';
-            alert.setAttribute('role', 'alert');
-
-            const message = document.createElement('p');
-            message.textContent = 'Nepodařilo se načíst tarotové karty. Zkontroluj připojení a zkus to znovu.';
-
-            const retry = document.createElement('button');
-            retry.type = 'button';
-            retry.className = 'btn btn--glass';
-            retry.textContent = 'Načíst karty znovu';
-            retry.addEventListener('click', () => {
-                retry.disabled = true;
-                retry.textContent = 'Načítám karty…';
-                if (tarotDeckHint) tarotDeckHint.textContent = 'Znovu načítám balíček karet…';
-                void initializeTarotData();
-            });
-
-            alert.append(message, retry);
-            container.replaceChildren(alert);
+            container.innerHTML = '<div class="text-center tarot-load-error">Nepodařilo se načíst data karet. Zkontrolujte připojení.</div>';
         }
-        setTarotReadingStatus('');
-        return false;
     }
 }
 
@@ -599,7 +520,6 @@ function initTarot() {
         btn.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
-            if (tarotReadingInProgress) return;
 
             const spreadType = btn.dataset.spreadType;
 
@@ -609,7 +529,7 @@ function initTarot() {
 
             if (spreadType !== 'Jedna karta') {
                 if (!window.Auth || !window.Auth.isLoggedIn()) {
-                    window.Auth?.showToast('Přihlášení vyžadováno', 'Pro výklad více karet se prosím přihlaste.', 'info');
+                    window.Auth?.showToast('Přihlášení vyžadováno', 'Pro vstup do Hvězdného Průvodce se prosím přihlaste.', 'info');
                     void trackTarotFunnelEvent('paywall_viewed', 'tarot_auth_gate', spreadType, {
                         gate_reason: 'auth_required'
                     });
@@ -621,13 +541,10 @@ function initTarot() {
                     isSoftGated = true;
 
                     // Check daily limit for free teaser
-                    const today = getPragueDateKey();
+                    const today = new Date().toISOString().split('T')[0];
                     let usage = {};
-                    try {
-                        usage = JSON.parse(localStorage.getItem('tarot_free_usage') || '{}');
-                    } catch {
-                        // The preview is a soft gate; blocked browser storage must not break the reading.
-                    }
+                    try { usage = JSON.parse(localStorage.getItem('tarot_free_usage') || '{}'); }
+                    catch { localStorage.removeItem('tarot_free_usage'); }
 
                     if (usage.date === today && usage.count >= 1) {
                         window.Auth.showToast('Limit vyčerpán', 'Dnešní ukázka zdarma už byla vyčerpána. Celý výklad a další karty odemknete přes ceník.', 'error');
@@ -639,11 +556,7 @@ function initTarot() {
                     }
 
                     // Increment usage
-                    try {
-                        localStorage.setItem('tarot_free_usage', JSON.stringify({ date: today, count: 1 }));
-                    } catch {
-                        // Continue with the one-card preview if this browser cannot persist the local marker.
-                    }
+                    localStorage.setItem('tarot_free_usage', JSON.stringify({ date: today, count: 1 }));
                 }
             }
 
@@ -664,8 +577,6 @@ function initTarot() {
     deckCards.forEach(card => {
         card.classList.add('tarot-card--clickable');
         card.addEventListener('click', () => {
-            if (tarotReadingInProgress) return;
-
             // Route deck starts through the visible spread CTA so auth, limits, and paywall tracking stay consistent.
             const selectedBtn = document.querySelector('.t-spread-card.featured .btn');
             if (selectedBtn) {
@@ -708,69 +619,24 @@ function getTarotProfileSignupHtml(spreadType) {
 
 async function startReading(spreadType, isSoftGated = false) {
     const deckContainer = document.querySelector('.tarot-deck');
-    if (!deckContainer || tarotReadingInProgress) return;
-    invalidateTarotSessionChange();
-    const readingSession = captureTarotReadingSession();
-    tarotReadingInProgress = true;
-    const readingGeneration = ++tarotReadingGeneration;
-    tarotReadingOwnerId = readingSession.isLoggedIn ? readingSession.userId || null : null;
-    activeTarotReadingSession = readingSession;
-    displayedTarotReadingSession = null;
-    const previousResults = document.getElementById('tarot-results');
-    if (previousResults) {
-        previousResults.classList.add('hidden');
-        previousResults.innerHTML = '';
-    }
-    window.currentTarotReadingId = null;
-    setTarotReadingStatus('Míchám karty pro výklad.');
-    tarotSummaryAbortController?.abort();
-    tarotSummaryAbortController = null;
-    const triggerButtons = [...document.querySelectorAll('.spread-trigger')];
-    const previousDisabledStates = triggerButtons.map((button) => button.disabled);
-    triggerButtons.forEach((button) => {
-        button.disabled = true;
-        button.setAttribute('aria-busy', 'true');
-    });
-    deckContainer.setAttribute('aria-busy', 'true');
-
-    try {
-        await completeTarotReading(spreadType, isSoftGated, deckContainer, readingGeneration, tarotReadingOwnerId, readingSession);
-    } finally {
-        tarotReadingInProgress = false;
-        triggerButtons.forEach((button, index) => {
-            button.disabled = previousDisabledStates[index];
-            button.removeAttribute('aria-busy');
-        });
-        deckContainer.removeAttribute('aria-busy');
-        if (activeTarotReadingSession === readingSession) activeTarotReadingSession = null;
-    }
-}
-
-async function completeTarotReading(spreadType, isSoftGated, deckContainer, readingGeneration, readingOwnerId = null, readingSession = captureTarotReadingSession()) {
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const waitForPresentation = (duration) => prefersReducedMotion
-        ? Promise.resolve()
-        : new Promise(resolve => window.setTimeout(resolve, duration));
+    if (!deckContainer) return;
     const tarotYesNoContext = spreadType === 'Tři karty'
         ? readTarotYesNoUpgradeContext()
         : null;
 
     // First scroll to deck so user can see the shuffle animation
-    deckContainer.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' });
-    await waitForPresentation(300);
-    if (!isCurrentTarotReading(readingGeneration, readingSession)) return;
+    deckContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    await new Promise(r => setTimeout(r, 300));
 
     // 1. Shuffle Animation - make it more visible
     deckContainer.classList.add('tarot-deck--shuffle-scale');
     deckContainer.classList.add('shaking');
-    await waitForPresentation(1500); // Longer shuffle
-    if (!isCurrentTarotReading(readingGeneration, readingSession)) return;
+    await new Promise(r => setTimeout(r, 1500)); // Longer shuffle
     deckContainer.classList.remove('shaking');
     deckContainer.classList.remove('tarot-deck--shuffle-scale');
 
     // Small pause after shuffle
-    await waitForPresentation(300);
-    if (!isCurrentTarotReading(readingGeneration, readingSession)) return;
+    await new Promise(r => setTimeout(r, 300));
 
     // 2. Draw Cards - only from cards that have images
     const cardsWithImages = TAROT_CARDS_ARRAY.filter(name => TAROT_CARDS[name].image);
@@ -823,7 +689,7 @@ async function completeTarotReading(spreadType, isSoftGated, deckContainer, read
     // Build initial layout (cards face down)
     resultsContainer.innerHTML = `
         <div class="text-center">
-            <h3 class="mb-lg tarot-results__title">Tvé vylosované karty</h3>
+            <h3 class="mb-lg tarot-results__title">Vaše vylosované karty</h3>
             ${resumeContextHtml}
             <div class="tarot-spread grid ${gridClass} tarot-results__spread">
                 ${drawnCards.map((card, index) => {
@@ -837,7 +703,7 @@ async function completeTarotReading(spreadType, isSoftGated, deckContainer, read
                             <div class="tarot-flip-back ${card.image ? 'has-image' : ''}">
                                 ${isLocked ? `
                                     <div class="premium-lock-overlay tarot-card-lock">
-                                        <div class="lock-icon tarot-card-lock__icon" aria-hidden="true"><svg class="mh-symbol" viewBox="0 0 48 48" width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false"><use href="/img/icons/mh-symbols.svg#lock"></use></svg></div>
+                                        <div class="lock-icon tarot-card-lock__icon">${window.Templates.renderSymbol('lock', '2.5rem')}</div>
                                         <h2 class="tarot-card-lock__title">${escapeHtml(upgradeCopy.title)}</h2>
                                         <p class="tarot-card-lock__copy">
                                             ${escapeHtml(upgradeCopy.body)}
@@ -873,7 +739,6 @@ async function completeTarotReading(spreadType, isSoftGated, deckContainer, read
     `;
 
     resultsContainer.classList.remove('hidden');
-    displayedTarotReadingSession = readingSession;
     bindTarotImageFallbacks(resultsContainer);
     if (isSoftGated) {
         window.MH_ANALYTICS?.trackAction?.('tarot_soft_gate_viewed', {
@@ -900,24 +765,21 @@ async function completeTarotReading(spreadType, isSoftGated, deckContainer, read
     });
 
     // Now scroll to results
-    await waitForPresentation(100);
-    if (!isCurrentTarotReading(readingGeneration, readingSession)) return;
-    resultsContainer.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    await new Promise(r => setTimeout(r, 100));
+    resultsContainer.scrollIntoView({ behavior: 'smooth' });
 
     // 4. Trigger flip animation for each card sequentially
     const flipCards = resultsContainer.querySelectorAll('.tarot-flip-card');
 
     for (let i = 0; i < flipCards.length; i++) {
-        await waitForPresentation(600); // Delay between flips
-        if (!isCurrentTarotReading(readingGeneration, readingSession)) return;
+        await new Promise(r => setTimeout(r, 600)); // Delay between flips
         flipCards[i].classList.add('flipped');
 
         // Sound effect removed (invalid audio data)
     }
 
     // 5. After all cards flipped, show interpretations
-    await waitForPresentation(800);
-    if (!isCurrentTarotReading(readingGeneration, readingSession)) return;
+    await new Promise(r => setTimeout(r, 800));
 
     const interpretationsContainer = document.getElementById('interpretations-container');
 
@@ -925,7 +787,12 @@ async function completeTarotReading(spreadType, isSoftGated, deckContainer, read
     let interpretationsHtml = drawnCards.map((card, index) => {
         if (isSoftGated && index > 0) return ''; // Skip interpretation for locked cards
 
-        const positionLabel = numCards > 1 ? tarotCardPosition(spreadType, index) : '';
+        let positionLabel = '';
+        if (spreadType === 'Tři karty') {
+            positionLabel = ['Minulost', 'Přítomnost', 'Budoucnost'][index] || '';
+        } else if (spreadType === 'Celtic Cross') {
+            positionLabel = ['Situace', 'Výzva', 'Podvědomí', 'Základ', 'Minulost', 'Budoucnost', 'Postoj', 'Vliv okolí', 'Naděje/Obavy', 'Výsledek'][index] || '';
+        }
 
         // Determine Arcana Type
         const isMajor = Object.keys(TAROT_CARDS).indexOf(card.name) < 22;
@@ -974,39 +841,25 @@ async function completeTarotReading(spreadType, isSoftGated, deckContainer, read
         });
     }
 
-    if (isSoftGated && numCards > 1) {
-        setTarotReadingStatus('Ukázka první karty je připravená. Zbývající výklad je součástí členství.');
-    } else if (numCards === 1) {
-        setTarotReadingStatus('Výklad jedné karty je připravený.');
-    } else {
-        setTarotReadingStatus('Karty jsou odkryté. Připravuji společný výklad.');
-    }
-
     // Trigger spiritual summary after DOM is updated
     if (numCards > 1 && !isSoftGated) {
-        setTimeout(() => {
-            if (isCurrentTarotReading(readingGeneration, readingSession)) {
-                void generateEtherealSummary(drawnCards, spreadType, tarotYesNoContext, readingGeneration, readingOwnerId, readingSession);
-            }
-        }, 500);
+        setTimeout(() => generateEtherealSummary(drawnCards, spreadType, tarotYesNoContext), 500);
     } else {
         // For single-card readings OR gated readings (Card 1 only), save
         // Actually, for gated reading we might not want to save to DB as a "reading" or maybe yes but with incomplete data?
         // Let's save it so they have it in history (as a tease).
 
         if (window.Auth && window.Auth.saveReading) {
-            const cardsData = savedTarotCards(drawnCards.slice(0, isSoftGated ? 1 : undefined), spreadType);
+            const cardsData = drawnCards.slice(0, isSoftGated ? 1 : undefined).map((card, index) => ({
+                name: card.name,
+                position: 'Jedna karta', // simplified for gated
+                meaning: card.meaning
+            }));
 
-            let saveResult = null;
-            try {
-                saveResult = await window.Auth.saveReading('tarot', {
-                    spreadType: isSoftGated ? `${spreadType} (Ukázka)` : spreadType,
-                    cards: cardsData
-                }, readingOwnerId);
-            } catch (error) {
-                console.warn('[Tarot] Could not save reading to profile:', error?.message || error);
-            }
-            if (!isCurrentTarotReading(readingGeneration, readingSession)) return;
+            const saveResult = await window.Auth.saveReading('tarot', {
+                spreadType: isSoftGated ? `${spreadType} (Ukázka)` : spreadType,
+                cards: cardsData
+            });
 
             // Store reading ID and add favorite button
             if (saveResult && saveResult.id) {
@@ -1016,8 +869,8 @@ async function completeTarotReading(spreadType, isSoftGated, deckContainer, read
                 const favoriteBtn = document.createElement('div');
                 favoriteBtn.className = 'text-center favorite-reading-action';
                 favoriteBtn.innerHTML = `
-                    <button id="favorite-tarot-btn" type="button" aria-pressed="false" class="btn btn--glass favorite-reading-action__button">
-                        <svg class="mh-symbol mh-symbol--inline favorite-icon" viewBox="0 0 48 48" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#star"></use></svg> Přidat do oblíbených
+                    <button id="favorite-tarot-btn" class="btn btn--glass favorite-reading-action__button">
+                        <span class="favorite-icon">${window.Templates.renderSymbol('star', '1em')}</span> Přidat do oblíbených
                     </button>
                 `;
                 interpretationsContainer.appendChild(favoriteBtn);
@@ -1026,8 +879,6 @@ async function completeTarotReading(spreadType, isSoftGated, deckContainer, read
                 document.getElementById('favorite-tarot-btn').addEventListener('click', async () => {
                     await toggleFavorite(window.currentTarotReadingId, 'favorite-tarot-btn');
                 });
-            } else {
-                showTarotReadingSaveNotice(interpretationsContainer);
             }
         }
     }

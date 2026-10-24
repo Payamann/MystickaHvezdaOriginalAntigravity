@@ -35,6 +35,12 @@ body.atlas-blog .breadcrumb { color: var(--atlas-muted); }
 body.atlas-blog .breadcrumb a { color: var(--atlas-gold-light); }
 
 /* Index cards */
+body.atlas-blog .blog-search { width:min(100%, 620px); margin:0 auto 18px; }
+body.atlas-blog .blog-search label { display:block; margin-bottom:8px; color:var(--atlas-muted); }
+body.atlas-blog .blog-search input { display:block; width:100%; min-height:48px; box-sizing:border-box; padding:10px 14px; border:1px solid var(--atlas-line); border-radius:3px; background:var(--atlas-navy); color:var(--atlas-ink); font:inherit; }
+body.atlas-blog .blog-search input::placeholder { color:#9aa7b2; }
+body.atlas-blog .blog-search input:focus-visible { outline:2px solid var(--atlas-gold-light); outline-offset:3px; }
+body.atlas-blog :is(.blog-search, .category-filter)[hidden] { display:none; }
 body.atlas-blog .category-filter { gap: 10px; }
 body.atlas-blog :is(.category-btn, .btn-read-more) { background: transparent; border: 1px solid var(--atlas-line); color: var(--atlas-ink); border-radius: 3px; min-height: 44px; box-shadow: none; }
 body.atlas-blog :is(.category-btn:hover, .category-btn:focus, .category-btn.active) { box-shadow: none; }
@@ -51,6 +57,12 @@ body.atlas-blog :is(.featured-post__content, .blog-card-content) { background: v
 body.atlas-blog :is(.featured-post__meta, .blog-meta-small) { color: var(--atlas-gold-light); }
 body.atlas-blog :is(.featured-post__title, .blog-title, #gridTitle) { color: var(--atlas-ink); text-shadow: none; }
 body.atlas-blog :is(.featured-post__desc, .blog-desc) { color: var(--atlas-muted); line-height: 1.75; }
+body.atlas-blog .blog-results-controls { display:flex; flex-direction:column; align-items:center; gap:12px; margin:28px auto 0; }
+body.atlas-blog .blog-results-count { margin:0; color:var(--atlas-muted); font-size:.95rem; text-align:center; }
+body.atlas-blog .blog-load-more { display:inline-flex; min-height:48px; align-items:center; justify-content:center; padding:10px 22px; border:1px solid var(--atlas-gold); border-radius:3px; background:var(--atlas-gold); color:#142032; font:inherit; font-weight:700; cursor:pointer; }
+body.atlas-blog .blog-load-more:hover { background:var(--atlas-gold-light); border-color:var(--atlas-gold-light); }
+body.atlas-blog .blog-load-more:focus-visible { outline:2px solid var(--atlas-gold-light); outline-offset:4px; }
+body.atlas-blog .blog-load-more[hidden], body.atlas-blog .blog-results-count[hidden] { display:none; }
 
 /* Articles share one readable column while retaining their original markup. */
 body.atlas-blog .atlas-article-cta { max-width:800px; margin:40px auto; padding:32px; background:#102638; border:1px solid #bd9b6544; border-radius:5px; box-shadow:none; }
@@ -69,7 +81,6 @@ body.atlas-blog .atlas-table-scroll .master-table { min-width:600px; width:100%;
 body.atlas-blog .master-table :is(th,td) { text-align:left; }
 body.atlas-blog .master-table th { background:#bd9b6522; color:#d0b17c; }
 body.atlas-blog .author-avatar { background:#0b1929; border:1px solid #bd9b6555; }
-body.atlas-blog .author-avatar .mh-symbol { display:block; width:1.5rem; height:1.5rem; color:#d0b17c; }
 body.atlas-blog .blog-content { max-width: 72ch; color: var(--atlas-ink); }
 body.atlas-blog .blog-content :is(p, li) { color: var(--atlas-muted); line-height: 1.85; }
 body.atlas-blog .blog-content p { text-align:left; }
@@ -103,6 +114,13 @@ body.atlas-blog :is(.sign-num, .related-chip) { background: transparent; border-
 body.atlas-blog :is(.related-chip, .mh-inline-cb351a4fb1, .mh-inline-e10e22912f) { color: var(--atlas-ink); }
 body.atlas-blog :is(.mh-inline-cbc552e55e, .mh-inline-76c78b89a7) { background: var(--atlas-surface); border: 1px solid var(--atlas-line); border-radius: 5px; box-shadow: none; }
 body.atlas-blog :is(.mh-inline-cb351a4fb1, .mh-inline-e10e22912f) { background: var(--atlas-gold); border-color: var(--atlas-gold); color: #142032; }
+/* Shared semantic hook for legacy purple panels across individual blog articles. */
+body.atlas-blog .atlas-blog-callout { background: var(--atlas-surface); border: 1px solid var(--atlas-line); border-radius: 6px; box-shadow: none; }
+body.atlas-blog .atlas-blog-primary { display:inline-flex; align-items:center; justify-content:center; min-height:44px; padding:.75rem 1.3rem; background:var(--atlas-gold); border:1px solid var(--atlas-gold); border-radius:3px; color:#142032; text-decoration:none; box-shadow:none; }
+body.atlas-blog .atlas-blog-primary:hover { background:var(--atlas-gold-light); border-color:var(--atlas-gold-light); color:#142032; }
+body.atlas-blog .blog-content a.btn--primary { color:#142032; }
+body.atlas-blog .atlas-blog-progress-fill { background:linear-gradient(90deg,var(--atlas-gold),var(--atlas-gold-light)); box-shadow:none; }
+body.atlas-blog .atlas-blog-accent { color:var(--atlas-gold-light); }
 
 @media (max-width: 760px) {
   body.atlas-blog .hero__title { font-size: clamp(1.65rem, 7.5vw, 2rem); line-height: 1.3; max-width: 100%; width: auto; }

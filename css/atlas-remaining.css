@@ -17,8 +17,7 @@ body.atlas-remaining-page :is(.option-btn,.zodiac-btn,.animal-btn,.ctrl-btn,.tab
 body.atlas-remaining-page :is(.option-btn,.related-chip) { padding:12px 16px; }
 body.atlas-remaining-page :is(.option-btn:hover,.zodiac-btn.active,.animal-btn.active,.tab.active,.gender-btn.active) { background:#bd9b65; color:#142032; border-color:#bd9b65; box-shadow:none; }
 body.atlas-remaining-page .quiz-progress__bar { background:#bd9b65; }
-body.atlas-remaining-page :is(.zodiac-card,.mentor-starter-card) { background:#102638; border-color:#bd9b6555; box-shadow:none; }
-body.atlas-remaining-page .natal-learning-card { border-color:#bd9b6555; box-shadow:none; }
+body.atlas-remaining-page :is(.zodiac-card,.mentor-starter-card,.natal-learning-card) { background:#102638; border-color:#bd9b6555; box-shadow:none; }
 body.atlas-remaining-page .zodiac-card__symbol { color:#d0b17c; font-family:Georgia,'Segoe UI Symbol',serif; font-variant-emoji:text; }
 body.atlas-remaining-page :is(.login-section,.onboarding-section) { padding-top:128px; }
 body.atlas-remaining-page .login-icon { color:#d0b17c; text-shadow:none; }
@@ -28,9 +27,21 @@ body.atlas-remaining-page .content-block { max-width:75ch; line-height:1.8; }
 body.atlas-remaining-page .pricing-comparison-table-wrapper,body.atlas-remaining-page .admin-table-container { overflow-x:auto; }
 body.atlas-remaining-page .ball-glow { opacity:.15; }
 body.atlas-remaining-page .angel-card-front,body.atlas-remaining-page .angel-card-back { box-shadow:none; border-color:#bd9b65; }
-body.atlas-remaining-page .page-404__number { background:none; color:#d0b17c; -webkit-text-fill-color:currentColor; animation:none; text-shadow:none; }
-body.atlas-remaining-page .page-404__links a { min-height:44px; border-radius:4px; border-color:#b3955e66; background:#102638; color:#e9e3d7; }
-body.atlas-remaining-page .page-404__links a:hover { background:#bd9b651f; border-color:#bd9b65; color:#e9e3d7; transform:none; }
+body.atlas-remaining-page .session-overlay { background:radial-gradient(ellipse at 50% 30%,#294b5f55 0%,#0b1929 72%); }
+body.atlas-remaining-page .journal-premium-gate { background:#102638; border-color:#bd9b6548; border-radius:6px; color:#c3c9cb; }
+body.atlas-remaining-page .loader-shadow { background:radial-gradient(circle,#294b5f 0%,#0b1929 100%); border-color:#bd9b65; animation:atlas-remaining-breathe 3s ease-in-out infinite; }
+body.atlas-remaining-page .loader-shadow::after { filter:drop-shadow(0 0 10px #bd9b65); }
+body.atlas-remaining-page .animate-shadow { animation:atlas-remaining-shadow-pulse 4s infinite alternate; }
+body.atlas-remaining-page .category-tag { background:#bd9b6518; border-color:#bd9b6544; color:#d0b17c; border-radius:3px; }
+@keyframes atlas-remaining-breathe {
+  0%,100% { transform:scale(1); box-shadow:0 0 20px #bd9b6533; }
+  50% { transform:scale(1.08); box-shadow:0 0 36px #bd9b6577; }
+}
+@keyframes atlas-remaining-shadow-pulse {
+  from { filter:drop-shadow(0 0 5px #bd9b6566); transform:scale(1); }
+  to { filter:drop-shadow(0 0 18px #bd9b65aa); transform:scale(1.08); }
+}
+body.atlas-remaining-page .page-404__number { color:#bd9b65; text-shadow:none; }
 body.atlas-remaining-page .atlas-language-hero { width:100%; max-width:560px; height:auto; aspect-ratio:3/2; object-fit:cover; border-radius:5px; animation:none; filter:none; }
 body.atlas-language-page .logo { flex-shrink:0; }
 body.atlas-language-page .logo__text { font-size:22px; }
@@ -40,13 +51,17 @@ body.atlas-language-page .nav__link { font-size:11px; }
 body.atlas-language-page .hero__grid { grid-template-columns:1fr 1fr; gap:48px; }
 body.atlas-language-page .hero__content { text-align:left; }
 body.atlas-language-page .hero__title { font-size:clamp(32px,4vw,54px); line-height:1.2; }
-body.atlas-language-home .hero__title .text-gradient { color:#d0b17c; background:none; -webkit-text-fill-color:currentColor; text-shadow:none; }
 @media(max-width:760px) {
  body.atlas-remaining-page :is(main > .section:first-child,.hero,.past-life-hero,.horoscope-cluster-hero,.numerology-cluster-hero,.ritual-moon-hero,.login-section,.onboarding-section) { padding-top:96px; }
  body.atlas-remaining-page :is(.hero__title,h1.section__title) { font-size:clamp(30px,8vw,42px); }
  body.atlas-remaining-page .header__inner { flex-direction:row; flex-wrap:nowrap; justify-content:space-between; }
- body.atlas-remaining-page .header__inner > .nav { position:static; margin-left:auto; display:flex; flex:0 0 44px; width:44px; height:44px; }
- body.atlas-remaining-page .nav__toggle { position:static; margin:0; }
+ body.atlas-remaining-page .header__inner > .nav { position:static; margin:0; display:block; flex:0 0 0; width:0; height:0; }
+ body.atlas-remaining-page .nav__toggle { position:static; flex:0 0 44px; margin-left:auto; }
+ body.atlas-remaining-page .header__actions { display:none; }
+ body.atlas-language-page .header__inner { gap:8px; }
+ body.atlas-language-page .logo { flex:0 1 auto; min-width:0; }
+ body.atlas-language-page .logo__text { font-size:16px; }
+ body.atlas-language-page .logo__image { width:30px; height:30px; }
  body.atlas-remaining-page .login-card { width:calc(100% - 28px); max-width:480px; }
  body.atlas-remaining-page .option-btn { white-space:normal; text-align:left; }
  body.atlas-language-page .hero__grid { grid-template-columns:1fr; gap:24px; }
@@ -66,14 +81,6 @@ body.atlas-localized-yes-no h2 { font-size:clamp(24px,3vw,32px); margin-bottom:2
 body.atlas-localized-yes-no h3 { font-size:22px; margin:28px 0 12px; }
 body.atlas-localized-yes-no main p { line-height:1.85; margin-bottom:20px; }
 body.atlas-localized-yes-no .tarot-card { height:auto; aspect-ratio:3 / 5; }
-body.atlas-localized-yes-no .card-answer-symbol { display:flex; align-items:center; justify-content:center; }
-body.atlas-localized-yes-no .card-answer-symbol .tarot-yes-no-answer-symbol { width:36px; height:36px; color:#d0b17c; }
-body.atlas-localized-yes-no .card-front.ano .tarot-yes-no-answer-symbol { color:#b8dfc8; }
-body.atlas-localized-yes-no .card-front.ne .tarot-yes-no-answer-symbol { color:#f1bac4; }
-body.atlas-localized-yes-no .tarot-result-symbol { display:flex; justify-content:center; margin:0 0 8px; }
-body.atlas-localized-yes-no .tarot-result-symbol .tarot-yes-no-answer-symbol { width:42px; height:42px; color:#d0b17c; }
-body.atlas-localized-yes-no .tarot-result-symbol--yes .tarot-yes-no-answer-symbol { color:#b8dfc8; }
-body.atlas-localized-yes-no .tarot-result-symbol--no .tarot-yes-no-answer-symbol { color:#f1bac4; }
 body.atlas-localized-yes-no .tarot-yes-no-trust-item::before { content:none; }
 body.atlas-localized-yes-no :is(.tarot-yes-no-trust-strip,.tarot-yes-no-intent-steps,.tarot-yes-no-related-grid) { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:20px; }
 body.atlas-localized-yes-no .tarot-yes-no-trust-strip { margin:24px 0 36px; font-size:14px; }
@@ -100,20 +107,16 @@ body.atlas-localized-yes-no .tarot-yes-no-faq-item p { margin-bottom:0; }
 }
 body.atlas-language-page .atlas-angel-preview { width:min(220px,65vw); margin:24px auto; }
 body.atlas-language-page .atlas-angel-preview img { width:100%; height:auto; display:block; border-radius:6px; }
+body.atlas-language-page .natal-local-result__facts { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin:24px 0; }
+body.atlas-language-page .natal-local-result__fact { min-width:0; padding:16px 12px; border:1px solid #bd9b6544; border-radius:5px; background:#102638; }
+body.atlas-language-page .natal-local-result__fact dt { margin-bottom:8px; color:#c3c9cb; font-size:13px; }
+body.atlas-language-page .natal-local-result__fact dd { margin:0; color:#e9e3d7; font-weight:600; }
+body.atlas-language-page .natal-local-result__more { margin:16px 0; text-align:left; }
+body.atlas-language-page .natal-local-result__more summary { cursor:pointer; color:#d0b17c; }
+body.atlas-language-page .natal-local-result__more li { padding:5px 0; color:#c3c9cb; }
+body.atlas-language-page .natal-local-result__note { color:#c3c9cb; font-size:13px; line-height:1.7; }
+@media(max-width:600px) { body.atlas-language-page .natal-local-result__facts { grid-template-columns:1fr; } }
 @media(max-width:360px) {
  body:is(.atlas-localized-yes-no,.atlas-localized-crystal) .logo__text { font-size:16px; }
  body:is(.atlas-localized-yes-no,.atlas-localized-crystal) .header__inner { gap:8px; }
 }
-/* Localized natal calculation uses the same calm, readable result surface. */
-.atlas-language-page #locale-natal-output { text-align: left; overflow-wrap: anywhere; }
-.atlas-language-page #locale-natal-output table { width: 100%; border-collapse: collapse; margin-block: 1rem; }
-.atlas-language-page #locale-natal-output th,
-.atlas-language-page #locale-natal-output td { padding: .7rem .5rem; text-align: left; border-bottom: 1px solid rgba(189, 155, 101, .2); }
-.atlas-language-page #locale-natal-output th { color: #d0b17c; }
-.atlas-language-page #natal-form { display: grid; gap: 1rem; text-align: left; }
-.atlas-language-page #natal-form .form-group { display: grid; gap: .5rem; margin: 0; }
-.atlas-language-page #natal-form input { width: 100%; min-width: 0; box-sizing: border-box; color-scheme: dark; }
-.atlas-language-page #natal-result .natal-chart-container { position: relative; padding: 1.25rem; }
-.atlas-language-page #natal-result .natal-chart-container img { width: 100%; max-width: 280px; height: auto; opacity: .65; filter: none; }
-.atlas-language-page #natal-result .natal-chart-container p { position: static; transform: none; margin: .75rem 0 0; }
-.atlas-language-page #locale-natal-output:not(:empty) + .natal-chart-container { display: none; }

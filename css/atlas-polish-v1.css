@@ -1,0 +1,330 @@
+/* Reviewed main-page refinement. Calculations, card draws and offer content stay in their own modules. */
+body[data-atlas-polish] { --polish-ink:#e9e3d7; --polish-muted:#c3c9cb; --polish-gold:#bd9b65; }
+body[data-atlas-polish] :is(#main-content,main) h1 { font-family:Cinzel,Georgia,serif; font-weight:400; font-size:clamp(34px,4vw,52px); line-height:1.22; text-wrap:balance; }
+body[data-atlas-polish] #main-content .hero__subtitle { max-width:65ch; margin-inline:auto; font-size:clamp(16px,1.45vw,19px); line-height:1.7; }
+body[data-atlas-polish] .header .container { width:100%; max-width:1440px; padding-inline:24px; }
+body[data-atlas-polish] .header .logo { font-family:Cinzel,Georgia,serif; font-size:20px; flex-shrink:0; }
+body[data-atlas-polish] .header .logo__text { font:inherit; }
+body[data-atlas-polish] .header .header__actions { flex-shrink:0; }
+body[data-atlas-polish] .btn--primary { background:#bd9b65; color:#142032; border-color:#bd9b65; box-shadow:none; }
+body[data-atlas-polish] :is(input,textarea,select) { color-scheme:dark; }
+body[data-atlas-polish] .hero--legal { min-height:0; padding-bottom:30px; }
+body[data-atlas-polish] .hero--legal + .section .container { max-width:880px; }
+body[data-atlas-polish] .hero--legal + .section .card { text-align:left; }
+body[data-atlas-polish] .hero--legal + .section .card :is(p,li) { text-align:left; line-height:1.85; }
+body[data-atlas-polish] .hero--legal + .section .card h2 { font-size:clamp(23px,2.5vw,30px); font-weight:400; line-height:1.4; }
+body[data-atlas-polish="tarot-ano-ne"] .yes-no-experience { padding-top:38px; }
+body[data-atlas-polish="tarot"] #main-content > .section--hero { padding-top:128px; min-height:0; }
+body[data-atlas-polish="tarot"] :is(.tarot-result-star,.summary-icon,.timeline-emoji,.astrologer-note__icon,.loading-crystal,.tarot-card-lock__icon,.favorite-icon) { color:#bd9b65; filter:none; line-height:1; }
+body[data-atlas-polish="tarot"] .loading-crystal { animation:none; }
+body[data-atlas-polish="tarot"] .celtic-section h5 .mh-symbol { margin-right:.35rem; }
+@media (min-width:761px) {
+  body[data-atlas-polish="tarot"] #main-content > .section--hero { padding-top:64px; padding-bottom:32px; }
+  body[data-atlas-polish="tarot"] #main-content > .section--hero .hero__subtitle { margin-bottom:1.15rem !important; }
+  body[data-atlas-polish="tarot"] #main-content > .section--hero .t-spread-grid { margin-top:1.25rem !important; }
+  body[data-atlas-polish="tarot"] #main-content > .section--hero .spread-trigger { white-space:nowrap; font-size:.84rem; letter-spacing:.01em; }
+}
+body[data-atlas-polish="tarot"] .t-spread-card .card__title { font-weight:400; }
+body[data-atlas-polish="horoskopy"] #main-content > .section--hero .hero__content { background:none; backdrop-filter:none; border:0; border-radius:0; box-shadow:none; padding:24px; }
+body[data-atlas-polish="horoskopy"] #main-content > .section--hero { min-height:0; padding:128px 0 48px; background-image:linear-gradient(90deg,#0b1929 10%,#0b1929d9 42%,#0b192966),url('/img/atlas/tools-v1/01-astrolab.webp'); background-size:cover; background-position:center,right center; }
+body[data-atlas-polish="horoskopy"] .tabs { width:fit-content; margin-inline:auto; border:1px solid #bd9b6540; border-radius:5px; }
+body[data-atlas-polish="horoskopy"] .zodiac-card { border-radius:5px; }
+body[data-atlas-polish="blog"] main > .section:first-child { padding-bottom:20px; }
+body[data-atlas-polish="blog"] main > .section:first-child + .section { padding-top:20px; }
+body[data-atlas-polish="horoskop-index"] .hub-hero,
+body[data-atlas-polish="partnerska-shoda"] #main-content > .section--hero,
+body[data-atlas-polish="testy-index"] #main-content > .section--hero { background-image:linear-gradient(90deg,#0b1929ef,#0b1929dc 48%,#0b19298c),var(--polish-hero-art); background-size:cover; background-position:center,right center; border-bottom:1px solid #bd9b6528; padding-bottom:40px; min-height:0; }
+body[data-atlas-polish="horoskop-index"] { --polish-hero-art:url('/img/atlas/16-kompas-oliva.webp'); }
+body[data-atlas-polish="partnerska-shoda"] { --polish-hero-art:url('/img/atlas/social-v1/01-dva-hrnky.webp'); }
+body[data-atlas-polish="testy-index"] { --polish-hero-art:url('/img/atlas/social-v1/02-zahradni-branka.webp'); }
+body[data-atlas-polish="slovnik"] .hero { min-height:0; padding-bottom:40px; }
+body[data-atlas-polish="slovnik"] .search-container { margin-top:32px; }
+body[data-atlas-polish="snar"] .dream-hero { background-image:linear-gradient(90deg,#0b1929ef,#0b1929dc 55%,#0b1929a8),url('/img/atlas/05-studna-hvezd.webp'); background-size:cover; background-position:center,right center; }
+body[data-atlas-polish="snar"] .stats-bar { margin-block:28px; gap:24px; }
+body[data-atlas-polish="snar"] .dream-of-day { border-radius:5px; }
+body[data-atlas-polish="snar"] :is(.dream-of-day-icon,.popular-emoji) { filter:grayscale(1) sepia(.65); }
+body[data-atlas-polish="mentor"] .mentor-avatar { font-size:0; background:url('/img/atlas/18-zapisnik-pero.webp') center 40%/cover; border:1px solid #bd9b6555; box-shadow:none; }
+body[data-atlas-polish="mentor"] :is(.mentor-starter-panel,.mentor-starter-card,.message--mentor,.chat-header) { background:#102638; border-color:#bd9b6540; box-shadow:none; }
+body[data-atlas-polish="mentor"] #main-content > .container > .mh-inline-a450e7ad51 { padding:24px; border-bottom:1px solid #bd9b6528; background:linear-gradient(90deg,#0b1929ed,#0b1929cb),url('/img/atlas/18-zapisnik-pero.webp') center/cover; }
+body[data-atlas-polish="shamansko-kolo"] :is(.mw-hero__title,.mw-intent-title) { font-family:Cinzel,Georgia,serif; font-weight:400; }
+body[data-atlas-polish="shamansko-kolo"] .mw-hero__content { margin-inline:auto; width:100%; max-width:1120px; padding-inline:24px; }
+body[data-atlas-polish="shamansko-kolo"] .mw-hero__subtitle { max-width:52ch; }
+body[data-atlas-polish="minuly-zivot"] .hero__title { font-family:Cinzel,Georgia,serif; }
+body[data-atlas-polish="kristalova-koule"] #question-input { background:#0b1929; border:1px solid #bd9b6555; border-radius:4px; min-height:48px; }
+body[data-atlas-polish="lunace"] .lunar-hero { background:radial-gradient(ellipse at 50% 28%,#19354a 0%,#102638 42%,#0b1929 78%); }
+body[data-atlas-polish="lunace"] .moon-display,
+body[data-atlas-polish="ritualy-index"] .ritual-moon-visual {
+  display:grid;
+  place-items:center;
+  width:clamp(112px,16vw,152px);
+  aspect-ratio:1;
+  margin-inline:auto;
+  filter:drop-shadow(0 10px 22px #02081288);
+  animation:none;
+}
+body[data-atlas-polish="lunace"] .moon-phase-illustration,
+body[data-atlas-polish="ritualy-index"] .moon-phase-illustration {
+  display:block;
+  width:100%;
+  height:100%;
+  overflow:visible;
+}
+body[data-atlas-polish="lunace"] .cycle-emoji {
+  display:grid;
+  place-items:center;
+  width:52px;
+  height:52px;
+  margin:0 auto .5rem;
+}
+body[data-atlas-polish="lunace"] .lunar-countdown-symbol {
+  display:grid;
+  place-items:center;
+  width:32px;
+  height:32px;
+}
+body[data-atlas-polish="ritualy-index"] .ritual-moon-hero {
+  background:radial-gradient(ellipse at 50% 16%,#19354a 0%,#102638 48%,#0b1929 82%);
+  border-bottom:1px solid #bd9b652e;
+}
+/* The guided ritual keeps its calm, focused flow while sharing the Atlas palette. */
+body.atlas-ritual-session {
+  --gold:#bd9b65;
+  --gold2:#d0b17c;
+  --bg:#0b1929;
+  --white:#e9e3d7;
+  --muted:#c3c9cb;
+  background:#0b1929;
+  color:#e9e3d7;
+}
+body.atlas-ritual-session .session-overlay { background:radial-gradient(ellipse at 50% 28%,#294b5f40 0%,#0b1929 72%); }
+body.atlas-ritual-session .stars-bg { display:none; }
+body.atlas-ritual-session .session-header {
+  gap:clamp(.5rem,2vw,1.25rem);
+  padding-inline:clamp(1rem,4vw,1.5rem);
+  background:#0b1929f2;
+  border-bottom:1px solid #bd9b6540;
+  backdrop-filter:blur(10px);
+}
+body.atlas-ritual-session .session-header a { color:#c3c9cb; }
+body.atlas-ritual-session .session-header a:hover { color:#d0b17c; }
+body.atlas-ritual-session .session-step-counter { color:#d0b17c; }
+body.atlas-ritual-session .session-ritual-name { color:#aeb9bd; }
+body.atlas-ritual-session .session-main { max-width:760px; padding-inline:clamp(1rem,4vw,2rem); }
+body.atlas-ritual-session .screen.active {
+  max-width:660px;
+  padding:clamp(1.5rem,5vw,2.75rem);
+  background:linear-gradient(155deg,#102638 0%,#0e2233 100%);
+  border:1px solid #bd9b6538;
+  border-radius:5px;
+  box-shadow:0 18px 48px #030c1733;
+}
+body.atlas-ritual-session .candle-wrap { margin-bottom:1.75rem; }
+body.atlas-ritual-session .candle-flame {
+  background:linear-gradient(to top,#bd9b65,#e9e3d7 82%);
+  animation:flicker 1.8s ease-in-out infinite alternate;
+  filter:none;
+  box-shadow:0 0 10px #bd9b6540,0 0 22px #bd9b6520;
+}
+body.atlas-ritual-session .candle-body { background:linear-gradient(to bottom,#e9e3d7,#bd9b65); }
+body.atlas-ritual-session .checkin-title,
+body.atlas-ritual-session .step-label,
+body.atlas-ritual-session .journal-section h3 { color:#d0b17c; }
+body.atlas-ritual-session .checkin-sub,
+body.atlas-ritual-session .step-subtext,
+body.atlas-ritual-session .session-ritual-name { color:#c3c9cb; }
+body.atlas-ritual-session .step-title,
+body.atlas-ritual-session .completion-title { color:#e9e3d7; }
+body.atlas-ritual-session .emoji-btn {
+  background:#0b1929;
+  border:1px solid #bd9b6555;
+  color:#e9e3d7;
+  min-width:52px;
+  min-height:52px;
+}
+body.atlas-ritual-session .emoji-btn:hover { border-color:#bd9b65; transform:scale(1.03); background:#153044; }
+body.atlas-ritual-session .btn-next,
+body.atlas-ritual-session .btn-save-journal {
+  min-height:48px;
+  padding:.8rem 1.5rem;
+  border:1px solid #bd9b65;
+  border-radius:4px;
+  background:#bd9b65;
+  color:#142032;
+  font-family:Inter,Arial,sans-serif;
+  font-size:.95rem;
+  font-weight:600;
+  letter-spacing:.02em;
+  box-shadow:none;
+}
+body.atlas-ritual-session .btn-next:hover,
+body.atlas-ritual-session .btn-save-journal:hover { transform:none; filter:brightness(1.06); }
+body.atlas-ritual-session .btn-next:focus-visible,
+body.atlas-ritual-session .btn-save-journal:focus-visible,
+body.atlas-ritual-session .emoji-btn:focus-visible { outline:2px solid #e0c18d; outline-offset:3px; }
+body.atlas-ritual-session .breath-guide { border-color:#bd9b6580; }
+body.atlas-ritual-session .breath-guide:is(.inhale,.hold,.exhale) { box-shadow:0 0 26px #bd9b6526; }
+body.atlas-ritual-session .breath-label,
+body.atlas-ritual-session .breath-counter { color:#d0b17c; }
+body.atlas-ritual-session .mood-shift,
+body.atlas-ritual-session .streak-badge {
+  background:#0b1929;
+  border:1px solid #bd9b6548;
+  border-radius:5px;
+}
+body.atlas-ritual-session .streak-number { color:#d0b17c; }
+body.atlas-ritual-session .journal-textarea {
+  background:#0b1929;
+  border:1px solid #bd9b6555;
+  border-radius:4px;
+  color:#e9e3d7;
+}
+body.atlas-ritual-session .journal-textarea:focus { border-color:#bd9b65; }
+body.atlas-ritual-session .journal-premium-gate { background:#102638; border-color:#bd9b6548; border-radius:5px; }
+body.atlas-ritual-session .crosslink-btn {
+  min-height:44px;
+  display:inline-flex;
+  align-items:center;
+  background:#102638;
+  border:1px solid #bd9b6548;
+  border-radius:4px;
+  color:#c3c9cb;
+}
+body.atlas-ritual-session .crosslink-btn:hover { background:#153044; border-color:#bd9b65; color:#e9e3d7; }
+body.atlas-ritual-session :is(.session-header a,.mh-inline-0959972fab):focus-visible { outline:2px solid #e0c18d; outline-offset:3px; }
+@media (max-width:600px) {
+  body.atlas-ritual-session .session-main { padding-top:6rem; }
+  body.atlas-ritual-session .session-header { padding-inline:.75rem; }
+  body.atlas-ritual-session .session-ritual-name { max-width:96px; }
+  body.atlas-ritual-session .screen.active { padding:1.35rem 1rem; }
+}
+@media (prefers-reduced-motion:reduce) {
+  body.atlas-ritual-session :is(.candle-flame,.screen,.completion-icon,.breath-guide,.btn-next,.emoji-btn,.crosslink-btn) { animation:none; transition:none; }
+}
+body[data-atlas-polish="jmena-index"] main > .section:first-child { background-image:linear-gradient(#0b1929e8,#0b1929f2),url('/img/atlas/tools-v1/03-numerologicky-zapisnik.webp'); background-size:cover; background-position:center; }
+body[data-atlas-polish="astro-mapa"] .map-container { border:1px solid #bd9b6577; border-radius:6px; background:#0b1929; box-shadow:0 14px 36px #030b143d; }
+body[data-atlas-polish="astro-mapa"] .map-bg { filter:saturate(.62) brightness(.84) contrast(1.05); transition:filter .5s ease,opacity .5s ease; }
+body[data-atlas-polish="astro-mapa"] .map-container.calculating .map-bg { filter:saturate(.62) brightness(.84) contrast(1.05) blur(5px); }
+body[data-atlas-polish="aura"] #main-content .atlas-art-interlude img { object-position:50% 23%; }
+body[data-atlas-polish="cenik"] .pricing-hero .hero__title { max-width:22ch; font-weight:400; }
+body[data-atlas-polish="cenik"] .cookie-banner__text { font-size:12px !important; line-height:1.45 !important; }
+body[data-atlas-polish="cenik"] .cookie-banner__preferences { font-size:12px !important; min-height:44px; }
+body[data-atlas-polish="cenik"] .cookie-banner__actions .btn { min-height:44px !important; font-size:11px !important; }
+body[data-atlas-polish="jak-to-funguje"] .step-number { background:#bd9b65; color:#142032; box-shadow:none; }
+body[data-atlas-polish="kontakt"] .contact-composer { align-self:start; }
+body[data-atlas-polish="kontakt"] .contact-form :is(input,textarea) { width:100%; max-width:100%; border-radius:4px; }
+body[data-atlas-polish="kontakt"] .contact-form textarea { min-height:140px; }
+/* Account screens: compact form, quiet painted detail, readable dashboard. */
+body[data-atlas-polish="prihlaseni"] .login-section { min-height:0; padding:112px 20px 64px; background:radial-gradient(ellipse at 50% 30%,#294b5f44,transparent 65%); }
+body[data-atlas-polish="prihlaseni"] .login-card { padding:32px; }
+body[data-atlas-polish="prihlaseni"] .login-header { margin-bottom:24px; }
+body[data-atlas-polish="prihlaseni"] #main-content h1 { font-size:clamp(30px,3vw,38px); margin:0 0 12px; }
+body[data-atlas-polish="prihlaseni"] .login-card .hero__subtitle { font-size:16px; line-height:1.65; margin-bottom:12px; }
+body[data-atlas-polish="prihlaseni"] .login-icon { width:64px; height:64px; margin:0 auto 16px; font-size:0; background:url('/img/atlas/15-zlaty-klic.webp') center/cover; border-radius:50%; }
+body[data-atlas-polish="prihlaseni"] .login-card .form-group { margin-bottom:20px; }
+body[data-atlas-polish="prihlaseni"] .login-card .form-input { display:block; min-height:50px; margin-bottom:0 !important; background:#0b1929; }
+body[data-atlas-polish="prihlaseni"] .password-toggle { border-radius:4px; background:#102638; color:#d0b17c; min-height:44px; }
+body[data-atlas-polish="prihlaseni"] .login-card .btn--text { min-height:44px; }
+body[data-atlas-polish="prihlaseni"] #auth-mode-toggle { border-radius:4px; margin-top:12px; }
+body[data-atlas-polish="profil"] :is(.profile-user-card,.daily-guidance-card,.activation-checklist-card,.ritual-memory-card,.stat-card,.reading-modal__content,.subscription-card,.profile-grid .card,.tab-content .card) { background:#102638; border-color:#bd9b6548; box-shadow:none; backdrop-filter:none; }
+body[data-atlas-polish="profil"] :is(.profile-user-email,.card-title,.readings-header h3,.subscription-card h3) { font-family:Cinzel,Georgia,serif; font-weight:400; }
+body[data-atlas-polish="profil"] .profile-user-email { overflow-wrap:anywhere; font-size:clamp(18px,2vw,24px); }
+body[data-atlas-polish="profil"] .profile-avatar { background:#0b1929; border-color:#bd9b6560; box-shadow:none; }
+body[data-atlas-polish="profil"] .stat-icon-wrapper { background:#0b1929; border-color:#bd9b6540; box-shadow:none; }
+body[data-atlas-polish="profil"] #main-content .profile-tab { min-height:48px; background:#102638; border:1px solid #bd9b6540; color:#c3c9cb; border-radius:4px; }
+body[data-atlas-polish="profil"] #main-content .profile-tab.active { background:#bd9b65; color:#142032; box-shadow:none; }
+body[data-atlas-polish="profil"] .profile-tab:focus-visible { outline:2px solid #d0b17c; outline-offset:3px; }
+body[data-atlas-polish="profil"] .reading-modal__content { max-height:calc(100dvh - 48px); overflow:auto; }
+body[data-atlas-polish="profil"] #reading-modal .reading-content { max-height:none; overflow:visible; background:none; }
+body[data-atlas-polish="profil"] #reading-modal .modal__close { min-width:44px; min-height:44px; }
+body[data-atlas-polish="profil"] .tab-content { scroll-margin-top:96px; }
+body[data-atlas-polish="profil"] #main-content > .hero { min-height:0; padding:112px 0 28px; background:linear-gradient(90deg,#0b1929ef,#0b1929d9),url('/img/atlas/18-zapisnik-pero.webp') center/cover; }
+body[data-atlas-polish="profil"] #main-content > .hero :is(h1,p) { width:100%; max-width:100%; margin-inline:0; text-align:left; }
+body[data-atlas-polish="profil"] #main-content > .hero + .section { padding-top:24px; }
+body[data-atlas-polish="profil"] .profile-tab-icon { display:none; }
+body[data-atlas-polish="profil"] :is(.activation-progress__bar,.ritual-memory-theme__meter-fill) { background:#bd9b65; }
+body[data-atlas-polish="onboarding"] .onboarding { padding:32px 20px; background:radial-gradient(ellipse at 50% 20%,#294b5f40,transparent 70%); }
+body[data-atlas-polish="onboarding"] .onboarding__card { background:#102638; border:1px solid #bd9b6548; border-radius:6px; box-shadow:none; }
+body[data-atlas-polish="onboarding"] .onboarding__card::before { display:none; }
+body[data-atlas-polish="onboarding"] :is(h1,h2) { font-family:Cinzel,Georgia,serif; font-weight:400; font-size:30px; line-height:1.35; }
+body[data-atlas-polish="onboarding"] .btn--primary { background:#bd9b65; box-shadow:none; }
+body[data-atlas-polish="onboarding"] .progress-bar__step { background:#294051; border-radius:2px; }
+body[data-atlas-polish="onboarding"] .progress-bar__step:is(.active,.done) { background:#bd9b65; }
+body[data-atlas-polish="onboarding"] .onboarding-value-strip div { background:#0b1929; border-color:#bd9b6548; border-radius:4px; }
+body[data-atlas-polish="onboarding"] .onboarding-value-strip strong { color:#e9e3d7; }
+body[data-atlas-polish="onboarding"] .onboarding-value-strip span { color:#c3c9cb; }
+body[data-atlas-polish="onboarding"] :is(.zodiac-btn.selected,.interest-chip.selected) { background:#bd9b65; border-color:#bd9b65; box-shadow:none; color:#142032; }
+body[data-atlas-polish="onboarding"] .zodiac-btn.selected > span { color:#142032; }
+body[data-atlas-polish="onboarding"] .interest-chip { min-height:44px; padding:10px 14px; border:1px solid #bd9b6555; border-radius:4px; background:#102638; color:#e9e3d7; }
+body[data-atlas-polish="onboarding"] .interest-chip:hover { border-color:#bd9b65; background:#153044; color:#e9e3d7; }
+body[data-atlas-polish="onboarding"] .interest-chip.selected { color:#142032; }
+/* One generated atlas, one request; named button text remains the accessible label. */
+body[data-atlas-polish="cinsky-horoskop"] .animal-btn { min-height:142px; gap:6px; padding:10px; border-radius:5px; }
+body[data-atlas-polish="cinsky-horoskop"] .animal-btn > span,
+body[data-atlas-polish="cinsky-horoskop"] .animal-portrait { display:block; width:88px; height:88px; margin-inline:auto; font-size:0 !important; background-image:url('/img/atlas/chinese-zodiac-v1.webp'); background-size:400% 300%; border-radius:5px; }
+body[data-atlas-polish="cinsky-horoskop"] #result-emoji.animal-portrait { width:160px; height:160px; }
+body[data-atlas-polish="cinsky-horoskop"] :is(.animal-btn[data-slug="krysa"] > span,[data-animal="krysa"]) { background-position:0% 0%; }
+body[data-atlas-polish="cinsky-horoskop"] :is(.animal-btn[data-slug="buvol"] > span,[data-animal="buvol"]) { background-position:33.333333% 0%; }
+body[data-atlas-polish="cinsky-horoskop"] :is(.animal-btn[data-slug="tygr"] > span,[data-animal="tygr"]) { background-position:66.666667% 0%; }
+body[data-atlas-polish="cinsky-horoskop"] :is(.animal-btn[data-slug="zajic"] > span,[data-animal="zajic"]) { background-position:100% 0%; }
+body[data-atlas-polish="cinsky-horoskop"] :is(.animal-btn[data-slug="drak"] > span,[data-animal="drak"]) { background-position:0% 50%; }
+body[data-atlas-polish="cinsky-horoskop"] :is(.animal-btn[data-slug="had"] > span,[data-animal="had"]) { background-position:33.333333% 50%; }
+body[data-atlas-polish="cinsky-horoskop"] :is(.animal-btn[data-slug="kun"] > span,[data-animal="kun"]) { background-position:66.666667% 50%; }
+body[data-atlas-polish="cinsky-horoskop"] :is(.animal-btn[data-slug="koza"] > span,[data-animal="koza"]) { background-position:100% 50%; }
+body[data-atlas-polish="cinsky-horoskop"] :is(.animal-btn[data-slug="opice"] > span,[data-animal="opice"]) { background-position:0% 100%; }
+body[data-atlas-polish="cinsky-horoskop"] :is(.animal-btn[data-slug="kohout"] > span,[data-animal="kohout"]) { background-position:33.333333% 100%; }
+body[data-atlas-polish="cinsky-horoskop"] :is(.animal-btn[data-slug="pes"] > span,[data-animal="pes"]) { background-position:66.666667% 100%; }
+body[data-atlas-polish="cinsky-horoskop"] :is(.animal-btn[data-slug="prase"] > span,[data-animal="prase"]) { background-position:100% 100%; }
+body[data-atlas-polish="cinsky-horoskop"] .year-input-wrapper { width:240px; max-width:100%; margin-inline:auto; }
+body[data-atlas-polish="cinsky-horoskop"] .year-input { flex:1; min-width:0; width:130px; }
+body[data-atlas-polish="cinsky-horoskop"] .mh-inline-5f03cef152 { justify-content:center; gap:16px; }
+body[data-atlas-polish="cinsky-horoskop"] .mh-inline-5f03cef152 .year-input-wrapper { margin-inline:0; }
+body[data-atlas-polish="cinsky-horoskop"] #chinese-synastry .mh-inline-a3cd1c1280 > div { min-width:0; }
+@media(min-width:993px) and (max-width:1320px) {
+ body[data-atlas-polish] .header .auth-buttons .btn { padding-inline:9px; font-size:11px; }
+ body[data-atlas-polish] .header .nav__list { gap:6px; margin-right:0; }
+ body[data-atlas-polish] .header .nav__link { letter-spacing:0; font-size:11px; }
+}
+@media(min-width:761px) {
+ body[data-atlas-polish="biorytmy"] #main-content .atlas-art-rest { background-image:linear-gradient(90deg,#0b1929 40%,#0b1929f5 47%,#0b1929b3 60%,#0b192933 84%),var(--atlas-art-image); background-size:cover,min(56vw,760px) auto; background-repeat:no-repeat; background-position:center,right 62%; }
+}
+@media(max-width:760px) {
+ body[data-atlas-polish="prihlaseni"] .login-section { padding:88px 12px 40px; }
+ body[data-atlas-polish="prihlaseni"] .login-card { width:100%; padding:24px 20px; }
+ body[data-atlas-polish="prihlaseni"] #main-content h1 { font-size:30px; }
+ body[data-atlas-polish="profil"] .profile-tabs { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:6px; }
+ body[data-atlas-polish="profil"] .profile-tab { min-width:0; padding:10px 6px; font-size:12px; white-space:normal; }
+ body[data-atlas-polish="profil"] .profile-return-grid { grid-template-columns:minmax(0,1fr); }
+ body[data-atlas-polish="profil"] #main-content > .hero { padding:88px 0 24px; }
+ body[data-atlas-polish] :is(#main-content,main) h1 { font-size:clamp(30px,8.5vw,36px); overflow-wrap:normal; }
+ body[data-atlas-polish] #main-content h1.hero__title { width:100%; max-width:100%; }
+ body[data-atlas-polish] .header .container { padding-inline:16px; }
+ body[data-atlas-polish] .header .logo { font-size:16px; }
+ body[data-atlas-polish] .header__inner { width:100%; gap:8px; padding-inline:0; }
+ body[data-atlas-polish] .header__inner > .nav { flex:0 0 0; width:0; height:0; margin:0; }
+ body[data-atlas-polish] .header .nav__toggle { flex:0 0 44px; margin-left:auto; }
+ body[data-atlas-polish] :is(.hero__subtitle,.section__text) { font-size:16px; line-height:1.75; }
+ body[data-atlas-polish="astro-mapa"] #main-content h1 { font-size:clamp(22px,7.1vw,30px); width:100%; max-width:100%; }
+ body[data-atlas-polish="astro-mapa"] #main-content > .hero--compact { min-height:0; padding-bottom:28px; }
+ body[data-atlas-polish="cinsky-horoskop"] #chinese-synastry .mh-inline-a3cd1c1280 { grid-template-columns:minmax(0,1fr); gap:20px; }
+ body[data-atlas-polish="cinsky-horoskop"] #chinese-synastry .year-input-wrapper { width:100%; }
+ body[data-atlas-polish="cenik"] #main-content h1 { font-size:34px; max-width:100%; }
+ body[data-atlas-polish="tarot-ano-ne"] .yes-no-experience { padding-top:14px; }
+ body[data-atlas-polish="tarot"] #main-content > .section--hero { padding-top:100px; }
+ body[data-atlas-polish="runy"] .runes-hero { padding-top:96px; }
+ body[data-atlas-polish="horoskopy"] #main-content > .section--hero { padding-top:100px; padding-bottom:32px; }
+ body[data-atlas-polish="horoskopy"] #main-content > .section--hero .hero__content { padding:0 16px; }
+ body[data-atlas-polish="horoskopy"] .tabs { display:flex; gap:4px; width:100%; }
+ body[data-atlas-polish="horoskopy"] .tab { flex:1; min-width:0; padding:10px 7px; }
+ body[data-atlas-polish="snar"] .stats-bar { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
+ body[data-atlas-polish="snar"] .stats-bar :is(.stat-number,.stat-value) { font-size:25px; }
+ body[data-atlas-polish="snar"] .stats-bar :is(.stat-label,.stat-text) { font-size:10px; line-height:1.4; word-break:normal; overflow-wrap:normal; }
+ body[data-atlas-polish="snar"] .dream-of-day { padding:20px; }
+ body[data-atlas-polish="snar"] .dream-of-day h2 { font-size:23px; }
+ body[data-atlas-polish="podminky"] #main-content .card,
+ body[data-atlas-polish="soukromi"] #main-content .card { padding:24px; text-align:left; }
+ body[data-atlas-polish="partnerska-shoda"] .form-group label { display:block; margin-bottom:8px; }
+ body[data-atlas-polish="partnerska-shoda"] .form-group :is(input,select) { display:block; width:100%; }
+ body[data-atlas-polish="partnerska-shoda"] .synastry-optional-grid { gap:14px; }
+ body[data-atlas-polish="shamansko-kolo"] .mw-intent-title { font-size:25px; line-height:1.4; }
+ body[data-atlas-polish="osobni-mapa"] .btn-primary { background:#bd9b65; box-shadow:none; }
+}

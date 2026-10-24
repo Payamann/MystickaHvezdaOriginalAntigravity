@@ -43,6 +43,7 @@
   const fixes = {
     '404.html': () => {
       document.title = 'Str\u00e1nka nenalezena | Mystick\u00e1 Hv\u011bzda';
+      setText('.page-404__icon', '\u2727');
       setText('.page-404__title', 'Hv\u011bzdy v\u00e1s sem nevedly');
       setHtml(
         '.page-404__subtitle',
@@ -51,19 +52,19 @@
       setText('.btn.btn--primary', '\u2190 Zp\u011bt na hlavn\u00ed str\u00e1nku');
 
       const labels = [
-        'Horoskopy',
-        'Tarot',
-        'Nat\u00e1ln\u00ed karta',
-        'Numerologie',
-        'K\u0159i\u0161\u0165\u00e1lov\u00e1 koule',
-        'Runy',
-        'Partnersk\u00e1 shoda',
-        'Pr\u016fvodce',
-        'Blog',
-        'Cen\u00edk'
+        '\ud83c\udf19 Horoskopy',
+        '\ud83d\udd2e Tarot',
+        '\u2b50 Nat\u00e1ln\u00ed karta',
+        '\ud83d\udd22 Numerologie',
+        '\ud83d\udd2e K\u0159i\u0161\u0165\u00e1lov\u00e1 koule',
+        '\u16b1 Runy',
+        '\ud83d\udcab Partnersk\u00e1 shoda',
+        '\ud83e\udded Pr\u016fvodce',
+        '\ud83d\udcdd Blog',
+        '\u2728 Cen\u00edk'
       ];
 
-      document.querySelectorAll('.page-404__links a > span').forEach((link, index) => {
+      document.querySelectorAll('.page-404__links a').forEach((link, index) => {
         if (labels[index]) link.textContent = labels[index];
       });
     },
@@ -72,24 +73,30 @@
       document.title = 'Denn\u00ed afirmace podle znamen\u00ed zv\u011brokruhu | Mystick\u00e1 Hv\u011bzda';
       setMetaByName(
         'description',
-        'Vyber si znamen\u00ed a p\u0159e\u010Dti si denn\u00ed afirmaci. Na str\u00e1nce uvid\u00ed\u0161 tak\u00e9 aktu\u00e1ln\u00ed f\u00e1zi M\u011bs\u00edce.'
+        'Va\u0161e dne\u0161n\u00ed afirmace podle znamen\u00ed zv\u011brokruhu a f\u00e1ze M\u011bs\u00edce. Personalizovan\u00e9 pozitivn\u00ed afirmace pro ka\u017ed\u00fd den zdarma.'
       );
-      setMetaByProperty('og:title', 'Denn\u00ed afirmace pro tv\u00e9 znamen\u00ed | Mystick\u00e1 Hv\u011bzda');
+      setMetaByProperty('og:title', 'Denn\u00ed afirmace pro v\u00e1\u0161 horoskop | Mystick\u00e1 Hv\u011bzda');
       setMetaByProperty(
         'og:description',
-        'Zvol znamen\u00ed a zobraz si denn\u00ed afirmaci i aktu\u00e1ln\u00ed f\u00e1zi M\u011bs\u00edce.'
+        'Dne\u0161n\u00ed afirmace podle va\u0161eho znamen\u00ed zv\u011brokruhu a aktu\u00e1ln\u00ed f\u00e1ze M\u011bs\u00edce.'
       );
       updateJsonLd(
         (data) => data?.url === 'https://www.mystickahvezda.cz/afirmace.html',
         {
           name: 'Denn\u00ed afirmace podle znamen\u00ed zv\u011brokruhu',
-          description: 'Denn\u00ed afirmace podle vybran\u00e9ho znamen\u00ed zv\u011brokruhu; str\u00e1nka zobrazuje tak\u00e9 aktu\u00e1ln\u00ed f\u00e1zi M\u011bs\u00edce.'
+          description: 'Personalizovan\u00e9 denn\u00ed afirmace pro ka\u017ed\u00e9 znamen\u00ed zv\u011brokruhu. Pozitivn\u00ed mantry pro v\u00e1\u0161 den.'
         }
       );
 
       setText('.section__badge', 'Ka\u017ed\u00fd den nov\u00e1');
       setHtml('.section__title', 'Denn\u00ed <span class="text-gradient">Afirmace</span>');
-      setText('.section__text', 'Vyber si znamen\u00ed a p\u0159e\u010Dti si dne\u0161n\u00ed afirmaci. Pod n\u00ed uvid\u00ed\u0161 tak\u00e9 aktu\u00e1ln\u00ed f\u00e1zi M\u011bs\u00edce.');
+      setText('.section__text', 'Vyberte sv\u00e9 znamen\u00ed a z\u00edskejte dne\u0161n\u00ed osobn\u00ed afirmaci nalad\u011bnou na hv\u011bzdy.');
+      setText('#moon-badge', '\ud83c\udf19 F\u00e1ze M\u011bs\u00edce');
+      setText('#btn-copy-affirmation', '\ud83d\udccb Kop\u00edrovat');
+      setText('#btn-share-affirmation', '\ud83d\udce4 Sd\u00edlet');
+      setText('#btn-horoskop-link', '\ud83c\udf19 Horoskop dnes');
+      setText('#copy-confirm', '\u2714 Zkop\u00edrov\u00e1no!');
+
       const zodiac = [
         ['\u2648', 'Beran'],
         ['\u2649', 'B\u00fdk'],
@@ -119,11 +126,11 @@
 
       const ctaText = document.querySelector('[data-animate] p[style*="margin-bottom:1rem;"]');
       if (ctaText) {
-        ctaText.textContent = 'Chce\u0161 dost\u00e1vat afirmace ka\u017Ed\u00e9 r\u00e1no e-mailem spolu s horoskopem?';
+        ctaText.textContent = 'Chcete afirmace ka\u017ed\u00e9 r\u00e1no p\u0159\u00edmo do e-mailu spolu s personalizovan\u00fdm horoskopem?';
       }
 
       const ctaButton = document.querySelector('[data-animate] a[href*="cenik.html"]');
-      if (ctaButton) ctaButton.textContent = 'Vyzkou\u0161et \u010Dlenstv\u00ed';
+      if (ctaButton) ctaButton.textContent = '\u2728 Vyzkou\u0161et Premium';
     },
 
     'andelska-posta.html': () => {
@@ -160,22 +167,21 @@
       setAttr('#msg-text', 'aria-label', 'Vzkaz and\u011bl\u016fm');
 
       const options = [
-        'L\u00e1ska a vztahy',
-        'Zdrav\u00ed a uzdraven\u00ed',
-        'Kari\u00e9ra a finance',
-        'Rodina a domov',
-        'Vd\u011b\u010dnost',
-        'Jin\u00e9'
+        '\u2764\ufe0f L\u00e1ska a vztahy',
+        '\ud83e\ude7a Zdrav\u00ed a uzdraven\u00ed',
+        '\ud83d\udcbc Kari\u00e9ra a finance',
+        '\ud83c\udfe0 Rodina a domov',
+        '\ud83d\ude4f Vd\u011b\u010dnost',
+        '\u2728 Jin\u00e9'
       ];
 
       document.querySelectorAll('#msg-category option').forEach((option, index) => {
         if (options[index]) option.textContent = options[index];
       });
 
-      const submitLabel = document.querySelector('#btn-submit-msg span');
-      if (submitLabel) submitLabel.textContent = 'Odeslat and\u011bl\u016fm';
+      setText('#btn-submit-msg', '\ud83d\udc7c Odeslat and\u011bl\u016fm');
       const wallTitle = document.querySelector('.messages-wall h2');
-      if (wallTitle) wallTitle.textContent = 'Ned\u00e1vn\u00ed vzkazy komunity';
+      if (wallTitle) wallTitle.textContent = '\u2728 Ned\u00e1vn\u00e9 vzkazy komunity';
     },
 
     'astro-mapa.html': () => {
@@ -222,12 +228,12 @@
       setAttr('#astro-place', 'placeholder', 'Nap\u0159. Praha');
 
       const optionLabels = [
-        'Obecn\u00fd p\u0159ehled',
-        'Kari\u00e9ra a \u00fasp\u011bch',
-        'L\u00e1ska a vztahy',
-        'Zdrav\u00ed a relaxace',
-        'Duchovn\u00ed r\u016fst',
-        'Domov a rodina'
+        '\ud83c\udf0d Obecn\u00fd p\u0159ehled',
+        '\ud83d\udcbc Kari\u00e9ra a \u00fasp\u011bch',
+        '\u2764\ufe0f L\u00e1ska a vztahy',
+        '\u2695\ufe0f Zdrav\u00ed a relaxace',
+        '\u2728 Duchovn\u00ed r\u016fst',
+        '\ud83c\udfe0 Domov a rodina'
       ];
 
       document.querySelectorAll('#astro-intention option').forEach((option, index) => {
@@ -235,12 +241,11 @@
       });
 
       const submit = document.querySelector('#astro-form button[type="submit"]');
-      const submitLabel = submit?.querySelector('span');
-      if (submitLabel) submitLabel.textContent = 'Sestavit symbolickou mapu';
+      if (submit) submit.textContent = '\ud83c\udf0d Sestavit symbolickou mapu';
 
       setAttr('.map-bg', 'alt', 'Astrokartografick\u00e1 mapa sv\u011bta');
       const loadingText = document.querySelector('#astro-loading span');
-      if (loadingText) loadingText.textContent = 'Po\u010d\u00edt\u00e1m mapu a p\u0159ipravuji jej\u00ed symbolick\u00fd v\u00fdklad\u2026';
+      if (loadingText) loadingText.textContent = 'Skl\u00e1d\u00e1m symbolickou mapu prost\u0159ed\u00ed...';
 
       const serviceTitles = document.querySelectorAll('.card.card--service .card__title');
       const serviceTexts = document.querySelectorAll('.card.card--service .card__text');
@@ -267,39 +272,40 @@
 
       const crossCards = document.querySelectorAll('section a.card');
       const cardData = [
-        ['And\u011blsk\u00e1 karta', 'Poselstv\u00ed na dne\u0161n\u00ed den'],
-        ['K\u0159i\u0161\u0165\u00e1lov\u00e1 koule', 'Zeptejte se na cokoli'],
-        ['Tarotov\u00fd v\u00fdklad', 'Hloubkov\u00fd vhled'],
-        ['Denn\u00ed horoskop', 'Va\u0161e znamen\u00ed dnes'],
-        ['Hv\u011bzdn\u00fd pr\u016fvodce', 'Osobn\u00ed veden\u00ed']
+        ['\ud83d\udc7c', 'And\u011blsk\u00e1 karta', 'Poselstv\u00ed na dne\u0161n\u00ed den'],
+        ['\ud83d\udd2e', 'K\u0159i\u0161\u0165\u00e1lov\u00e1 koule', 'Zeptejte se na cokoli'],
+        ['\ud83c\udfb4', 'Tarotov\u00fd v\u00fdklad', 'Hloubkov\u00fd vhled'],
+        ['\u2728', 'Denn\u00ed horoskop', 'Va\u0161e znamen\u00ed dnes'],
+        ['\ud83e\udded', 'Hv\u011bzdn\u00fd pr\u016fvodce', 'Osobn\u00ed veden\u00ed']
       ];
 
       crossCards.forEach((card, index) => {
         const config = cardData[index];
         if (!config) return;
-        const [title, subtitle] = config;
+        const [icon, title, subtitle] = config;
         const blocks = card.querySelectorAll('div');
+        if (blocks[0]) blocks[0].textContent = icon;
         if (blocks[1]) blocks[1].textContent = title;
         if (blocks[2]) blocks[2].textContent = subtitle;
       });
     },
 
     'aura.html': () => {
-      document.title = 'Aura kalkula\u010dka podle data narozen\u00ed — symbolick\u00fd portr\u00e9t | Mystick\u00e1 Hv\u011bzda';
+      document.title = 'Aura kalkula\u010dka | Zjist\u011bte barvu sv\u00e9 aury | Mystick\u00e1 Hv\u011bzda';
       setMetaByName(
         'description',
-        'Spo\u010d\u00edtej si symbolickou barvu podle \u010d\u00edslic data narozen\u00ed. Kr\u00e1tk\u00fd portr\u00e9t k zamy\u0161len\u00ed zdarma; skute\u010dnou auru ani osobnost nem\u011b\u0159\u00ed.'
+        'Zjist\u011bte barvu sv\u00e9 aury podle data narozen\u00ed. Aura kalkula\u010dka zdarma s detailn\u00edm popisem, \u010dakrou, krystaly, siln\u00fdmi str\u00e1nkami i \u017eivotn\u00edm posl\u00e1n\u00edm.'
       );
-      setMetaByProperty('og:title', 'Aura podle data narozen\u00ed? Symbolick\u00fd portr\u00e9t | Mystick\u00e1 Hv\u011bzda');
+      setMetaByProperty('og:title', 'Aura kalkula\u010dka | Jak\u00e1 je barva va\u0161\u00ed aury? | Mystick\u00e1 Hv\u011bzda');
       setMetaByProperty(
         'og:description',
-        'Zobraz si zdarma symbolickou barvu odvozenou z data narozen\u00ed. Kalkula\u010dka skute\u010dnou auru ani osobnost nem\u011b\u0159\u00ed.'
+        'Zadejte datum narozen\u00ed a zjist\u011bte barvu sv\u00e9 aury zdarma a okam\u017eit\u011b.'
       );
       updateJsonLd(
         (data) => data?.applicationCategory === 'EntertainmentApplication',
         {
-          name: 'Symbolick\u00fd portr\u00e9t aury',
-          description: 'Symbolick\u00e9 p\u0159i\u0159azen\u00ed barvy z \u010d\u00edslic data narozen\u00ed; nejde o m\u011b\u0159en\u00ed skute\u010dn\u00e9 aury.'
+          name: 'Aura kalkula\u010dka',
+          description: 'V\u00fdpo\u010det barvy aury podle data narozen\u00ed'
         }
       );
     },
@@ -308,57 +314,56 @@
       document.title = 'Osobn\u00ed biorytmy | Mystick\u00e1 Hv\u011bzda';
       setMetaByName(
         'description',
-        'Prohl\u00e9dni si zdarma matematick\u00fd model t\u0159\u00ed cykl\u016f podle data narozen\u00ed. V\u00fdsledek neukazuje skute\u010dnou kondici, n\u00e1ladu ani soust\u0159ed\u011bn\u00ed.'
+        'Zjist\u011bte sv\u00e9 osobn\u00ed biorytmy. Fyzick\u00fd, emo\u010dn\u00ed a intelektu\u00e1ln\u00ed cyklus podle data narozen\u00ed zdarma a online.'
       );
       setMetaByProperty('og:title', 'Osobn\u00ed biorytmy online | Mystick\u00e1 Hv\u011bzda');
       setMetaByProperty(
         'og:description',
-        'Zobraz si zdarma matematick\u00fd model fyzick\u00e9ho, emo\u010dn\u00edho a intelektu\u00e1ln\u00edho cyklu. Nejde o p\u0159edpov\u011b\u010f v\u00fdkonu, n\u00e1lady ani zdrav\u00ed.'
+        'Odhalte sv\u00e9 siln\u00e9 a slab\u00e9 dny. V\u00fdpo\u010det osobn\u00edch biorytm\u016f zdarma na Mystick\u00e9 Hv\u011bzd\u011b.'
       );
       updateJsonLd(
         (data) => data?.applicationCategory === 'LifestyleApplication' && data?.name?.includes('Biorytm'),
         {
-          name: 'Matematick\u00fd model biorytm\u016f',
-          description: 'Zobrazen\u00ed t\u0159\u00ed matematick\u00fdch cykl\u016f podle data narozen\u00ed. V\u00fdsledek nen\u00ed m\u011b\u0159en\u00edm kondice, n\u00e1lady ani schopnost\u00ed.'
+          name: 'V\u00fdpo\u010det biorytm\u016f online'
         }
       );
     },
 
     'cinsky-horoskop.html': () => {
-      document.title = '\u010c\u00ednsk\u00fd horoskop 2026: znamen\u00ed a \u017eivel podle ro\u010dn\u00edku | Mystick\u00e1 Hv\u011bzda';
+      document.title = '\u010c\u00ednsk\u00fd horoskop 2026 | Mystick\u00e1 Hv\u011bzda';
       setMetaByName(
         'description',
-        'Zadej rok narozen\u00ed a zjisti \u010d\u00ednsk\u00e9 znamen\u00ed i \u017eivel podle ro\u010dn\u00edku. Pro narozen\u00ed v lednu \u010di \u00fanoru ov\u011b\u0159 datum \u010d\u00ednsk\u00e9ho nov\u00e9ho roku. Symbolick\u00fd p\u0159ehled nen\u00ed p\u0159edpov\u011b\u010f.'
+        '\u010c\u00ednsk\u00fd horoskop 2026: zadejte rok narozen\u00ed a zjist\u011bte sv\u00e9 \u010d\u00ednsk\u00e9 znamen\u00ed. Krysa, B\u00fdk, Tygr, Drak a dal\u0161\u00ed zv\u00ed\u0159ata s progn\u00f3zou na rok 2026.'
       );
-      setMetaByProperty('og:title', '\u010c\u00ednsk\u00fd horoskop 2026: znamen\u00ed a \u017eivel | Mystick\u00e1 Hv\u011bzda');
+      setMetaByProperty('og:title', '\u010c\u00ednsk\u00fd horoskop 2026 | Mystick\u00e1 Hv\u011bzda');
       setMetaByProperty(
         'og:description',
-        'Zjisti \u010d\u00ednsk\u00e9 znamen\u00ed a \u017eivel podle roku narozen\u00ed. P\u0159ehled tradi\u010dn\u00ed symboliky k zamy\u0161len\u00ed, ne p\u0159edpov\u011b\u010f.'
+        'Zjist\u011bte sv\u00e9 \u010d\u00ednsk\u00e9 znamen\u00ed a progn\u00f3zu na rok 2026.'
       );
       updateJsonLd(
         (data) => data?.['@type'] === 'WebPage' && typeof data?.name === 'string' && data.name.includes('horoskop'),
         {
-          name: '\u010c\u00ednsk\u00fd horoskop 2026: znamen\u00ed a \u017eivel podle ro\u010dn\u00edku'
+          name: '\u010c\u00ednsk\u00fd horoskop 2026'
         }
       );
     },
 
     'kalkulacka-cisla-osudu.html': () => {
-      document.title = 'Kalkula\u010dka \u010d\u00edsla \u017eivotn\u00ed cesty zdarma | Mystick\u00e1 Hv\u011bzda';
+      document.title = 'Kalkula\u010dka \u010c\u00edsla osudu | Va\u0161e numerologick\u00e9 \u010d\u00edslo zdarma | Mystick\u00e1 Hv\u011bzda';
       setMetaByName(
         'description',
-        'Spo\u010d\u00edtej si \u010d\u00edslo \u017eivotn\u00ed cesty z data narozen\u00ed. V\u00fdsledek ber jako symbolick\u00e9 t\u00e9ma k zamy\u0161len\u00ed, ne jako p\u0159edpov\u011b\u010f. Zdarma a bez registrace.'
+        'Zjist\u011bte sv\u00e9 \u010c\u00edslo osudu zdarma. Zadejte datum narozen\u00ed a okam\u017eit\u011b odhalte, co o v\u00e1s \u0159\u00edkaj\u00ed \u010d\u00edsla. Bezplatn\u00e1 numerologick\u00e1 kalkula\u010dka bez registrace.'
       );
-      setMetaByProperty('og:title', 'Kalkula\u010dka \u010d\u00edsla \u017eivotn\u00ed cesty zdarma');
+      setMetaByProperty('og:title', 'Kalkula\u010dka \u010c\u00edsla osudu | Numerologie zdarma');
       setMetaByProperty(
         'og:description',
-        'Spo\u010d\u00edtej si \u010d\u00edslo \u017eivotn\u00ed cesty z data narozen\u00ed. Zdarma, bez registrace a bez slib\u016f o budoucnosti.'
+        'Zadejte datum narozen\u00ed a zjist\u011bte sv\u00e9 \u010c\u00edslo osudu. Bezplatn\u00e1 numerologick\u00e1 kalkula\u010dka.'
       );
       updateJsonLd(
         (data) => data?.url === 'https://www.mystickahvezda.cz/kalkulacka-cisla-osudu.html',
         {
-          name: 'Kalkula\u010dka \u010d\u00edsla \u017eivotn\u00ed cesty',
-          description: 'Bezplatn\u00e1 kalkula\u010dka \u010d\u00edsla \u017eivotn\u00ed cesty vypo\u010d\u00edtan\u00e9ho z data narozen\u00ed. Numerologick\u00fd v\u00fdsledek slou\u017e\u00ed jako symbolick\u00fd podn\u011bt k zamy\u0161len\u00ed.'
+          name: 'Kalkula\u010dka \u010c\u00edsla osudu',
+          description: 'Bezplatn\u00e1 numerologick\u00e1 kalkula\u010dka. Zjist\u011bte sv\u00e9 \u010c\u00edslo osudu zad\u00e1n\u00edm data narozen\u00ed.'
         }
       );
     },
@@ -513,16 +518,16 @@
       document.title = 'Sn\u00e1\u0159 | V\u00fdklad sn\u016f a lexikon symbol\u016f | Mystick\u00e1 Hv\u011bzda';
       setMetaByName(
         'description',
-        'V \u010Desk\u00e9m sn\u00e1\u0159i najde\u0161 mo\u017En\u00e9 symbolick\u00e9 v\u00fdklady snov\u00fdch motiv\u016F. Porovnej je se svou zku\u0161enost\u00ed; jeden sen nemus\u00ed m\u00edt pro ka\u017Ed\u00e9ho stejn\u00fd v\u00fdznam.'
+        'Lexikon sn\u016f a hlubok\u00fd snov\u00fd v\u00fdklad. Odhalte skryt\u00e9 poselstv\u00ed va\u0161eho podv\u011bdom\u00ed a rozkl\u00ed\u010dujte v\u00fdznam snov\u00fdch symbol\u016f.'
       );
       setMetaByProperty('og:title', 'Sn\u00e1\u0159 | V\u00fdklad sn\u016f a lexikon symbol\u016f | Mystick\u00e1 Hv\u011bzda');
       setMetaByProperty(
         'og:description',
-        'Prozkoumej mo\u017En\u00e9 v\u00fdklady snov\u00fdch symbol\u016F a vzt\u00e1hni je k vlastn\u00ed zku\u0161enosti. Jeden motiv nemus\u00ed m\u00edt pro ka\u017Ed\u00e9ho stejn\u00fd v\u00fdznam.'
+        'Rozlu\u0161t\u011b v\u00fdznamy sn\u016f zdarma. Lexikon symbol\u016f i hlubok\u00fd osobn\u00ed v\u00fdklad cel\u00e9ho snu.'
       );
       setText(
         '.hero__subtitle',
-        'Prohl\u00e9dni si mo\u017En\u00e9 symbolick\u00e9 v\u00fdklady \u010Dast\u00fdch snov\u00fdch motiv\u016F a porovnej je se svou zku\u0161enost\u00ed. Jeden sen nemus\u00ed m\u00edt pro ka\u017Ed\u00e9ho stejn\u00fd v\u00fdznam; ber v\u00fdklad jako podn\u011Bt k zamy\u0161len\u00ed, ne jako diagn\u00F3zu.'
+        'Rozlu\u0161t\u011b poselstv\u00ed sv\u00fdch sn\u016f. Prozkoumejte lexikon symbol\u016f nebo si nechte vylo\u017eit sen do hloubky.'
       );
     },
 

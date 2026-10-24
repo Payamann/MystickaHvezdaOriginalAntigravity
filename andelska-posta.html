@@ -26,8 +26,10 @@
     <meta property="og:image" content="https://www.mystickahvezda.cz/img/search-preview/angels.webp">
 
     <link rel="stylesheet" href="/fonts/local-fonts.css">
-    <link rel="stylesheet" href="css/style.v2.min.css?v=20261018-release-candidate">
-    <link rel="stylesheet" href="css/pages/andelska-posta.css?v=20261017-ui-polish">
+    <link rel="stylesheet" href="css/style.v2.min.css?v=20261023-release-todo">
+    <link rel="stylesheet" href="css/pages/andelska-posta.css">
+<!-- DOMPurify for XSS protection (must load synchronously before other scripts use it) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.7/purify.min.js" integrity="sha384-XQqX/4yiUGu+oyr87jvWzRuqBUK/adrY0DunhL+tID9m/9dwSpV8h9Fk/Sg6ifVQ" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
     <script type="application/ld+json">
     {
@@ -51,11 +53,12 @@
 <meta property="og:image:alt" content="Andělská pošta — Napište vzkaz andělům | Mystická Hvězda">
 <meta name="twitter:image:alt" content="Andělská pošta — Napište vzkaz andělům | Mystická Hvězda">
 
-    <link rel="stylesheet" href="/css/atlas-web.css?v=20261020-03-horoscope-day-switcher-atlas">
-    <link rel="stylesheet" href="/css/atlas-remaining.css?v=20261020-01-remaining-surface-polish">
+    <link rel="stylesheet" href="/css/atlas-web.css?v=20261023-release-todo">
+    <link rel="stylesheet" href="/css/atlas-remaining.css?v=20261023-release-todo">
+<link rel="stylesheet" href="/css/atlas-polish-v1.css?v=20261009">
 </head>
 
-<body class="atlas-page atlas-remaining-page">
+<body class="atlas-page atlas-remaining-page" data-atlas-polish="andelska-posta">
     <a href="#main-content" class="skip-link">Přeskočit na obsah</a>
 
     <div id="header-placeholder"></div>
@@ -120,23 +123,23 @@
 
                         <select id="msg-category" class="form-input" aria-label="Kategorie vzkazu">
 
-                            <option value="laska">Láska a vztahy</option>
+                            <option value="laska">❤️ Láska a vztahy</option>
 
-                            <option value="zdravi">Zdraví a uzdravení</option>
+                            <option value="zdravi">🩺 Zdraví a uzdravení</option>
 
-                            <option value="kariera">Kariéra a finance</option>
+                            <option value="kariera">💼 Kariéra a finance</option>
 
-                            <option value="rodina">Rodina a domov</option>
+                            <option value="rodina">🏠 Rodina a domov</option>
 
-                            <option value="dek">Vděčnost</option>
+                            <option value="dek">🙏 Vděčnost</option>
 
-                            <option value="jine">Jiné</option>
+                            <option value="jine">✨ Jiné</option>
 
                         </select>
 
                     </div>
 
-                    <button id="btn-submit-msg" class="btn btn--primary submit-btn" type="submit"><svg class="mh-symbol mh-symbol--inline" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#angel"></use></svg><span>Odeslat andělům</span></button>
+                    <button id="btn-submit-msg" class="btn btn--primary submit-btn" type="submit">👼 Odeslat andělům</button>
 
                     <p id="submit-msg"
 
@@ -152,7 +155,7 @@
 
                         class="mh-inline-30d4d9591a">
 
-                        Nedávné vzkazy komunity</h2>
+                        ✨ Nedávné vzkazy komunity</h2>
 
                     <div id="messages-container">
 
@@ -172,21 +175,21 @@
 
     <script src="js/dist/api-config.js?v=5" defer></script>
 
-    <script src="js/dist/templates.js?v=20261021-celtic-footer-star-svg" defer></script>
+    <script src="js/dist/templates.js?v=14" defer></script>
     <script src="js/dist/auth-client.js?v=20261020-02-register-password-policy" defer></script>
 <script src="js/dist/auth-copy-fixes.js" defer></script>
-    <script src="js/dist/secondary-pages-copy-fixes.js?v=20261018-honest-astro-copy" defer></script>
+    <script src="js/dist/secondary-pages-copy-fixes.js?v=4" defer></script>
 
-    <script src="js/dist/components.js?v=20261021-footer-support-locale" defer></script>
+    <script src="js/dist/components.js?v=20260522-premium-gate-cache" defer></script>
 
     
 
     <script src="js/dist/exit-intent.js" defer></script>
 
-    <script type="module" src="js/dist/main.js?v=20261018-status-icons"></script>
+    <script type="module" src="js/dist/main.js?v=10"></script>
 
-    <script src="js/dist/angel-post.js?v=20261018-angel-post-voice" defer></script>
-    <script src="js/dist/share-result.js?v=20261017-icons" defer></script>
+    <script src="js/dist/angel-post.js" defer></script>
+    <script src="js/dist/share-result.js?v=3" defer></script>
 
 </body>
 

@@ -48,8 +48,9 @@ process.stdin.on('end', () => {
     const missing = [];
     fileRefs.forEach(ref => {
       const f = ref.replace(/'/g, '');
-      // Cache keys can include a version query; the file lives at the URL pathname.
-      const p = new URL(f, 'https://local.invalid').pathname.replace(/^\//, '');
+      // Cache-busted URLs map to the same local file as their pathname.
+      const pathname = f.split(/[?#]/, 1)[0];
+      const p = pathname.startsWith('/') ? pathname.slice(1) : pathname;
       const fullPath = path.join(dir, p);
       if (!fs.existsSync(fullPath)) missing.push(f);
     });

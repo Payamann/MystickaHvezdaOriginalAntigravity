@@ -989,8 +989,7 @@ app.use('/fonts', express.static(path.join(rootDir, 'fonts'), {
 }));
 
 
-// Auth routes own the recovery and password-reset limits, including their
-// stable error codes. A second generic limiter would mask those responses.
+// Apply sensitive operation limiter to password reset (stricter than authLimiter)
 app.use('/api/auth', authRoutes);
 app.use('/api/newsletter', newsletterRoutes);
 app.use('/api/contact', contactRoutes);

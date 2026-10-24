@@ -114,6 +114,18 @@ test('free canceled account with a retained Stripe customer can open billing por
     expect(session.container.innerHTML).toContain('Platební údaje a faktury');
 });
 
+test('current billing manifest aliases keep portal and reactivation controls available', async () => {
+    await renderStatus({
+        planType: 'premium_monthly', status: 'cancel_pending', currentPeriodEnd: '2026-12-01T00:00:00.000Z',
+        canCancel: false, canResume: false, canReactivate: true, needsPaymentUpdate: false,
+        canManageBilling: true, hasStripeSubscription: true
+    });
+
+    expect(session.nodes.has('sub-reactivate-btn')).toBe(true);
+    expect(session.nodes.has('sub-portal-btn')).toBe(true);
+    expect(session.container.innerHTML).toContain('Správa plateb');
+});
+
 test.each([
     ['trialing', { ...premium, status: 'trialing', currentPeriodEnd: new Date(Date.now() + 5 * 86400000).toISOString() }, ['Zkušební období', '<strong>5</strong> dnů', 'sub-cancel-btn', 'sub-portal-btn']],
     ['active', { ...premium, status: 'active', currentPeriodEnd: '2026-12-01T00:00:00.000Z' }, ['Aktivní', 'sub-cancel-btn', 'sub-portal-btn']],

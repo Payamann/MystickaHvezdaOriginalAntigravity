@@ -66,11 +66,210 @@
 
     if (!window.Premium && !document.querySelector('script[src*="premium-gates.js"]')) {
         const pg = document.createElement('script');
-        pg.src = basePath + 'js/dist/premium-gates.js?v=20261018-paywall-svg';
+        pg.src = basePath + 'js/dist/premium-gates.js?v=20261010-membership-gate-copy';
         pg.defer = true;
         document.head.appendChild(pg);
     }
 })();
+
+const LOCALIZED_SHELL = {
+    sk: {
+        suffix: ' (CZ)',
+        routes: {
+            '/index.html': '/sk/',
+            '/horoskopy.html': '/sk/horoskopy.html',
+            '/andelske-karty.html': '/sk/andelske-karty.html',
+            '/kristalova-koule.html': '/sk/kristalova-koule.html',
+            '/natalni-karta.html': '/sk/natalni-karta.html',
+            '/tarot.html': '/sk/tarot.html',
+            '/tarot-ano-ne.html': '/sk/tarot-ano-nie.html'
+        },
+        labels: {
+            'Domů': 'Domov', 'Astrologie': 'Astrológia', 'Věštění & Tarot': 'Veštenie a tarot',
+            'Čísla & Energie': 'Čísla a energia', 'Poznání': 'Poznanie', 'Členství': 'Členstvo',
+            'Horoskopy': 'Horoskopy', 'Znamení zvěrokruhu': 'Znamenia zverokruhu',
+            'Natální Karta': 'Natálna karta', 'Lunární Fáze': 'Lunárne fázy', 'Lunární Rituál': 'Lunárny rituál',
+            'Astro Mapa': 'Astro mapa', 'Partnerská Shoda': 'Partnerská zhoda', 'Čínský Horoskop': 'Čínsky horoskop',
+            'Minulý Život': 'Minulý život', 'Tarot': 'Tarot', 'Tarot karta dne': 'Tarotová karta dňa',
+            'Tarot 3 karty': 'Tarot na tri karty', 'Keltský kříž': 'Keltský kríž', 'Tarot na lásku': 'Tarot na lásku',
+            'Tarot ANO nebo NE': 'Tarot ÁNO alebo NIE', 'Významy karet': 'Významy tarotových kariet',
+            'Andělské Karty': 'Anjelské karty', 'Andělská Pošta': 'Anjelská pošta', 'Věštění z Run': 'Výklad z rún',
+            'Křišťálová Koule': 'Krištáľová guľa', 'Lexikon Snů (Snář)': 'Snár', 'Šamanské Kolo': 'Šamanské koleso',
+            'Numerologie': 'Numerológia', 'Kalkulačka čísla osudu': 'Kalkulačka čísla osudu',
+            'Aura Kalkulačka': 'Kalkulačka aury', 'Denní Afirmace': 'Denné afirmácie', 'Databáze Jmen': 'Databáza mien',
+            'Biorytmy': 'Bioritmy', 'Ezoterický Slovník': 'Ezoterický slovník', 'Mystické Testy': 'Mystické testy',
+            'Mystický Blog': 'Mystický blog', 'Časté otázky': 'Časté otázky', 'O nás': 'O nás',
+            'Osobní mapa na 12 měsíců': 'Osobná mapa na 12 mesiacov', 'Průvodce': 'Sprievodca',
+            'Ceník členství': 'Cenník členstva', 'Profil': 'Profil', 'Registrace': 'Registrácia', 'Přihlásit se': 'Prihlásiť sa',
+            'Tarot & Výklady': 'Tarot a výklady', 'Významy tarotových karet': 'Významy tarotových kariet',
+            'Ceník': 'Cenník', 'Napsat podpoře': 'Napísať podpore', 'Kontakt': 'Kontakt',
+            'Hvězdný Průvodce': 'Hviezdny sprievodca', 'Aura kalkulačka': 'Kalkulačka aury',
+            'FAQ (Časté dotazy)': 'FAQ (časté otázky)',
+            'Jak to funguje': 'Ako to funguje', 'Obchodní podmínky': 'Obchodné podmienky', 'Ochrana soukromí': 'Ochrana súkromia',
+            'Čeština': 'Čeština', 'Slovenčina': 'Slovenčina', 'Polski': 'Poľština'
+        },
+        text: {
+            menu: 'Otvoriť hlavné menu', nav: 'Hlavná navigácia',
+            footerDesc: 'Tarot a astrológia pre chvíle, keď hľadáš nový pohľad.',
+            trust: 'Prevádzkovateľ služby Mystická Hvězda.', feedback: 'Pomohla ti táto stránka?', yes: 'Áno', no: 'Nie',
+            copyright: `© ${new Date().getFullYear()} Mystická Hvězda. Všetky práva vyhradené.`, support: 'Podpora:', languages: 'Jazykové verzie',
+            cookieText: 'Cookies používame na fungovanie webu a voliteľnú analytiku.', necessary: 'Nevyhnutné', analytics: 'Analytické',
+            marketing: 'Marketingové', reject: 'Odmietnuť všetko', save: 'Uložiť nastavenia', accept: 'Súhlasím so všetkým',
+            czechOnly: 'Odkaz vedie na stránku dostupnú iba v češtine.'
+        }
+    },
+    pl: {
+        suffix: ' (CZ)',
+        routes: {
+            '/index.html': '/pl/',
+            '/horoskopy.html': '/pl/horoskopy.html',
+            '/andelske-karty.html': '/pl/andelske-karty.html',
+            '/kristalova-koule.html': '/pl/kristalova-koule.html',
+            '/natalni-karta.html': '/pl/natalni-karta.html',
+            '/tarot.html': '/pl/tarot.html'
+        },
+        labels: {
+            'Domů': 'Strona główna', 'Astrologie': 'Astrologia', 'Věštění & Tarot': 'Wróżby i tarot',
+            'Čísla & Energie': 'Liczby i energia', 'Poznání': 'Wiedza', 'Členství': 'Członkostwo',
+            'Horoskopy': 'Horoskopy dzienne', 'Znamení zvěrokruhu': 'Znaki zodiaku', 'Natální Karta': 'Kosmogram',
+            'Lunární Fáze': 'Fazy Księżyca', 'Lunární Rituál': 'Rytuał księżycowy', 'Astro Mapa': 'Mapa astrologiczna',
+            'Partnerská Shoda': 'Dopasowanie partnerskie', 'Čínský Horoskop': 'Horoskop chiński', 'Minulý Život': 'Poprzednie życie',
+            'Tarot': 'Tarot', 'Tarot karta dne': 'Karta tarota na dziś', 'Tarot 3 karty': 'Tarot trzy karty',
+            'Keltský kříž': 'Krzyż celtycki', 'Tarot na lásku': 'Tarot miłosny', 'Tarot ANO nebo NE': 'Tarot TAK czy NIE',
+            'Významy karet': 'Znaczenie kart tarota', 'Andělské Karty': 'Karty anielskie', 'Andělská Pošta': 'Poczta anielska',
+            'Věštění z Run': 'Wróżby z run', 'Křišťálová Koule': 'Kryształowa kula', 'Lexikon Snů (Snář)': 'Sennik',
+            'Šamanské Kolo': 'Koło szamańskie', 'Numerologie': 'Numerologia', 'Kalkulačka čísla osudu': 'Kalkulator liczby życia',
+            'Aura Kalkulačka': 'Kalkulator aury', 'Denní Afirmace': 'Codzienne afirmacje', 'Databáze Jmen': 'Baza imion',
+            'Biorytmy': 'Biorytmy', 'Ezoterický Slovník': 'Słownik ezoteryczny', 'Mystické Testy': 'Testy mistyczne',
+            'Mystický Blog': 'Blog Mistycznej Gwiazdy', 'Časté otázky': 'Częste pytania', 'O nás': 'O nas',
+            'Osobní mapa na 12 měsíců': 'Osobista mapa na 12 miesięcy', 'Průvodce': 'Gwiezdny przewodnik',
+            'Ceník členství': 'Cennik członkostwa', 'Profil': 'Profil', 'Registrace': 'Rejestracja', 'Přihlásit se': 'Zaloguj się',
+            'Tarot & Výklady': 'Tarot i rozkłady', 'Významy tarotových karet': 'Znaczenie kart tarota',
+            'Ceník': 'Cennik', 'Napsat podpoře': 'Napisz do pomocy', 'Kontakt': 'Kontakt',
+            'Hvězdný Průvodce': 'Gwiezdny przewodnik',
+            'Aura kalkulačka': 'Kalkulator aury', 'FAQ (Časté dotazy)': 'FAQ (częste pytania)',
+            'Jak to funguje': 'Jak to działa', 'Obchodní podmínky': 'Regulamin', 'Ochrana soukromí': 'Polityka prywatności',
+            'Čeština': 'Czeski', 'Slovenčina': 'Słowacki', 'Polski': 'Polski'
+        },
+        text: {
+            menu: 'Otwórz główne menu', nav: 'Nawigacja główna',
+            footerDesc: 'Tarot i astrologia, gdy szukasz nowego spojrzenia.',
+            trust: 'Operator serwisu Mystická Hvězda.', feedback: 'Czy ta strona była pomocna?', yes: 'Tak', no: 'Nie',
+            copyright: `© ${new Date().getFullYear()} Mystická Hvězda. Wszelkie prawa zastrzeżone.`, support: 'Pomoc:', languages: 'Wersje językowe',
+            cookieText: 'Używamy plików cookie, aby strona działała i do opcjonalnej analityki.', necessary: 'Niezbędne', analytics: 'Analityczne',
+            marketing: 'Marketingowe', reject: 'Odrzuć wszystkie', save: 'Zapisz ustawienia', accept: 'Akceptuj wszystkie',
+            czechOnly: 'Link prowadzi do strony dostępnej tylko po czesku.'
+        }
+    }
+};
+
+function setLocalizedText(element, value) {
+    if (!element || !value) return;
+    const textNodes = Array.from(element.childNodes).filter((node) =>
+        node.nodeType === Node.TEXT_NODE && node.textContent.trim()
+    );
+    if (textNodes.length) {
+        const textNode = textNodes[textNodes.length - 1];
+        textNode.textContent = element.querySelector('svg') ? ` ${value}` : value;
+    } else {
+        element.textContent = value;
+    }
+}
+
+function localizeSharedShell(placeholder, elementId, locale) {
+    const config = LOCALIZED_SHELL[locale];
+    if (!config) return;
+
+    if (elementId === 'header-placeholder') {
+        const toggle = placeholder.querySelector('.nav__toggle');
+        if (toggle) toggle.setAttribute('aria-label', config.text.menu);
+        const nav = placeholder.querySelector('.nav');
+        if (nav) nav.setAttribute('aria-label', config.text.nav);
+        const logoLink = placeholder.querySelector('a.logo');
+        const localizedHome = config.routes['/index.html'];
+        if (logoLink && localizedHome) logoLink.setAttribute('href', localizedHome);
+        placeholder.querySelectorAll('.logo__image').forEach((image) => {
+            image.alt = '';
+        });
+
+        const categoryLabels = [
+            config.labels['Astrologie'], config.labels['Věštění & Tarot'], config.labels['Čísla & Energie'],
+            config.labels['Poznání'], config.labels['Členství']
+        ];
+        placeholder.querySelectorAll('.nav__link--dropdown-toggle').forEach((link, index) => {
+            setLocalizedText(link, categoryLabels[index] || link.textContent.trim());
+        });
+    } else if (elementId === 'footer-placeholder') {
+        const setText = (selector, value) => {
+            const element = placeholder.querySelector(selector);
+            if (element) setLocalizedText(element, value);
+        };
+        setText('.footer__desc', config.text.footerDesc);
+        setText('.footer__trust-note', config.text.trust);
+        setText('.footer-feedback > p', config.text.feedback);
+        placeholder.querySelectorAll('[data-feedback-value="yes"]').forEach((button) => setLocalizedText(button, config.text.yes));
+        placeholder.querySelectorAll('[data-feedback-value="no"]').forEach((button) => setLocalizedText(button, config.text.no));
+        placeholder.querySelectorAll('.footer__title').forEach((title, index) => {
+            const translated = locale === 'sk'
+                ? ['Astrológia', 'Veštenie a energia', 'Poznanie', 'Podpora'][index]
+                : ['Astrologia', 'Wróżby i energia', 'Wiedza', 'Pomoc'][index];
+            if (translated) setLocalizedText(title, translated);
+        });
+        const copyright = placeholder.querySelector('.footer__bottom > p');
+        if (copyright) copyright.textContent = config.text.copyright;
+        const supportLine = placeholder.querySelector('.footer__support-line');
+        if (supportLine) {
+            const node = Array.from(supportLine.childNodes).find((child) => child.nodeType === Node.TEXT_NODE && child.textContent.trim());
+            if (node) node.textContent = ` ${config.text.support} `;
+        }
+        const supportEmailLink = placeholder.querySelector('.footer__support-email a');
+        if (supportEmailLink) setLocalizedText(supportEmailLink, config.labels['Napsat podpoře']);
+        const languages = placeholder.querySelector('.footer__languages');
+        if (languages) {
+            languages.setAttribute('aria-label', config.text.languages);
+            const labelNode = Array.from(languages.childNodes).find((child) => child.nodeType === Node.TEXT_NODE && child.textContent.includes('Jazyk:'));
+            if (labelNode) labelNode.textContent = locale === 'sk' ? ' Jazyk: ' : ' Język: ';
+            languages.querySelectorAll('a').forEach((link) => {
+                const lang = link.getAttribute('lang');
+                if (lang === 'cs') setLocalizedText(link, config.labels['Čeština']);
+                if (lang === 'sk') setLocalizedText(link, config.labels['Slovenčina']);
+                if (lang === 'pl') setLocalizedText(link, config.labels['Polski']);
+            });
+        }
+        setText('.cookie-banner__text', config.text.cookieText);
+        const cookieLabels = placeholder.querySelectorAll('.cookie-banner__preferences label');
+        [config.text.necessary, config.text.analytics, config.text.marketing].forEach((label, index) => {
+            if (cookieLabels[index]) setLocalizedText(cookieLabels[index], label);
+        });
+        [['#cookie-reject', config.text.reject], ['#cookie-save', config.text.save], ['#cookie-accept', config.text.accept]]
+            .forEach(([selector, value]) => setText(selector, value));
+    }
+
+    const labels = config.labels;
+    const localizedPaths = config.routes;
+    placeholder.querySelectorAll('a[href^="/"]').forEach((link) => {
+        if (link.closest('.footer__languages') || link.classList.contains('logo')) return;
+        const href = link.getAttribute('href') || '';
+        const pathEnd = href.search(/[?#]/);
+        const path = pathEnd === -1 ? href : href.slice(0, pathEnd);
+        const currentLabel = link.textContent.trim();
+        const label = labels[currentLabel];
+        const localizedPath = localizedPaths[path];
+        if (localizedPath) {
+            link.setAttribute('href', localizedPath + (pathEnd === -1 ? '' : href.slice(pathEnd)));
+        }
+        const alreadyLocalized = path.startsWith(`/${locale}/`);
+        const isCzechOnly = !localizedPath && !alreadyLocalized;
+        const displayLabel = label || currentLabel;
+        if (isCzechOnly && displayLabel) {
+            setLocalizedText(link, `${displayLabel}${config.suffix}`);
+            link.setAttribute('aria-label', `${displayLabel}. ${config.text.czechOnly}`);
+            link.setAttribute('title', config.text.czechOnly);
+        } else if (label) {
+            setLocalizedText(link, label);
+        }
+    });
+}
 
 document.addEventListener('DOMContentLoaded', async () => {
     // Determine the base path based on where this script is loaded from
@@ -82,8 +281,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Load header and footer in parallel for faster initial paint
     // Use high priority for header as it affects LCP/CLS
     await Promise.all([
-        loadComponent('header-placeholder', `${basePath}components/header.html?v=20261014-detail-polish-2`, basePath, true),
-        loadComponent('footer-placeholder', `${basePath}components/footer.html?v=20261020-footer-contact-dedupe`, basePath, false)
+        loadComponent('header-placeholder', `${basePath}components/header.html?v=20261022-localized-shell-polish-1`, basePath, true),
+        loadComponent('footer-placeholder', `${basePath}components/footer.html?v=20261022-localized-shell-polish-1`, basePath, false)
     ]);
 
     // STANDALONE: Init hamburger menu + header scroll (no module dependency)
@@ -121,9 +320,6 @@ async function loadComponent(elementId, path, basePath = '', highPriority = fals
         const temp = document.createElement('div');
         temp.innerHTML = html;
 
-        localizeSharedShell(temp);
-        html = temp.innerHTML;
-
         // Fix relative paths for images and links if we are in a subdirectory
         if (basePath && basePath !== './' && basePath !== '/') {
             // Fix images
@@ -147,6 +343,23 @@ async function loadComponent(elementId, path, basePath = '', highPriority = fals
 
         element.innerHTML = html;
 
+        const locale = document.documentElement.lang.slice(0, 2).toLowerCase();
+        if (locale === 'sk' || locale === 'pl') {
+            localizeSharedShell(element, elementId, locale);
+        }
+
+        if (elementId === 'footer-placeholder') {
+            const mobileFooter = window.matchMedia('(max-width: 768px)');
+            const disclosures = Array.from(element.querySelectorAll('.footer__disclosure'));
+            const syncFooterDisclosure = () => {
+                disclosures.forEach((disclosure) => {
+                    disclosure.open = !mobileFooter.matches;
+                });
+            };
+            syncFooterDisclosure();
+            mobileFooter.addEventListener?.('change', syncFooterDisclosure);
+        }
+
         // Replace the placeholder with the actual content
         element.replaceWith(...element.childNodes);
 
@@ -154,156 +367,6 @@ async function loadComponent(elementId, path, basePath = '', highPriority = fals
         console.error(`Error loading component ${path}:`, error);
         element.innerHTML = `<div class="error-loading">Failed to load content.</div>`;
     }
-}
-
-// Translate only known shared-shell text nodes. The component markup, IDs,
-// classes, SVG and event hooks stay intact across the locale variants.
-function localizeSharedShell(root) {
-    const locale = document.documentElement.lang;
-    if (locale !== 'sk' && locale !== 'pl') return;
-
-    const labels = {
-        sk: {
-            'Natální Karta': 'Natálna karta',
-            'Partnerská Shoda': 'Partnerská zhoda',
-            'Lunární Fáze': 'Mesačné fázy',
-            'Astro Mapa': 'Astromapa',
-            'Čínský Horoskop': 'Čínsky horoskop',
-            'Andělské Karty': 'Anjelské karty',
-            'Otevřít hlavní menu': 'Otvoriť hlavné menu', 'Zavřít hlavní menu': 'Zavrieť hlavné menu',
-            'Hlavní navigace': 'Hlavná navigácia', 'Domů': 'Domov', 'Astrologie': 'Astrológia',
-            'Horoskopy': 'Horoskopy', 'Znamení zvěrokruhu': 'Znamenia zverokruhu', 'Natální karta': 'Natálna karta',
-            'Lunární fáze': 'Mesačné fázy', 'Lunární rituál': 'Mesačný rituál', 'Astro mapa': 'Astromapa',
-            'Partnerská shoda': 'Partnerská zhoda', 'Čínský horoskop': 'Čínsky horoskop', 'Minulý život': 'Minulý život',
-            'Tarot a věštění': 'Tarot a veštenie', 'Tarot': 'Tarot', 'Tarot karta dne': 'Tarotová karta dňa',
-            'Tarot 3 karty': 'Tarot 3 karty', 'Keltský kříž': 'Keltský kríž', 'Tarot na lásku': 'Tarot na lásku',
-            'Tarot ANO nebo NE': 'Tarot ÁNO alebo NIE', 'Významy karet': 'Významy kariet', 'Andělské karty': 'Anjelské karty',
-            'Andělská pošta': 'Anjelská pošta', 'Runy': 'Runy', 'Křišťálová koule': 'Krištáľová guľa', 'Snář': 'Snár',
-            'Šamanské kolo': 'Šamanské koleso', 'Čísla a energie': 'Čísla a energia', 'Numerologie': 'Numerológia',
-            'Kalkulačka životní cesty': 'Kalkulačka životnej cesty', 'Aura kalkulačka': 'Kalkulačka aury',
-            'Denní afirmace': 'Denné afirmácie', 'Databáze jmen': 'Databáza mien', 'Biorytmy': 'Bioritmy',
-            'Ezoterický slovník': 'Ezoterický slovník', 'Poznání': 'Poznanie', 'Mystické testy': 'Mystické testy',
-            'Mystický blog': 'Mystický blog', 'Časté otázky': 'Časté otázky', 'O nás': 'O nás',
-            'Výklady a služby': 'Výklady a služby', 'Osobní mapa na 12 měsíců': 'Osobná mapa na 12 mesiacov',
-            'Průvodce': 'Sprievodca', 'Ceník': 'Cenník', 'Profil': 'Profil', 'Registrace': 'Registrácia', 'Přihlásit se': 'Prihlásiť sa',
-            'Mystická Hvězda Logo': 'Logo Mystická Hvězda', 'Moderní astrologická služba pro českou komunitu.': 'Moderná astrologická služba pre českú komunitu.',
-            'Moderní astrologická služba pro českou komunitu. Spojujeme tisíciletou moudrost s důvěryhodnou praxí.': 'Moderná astrologická služba pre českú komunitu. Spájame tisícročnú múdrosť s dôveryhodnou praxou.',
-            'Spojujeme tisíciletou moudrost s důvěryhodnou praxí.': 'Spájame tisícročnú múdrosť s dôveryhodnou praxou.',
-            'Provozovatel služby Mystická Hvězda. Potřebuješ pomoc? Napiš nám kdykoliv na': 'Prevádzkovateľ služby Mystická Hvězda. Potrebuješ pomoc? Napíš nám kedykoľvek na',
-            'Provozovatel služby Mystická Hvězda. Podpora:': 'Prevádzkovateľ služby Mystická Hvězda. Podpora:',
-            'Pomohla ti tato stránka?': 'Pomohla ti táto stránka?', 'Ano': 'Áno', 'Ne': 'Nie',
-            'Věštění & Energie': 'Veštenie a energia', 'Tarot & Výklady': 'Tarot a výklady', 'Věštění z Run': 'Veštenie z rún',
-            'Křišťálová Koule': 'Krištáľová guľa', 'Šamanské Kolo': 'Šamanské koleso', 'Hvězdný Průvodce': 'Hviezdny sprievodca',
-            'Mystické Testy': 'Mystické testy', 'Mystický Blog': 'Mystický blog', 'Ezoterický Slovník': 'Ezoterický slovník',
-            'Významy tarotových karet': 'Významy tarotových kariet', 'Kontakt': 'Kontakt',
-            'Napsat podpoře': 'Napísať podpore', 'FAQ (Časté dotazy)': 'FAQ (časté otázky)', 'Jak to funguje': 'Ako to funguje',
-            'Jazykové verze': 'Jazykové verzie', 'Jazyk:': 'Jazyk:', 'Čeština': 'Čeština', 'Slovenčina': 'Slovenčina', 'Polski': 'Poľština',
-            '© 2026 Mystická Hvězda. Všechna práva vyhrazena.': '© 2026 Mystická Hvězda. Všetky práva vyhradené.',
-            'Podpora:': 'Podpora:', 'Obchodní podmínky': 'Obchodné podmienky', 'Ochrana soukromí': 'Ochrana súkromia',
-            'Cookies používáme pro chod webu a volitelnou analytiku.': 'Cookies používame na fungovanie webu a voliteľnú analytiku.',
-            'Nezbytné': 'Nevyhnutné', 'Analytické': 'Analytické', 'Marketingové': 'Marketingové',
-            'Odmítnout vše': 'Odmietnuť všetko', 'Uložit nastavení': 'Uložiť nastavenia', 'Nastavení': 'Nastavenia', 'Souhlasím se vším': 'Súhlasím so všetkým',
-            'Otevírá českou stránku': 'Otvára českú stránku'
-        },
-        pl: {
-            'Natální Karta': 'Kosmogram',
-            'Partnerská Shoda': 'Dopasowanie partnerskie',
-            'Lunární Fáze': 'Fazy Księżyca',
-            'Astro Mapa': 'Mapa astrologiczna',
-            'Čínský Horoskop': 'Horoskop chiński',
-            'Andělské Karty': 'Karty anielskie',
-            'Otevřít hlavní menu': 'Otwórz menu główne', 'Zavřít hlavní menu': 'Zamknij menu główne',
-            'Hlavní navigace': 'Nawigacja główna', 'Domů': 'Strona główna', 'Astrologie': 'Astrologia',
-            'Horoskopy': 'Horoskopy', 'Znamení zvěrokruhu': 'Znaki zodiaku', 'Natální karta': 'Kosmogram',
-            'Lunární fáze': 'Fazy Księżyca', 'Lunární rituál': 'Rytuał księżycowy', 'Astro mapa': 'Mapa astrologiczna',
-            'Partnerská shoda': 'Dopasowanie partnerskie', 'Čínský horoskop': 'Horoskop chiński', 'Minulý život': 'Poprzednie życie',
-            'Tarot a věštění': 'Tarot i wróżby', 'Tarot': 'Tarot', 'Tarot karta dne': 'Karta dnia', 'Tarot 3 karty': 'Tarot 3 karty',
-            'Keltský kříž': 'Krzyż celtycki', 'Tarot na lásku': 'Tarot miłosny', 'Tarot ANO nebo NE': 'Tarot TAK albo NIE',
-            'Významy karet': 'Znaczenie kart', 'Andělské karty': 'Karty anielskie', 'Andělská pošta': 'Poczta anielska',
-            'Runy': 'Runy', 'Křišťálová koule': 'Kryształowa kula', 'Snář': 'Sennik', 'Šamanské kolo': 'Koło szamańskie',
-            'Čísla a energie': 'Liczby i energia', 'Numerologie': 'Numerologia', 'Kalkulačka životní cesty': 'Kalkulator drogi życia',
-            'Aura kalkulačka': 'Kalkulator aury', 'Denní afirmace': 'Codzienne afirmacje', 'Databáze jmen': 'Baza imion',
-            'Biorytmy': 'Biorytmy', 'Ezoterický slovník': 'Słownik ezoteryczny', 'Poznání': 'Odkrywanie',
-            'Mystické testy': 'Testy mistyczne', 'Mystický blog': 'Blog mistyczny', 'Časté otázky': 'Częste pytania', 'O nás': 'O nas',
-            'Výklady a služby': 'Odczyty i usługi', 'Osobní mapa na 12 měsíců': 'Osobista mapa na 12 miesięcy',
-            'Průvodce': 'Przewodnik', 'Ceník': 'Cennik', 'Profil': 'Profil', 'Registrace': 'Rejestracja', 'Přihlásit se': 'Zaloguj się',
-            'Mystická Hvězda Logo': 'Logo Mystická Hvězda', 'Moderní astrologická služba pro českou komunitu.': 'Nowoczesny serwis astrologiczny dla czeskiej społeczności.',
-            'Moderní astrologická služba pro českou komunitu. Spojujeme tisíciletou moudrost s důvěryhodnou praxí.': 'Nowoczesny serwis astrologiczny dla czeskiej społeczności. Łączymy tysiącletnią mądrość z rzetelną praktyką.',
-            'Spojujeme tisíciletou moudrost s důvěryhodnou praxí.': 'Łączymy tysiącletnią mądrość z rzetelną praktyką.',
-            'Provozovatel služby Mystická Hvězda. Potřebuješ pomoc? Napiš nám kdykoliv na': 'Serwis Mystická Hvězda. Potrzebujesz pomocy? Napisz do nas w każdej chwili:',
-            'Provozovatel služby Mystická Hvězda. Podpora:': 'Serwis Mystická Hvězda. Wsparcie:',
-            'Pomohla ti tato stránka?': 'Czy ta strona była pomocna?', 'Ano': 'Tak', 'Ne': 'Nie',
-            'Věštění & Energie': 'Wróżby i energia', 'Tarot & Výklady': 'Tarot i odczyty', 'Věštění z Run': 'Wróżby z run',
-            'Křišťálová Koule': 'Kryształowa kula', 'Šamanské Kolo': 'Koło szamańskie', 'Hvězdný Průvodce': 'Gwiezdny przewodnik',
-            'Mystické Testy': 'Testy mistyczne', 'Mystický Blog': 'Blog mistyczny', 'Ezoterický Slovník': 'Słownik ezoteryczny',
-            'Významy tarotových karet': 'Znaczenie kart tarota', 'Kontakt': 'Kontakt', 'Napsat podpoře': 'Napisz do pomocy',
-            'FAQ (Časté dotazy)': 'FAQ (częste pytania)', 'Jak to funguje': 'Jak to działa', 'Jazykové verze': 'Wersje językowe',
-            'Jazyk:': 'Język:', 'Čeština': 'Czeski', 'Slovenčina': 'Słowacki', 'Polski': 'Polski',
-            '© 2026 Mystická Hvězda. Všechna práva vyhrazena.': '© 2026 Mystická Hvězda. Wszelkie prawa zastrzeżone.',
-            'Podpora': 'Pomoc', 'Podpora:': 'Pomoc:', 'Obchodní podmínky': 'Warunki korzystania', 'Ochrana soukromí': 'Ochrona prywatności',
-            'Cookies používáme pro chod webu a volitelnou analytiku.': 'Używamy plików cookie do działania serwisu i opcjonalnej analityki.',
-            'Nezbytné': 'Niezbędne', 'Analytické': 'Analityczne', 'Marketingové': 'Marketingowe',
-            'Odmítnout vše': 'Odrzuć wszystkie', 'Uložit nastavení': 'Zapisz ustawienia', 'Nastavení': 'Ustawienia', 'Souhlasím se vším': 'Akceptuję wszystkie',
-            'Otevírá českou stránku': 'Otwiera stronę w języku czeskim'
-        }
-    };
-    const copy = labels[locale];
-    const localTargets = {
-        '/': `/${locale}/`, '/index.html': `/${locale}/`,
-        '/horoskopy.html': `/${locale}/horoskopy.html`, '/tarot.html': `/${locale}/tarot.html`,
-        '/natalni-karta.html': `/${locale}/natalni-karta.html`, '/andelske-karty.html': `/${locale}/andelske-karty.html`,
-        '/kristalova-koule.html': `/${locale}/kristalova-koule.html`
-    };
-    if (locale === 'sk') localTargets['/tarot-ano-ne.html'] = '/sk/tarot-ano-nie.html';
-
-    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
-    let node;
-    while ((node = walker.nextNode())) {
-        const normalized = node.nodeValue.trim().replace(/\s+/g, ' ');
-        if (!Object.prototype.hasOwnProperty.call(copy, normalized)) continue;
-        const leading = node.nodeValue.match(/^\s*/)[0];
-        const trailing = node.nodeValue.match(/\s*$/)[0];
-        node.nodeValue = `${leading}${copy[normalized]}${trailing}`;
-    }
-
-    root.querySelectorAll('a[href^="/"]').forEach((link) => {
-        const href = link.getAttribute('href');
-        if (link.hasAttribute('hreflang') || link.hasAttribute('lang') || href.startsWith('//')) return;
-        const target = localTargets[href];
-        if (target) {
-            link.setAttribute('href', target);
-            link.removeAttribute('lang');
-            link.removeAttribute('title');
-        } else {
-            link.setAttribute('hreflang', 'cs');
-            link.setAttribute('title', copy['Otevírá českou stránku']);
-        }
-    });
-
-    root.querySelectorAll('[aria-label]').forEach((element) => {
-        const label = element.getAttribute('aria-label');
-        if (copy[label]) element.setAttribute('aria-label', copy[label]);
-    });
-    root.querySelectorAll('[alt]').forEach((element) => {
-        const alt = element.getAttribute('alt');
-        if (copy[alt]) element.setAttribute('alt', copy[alt]);
-    });
-
-    // cookie-handler.js updates this control after the component is inserted.
-    const saveButton = root.querySelector('#cookie-save');
-    if (saveButton && !saveButton.dataset.localeObserver) {
-        saveButton.dataset.localeObserver = 'true';
-        new MutationObserver(() => {
-            const source = saveButton.textContent.trim();
-            if (copy[source]) saveButton.textContent = copy[source];
-        }).observe(saveButton, { childList: true, characterData: true, subtree: true });
-    }
-}
-
-function getSharedShellCopy(locale) {
-    if (locale === 'sk') return { open: 'Otvoriť hlavné menu', close: 'Zavrieť hlavné menu' };
-    if (locale === 'pl') return { open: 'Otwórz menu główne', close: 'Zamknij menu główne' };
-    return { open: 'Otevřít hlavní menu', close: 'Zavřít hlavní menu' };
 }
 
 /**
@@ -355,26 +418,16 @@ function initStandaloneHeader() {
             item.querySelector('.nav__link--dropdown-toggle')?.setAttribute('aria-expanded', 'false');
         });
     };
-    const setDropdownOpen = (item, open) => {
-        if (!item) return;
-        closeDropdowns(open ? item : null);
-        item.classList.toggle('is-active', open);
-        item.querySelector('.nav__link--dropdown-toggle')?.setAttribute('aria-expanded', String(open));
-    };
-    const menuCopy = getSharedShellCopy(document.documentElement.lang);
     const setMenuOpen = (open, focusFirstLink = false) => {
         navList.classList.toggle('open', open);
         toggle.classList.toggle('active', open);
         toggle.setAttribute('aria-expanded', String(open));
-        toggle.setAttribute('aria-label', open ? menuCopy.close : menuCopy.open);
         document.body.classList.toggle('nav-open', open);
 
         if (isMobileNav()) {
             navList.setAttribute('aria-hidden', String(!open));
-            navList.inert = !open;
         } else {
             navList.removeAttribute('aria-hidden');
-            navList.inert = false;
         }
 
         if (!open) closeDropdowns();
@@ -383,19 +436,15 @@ function initStandaloneHeader() {
         }
     };
     const syncNavA11y = () => {
-        if (isMobileNav()) {
-            navList.setAttribute('aria-hidden', String(!navList.classList.contains('open')));
-            navList.inert = !navList.classList.contains('open');
+        if (isMobileNav() && !navList.classList.contains('open')) {
+            navList.setAttribute('aria-hidden', 'true');
             return;
         }
-        if (navList.classList.contains('open')) setMenuOpen(false);
         navList.removeAttribute('aria-hidden');
-        navList.inert = false;
     };
 
     if (!navList.id) navList.id = 'primary-navigation';
     toggle.setAttribute('aria-controls', navList.id);
-    toggle.setAttribute('aria-label', navList.classList.contains('open') ? menuCopy.close : menuCopy.open);
     syncNavA11y();
 
     dropdownItems.forEach((item, index) => {
@@ -404,20 +453,10 @@ function initStandaloneHeader() {
         if (!toggleLink || !dropdown) return;
 
         if (!dropdown.id) dropdown.id = `nav-dropdown-${index + 1}`;
+        toggleLink.setAttribute('role', 'button');
         toggleLink.setAttribute('aria-haspopup', 'true');
         toggleLink.setAttribute('aria-expanded', 'false');
         toggleLink.setAttribute('aria-controls', dropdown.id);
-
-        item.addEventListener('mouseenter', () => {
-            if (!isMobileNav()) setDropdownOpen(item, true);
-        });
-        item.addEventListener('mouseleave', () => {
-            if (!isMobileNav() && !item.contains(document.activeElement)) setDropdownOpen(item, false);
-        });
-        item.addEventListener('focusout', (event) => {
-            if (isMobileNav() || item.contains(event.relatedTarget)) return;
-            setDropdownOpen(item, false);
-        });
     });
 
     toggle.addEventListener('click', function (e) {
@@ -425,7 +464,7 @@ function initStandaloneHeader() {
         setMenuOpen(!navList.classList.contains('open'), true);
     });
 
-    // Dropdown buttons work the same with click, Enter and Space on every viewport.
+    // === MOBILE DROPDOWNS ===
     navList.querySelectorAll('.nav__link--dropdown-toggle').forEach(toggleLink => {
         toggleLink.addEventListener('click', (e) => {
             e.preventDefault();
@@ -433,16 +472,15 @@ function initStandaloneHeader() {
             const item = toggleLink.closest('.nav__item--has-dropdown');
             if (!item) return;
             const isOpen = item.classList.contains('is-active');
-            setDropdownOpen(item, !isOpen);
+            closeDropdowns(item);
+            item.classList.toggle('is-active', !isOpen);
+            toggleLink.setAttribute('aria-expanded', String(!isOpen));
         });
 
         toggleLink.addEventListener('keydown', (e) => {
-            if (e.key === ' ' && toggleLink.tagName !== 'BUTTON') { e.preventDefault(); toggleLink.click(); return; }
-            if (e.key !== 'ArrowDown') return;
+            if (e.key !== ' ') return;
             e.preventDefault();
-            const item = toggleLink.closest('.nav__item--has-dropdown');
-            setDropdownOpen(item, true);
-            item?.querySelector('.nav__dropdown-link')?.focus({ preventScroll: true });
+            toggleLink.click();
         });
     });
 
@@ -462,25 +500,19 @@ function initStandaloneHeader() {
 
     // Close menu when clicking outside
     document.addEventListener('click', (e) => {
-        if (header.contains(e.target)) return;
-        closeDropdowns();
-        if (navList.classList.contains('open')) setMenuOpen(false);
+        if (!header.contains(e.target) && navList.classList.contains('open')) {
+            setMenuOpen(false);
+        }
     });
 
     // Close menu on Escape key
     document.addEventListener('keydown', (e) => {
-        if (e.key !== 'Escape') return;
-        const expandedDropdown = navList.querySelector('.nav__link--dropdown-toggle[aria-expanded="true"]');
-        if (isMobileNav() && navList.classList.contains('open')) {
+        if (e.key === 'Escape' && navList.classList.contains('open')) {
             setMenuOpen(false);
             toggle.focus();
-        } else if (expandedDropdown) {
-            closeDropdowns();
-            expandedDropdown.focus();
         }
     });
 
-    navList.dataset.dropdownsReady = 'true';
     window.addEventListener('resize', syncNavA11y);
 
     initLanguageSwitcher();
@@ -537,29 +569,34 @@ function initLanguageSwitcher() {
 
             localStorage.setItem('mh_lang_pref', targetLang);
             
-            // Generate target URL
-            let newPath = window.location.pathname;
-            const fileName = newPath.split('/').pop() || 'index.html';
-            
-            // Remove existing lang prefix
-            newPath = newPath.replace(/\/(sk|pl)\//, '/');
-            
-            if (targetLang === 'cs') {
-                // To root or CZ version (already handled by replace)
-                window.location.href = newPath;
+            // Keep language switching on an equivalent page when that locale
+            // has one. The localized inventory is intentionally smaller than
+            // the Czech site; unsupported paths go to that locale's home page
+            // instead of constructing a URL that returns 404.
+            const localizedRoutes = {
+                'index.html': { cs: '/index.html', sk: '/sk/', pl: '/pl/' },
+                'horoskopy.html': { cs: '/horoskopy.html', sk: '/sk/horoskopy.html', pl: '/pl/horoskopy.html' },
+                'andelske-karty.html': { cs: '/andelske-karty.html', sk: '/sk/andelske-karty.html', pl: '/pl/andelske-karty.html' },
+                'kristalova-koule.html': { cs: '/kristalova-koule.html', sk: '/sk/kristalova-koule.html', pl: '/pl/kristalova-koule.html' },
+                'natalni-karta.html': { cs: '/natalni-karta.html', sk: '/sk/natalni-karta.html', pl: '/pl/natalni-karta.html' },
+                'tarot.html': { cs: '/tarot.html', sk: '/sk/tarot.html', pl: '/pl/tarot.html' },
+                'tarot-ano-ne.html': { cs: '/tarot-ano-ne.html', sk: '/sk/tarot-ano-nie.html', pl: '/pl/' },
+                'tarot-ano-nie.html': { cs: '/tarot-ano-ne.html', sk: '/sk/tarot-ano-nie.html', pl: '/pl/' }
+            };
+            const currentPath = window.location.pathname;
+            const fileName = currentPath.split('/').filter(Boolean).pop() || 'index.html';
+            const targetPath = localizedRoutes[fileName]?.[targetLang]
+                || (targetLang === 'cs'
+                    ? currentPath.replace(/\/(sk|pl)\//, '/')
+                    : `/${targetLang}/`);
+
+            if (window.location.protocol === 'file:') {
+                const baseMatch = currentPath.match(/(.*\/MystickaHvezda\/)/i);
+                window.location.href = baseMatch
+                    ? baseMatch[1] + targetPath.replace(/^\/+/, '')
+                    : './' + targetPath.replace(/^\/+/, '');
             } else {
-                // To subdirectory
-                // Handle local file protocol vs server
-                if (window.location.protocol === 'file:') {
-                    const baseMatch = newPath.match(/(.*\/MystickaHvezda\/)/);
-                    if (baseMatch) {
-                        window.location.href = baseMatch[1] + targetLang + '/' + fileName;
-                    } else {
-                        window.location.href = './' + targetLang + '/' + fileName;
-                    }
-                } else {
-                    window.location.href = '/' + targetLang + '/' + fileName;
-                }
+                window.location.href = targetPath;
             }
         });
     });

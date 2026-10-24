@@ -9,30 +9,6 @@
 
     const CARD_WIDTH = 1080;
     const CARD_HEIGHT = 1350;
-    const PAINTED_BACKGROUND_SRC = '/img/atlas/tools-v1/02-mesicni-krajina.webp';
-    const COLOR_NAVY = '#0b1929';
-    const COLOR_NAVY_DEEP = '#07121f';
-    const COLOR_GOLD = '#d0b17c';
-    const COLOR_CREAM = '#e9e3d7';
-    let paintedBackground = null;
-    const graphemeSegmenter = typeof Intl !== 'undefined' && typeof Intl.Segmenter === 'function'
-        ? new Intl.Segmenter(undefined, { granularity: 'grapheme' })
-        : null;
-
-    function splitGraphemes(text) {
-        return graphemeSegmenter
-            ? Array.from(graphemeSegmenter.segment(text), part => part.segment)
-            : Array.from(text);
-    }
-
-    // Keep drawBrandBackground synchronous for legacy callers. The local
-    // artwork is warmed in the background and the renderer falls back to a
-    // complete navy card when the image is not ready or cannot be loaded.
-    const paintedBackgroundImage = new Image();
-    paintedBackgroundImage.onload = () => { paintedBackground = paintedBackgroundImage; };
-    paintedBackgroundImage.onerror = () => { paintedBackground = null; };
-    paintedBackgroundImage.decoding = 'async';
-    paintedBackgroundImage.src = PAINTED_BACKGROUND_SRC;
 
     function createCanvas() {
         const canvas = document.createElement('canvas');
@@ -41,34 +17,24 @@
         return canvas;
     }
 
-    function wrapText(ctx, text, maxWidth) {
-        const words = String(text || '').split(/\s+/).filter(Boolean);
+    const graphemeSegmenter = typeof Intl.Segmenter === 'function'
+        ? new Intl.Segmenter(undefined, { granularity: 'grapheme' })
+        : null;
+
+    function splitLongToken(ctx, token, maxWidth) {
+        const graphemes = graphemeSegmenter
+            ? Array.from(graphemeSegmenter.segment(token), (part) => part.segment)
+            : Array.from(token);
         const lines = [];
         let current = '';
 
-        words.forEach((word) => {
-            const test = current ? `${current} ${word}` : word;
-            if (ctx.measureText(test).width <= maxWidth) {
-                current = test;
+        graphemes.forEach((grapheme) => {
+            const candidate = current + grapheme;
+            if (current && ctx.measureText(candidate).width > maxWidth) {
+                lines.push(current);
+                current = grapheme;
             } else {
-                if (current) lines.push(current);
-                if (ctx.measureText(word).width <= maxWidth) {
-                    current = word;
-                    return;
-                }
-
-                const segments = splitGraphemes(word);
-                let chunk = '';
-                segments.forEach((segment) => {
-                    const next = `${chunk}${segment}`;
-                    if (chunk && ctx.measureText(next).width > maxWidth) {
-                        lines.push(chunk);
-                        chunk = segment;
-                    } else {
-                        chunk = next;
-                    }
-                });
-                current = chunk;
+                current = candidate;
             }
         });
 
@@ -76,25 +42,62 @@
         return lines;
     }
 
-    function ellipsizeLine(ctx, line, maxWidth) {
-        const characters = splitGraphemes(String(line || '').trimEnd());
-        while (characters.length > 0 && ctx.measureText(`${characters.join('')}…`).width > maxWidth) {
-            characters.pop();
+    function wrapText(ctx, text, maxWidth) {
+        const words = String(text || '').split(/\s+/).filter(Boolean);
+        const lines = [];
+        let current = '';
+
+        words.forEach((word) => {
+            if (ctx.measureText(word).width > maxWidth) {
+                if (current) lines.push(current);
+                const wordLines = splitLongToken(ctx, word, maxWidth);
+                lines.push(...wordLines.slice(0, -1));
+                current = wordLines[wordLines.length - 1] || '';
+                return;
+            }
+
+            const test = current ? `${current} ${word}` : word;
+            if (ctx.measureText(test).width <= maxWidth) {
+                current = test;
+            } else {
+                if (current) lines.push(current);
+                current = word;
+            }
+        });
+
+        if (current) lines.push(current);
+        return lines;
+    }
+
+    function appendEllipsis(ctx, line, maxWidth) {
+        const graphemes = graphemeSegmenter
+            ? Array.from(graphemeSegmenter.segment(String(line)), (part) => part.segment)
+            : Array.from(String(line));
+        let text = graphemes.join('').trimEnd();
+
+        while (text && ctx.measureText(`${text}…`).width > maxWidth) {
+            const parts = graphemeSegmenter
+                ? Array.from(graphemeSegmenter.segment(text), (part) => part.segment)
+                : Array.from(text);
+            parts.pop();
+            text = parts.join('').trimEnd();
         }
-        return `${characters.join('').trimEnd()}…`;
+
+        return `${text}…`;
     }
 
     function drawCenteredLines(ctx, lines, centerX, startY, lineHeight, maxLines = lines.length, maxWidth = Infinity) {
         const visibleLines = lines.slice(0, maxLines);
-        if (visibleLines.length > 0 && Number.isFinite(maxWidth) && maxWidth > 0) {
+        if (visibleLines.length && Number.isFinite(maxWidth) && maxWidth > 0) {
             const hasOmittedLines = lines.length > visibleLines.length;
             const lastIndex = visibleLines.length - 1;
             visibleLines.forEach((line, index) => {
                 if (ctx.measureText(line).width > maxWidth || (hasOmittedLines && index === lastIndex)) {
-                    visibleLines[index] = ellipsizeLine(ctx, line, maxWidth);
+                    visibleLines[index] = appendEllipsis(ctx, line, maxWidth);
                 }
             });
         }
+
         visibleLines.forEach((line, index) => {
             ctx.fillText(line, centerX, startY + index * lineHeight);
         });
@@ -117,68 +120,56 @@
         ctx.drawImage(image, x + (width - drawWidth) / 2, y + (height - drawHeight) / 2, drawWidth, drawHeight);
     }
 
-    function drawSeededStars(ctx, seed, width, height) {
-        // Retained as a no-op for older tools that reference this public
-        // helper directly. Current exports use the painted navy background.
-        if (!ctx || !Number.isFinite(seed) || width <= 0 || height <= 0) return;
+    let brandArtworkPromise;
+    function loadBrandArtwork() {
+        if (!brandArtworkPromise) {
+            brandArtworkPromise = loadImage('/img/atlas/tools-v1/02-mesicni-krajina.webp').catch(() => null);
+        }
+        return brandArtworkPromise;
     }
 
-    function drawImageCover(ctx, image, x, y, width, height) {
-        const ratio = Math.max(width / image.naturalWidth, height / image.naturalHeight);
-        const drawWidth = image.naturalWidth * ratio;
-        const drawHeight = image.naturalHeight * ratio;
-        ctx.drawImage(image, x + (width - drawWidth) / 2, y + (height - drawHeight) / 2, drawWidth, drawHeight);
-    }
-
-    // Painted navy surface + restrained gold frame + brand header. The seed
-    // argument remains accepted because existing tools pass it. Cards that
-    // already place artwork or a heading at the top may hide the shared header.
-    function drawBrandBackground(ctx, canvas, seed = 7, options = {}) {
+    // Shared navy/gold share-card background with the site's painted landscape.
+    async function drawBrandBackground(ctx, canvas) {
         const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-        gradient.addColorStop(0, COLOR_NAVY);
-        gradient.addColorStop(0.52, '#102638');
-        gradient.addColorStop(1, COLOR_NAVY_DEEP);
+        gradient.addColorStop(0, '#0b1929');
+        gradient.addColorStop(0.58, '#102638');
+        gradient.addColorStop(1, '#0b1929');
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        if (paintedBackground?.naturalWidth) {
-            const artworkHeight = Math.min(660, canvas.height * 0.52);
-            ctx.save();
-            ctx.beginPath();
-            ctx.rect(0, 0, canvas.width, artworkHeight);
-            ctx.clip();
-            drawImageCover(ctx, paintedBackground, 0, 0, canvas.width, artworkHeight);
-            const veil = ctx.createLinearGradient(0, 0, 0, artworkHeight);
-            veil.addColorStop(0, 'rgba(11,25,41,0.86)');
-            veil.addColorStop(0.5, 'rgba(11,25,41,0.34)');
+        const artwork = await loadBrandArtwork();
+        if (artwork) {
+            const artworkHeight = canvas.width * artwork.naturalHeight / artwork.naturalWidth;
+            ctx.drawImage(artwork, 0, 0, canvas.width, artworkHeight);
+
+            const veil = ctx.createLinearGradient(0, 0, 0, artworkHeight + 180);
+            veil.addColorStop(0, 'rgba(11,25,41,0.78)');
+            veil.addColorStop(0.5, 'rgba(11,25,41,0.28)');
             veil.addColorStop(1, '#102638');
             ctx.fillStyle = veil;
-            ctx.fillRect(0, 0, canvas.width, artworkHeight);
-            ctx.restore();
+            ctx.fillRect(0, 0, canvas.width, artworkHeight + 180);
         }
 
-        ctx.strokeStyle = 'rgba(208,177,124,0.5)';
+        ctx.strokeStyle = 'rgba(189,155,101,0.45)';
         ctx.lineWidth = 2;
-        ctx.strokeRect(54, 54, canvas.width - 108, canvas.height - 108);
+        ctx.strokeRect(48, 48, canvas.width - 96, canvas.height - 96);
 
-        if (options.showHeader !== false) {
-            ctx.textAlign = 'center';
-            ctx.fillStyle = COLOR_GOLD;
-            ctx.font = '600 38px Inter, Arial, sans-serif';
-            ctx.fillText('Mystická Hvězda', canvas.width / 2, 130);
-        }
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#e9e3d7';
+        ctx.font = '600 38px Cinzel, Georgia, serif';
+        ctx.fillText('Mystická Hvězda', canvas.width / 2, 130);
     }
 
     function drawFooter(ctx, canvas, pageUrl, ctaText) {
         ctx.textAlign = 'center';
-        ctx.fillStyle = COLOR_CREAM;
+        ctx.fillStyle = 'rgba(233,227,215,0.78)';
         ctx.font = '500 30px Inter, Arial, sans-serif';
-        ctx.fillText(pageUrl, canvas.width / 2, 1240);
+        ctx.fillText(pageUrl, canvas.width / 2, 1218, canvas.width - 120);
 
         if (ctaText) {
-            ctx.fillStyle = COLOR_GOLD;
+            ctx.fillStyle = 'rgba(208,177,124,0.94)';
             ctx.font = '600 26px Inter, Arial, sans-serif';
-            ctx.fillText(ctaText, canvas.width / 2, 1280);
+            ctx.fillText(ctaText, canvas.width / 2, 1258, canvas.width - 120);
         }
     }
 
@@ -254,13 +245,13 @@
                     track(`${eventBase}_share_cancelled`, metadata);
                     return 'cancelled';
                 }
-                await downloadCanvas(canvas, fileName);
+                downloadCanvas(canvas, fileName);
                 track(`${eventBase}_saved`, { ...metadata, share_target: 'download_fallback', format: 'png' });
                 return 'downloaded';
             }
         }
 
-        await downloadCanvas(canvas, fileName);
+        downloadCanvas(canvas, fileName);
         track(`${eventBase}_saved`, { ...metadata, share_target: 'download', format: 'png' });
         return 'downloaded';
     }
@@ -273,7 +264,6 @@
         drawCenteredLines,
         loadImage,
         drawImageContain,
-        drawSeededStars,
         drawBrandBackground,
         drawFooter,
         canvasToPngFile,

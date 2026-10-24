@@ -1,986 +1,986 @@
 [
-  {
-    "id": "andele",
-    "keyword": "Andělé",
-    "emoji": "👼",
-    "description": "Anděl může připomenout víru, příběh, naději nebo osobní představu pomoci. Sen nepředpovídá nečekanou podporu ani nepotvrzuje zprávu z vyšších sfér."
-  },
-  {
-    "id": "auto",
-    "keyword": "Auto",
-    "emoji": "🚗",
-    "description": "Auto může připomenout cestu, tempo nebo volbu směru. To, kdo řídí a co se děje, je podnět k zamyšlení; sen sám neukazuje míru kontroly nad životem."
-  },
-  {
-    "id": "baby",
-    "keyword": "Dítě (miminko)",
-    "emoji": "👶",
-    "description": "Miminko může připomenout péči, křehkost, odpovědnost nebo zkušenost s dítětem. Sen nepotvrzuje ani nepředpovídá těhotenství a neukazuje, že něco zanedbáváš."
-  },
-  {
-    "id": "barva-bila",
-    "keyword": "Barva: Bílá",
-    "emoji": "🤍",
-    "description": "Bílá může připomenout světlo, sníh, oděv nebo kulturní představu čistoty. Sen nepotvrzuje karmickou očistu ani duchovní probuzení."
-  },
-  {
-    "id": "barva-cerna",
-    "keyword": "Barva: Černá",
-    "emoji": "🖤",
-    "description": "Černá může připomenout noc, stín, oblečení nebo osobní zkušenost. Ve snu sama neodhaluje skrytý strach ani neurčuje psychický stav."
-  },
-  {
-    "id": "barva-cervena",
-    "keyword": "Barva: Červená",
-    "emoji": "❤️",
-    "description": "Červená může připomenout barvu, krev, oheň, oblečení nebo osobní vzpomínku. Ve snu sama neodhaluje zranění, touhu ani skrytý hněv."
-  },
-  {
-    "id": "barva-modra",
-    "keyword": "Barva: Modrá",
-    "emoji": "💙",
-    "description": "Modrá může připomenout oblohu, vodu, oděv nebo oblíbenou barvu. Sen ti nedává pokyn spoléhat na intuici ani nepopisuje tvůj klid či city."
-  },
-  {
-    "id": "bezpecny-pristav",
-    "keyword": "Bezpečný přístav",
-    "emoji": "⚓",
-    "description": "Bezpečný přístav ve snu může připomenout známé místo, cestu po vodě nebo představu odpočinku. Neznamená automaticky, že končí náročné období."
-  },
-  {
-    "id": "bludiste",
-    "keyword": "Bludiště",
-    "emoji": "🌀",
-    "description": "Bludiště může připomenout hru, cestu, stavbu nebo příběh. Jeho výskyt ve snu neznamená, že se cítíš ztraceně nebo že čelíš složitému problému."
-  },
-  {
-    "id": "boty",
-    "keyword": "Boty",
-    "emoji": "👟",
-    "description": "Boty mohou připomenout cestu, pohodlí, oblečení nebo přípravu na běžnou situaci. Jejich stav ve snu neodhaluje, zda se cítíš nejistě či nepřipraveně."
-  },
-  {
-    "id": "bouri",
-    "keyword": "Bouře",
-    "emoji": "⛈️",
-    "description": "Bouře může připomenout napětí, změnu počasí nebo výrazný zážitek. Sen neurčuje, že se v tobě hromadí hněv, ani neslibuje, že po konfliktu přijde úleva."
-  },
-  {
-    "id": "cesta",
-    "keyword": "Cesta",
-    "emoji": "🛤️",
-    "description": "Obraz cesty může souviset se směrem, změnou nebo rozhodováním. Všímej si, kudy vede, co tě na ní zaujalo a jak ses cítil; sen sám výsledek projektů nepředpovídá."
-  },
-  {
-    "id": "chvatal",
-    "keyword": "Chvátat / Nestíhat",
-    "emoji": "⏱️",
-    "description": "Nestíhání ve snu může připomenout časový tlak, povinnosti nebo nedávný zážitek. Samotný sen neurčuje, zda máš úzkost nebo jsi přepracovaný."
-  },
-  {
-    "id": "cisla",
-    "keyword": "Čísla ve snu",
-    "emoji": "🔢",
-    "description": "Čísla ve snu mohou připomenout datum, věk, množství nebo osobní vzpomínku. Numerologické významy jsou součástí symbolického systému, ne ověřený signál."
-  },
-  {
-    "id": "dary",
-    "keyword": "Dárek (balíček)",
-    "emoji": "🎁",
-    "description": "Sen o dárku může připomenout, jaké to pro tebe je něco nabídnout nebo přijmout. Záleží na tom, kdo dárek dával, co v tobě vyvolal a jaký máš k podobným situacím vztah."
-  },
-  {
-    "id": "dvere",
-    "keyword": "Dveře",
-    "emoji": "🚪",
-    "description": "Dveře mohou připomenout vstup, soukromí nebo překážku. Otevřené ani zavřené dveře ve snu nepředpovídají příležitost či zmeškanou šanci."
-  },
-  {
-    "id": "dum",
-    "keyword": "Dům",
-    "emoji": "🏠",
-    "description": "Dům ve snu může připomenout domov, soukromí, vzpomínky nebo místo, které znáš. Sklep ani půda nemají jeden pevný psychologický význam; důležitý je tvůj vlastní kontext."
-  },
-  {
-    "id": "expartner",
-    "keyword": "Ex-partner (bývalý)",
-    "emoji": "💔",
-    "description": "Sen o bývalém partnerovi může navazovat na vzpomínku, nedávný podnět nebo téma vztahů. Sám o sobě nepotvrzuje touhu po návratu ani city druhého člověka."
-  },
-  {
-    "id": "had",
-    "keyword": "Had",
-    "emoji": "🐍",
-    "description": "Had může připomenout zvíře, kulturní příběh či osobní zkušenost. V některých tradicích souvisí s proměnou; sen sám neukazuje zradu, skrytou emoci ani léčivý účinek."
-  },
-  {
-    "id": "hadka",
-    "keyword": "Hádka",
-    "emoji": "💢",
-    "description": "Hádka ve snu může připomenout nesouhlas, napětí nebo běžnou vzpomínku na konflikt. Sama neukazuje, co potlačuješ ani co si druhý člověk myslí."
-  },
-  {
-    "id": "hmyz",
-    "keyword": "Hmyz",
-    "emoji": "🐛",
-    "description": "Hmyz může připomenout přírodu, obavu, štípnutí nebo běžný zážitek. Sen sám neurčuje množství starostí ani to, že ti ubývá mentální energie."
-  },
-  {
-    "id": "hodiny",
-    "keyword": "Hodiny",
-    "emoji": "⏰",
-    "description": "Hodiny ve snu mohou připomenout plán, termín, věk nebo konkrétní vzpomínku. Sen sám nedokazuje úzkost ani potíž užívat přítomný okamžik."
-  },
-  {
-    "id": "hora",
-    "keyword": "Hora / Vrchol",
-    "emoji": "⛰️",
-    "description": "Hora může připomenout túru, krajinu, cíl nebo příběh. Výstup ani pád ve snu neukazuje na sílu, strach ze selhání nebo průběh kariéry."
-  },
-  {
-    "id": "hrob",
-    "keyword": "Hrob / Pohřeb",
-    "emoji": "🪦",
-    "description": "Hrob či pohřeb může připomenout vzpomínku, ztrátu nebo obraz rozloučení. Sen neurčuje, že určitá životní fáze končí, ani neříká, jak se máš cítit."
-  },
-  {
-    "id": "hvezdy",
-    "keyword": "Hvězdy / Noční obloha",
-    "emoji": "⭐",
-    "description": "Hvězdy mohou připomenout noční oblohu, cestu, přání nebo vzpomínku. Ve snu nepředpovídají naději, směr ani splnění odkládaného cíle."
-  },
-  {
-    "id": "jablko",
-    "keyword": "Jablko",
-    "emoji": "🍎",
-    "description": "Jablko může připomenout jídlo, zahradu, pohádku nebo náboženský obraz. Jeho stav ve snu nepředpovídá zdraví ani problém, který přehlížíš."
-  },
-  {
-    "id": "jezero",
-    "keyword": "Jezero / Rybník",
-    "emoji": "🏞️",
-    "description": "Jezero může připomenout místo, výlet, počasí nebo obraz z příběhu. Jeho hladina ve snu neodhaluje skryté obsahy nevědomí ani neurčuje tvůj vnitřní klid."
-  },
-  {
-    "id": "klic",
-    "keyword": "Klíč",
-    "emoji": "🗝️",
-    "description": "Klíč může připomenout hledání, přístup, zámek nebo běžnou starost. Jeho nalezení či ztráta nepředpovídá řešení a neodhaluje tvůj vztah ke kontrole."
-  },
-  {
-    "id": "kocka",
-    "keyword": "Kočka",
-    "emoji": "🐱",
-    "description": "Kočka může připomenout domácí zvíře, nezávislost, zvědavost nebo konkrétní vzpomínku. Agresivní kočka sama neříká nic jistého o tvé intuici ani o ženách ve tvém okolí."
-  },
-  {
-    "id": "konev-voda",
-    "keyword": "Studna / Pramen",
-    "emoji": "💧",
-    "description": "Studna, konev nebo pramen mohou připomenout vodu, péči, vzpomínku či příběh. Obraz sám neurčuje vyčerpání ani neslibuje novou energii."
-  },
-  {
-    "id": "krev",
-    "keyword": "Krev",
-    "emoji": "🩸",
-    "description": "Krev ve snu může souviset s tělesností, zraněním, blízkostí nebo s tím, co sis nedávno přečetl či viděl. Její význam není pro všechny stejný a sen sám neurčuje tvůj zdravotní ani vztahový stav."
-  },
-  {
-    "id": "kvetiny",
-    "keyword": "Květiny",
-    "emoji": "🌸",
-    "description": "Květiny mohou připomenout krásu, vzpomínku, dárek nebo péči o něco živého. Rozkvetlá ani zvadlá rostlina sama neurčuje osobní růst, vztah či zanedbanou potřebu."
-  },
-  {
-    "id": "letani",
-    "keyword": "Létání",
-    "emoji": "🦅",
-    "description": "Létání ve snu může přinést radost, úžas, obavu nebo vzpomínku na konkrétní zážitek. Pocit volnosti ani strach samy neurčují, co se děje ve tvém životě."
-  },
-  {
-    "id": "les",
-    "keyword": "Les (temný)",
-    "emoji": "🌲",
-    "description": "Les může připomenout procházku, výlet, pohádku nebo místo z dětství. Sen sám není sestupem do podvědomí ani cestou k jediné vlastní pravdě."
-  },
-  {
-    "id": "lev",
-    "keyword": "Lev / Tygr",
-    "emoji": "🦁",
-    "description": "Lev může připomenout zvíře, příběh, odvahu či kulturní symbol. Jeho chování ve snu neurčuje tvou sílu ani předpřipravenost na výzvu."
-  },
-  {
-    "id": "lod",
-    "keyword": "Loď / Plavba",
-    "emoji": "⛵",
-    "description": "Loď může připomenout cestu, moře, počasí nebo obraz z příběhu. Vlny ve snu neurčují emoční stabilitu ani stav tvého života."
-  },
-  {
-    "id": "lucidni",
-    "keyword": "Lucidní sen (uvědomění ve snu)",
-    "emoji": "🌌",
-    "description": "Lucidní sen je sen, v němž si během snění uvědomíš, že sníš. Může být zajímavým zážitkem, ale sám nezaručuje přístup k podvědomí ani proměnu strachu."
-  },
-  {
-    "id": "maska",
-    "keyword": "Maska",
-    "emoji": "🎭",
-    "description": "Maska může připomenout roli, soukromí, proměnu nebo hru. Sen sám ale neukazuje, že někomu nedůvěřuješ nebo předstíráš emoce; rozhodují tvoje vlastní asociace."
-  },
-  {
-    "id": "medved",
-    "keyword": "Medvěd",
-    "emoji": "🐻",
-    "description": "Medvěd může připomenout zvíře, sílu, strach, ochranu nebo příběh. Jeho chování ve snu neurčuje, zda v sobě potlačuješ hněv nebo agresi."
-  },
-  {
-    "id": "mesic",
-    "keyword": "Měsíc",
-    "emoji": "🌙",
-    "description": "Měsíc může připomenout noční oblohu, cyklus, příběh nebo osobní symbol. Jeho fáze ve snu nepředpovídá události ani neurčuje intenzitu tvých emocí."
-  },
-  {
-    "id": "more",
-    "keyword": "Moře / Oceán",
-    "emoji": "🌊",
-    "description": "Moře může ve snu připomenout emoce, cestu, vzpomínku nebo obraz z médií. Klidná či bouřlivá hladina nemá jednotný význam a neurčuje tvůj vnitřní stav."
-  },
-  {
-    "id": "mrtvi",
-    "keyword": "Mrtví (komunikace se zesnulými)",
-    "emoji": "👻",
-    "description": "Sen o zesnulém může navazovat na vzpomínku, truchlení nebo jinou osobní asociaci. Živost snu sama nedokazuje vzkaz, neuzavřenou minulost ani proces odpouštění."
-  },
-  {
-    "id": "nahota",
-    "keyword": "Nahota na veřejnosti",
-    "emoji": "😳",
-    "description": "Sen o nahotě na veřejnosti může navazovat na zranitelnost, změnu nebo konkrétní zkušenost. Sám neříká, čeho se bojíš ani zda se před někým přetvařuješ."
-  },
-  {
-    "id": "nemoc",
-    "keyword": "Nemoc / Zranění",
-    "emoji": "🤒",
-    "description": "Sen o nemoci sám o sobě nic nedokazuje o tělesném ani psychickém zdraví. Může vycházet z obav, zkušeností, péče o blízkého nebo z běžných podnětů; konkrétní souvislost znáš nejlépe ty."
-  },
-  {
-    "id": "nuz",
-    "keyword": "Nůž",
-    "emoji": "🔪",
-    "description": "Nůž ve snu může souviset s vařením, nástrojem, příběhem nebo pocitem ohrožení. Sám neurčuje, že máš ukončit vztah či návyk, ani nedokazuje skrytou agresi."
-  },
-  {
-    "id": "ohen",
-    "keyword": "Oheň",
-    "emoji": "🔥",
-    "description": "Oheň může připomenout teplo, nebezpečí, energii, proměnu nebo konkrétní zážitek. Krb ani hořící dům samy neurčují rodinnou pohodu, hněv či budoucí změnu."
-  },
-  {
-    "id": "okno",
-    "keyword": "Okno",
-    "emoji": "🪟",
-    "description": "Okno může připomenout výhled, místnost, počasí nebo konkrétní zážitek. Jeho čistota ve snu neurčuje tvůj pohled na svět ani psychický stav."
-  },
-  {
-    "id": "padani",
-    "keyword": "Padání (do prázdna)",
-    "emoji": "⬇️",
-    "description": "Pád ve snu může být znepokojivý nebo naopak osvobozující obraz. Může navazovat na různé zážitky a pocity; sám o sobě není známkou přetížení ani ztráty jistoty."
-  },
-  {
-    "id": "penize",
-    "keyword": "Peníze",
-    "emoji": "💰",
-    "description": "Peníze ve snu mohou připomenout finance, práci, přání, obavy nebo nedávné rozhodování. Jejich obraz sám neurčuje tvoji sebehodnotu, energii ani budoucí příjem."
-  },
-  {
-    "id": "pes",
-    "keyword": "Pes",
-    "emoji": "🐕",
-    "description": "Pes může připomenout zvíře, přátelství, péči nebo zkušenost s věrností. Nemoc či útok ve snu samy nedokazují zanedbaný instinkt, zradu ani problém ve vztahu."
-  },
-  {
-    "id": "plac",
-    "keyword": "Pláč (Probuzení se do reálných slz)",
-    "emoji": "😢",
-    "description": "Pláč ve snu může souviset se smutkem, úlevou, vzpomínkou nebo silným zážitkem. Není to automaticky léčebný proces ani důkaz, že emoci dlouhodobě potlačuješ."
-  },
-  {
-    "id": "potopa",
-    "keyword": "Potopa (povodně)",
-    "emoji": "🌧️",
-    "description": "Potopa ve snu může připomenout silný obraz, změnu, počasí nebo osobní zkušenost. Sama neurčuje, zda tě emoce zahlcují, ani neslibuje, že něco starého odplaví."
-  },
-  {
-    "id": "ptak",
-    "keyword": "Pták",
-    "emoji": "🦜",
-    "description": "Pták ve snu může připomenout zvíře, let, hlas nebo příběh, který znáš. Sám neukazuje na nový nápad ani neurčuje, po čem toužíš."
-  },
-  {
-    "id": "ruze",
-    "keyword": "Růže",
-    "emoji": "🌹",
-    "description": "Růže může připomenout květinu, dárek, zahradu nebo kulturní obraz lásky. Její barva a stav ve snu nepředpovídají vývoj vztahu."
-  },
-  {
-    "id": "smrt",
-    "keyword": "Smrt (Úmrtí vaše nebo cizí)",
-    "emoji": "☠️",
-    "description": "Smrt ve snu může vyvolat strach, smutek, vzpomínku nebo úvahu o změně. Nemá jeden pevný ani vždy pozitivní význam a sama o sobě nic nepředpovídá."
-  },
-  {
-    "id": "sovy",
-    "keyword": "Sova",
-    "emoji": "🦉",
-    "description": "Sova může připomenout nočního ptáka, moudrost z příběhů nebo osobní zkušenost. Sen nepředpovídá zprávu ani nepotvrzuje jasnovidnost."
-  },
-  {
-    "id": "strom",
-    "keyword": "Strom",
-    "emoji": "🌳",
-    "description": "Strom může připomenout přírodu, rodinu, místo nebo osobní vzpomínku. Jeho kořeny a větve ve snu neurčují stav tvé osobnosti ani životních vztahů."
-  },
-  {
-    "id": "skola",
-    "keyword": "Škola / Zkouška",
-    "emoji": "📚",
-    "description": "Škola nebo zkouška ve snu může připomenout hodnocení, učení či konkrétní školní vzpomínku. Sen sám nepotvrzuje úzkost ani strach ze selhání."
-  },
-  {
-    "id": "telo",
-    "keyword": "Tělo (části těla)",
-    "emoji": "🫀",
-    "description": "Části těla nemají univerzální snový slovník. Srdce, hlava, ruce, nohy nebo záda mohou připomenout osobní zkušenost, denní podnět či tělesný pocit; samy neurčují psychický ani zdravotní stav."
-  },
-  {
-    "id": "tehotenstvi",
-    "keyword": "Těhotenství ve snu",
-    "emoji": "🤰",
-    "description": "Těhotenství ve snu může připomenout péči, očekávání, rodičovství nebo něco nového, čemu věnuješ pozornost. Jeho význam záleží na tvé situaci a pocitu ze snu."
-  },
-  {
-    "id": "tma",
-    "keyword": "Tma",
-    "emoji": "🌑",
-    "description": "Tma ve snu může připomenout neznámé prostředí, výpadek světla, film nebo nejistotu. Sama neukazuje, že něco odmítáš vidět."
-  },
-  {
-    "id": "utikani",
-    "keyword": "Útěk / Pronásledování",
-    "emoji": "🏃",
-    "description": "Sen o útěku nebo pronásledování může navazovat na stres, příběh či vzpomínku. To, před čím utíkáš, neurčuje skrytý strach ani část osobnosti. Všímej si děje a pocitu."
-  },
-  {
-    "id": "vesmir",
-    "keyword": "Vesmír / Planety",
-    "emoji": "🪐",
-    "description": "Vesmír ve snu může připomenout noční oblohu, příběh nebo zvědavost na svět kolem nás. Sám neodhaluje touhu uniknout z běžného života."
-  },
-  {
-    "id": "vlasy",
-    "keyword": "Vlasy",
-    "emoji": "💇",
-    "description": "Vlasy ve snu mohou připomenout vzhled, péči o sebe, nedávnou změnu účesu nebo osobní vzpomínku. Jejich stav sám neurčuje sebedůvěru, pohlavní identitu ani věk."
-  },
-  {
-    "id": "vlak",
-    "keyword": "Vlak",
-    "emoji": "🚂",
-    "description": "Vlak ve snu může připomenout cestování, jízdní řád nebo obraz směru a pohybu. Neříká, že sis životní cestu nevybral ani že se blíží osudové rozhodnutí."
-  },
-  {
-    "id": "vlci",
-    "keyword": "Vlk",
-    "emoji": "🐺",
-    "description": "Vlk může připomenout zvíře, příběh, skupinu nebo vlastní zkušenost. Jeho význam neurčuje pohlaví snícího; sen nedokazuje agresi, instinkt ani touhu po svobodě."
-  },
-  {
-    "id": "voda",
-    "keyword": "Voda (čistá / špinavá)",
-    "emoji": "💦",
-    "description": "Voda může být osobním obrazem emocí, vzpomínek, počasí nebo konkrétního zážitku. Její barva a pohyb mají různé asociace; samy neodhalují psychický stav ani nepředpovídají události."
-  },
-  {
-    "id": "vzlety-padi",
-    "keyword": "Výtah (zaseklý / jedoucí)",
-    "emoji": "🛗",
-    "description": "Výtah může připomenout cestování mezi patry, výšku, čekání nebo pocit kontroly. Jeho směr ve snu nepředpovídá kariéru ani osobní rozvoj."
-  },
-  {
-    "id": "zachrana",
-    "keyword": "Záchrana (záchrána být nebo zachraňovat)",
-    "emoji": "🦸",
-    "description": "Záchrana ve snu může připomenout pomoc, odpovědnost nebo příběh. Neurčuje, jakou vlastnost máš rozvíjet, ani nepředpovídá, že ti někdo brzy pomůže."
-  },
-  {
-    "id": "zapomenute-dite",
-    "keyword": "Zapomenuté / ztracené dítě",
-    "emoji": "👦",
-    "description": "Sen o zapomenutém dítěti může navazovat na rodičovské starosti, vzpomínku, film nebo obavu z odpovědnosti. Sám nedokazuje, že zanedbáváš své zájmy či potřeby."
-  },
-  {
-    "id": "zemetreseni",
-    "keyword": "Zemětřesení",
-    "emoji": "💥",
-    "description": "Zemětřesení může připomenout změnu, nejistotu, zprávy nebo osobní zážitek. Sen sám nepředpovídá ztrátu partnera, vyhoření ani narušení životních jistot."
-  },
-  {
-    "id": "zivocich-ryba",
-    "keyword": "Ryba / Rybolov",
-    "emoji": "🐟",
-    "description": "Ryba může připomenout vodu, jídlo, rybaření, příběh či náboženský symbol. Úlovek ve snu nepotvrzuje, že už znáš odpověď nebo že se skrývá v nevědomí."
-  },
-  {
-    "id": "zlobratri",
-    "keyword": "Rodinní příslušníci",
-    "emoji": "👨‍👩‍👧",
-    "description": "Rodina ve snu může připomenout konkrétní vztahy, společné vzpomínky nebo postavy ze snového příběhu. Matka, otec ani sourozenec nemají jeden pevný význam pro každého."
-  },
-  {
-    "id": "zrcadlo",
-    "keyword": "Zrcadlo",
-    "emoji": "🪞",
-    "description": "Zrcadlo ve snu může připomenout sebepojetí, změnu vzhledu nebo konkrétní vzpomínku. Jiný či chybějící odraz sám nedokazuje ztrátu identity ani potlačené touhy."
-  },
-  {
-    "id": "zuby",
-    "keyword": "Zuby (vypadávání)",
-    "emoji": "🦷",
-    "description": "Vypadávání nebo poškození zubů ve snu může připomenout obavy o vzhled, řeč, tělo nebo nedávný zážitek. Samotný sen neurčuje jeho příčinu ani nepředpovídá budoucnost."
-  },
-  {
-    "id": "pavouk",
-    "keyword": "Pavouk",
-    "emoji": "🕷️",
-    "description": "Pavouk může připomenout strach, fascinaci, zkušenost se zvířetem nebo pohádkový motiv. Pavučina sama nedokazuje manipulaci ani to, že tě někdo drží v pasti."
-  },
-  {
-    "id": "mys",
-    "keyword": "Myš",
-    "emoji": "🐭",
-    "description": "Myš může připomenout drobný detail, zvíře, starost nebo scénu z příběhu. Počet myší neurčuje závažnost problému ani to, čemu věnuješ příliš pozornosti."
-  },
-  {
-    "id": "kun",
-    "keyword": "Kůň",
-    "emoji": "🐎",
-    "description": "Kůň může připomenout svobodu, sílu, práci se zvířaty nebo příběh. Jeho barva sama nepředpovídá duchovní vývoj ani neurčuje, které emoce máš krotit."
-  },
-  {
-    "id": "orel",
-    "keyword": "Orel",
-    "emoji": "🦅",
-    "description": "Orel může připomenout ptáka, přírodu, let nebo kulturní symbol. Sen nedokazuje vysoké ambice, vítězství ani schopnost vidět pravdu lépe než ostatní."
-  },
-  {
-    "id": "havran",
-    "keyword": "Havran / Krkavec",
-    "emoji": "🐦‍⬛",
-    "description": "Havran může připomenout ptáka, příběh, vzpomínku nebo kulturní symbol. Sen nedoručuje ověřenou zprávu z neznáma ani neodhaluje pravdu, kterou odmítáš."
-  },
-  {
-    "id": "vcela",
-    "keyword": "Včela",
-    "emoji": "🐝",
-    "description": "Včela může připomenout přírodu, práci, společenství nebo zkušenost s hmyzem. Bzukot ani bodnutí ve snu nepředpovídají zprávu či konflikt."
-  },
-  {
-    "id": "motyl",
-    "keyword": "Motýl",
-    "emoji": "🦋",
-    "description": "Motýl ve snu může připomenout hmyz, příběh nebo proměnu, kterou znáš z přírody. Neslibuje, že právě procházíš změnou nebo že se blíží lehčí období."
-  },
-  {
-    "id": "slunce",
-    "keyword": "Slunce",
-    "emoji": "☀️",
-    "description": "Slunce může připomenout světlo, teplo, počasí nebo osobní vzpomínku. Jeho podoba ve snu nepředpovídá radost ani neurčuje tvou vitalitu."
-  },
-  {
-    "id": "svitani",
-    "keyword": "Svítání",
-    "emoji": "🌅",
-    "description": "Svítání ve snu může připomenout začátek dne, noční bdění nebo vzpomínku. Samo neslibuje, že se nějaký problém brzy vyřeší."
-  },
-  {
-    "id": "blesk",
-    "keyword": "Blesk",
-    "emoji": "⚡",
-    "description": "Blesk může připomenout bouřku, světelný záblesk nebo dramatickou scénu. Sen nepředpovídá změnu ani nepotvrzuje, že jsi právě odhalil pravdu."
-  },
-  {
-    "id": "snih",
-    "keyword": "Sníh",
-    "emoji": "❄️",
-    "description": "Sníh může připomenout počasí, zimu, vzpomínku nebo krajinu z příběhu. Jeho podoba ve snu neurčuje tvé emoce ani stav vztahu."
-  },
-  {
-    "id": "poust",
-    "keyword": "Poušť",
-    "emoji": "🏜️",
-    "description": "Poušť může připomenout krajinu, cestování, příběh nebo nedostatek vody. Sen sám neurčuje samotu, duchovní sucho ani potřebu šetřit silami."
-  },
-  {
-    "id": "ostrov",
-    "keyword": "Ostrov",
-    "emoji": "🏝️",
-    "description": "Ostrov může připomenout dovolenou, geografii, příběh nebo pobyt u moře. Sen sám neurčuje, zda se cítíš izolovaně nebo toužíš uniknout."
-  },
-  {
-    "id": "tanec",
-    "keyword": "Tanec",
-    "emoji": "💃",
-    "description": "Tanec může připomenout hudbu, oslavu, sport nebo kulturní scénu. Jeho lehkost ve snu neurčuje soulad s osudem ani vztah k vlastnímu tělu."
-  },
-  {
-    "id": "polibek",
-    "keyword": "Polibek",
-    "emoji": "💋",
-    "description": "Polibek může připomenout blízkost, náklonnost, smíření nebo zkušenost z příběhu. Sen sám neurčuje přání, hranice ani skrytý význam vztahu."
-  },
-  {
-    "id": "svatba",
-    "keyword": "Svatba",
-    "emoji": "💍",
-    "description": "Svatba může připomenout vztah, závazek, rodinnou událost nebo scénu z příběhu. Sen nepředpovídá sňatek ani neurčuje, co k někomu cítíš."
-  },
-  {
-    "id": "plavani",
-    "keyword": "Plavání",
-    "emoji": "🏊",
-    "description": "Plavání ve snu může připomenout sport, vodu, výlet nebo zkušenost s plaváním. Snadný či obtížný pohyb neurčuje, jak zvládáš emoce nebo nároky okolí."
-  },
-  {
-    "id": "zabloudit",
-    "keyword": "Zabloudit / Bloudit",
-    "emoji": "🧭",
-    "description": "Zabloudit ve snu může připomenout cestu, nové prostředí nebo hledání adresy. Není to důkaz ztráty směru či integrity a intuice nezaručuje, že tě vyvede ven."
-  },
-  {
-    "id": "prsten",
-    "keyword": "Prsten",
-    "emoji": "💍",
-    "description": "Prsten může připomenout závazek, vztah, šperk nebo osobní vzpomínku. Jeho nalezení ani ztráta nepředpovídají nový vztah, návrat důvěry či rozchod."
-  },
-  {
-    "id": "kniha",
-    "keyword": "Kniha",
-    "emoji": "📖",
-    "description": "Kniha může připomenout čtení, školu, příběh nebo osobní zájem. Otevřená či zavřená kniha ve snu neodhaluje tajemství, které zatím nemáš znát."
-  },
-  {
-    "id": "telefon",
-    "keyword": "Telefon",
-    "emoji": "📱",
-    "description": "Telefon ve snu může připomenout rozhovor, zprávu nebo technickou potíž. Zmeškaný hovor sám neznamená, že ignoruješ varování či vnitřní hlas."
-  },
-  {
-    "id": "krabice",
-    "keyword": "Krabice / Skříňka",
-    "emoji": "📦",
-    "description": "Krabice může připomenout balení, stěhování, dárek nebo obyčejný předmět. Její obsah ve snu nemusí představovat potlačené emoce ani skryté talenty."
-  },
-  {
-    "id": "duch",
-    "keyword": "Duch / Přízrak",
-    "emoji": "👻",
-    "description": "Duch ve snu může připomenout vzpomínku, příběh, víru nebo pocit z konkrétní scény. Sám nedokazuje neuzavřenou minulost ani zprávu od zemřelého."
-  },
-  {
-    "id": "demon",
-    "keyword": "Démon",
-    "emoji": "👿",
-    "description": "Démon může představovat postavu z víry, příběhu nebo děsivé snové scény. Jeho podoba sama neukazuje, že máš závislost, skrytou vlastnost nebo problém."
-  },
-  {
-    "id": "buh",
-    "keyword": "Bůh / Vyšší bytost",
-    "emoji": "✨",
-    "description": "Bůh ve snu může připomenout víru, otázku smyslu, rodinný příběh či osobní prožitek. Samotný sen nepotvrzuje zprávu ani vedení shůry."
-  },
-  {
-    "id": "osud",
-    "keyword": "Osud / Kolo štěstí",
-    "emoji": "🎡",
-    "description": "Kolo osudu může připomenout změnu, náhodu nebo otázku, co můžeš ovlivnit. Sen nepředpovídá obrat a neříká, že se máš odevzdat proudu."
-  },
-  {
-    "id": "kletba",
-    "keyword": "Kletba",
-    "emoji": "🔮",
-    "description": "Kletba ve snu může připomenout strach, pověru, příběh nebo pocit bezmoci. Sen nedokazuje skutečnou kletbu ani potřebu rituální očisty."
-  },
-  {
-    "id": "pozehnani",
-    "keyword": "Požehnání",
-    "emoji": "🙏",
-    "description": "Požehnání může připomenout vděčnost, přijetí, víru nebo obřad. Sen nepotvrzuje, že jsi pod nadpřirozenou ochranou nebo že kráčíš jedinou správnou cestou."
-  },
-  {
-    "id": "porod",
-    "keyword": "Porod",
-    "emoji": "🍼",
-    "description": "Porod ve snu může připomenout zkušenost s narozením, péčí, změnou nebo příběhem. Nepředpovídá novou životní etapu ani skutečné těhotenství."
-  },
-  {
-    "id": "labut",
-    "keyword": "Labuť",
-    "emoji": "🦢",
-    "description": "Labuť se v příbězích spojuje s elegancí, proměnou nebo párovým soužitím. Ve snu může vyvolat vlastní asociace; nepředpovídá, jak se bude vyvíjet tvůj vztah."
-  },
-  {
-    "id": "vlna",
-    "keyword": "Vlna (mořská)",
-    "emoji": "🌊",
-    "description": "Vlna může připomenout moře, plavání, surfování nebo obraz z filmu. Její velikost ve snu neurčuje tvůj emoční stav ani nepředpovídá událost."
-  },
-  {
-    "id": "vitr",
-    "keyword": "Vítr / Vichřice",
-    "emoji": "🌬️",
-    "description": "Vítr může připomenout počasí, cestu nebo zvuk v okolí. Jeho síla ve snu nepředpovídá chaos ani neříká, že tě životní prostředí brzdí."
-  },
-  {
-    "id": "hvezdny-prach",
-    "keyword": "Hvězdný prach / Třpyt",
-    "emoji": "✨",
-    "description": "Hvězdný prach ve snu může připomenout pohádku, třpytivý obraz nebo něco, co tě zaujalo. Neslibuje štěstí, zázrak ani nemožný výsledek."
-  },
-  {
-    "id": "kometa",
-    "keyword": "Kometa / Padající hvězda",
-    "emoji": "☄️",
-    "description": "Kometa nebo padající hvězda může připomenout vzácný okamžik, přání či změnu, kterou právě řešíš. Sama o sobě nic nevěští a neříká, jak se události vyvinou."
-  },
-  {
-    "id": "duha",
-    "keyword": "Duha",
-    "emoji": "🌈",
-    "description": "Duha může připomenout počasí, barvy, příběh nebo osobní vzpomínku. Sen neslibuje odměnu, usmíření ani konec těžkého období."
-  },
-  {
-    "id": "blesk-karta",
-    "keyword": "Blesk z čistého nebe",
-    "emoji": "🌩️",
-    "description": "Blesk ve snu může připomenout bouřku, filmovou scénu nebo okamžik překvapení. Sám nevěští zprávu ani neznamená, že se musí něco zbořit."
-  },
-  {
-    "id": "led",
-    "keyword": "Led / Zamrzlá voda",
-    "emoji": "🧊",
-    "description": "Led může připomenout zimu, kluzký povrch, sport nebo krajinu. Ve snu nepředpovídá nebezpečí ani neurčuje skryté emoce či vývoj vztahu."
-  },
-  {
-    "id": "sopka",
-    "keyword": "Sopka",
-    "emoji": "🌋",
-    "description": "Erupce může ve snu připomenout napětí, změnu nebo působivý obraz z nedávné zkušenosti. Sama o sobě neukazuje potlačený hněv ani nepředpovídá, co uděláš."
-  },
-  {
-    "id": "jeskyne",
-    "keyword": "Jeskyně",
-    "emoji": "🧱",
-    "description": "Jeskyně ve snu může připomenout výlet, příběh, tmu nebo chráněné místo. Sama neodhaluje skrytý talent, zapomenutou pravdu ani vrstvy podvědomí."
-  },
-  {
-    "id": "most",
-    "keyword": "Most",
-    "emoji": "🌉",
-    "description": "Most může připomenout spojení, cestu či přechod přes překážku. Jeho stav ve snu nepředpovídá novou životní fázi, zmeškanou šanci ani konec vztahu."
-  },
-  {
-    "id": "schody",
-    "keyword": "Schody",
-    "emoji": "🪜",
-    "description": "Schody mohou připomenout budovu, cestu či fyzický pohyb. Stoupání a sestup ve snu nepředpovídají úspěch, pokrok ani duchovní vývoj."
-  },
-  {
-    "id": "vezeni",
-    "keyword": "Vězení",
-    "emoji": "⛓️",
-    "description": "Vězení ve snu může připomenout omezení, film, knihu nebo konkrétní místo. Samo neukazuje, že tě svazují vlastní přesvědčení, strach či vina."
-  },
-  {
-    "id": "policie",
-    "keyword": "Policie / Stráž",
-    "emoji": "👮",
-    "description": "Policie může připomenout zprávy, pravidla, bezpečnost nebo osobní zkušenost. Její přítomnost ve snu nedokazuje, že ses zachoval nemorálně."
-  },
-  {
-    "id": "krizovatka",
-    "keyword": "Křižovatka",
-    "emoji": "🔀",
-    "description": "Křižovatka ve snu může připomenout cestu, dopravní situaci nebo chvíli, kdy zvažuješ více možností. Nepředpovídá různé osudy a neříká, kterou cestu zvolit."
-  },
-  {
-    "id": "poklad",
-    "keyword": "Poklad / Zlato",
-    "emoji": "💰",
-    "description": "Poklad může připomenout pohádku, hledání, cenný předmět nebo přání. Sen neodhaluje skrytý talent ani nepředpovídá objevení nové příležitosti."
-  },
-  {
-    "id": "zrcadlo-cele",
-    "keyword": "Zrcadlo (rozbité)",
-    "emoji": "🪞",
-    "description": "Rozbité zrcadlo může připomenout pověru, nehodu nebo obraz z příběhu. Samo neurčuje tvoje sebevědomí, identitu ani to, jaká je o tobě pravda."
-  },
-  {
-    "id": "hodiny-piskove",
-    "keyword": "Přesýpací hodiny",
-    "emoji": "⏳",
-    "description": "Přesýpací hodiny mohou připomenout čas, termín nebo konečnost. Sen neříká, že ti uniká příležitost nebo že musíš okamžitě jednat."
-  },
-  {
-    "id": "kotva",
-    "keyword": "Kotva",
-    "emoji": "⚓",
-    "description": "Kotva může připomenout loď, přístav, stabilitu nebo příběh z moře. To, zda ve snu drží či se zvedá, samo neurčuje, jak tě ovlivňují druzí."
-  },
-  {
-    "id": "majak",
-    "keyword": "Maják",
-    "emoji": "🚨",
-    "description": "Maják může připomenout orientaci, moře, bezpečí nebo příběh. Sen neslibuje záchranu ani nedokazuje, že máš potřebnou oporu nablízku."
-  },
-  {
-    "id": "zvon",
-    "keyword": "Zvon / Zvonění",
-    "emoji": "🔔",
-    "description": "Zvon může připomenout obřad, oslavu, varování nebo zvuk z okolí. Ve snu sám neohlašuje důležitou událost ani neodhaluje, co přehlížíš."
-  },
-  {
-    "id": "klic-zlaty",
-    "keyword": "Zlatý klíč",
-    "emoji": "🗝️",
-    "description": "Zlatý klíč může připomenout tajemství, pohádku nebo hledání přístupu. Sen neodemyká skryté schopnosti ani neslibuje nekonečné možnosti."
-  },
-  {
-    "id": "mec",
-    "keyword": "Meč",
-    "emoji": "⚔️",
-    "description": "Meč ve snu může připomenout historický příběh, nástroj nebo symbol z knihy či karet. Sám neurčuje, co je pravda, a není výzvou ke konfliktu."
-  },
-  {
-    "id": "pohár",
-    "keyword": "Pohár / Grál",
-    "emoji": "🏆",
-    "description": "Pohár může připomenout přípitek, obřad, nádobu nebo konkrétní vzpomínku. Jeho obsah ve snu nepředpovídá hojnost ani neurčuje tvé citové rozpoložení."
-  },
-  {
-    "id": "hvezdarna",
-    "keyword": "Hvězdárna / Dalekohled",
-    "emoji": "🔭",
-    "description": "Hvězdárna ve snu může připomenout pozorování oblohy, zájem o vesmír nebo vědecký příběh. Pohled do dálky sám neukazuje, že plánuješ budoucnost s větším vhledem."
-  },
-  {
-    "id": "labyrint",
-    "keyword": "Labyrint / Bludiště (řešení)",
-    "emoji": "🌀",
-    "description": "Labyrint ve snu může připomenout klikatou cestu, stavbu nebo příběh. Nemá jeden univerzální duchovní význam a nezaručuje, že každá cesta povede ke správnému cíli."
-  },
-  {
-    "id": "pyramida",
-    "keyword": "Pyramida",
-    "emoji": "📐",
-    "description": "Pyramida ve snu může připomenout historii, architekturu nebo známý příběh. Sama neříká, že se opíráš o pevné základy nebo že po sobě zanecháš určitý odkaz."
-  },
-  {
-    "id": "sfinga",
-    "keyword": "Sfinga / Hádanka",
-    "emoji": "🦁",
-    "description": "Sfinga může připomenout hádanku, mytologii nebo otázku bez snadné odpovědi. Sen neříká, že musíš najít své „vyšší vědomí“ nebo že tě čeká zkouška."
-  },
-  {
-    "id": "vlk-samotar",
-    "keyword": "Vlk samotář",
-    "emoji": "🐺",
-    "description": "Vlk samotář může připomenout zvíře, příběh nebo kulturní obraz nezávislosti. Sen sám neříká, zda je tvoje samota volbou, nebo zda ti chybí blízkost."
-  },
-  {
-    "id": "jelen",
-    "keyword": "Jelen / Laň",
-    "emoji": "🦌",
-    "description": "Jelen ve snu může připomenout setkání s přírodou, zvířecí příběh nebo osobní vzpomínku. Neprokazuje zvláštní spojení s přírodou ani spolehlivou intuici."
-  },
-  {
-    "id": "meduza",
-    "keyword": "Meduza",
-    "emoji": "🪼",
-    "description": "Medúza ve snu může připomenout mořského živočicha, báji nebo scénu z filmu. Sama neurčuje tvé emoce ani nevaruje před konkrétním člověkem či prostředím."
-  },
-  {
-    "id": "slon",
-    "keyword": "Slon",
-    "emoji": "🐘",
-    "description": "Slon může připomenout zvíře, přírodu, paměť nebo kulturní příběh. Jeho výskyt ve snu nepotvrzuje tvoji stabilitu ani připravenost na životní výzvy."
-  },
-  {
-    "id": "delphi",
-    "keyword": "Delfín",
-    "emoji": "🐬",
-    "description": "Delfín může připomenout moře, zvíře, příběh nebo zážitek. Sen nepředepisuje odpočinek, neukazuje na potřebu záchrany a neslibuje hladký průběh projektu."
-  },
-  {
-    "id": "fénix",
-    "keyword": "Fénix",
-    "emoji": "🐦‍🔥",
-    "description": "Fénix je mytický pták spojovaný v příbězích s obnovou. Jeho obraz může být osobní metaforou, ale neslibuje, že po těžké zkušenosti budeš silnější."
-  },
-  {
-    "id": "jednorozec",
-    "keyword": "Jednorožec",
-    "emoji": "🦄",
-    "description": "Jednorožec může připomenout pohádku, fantasy příběh nebo představu něčeho vzácného. Jeho výskyt ve snu nedokazuje čistotu srdce ani zvláštní schopnosti."
-  },
-  {
-    "id": "drak",
-    "keyword": "Drak",
-    "emoji": "🐉",
-    "description": "Drak může připomenout mytologii, příběh, sílu nebo fantazii. Sen sám neodhaluje skrytou vlastnost a neslibuje, že překonáním strachu získáš určitý dar."
-  },
-  {
-    "id": "strom-zivota",
-    "keyword": "Strom života",
-    "emoji": "🌳",
-    "description": "Strom života se v různých kulturách objevuje jako symbol růstu či propojení. Sen neurčuje, jak se daří tvým vztahům, práci nebo osobnímu rozvoji."
-  },
-  {
-    "id": "andel-strazny",
-    "keyword": "Anděl strážný",
-    "emoji": "👼",
-    "description": "Strážný anděl může připomenout víru, útěšný příběh nebo pocit bezpečí. Sen sám nepotvrzuje skutečnou ochranu ani přítomnost vyšší síly."
-  },
-  {
-    "id": "svetlo-bile",
-    "keyword": "Bílé světlo",
-    "emoji": "⚪",
-    "description": "Bílé světlo může připomenout jas, klid, náboženský obraz nebo zážitek z příběhu. Sen sám nepotvrzuje karmickou očistu ani duchovní setkání."
-  },
-  {
-    "id": "vyhra",
-    "keyword": "Výhra (v loterii / soutěži)",
-    "emoji": "🎰",
-    "description": "Výhra ve snu může souviset s přáním uspět, štěstím nebo soutěživostí. Sen ale neříká, že je úspěch na dosah nebo že něco vyhraješ."
-  },
-  {
-    "id": "hlad",
-    "keyword": "Hlad / Žízeň",
-    "emoji": "🥣",
-    "description": "Hlad ve snu může souviset s tělesným pocitem, jídlem nebo nedávným zážitkem. Někdy připomene i něco, po čem toužíš; sám ale neurčuje, co ti v životě chybí."
-  },
-  {
-    "id": "poutnik",
-    "keyword": "Poutník / Cizinec",
-    "emoji": "🚶",
-    "description": "Poutník nebo cizinec ve snu může připomenout cestu, příběh či setkání s někým neznámým. Sen nepředpovídá, že do tvého života vstoupí nová osoba nebo perspektiva."
-  },
-  {
-    "id": "zlata-rybka",
-    "keyword": "Zlatá rybka",
-    "emoji": "🐠",
-    "description": "Zlatá rybka může připomenout pohádku, přání nebo otázku, co si přeješ. Její chycení či vypuštění neslibuje, že se dobrota vrátí nebo se přání splní."
-  },
-  {
-    "id": "kvet-zivota",
-    "keyword": "Květ života / Geometrie",
-    "emoji": "💮",
-    "description": "Květ života je geometrický motiv, který může připomenout řád, opakování nebo osobní zájem o symboly. Sen nepotvrzuje dokonalý plán vesmíru."
-  },
-  {
-    "id": "jin-jang",
-    "keyword": "Jin a Jang / Rovnováha",
-    "emoji": "☯️",
-    "description": "Jin-jang může připomenout protiklady, kruhový motiv nebo taoistickou symboliku. Sen neurčuje, že jsi nevyvážený nebo že najdeš mír jen změnou svého života."
-  },
-  {
-    "id": "runy",
-    "keyword": "Runy / Staré písmo",
-    "emoji": "📜",
-    "description": "Runy mohou ve snu otevřít téma tradice, nejasného sdělení nebo hledání vlastní orientace. Nejde o pevnou zprávu z minulosti; význam se odvíjí od toho, co pro tebe runy znamenaly a jaký pocit ve snu zanechaly."
-  },
-  {
-    "id": "tarot",
-    "keyword": "Tarotová karta",
-    "emoji": "🃏",
-    "description": "Tarotová karta ve snu může souviset s tarotem, který znáš, nebo s obrazem, jenž tě zaujal. Její význam si můžeš spojit s vlastní otázkou; sen nepředává ověřenou zprávu vesmíru."
-  },
-  {
-    "id": "kristalova-koule",
-    "keyword": "Křišťálová koule",
-    "emoji": "🔮",
-    "description": "Křišťálová koule může ve snu připomínat zvědavost, očekávání nebo nejistotu z toho, co přijde. Nepotvrzuje jasnovidnost ani schopnost předvídat budoucnost."
-  },
-  {
-    "id": "kyvadlo",
-    "keyword": "Kyvadlo",
-    "emoji": "⏳",
-    "description": "Kyvadlo může připomenout rozhodování, pokus najít odpověď nebo zkušenost s věštěním. Jeho pohyb ve snu nepotvrzuje pravdivost odpovědi ani vnitřní jistotu."
-  },
-  {
-    "id": "kadidlo",
-    "keyword": "Kadidlo / Kouř",
-    "emoji": "💨",
-    "description": "Kadidlo může připomenout modlitbu, obřad, vůni nebo zkušenost s kouřem. Sen nepotvrzuje účinek rituálu ani potřebu očisty od negativních vlivů."
-  },
-  {
-    "id": "svicka",
-    "keyword": "Svíčka",
-    "emoji": "🕯️",
-    "description": "Svíčka může připomenout světlo, obřad, oslavu nebo výpadek proudu. Její zhasnutí ve snu neznamená ztrátu naděje ani ubývání životních sil."
-  },
-  {
-    "id": "oltar",
-    "keyword": "Oltář",
-    "emoji": "🏺",
-    "description": "Oltář může připomenout obřad, místo uctívání, historii nebo kulturní obraz. Sen neříká, co máš obětovat ani zda se máš něčeho vzdát."
-  },
-  {
-    "id": "chram",
-    "keyword": "Chrám / Katedrála",
-    "emoji": "🕍",
-    "description": "Chrám ve snu může připomenout víru, architekturu, ticho nebo místo, které znáš. Jeho obraz sám nevypovídá nic jistého o tvém nitru ani o božské ochraně."
-  },
-  {
-    "id": "zricenina",
-    "keyword": "Zřícenina / Hrad",
-    "emoji": "🏰",
-    "description": "Zřícenina může připomenout starou stavbu, historii nebo otázku, co přetrvalo po změně. Sama neprokazuje konec vztahu, víry ani jiné životní etapy; hrad může být prostě součástí příběhu."
-  },
-  {
-    "id": "zahrada",
-    "keyword": "Zahrada / Ráj",
-    "emoji": "🏡",
-    "description": "Zahrada ve snu může připomenout známé místo, práci s rostlinami nebo čas strávený venku. Její stav sám neurčuje stav duše ani to, zda zanedbáváš své potřeby."
-  },
-  {
-    "id": "zelva",
-    "keyword": "Želva",
-    "emoji": "🐢",
-    "description": "Želva může připomenout konkrétní zvíře, trpělivost nebo příběh. Sen neslibuje jistý pokrok ani neurčuje, jak rychle máš postupovat."
-  },
-  {
-    "id": "velryba",
-    "keyword": "Velryba",
-    "emoji": "🐋",
-    "description": "Velryba může připomenout moře, zvíře, dokument nebo příběh. Sen neurčuje obsah podvědomí ani nepotvrzuje zvláštní spojení s vesmírem."
-  },
-  {
-    "id": "lek",
-    "keyword": "Lék / Elixír",
-    "emoji": "🧪",
-    "description": "Lék či elixír mohou připomenout péči, nemoc, naději nebo pohádkový motiv. Sen neslibuje uzdravení ani nepředepisuje řešení."
-  },
-  {
-    "id": "pohadkova-bytost",
-    "keyword": "Víla / Elf",
-    "emoji": "🧚",
-    "description": "Víla, elf nebo jiná pohádková bytost může připomenout příběh, fantazii či vzpomínku z dětství. Sen nepotvrzuje, že se setkáváš s přírodními duchy."
-  },
-  {
-    "id": "brana",
-    "keyword": "Brána / Portál",
-    "emoji": "⛩️",
-    "description": "Brána ve snu může připomenout vstup, hranici, budovu nebo chvíli čekání. Její překročení není nevratnou proměnou a neznamená, že musíš vše staré opustit."
-  }
+    {
+        "id": "andele",
+        "keyword": "Andělé",
+        "emoji": "👼",
+        "description": "Vidět anděla ve snu je velmi silné, ochranné znamení. Často symbolizuje příchod nečekané pomoci, duchovní probuzení nebo zprávu z vyšších sfér, kterou vaše denní vědomí přehlíží."
+    },
+    {
+        "id": "auto",
+        "keyword": "Auto",
+        "emoji": "🚗",
+        "description": "Auto ve snu představuje váš směr, kontrolu a pohyb životem. Kdo řídí? Pokud řídíte vy a máte plnou kontrolu, jste pány svého osudu. Pokud vám selžou brzdy, cítíte se v bdělém životě mimo kontrolu."
+    },
+    {
+        "id": "baby",
+        "keyword": "Dítě (miminko)",
+        "emoji": "👶",
+        "description": "Miminko ve snech zřídkakdy znamená skutečné otěhotnění. Je to mocný archetyp nového začátku, nového projektu nebo znovuzrozené, zranitelné části vaší duše, která vyžaduje péči."
+    },
+    {
+        "id": "barva-bila",
+        "keyword": "Barva: Bílá",
+        "emoji": "🤍",
+        "description": "Symbolizuje čistotu, nevinnost a vyčištění karmy. Sníte-li o zářivě bílém světle, může to naznačovat duchovní probuzení nebo snahu najít pravdu."
+    },
+    {
+        "id": "barva-cerna",
+        "keyword": "Barva: Černá",
+        "emoji": "🖤",
+        "description": "Černá ve snech zosobňuje nevědomí, neznámo, prázdnotu nebo skryté strachy. Nemusí to být negativní symbol – často představuje úrodnou půdu pro hlubokou transformaci (Stín v jungovské psychologii)."
+    },
+    {
+        "id": "barva-cervena",
+        "keyword": "Barva: Červená",
+        "emoji": "❤️",
+        "description": "Rudá barva ve snech bývá spojena s vášní, hněvem, silou nebo nebezpečím. Záleží na kontextu. Červená rána upozorňuje na emocionální zranění, červená obléknutá věc odhaluje touhu být viděn."
+    },
+    {
+        "id": "barva-modra",
+        "keyword": "Barva: Modrá",
+        "emoji": "💙",
+        "description": "Modrá je barvou klidu, intuice, komunikace a duchovnosti. Sen plný modré naznačuje, že je čas naslouchat hlasu vnitřní moudrosti a méně jednat z impulsu."
+    },
+    {
+        "id": "bezpecny-pristav",
+        "keyword": "Bezpečný přístav",
+        "emoji": "⚓",
+        "description": "Hledáte kotvu. Pokud jste ve snu dopluli dál po bouři, konečně nacházíte klid po náročném emocionálním období."
+    },
+    {
+        "id": "bludiste",
+        "keyword": "Bludiště",
+        "emoji": "🌀",
+        "description": "Cítíte se ztraceni nebo čelíte složité situaci, ve které nevidíte jasné východisko. Zkuste ve snu i bdělém životě zastavit a nevynucovat řešení silou."
+    },
+    {
+        "id": "boty",
+        "keyword": "Boty",
+        "emoji": "👟",
+        "description": "Představují náš základ a náš postoj k životu. Nemáte-li boty nebo jsou zničené, cítíte se nejistě nebo nepřipraveně k aktuální cestě."
+    },
+    {
+        "id": "bouri",
+        "keyword": "Bouře",
+        "emoji": "⛈️",
+        "description": "Silné emocionální uvolnění, hněv, stres nebo strach nahromaděný v bdělém světě, který potřeboval explodovat. Po bouři ale vždy přijde čistý vzduch."
+    },
+    {
+        "id": "cesta",
+        "keyword": "Cesta",
+        "emoji": "🛤️",
+        "description": "Dlouhá, přímá cesta věstí dobré plynutí současných projektů. Klikatá, nebezpečná cesta symbolizuje skryté překážky a nutnost zpomalit."
+    },
+    {
+        "id": "chvatal",
+        "keyword": "Chvátat / Nestíhat",
+        "emoji": "⏱️",
+        "description": "Typický sen odrážející úzkost z reálného života. Podvědomí vás varuje před přepracováním a strachem z nenaplněných očekávání."
+    },
+    {
+        "id": "cisla",
+        "keyword": "Čísla ve snu",
+        "emoji": "🔢",
+        "description": "Opakující se čísla jsou silný signál. Číslo 3 symbolizuje trojici (moc, růst, kreativita), 7 duchovnost, 11 a 22 jsou 'mistrovská čísla' spojená s intuicí a transformací."
+    },
+    {
+        "id": "dary",
+        "keyword": "Dárek (balíček)",
+        "emoji": "🎁",
+        "description": "Dostanete-li ve snu dárek, podvědomí vám oznamuje příchod pozitivní energie nebo nečekaného projektu. Odmítnutí dárku naznačuje nevyléčenou nevděčnost."
+    },
+    {
+        "id": "dvere",
+        "keyword": "Dveře",
+        "emoji": "🚪",
+        "description": "Dveře znamenají příležitosti a hranice. Zavřené dveře mohou znamenat zmeškanou šanci, zatímco otevřené zvou k prozkoumání nových částí vaší osobnosti."
+    },
+    {
+        "id": "dum",
+        "keyword": "Dům",
+        "emoji": "🏠",
+        "description": "Dům jste vy – vaše psychika a tělo. Sklep představuje podvědomí (strachy a traumata), půda zase vaše vzpomínky a duchovní aspirace. Objevili jste ve snu novou místnost? Objevili jste v sobě nový talent nebo část osobnosti."
+    },
+    {
+        "id": "expartner",
+        "keyword": "Ex-partner (bývalý)",
+        "emoji": "💔",
+        "description": "Sen o ex-partnerovi nejčastěji neznamená touhu se vrátit. Ex je symbolem 'nedovyřízeného emocionálního účtu' – naučte se od tohoto snu, jaká vlastnost nebo pocit zůstal neuzavřen."
+    },
+    {
+        "id": "had",
+        "keyword": "Had",
+        "emoji": "🐍",
+        "description": "Jeden z nejstarších snových archetypů. Může znamenat zradu a utajené nebezpečí, ale mnohem častěji (zejména pokud vysléká kůži) symbolizuje hlubokou osobní transformaci, léčení a probuzení tzv. hadí síly (kundalini)."
+    },
+    {
+        "id": "hadka",
+        "keyword": "Hádka",
+        "emoji": "💢",
+        "description": "Vnitřní konflikt mezi dvěma póly vaší osobnosti. Rozum vs. emoce. Neschopnost říct ve skutečném světě něco nahlas se hromadí jako fiktivní sen."
+    },
+    {
+        "id": "hmyz",
+        "keyword": "Hmyz",
+        "emoji": "🐛",
+        "description": "Drobné, obtěžující detaily nebo starosti v bdělém životě, které se nahromadily a sají vaši mentální energii."
+    },
+    {
+        "id": "hodiny",
+        "keyword": "Hodiny",
+        "emoji": "⏰",
+        "description": "Strach z ubíhajícího času, biologických hodin nebo blížícího se deadlinu. Neschopnost uvolnit se do přítomného okamžiku."
+    },
+    {
+        "id": "hora",
+        "keyword": "Hora / Vrchol",
+        "emoji": "⛰️",
+        "description": "Hora testuje vaši odhodlanost. Stoupáte-li vytrvale, máte ve skutečném životě sílu překonávat výzvy. Spadnete-li z hory, prožíváte strach ze selhání na vyvýšeném místě (kariéra, vztah, status)."
+    },
+    {
+        "id": "hrob",
+        "keyword": "Hrob / Pohřeb",
+        "emoji": "🪦",
+        "description": "Nekomplikujte tento obraz. Pohřeb ve snu symbolizuje konec jedné životní fáze a slavnostní rozloučení se starými vzorci. Přijde-li vám v srdci při pohřbu úleva, je to zdravý psychický akt uzavření."
+    },
+    {
+        "id": "hvezdy",
+        "keyword": "Hvězdy / Noční obloha",
+        "emoji": "⭐",
+        "description": "Propojení s vesmírným řádem a vědomím přesahujícím každodennost. Jasné hvězdy přinášejí naději a orientaci. Padající hvězda je výzva splnit si přání nebo aspiraci, které jste odkládali."
+    },
+    {
+        "id": "jablko",
+        "keyword": "Jablko",
+        "emoji": "🍎",
+        "description": "Symbol zdraví, celistvosti, poznání (jako Rajské jablko). Shnilé jablko varuje před ignorováním problému."
+    },
+    {
+        "id": "jezero",
+        "keyword": "Jezero / Rybník",
+        "emoji": "🏞️",
+        "description": "Klidné jezero je odrazem vašeho vnitřního klidu a usazenosti. Temné nebo kalné jezero naznačuje, co číhá v hlubinách vašeho nevědomí a čeká na konfrontaci."
+    },
+    {
+        "id": "klic",
+        "keyword": "Klíč",
+        "emoji": "🗝️",
+        "description": "Naleznete-li klíč, přicházíte na řešení uzamčeného problému. Ztratíte-li klíč, bojíte se ztráty přístupu, kontroly nebo příležitosti. Klíč je jedno z nejpozitivnějších snových znamení."
+    },
+    {
+        "id": "kocka",
+        "keyword": "Kočka",
+        "emoji": "🐱",
+        "description": "Reprezentuje intuitivní, nezávislou a tajemnou energii, často spojenou s ženstvím (nebo vaší vlastní animou/animem). Agresivní kočka znamená odpojení od vlastní intuice."
+    },
+    {
+        "id": "konev-voda",
+        "keyword": "Studna / Pramen",
+        "emoji": "💧",
+        "description": "Studna symbolizuje hlubinné zdroje moudrosti a vnitřní síly. Prázdná studna naznačuje vyčerpání nebo odpojení od sebe sama. Pramen vody je znamením nové tvůrčí energie."
+    },
+    {
+        "id": "krev",
+        "keyword": "Krev",
+        "emoji": "🩸",
+        "description": "Životní síla. Krvácíte-li, ztrácíte emocionální energii nebo fyzickou sílu z nějakého parazitního vztahu. Cizí krev vyjadřuje vaši podvědomou vinu."
+    },
+    {
+        "id": "kvetiny",
+        "keyword": "Květiny",
+        "emoji": "🌸",
+        "description": "Rozkvetlé květiny jsou nejkrásnějším symbolem osobního růstu, krásy a přijímání sebe sama. Uvadlé nebo mrtvé květiny vás vyzývají přestat zanedbávat svou duševní zahradu."
+    },
+    {
+        "id": "letani",
+        "keyword": "Létání",
+        "emoji": "🦅",
+        "description": "Pokud v létání cítíte radost a volnost, vymanili jste se aktuálně z omezující situace a získali jste kontrolu. Pokud se létání bojíte nebo padáte, máte strach ze ztráty uzemnění."
+    },
+    {
+        "id": "les",
+        "keyword": "Les (temný)",
+        "emoji": "🌲",
+        "description": "Sestup do hlubokého podvědomí. Místo, kde čelíme našim stínům, zkouškám a bloudění. Cesta z lesa je aktem nalezení vlastní pravdy."
+    },
+    {
+        "id": "lev",
+        "keyword": "Lev / Tygr",
+        "emoji": "🦁",
+        "description": "Archetypální symbol vnitřní síly, odvahy a vedení. Lev, který vás pronásleduje, odráží strach z konfrontace s vlastní silou. Lev, který vás doprovází, naznačuje, že jste připraveni na velkou životní výzvu."
+    },
+    {
+        "id": "lod",
+        "keyword": "Loď / Plavba",
+        "emoji": "⛵",
+        "description": "Loď je váš životní příběh plující emocemi (mořem). Klidná plavba = dobrá kontrola. Bouřlivé vlny = emocionální nestabilita. Kdo váš člun řídí?"
+    },
+    {
+        "id": "lucidni",
+        "keyword": "Lucidní sen (uvědomění ve snu)",
+        "emoji": "🌌",
+        "description": "Vědomí, že sníte, je jednou z nejvzácnějších a nejposvátnějších snových stavů. Lucidní sen je branou k přímé komunikaci s podvědomím a k transformaci strachu přímo ve snu."
+    },
+    {
+        "id": "maska",
+        "keyword": "Maska",
+        "emoji": "🎭",
+        "description": "Společenská fasáda (persona). Vidíte-li někoho s maskou, nedůvěřujete mu. Máte-li masku vy, předstíráte v bdělém životě emoce, které necítíte."
+    },
+    {
+        "id": "medved",
+        "keyword": "Medvěd",
+        "emoji": "🐻",
+        "description": "Archetypální prastará síla a podvědomá agresivita, někdy dominantní, přehnaně ochranitelský vliv (jako velká medvědice matka)."
+    },
+    {
+        "id": "mesic",
+        "keyword": "Měsíc",
+        "emoji": "🌙",
+        "description": "Měsíc je spoluvládcem podvědomí a intuice. Úplněk přináší sny zvýšené intenzity, energie, odhalení. Ubývající měsíc symbolizuje potřebu pustit to, co vás táhne dolů."
+    },
+    {
+        "id": "more",
+        "keyword": "Moře / Oceán",
+        "emoji": "🌊",
+        "description": "Moře dokonale zrcadlí stav vašich emocí a kolektivního nevědomí. Klidná hladina = vnitřní mír; rozbouřené vlny = emoční stres, uvolněné afekty a úzkosti."
+    },
+    {
+        "id": "mrtvi",
+        "keyword": "Mrtví (komunikace se zesnulými)",
+        "emoji": "👻",
+        "description": "Setkání se zesnulými často značí neuzavřenou minulost. Výjimečně (při extrémní živosti snu) to může být lucidní vzkaz. Vaše podvědomí se s vámi přes ně učí odpouštět."
+    },
+    {
+        "id": "nahota",
+        "keyword": "Nahota na veřejnosti",
+        "emoji": "😳",
+        "description": "Velmi častý sen pramenící ze strachu z odhalení a zranitelnosti. Bojíte se, že okolí uvidí vaši 'pravou tvář' nebo nepříjemné 'nedostatky'."
+    },
+    {
+        "id": "nemoc",
+        "keyword": "Nemoc / Zranění",
+        "emoji": "🤒",
+        "description": "Nemoc ve snu nejčastěji upozorňuje na emocionální nebo psychické vyčerpání, ne na fyzickou diagnózu. Zranění na rukou = neschopnost uchopit příležitost; na nohou = strach jít kupředu."
+    },
+    {
+        "id": "nuz",
+        "keyword": "Nůž",
+        "emoji": "🔪",
+        "description": "Nutnost něco 'odříznout' – toxický vztah, závislost nebo škodlivý vzorec chování. Také varování před latentní agresí."
+    },
+    {
+        "id": "ohen",
+        "keyword": "Oheň",
+        "emoji": "🔥",
+        "description": "Nejlepší symbol transformace (třeba jako fénix). Ohřející oheň v krbu znamená rodinnou pohodu, hořící dům ukazuje zničující hněv nebo naprosté spálení všech starých jistot vůči novému začátku."
+    },
+    {
+        "id": "okno",
+        "keyword": "Okno",
+        "emoji": "🪟",
+        "description": "Váš výhled na svět a vnímání okolí. Špinavé okno odráží vaši depresivně zamlženou optiku a skepsi."
+    },
+    {
+        "id": "padani",
+        "keyword": "Padání (do prázdna)",
+        "emoji": "⬇️",
+        "description": "Jeden z nejintenzivnějších snů. Objevuje se, když máme pocit, že ztrácíme jakoukoliv pevnou půdu pod nohama – v kariéře, vztazích, sebepojetí. Typická známka přetížení."
+    },
+    {
+        "id": "penize",
+        "keyword": "Peníze",
+        "emoji": "💰",
+        "description": "Ve snech peníze zřídka znamenají peníze. Představují vaši *osobní energii, sebevědomí a sebehodnotu*. Ztráta peněz značí vyčerpání a nízké sebevědomí."
+    },
+    {
+        "id": "pes",
+        "keyword": "Pes",
+        "emoji": "🐕",
+        "description": "Bezpodmínečná loajalita, intuice a instinktivní ochrana. Nemocný pes ve snu často upozorňuje, že zanedbáváte své vlastní důležité životní instinkty k udržení přátel."
+    },
+    {
+        "id": "plac",
+        "keyword": "Pláč (Probuzení se do reálných slz)",
+        "emoji": "😢",
+        "description": "Snový pláč je obrovsky katarzní léčebný proces. Nádoba s nevysloveným smutkem přetekla. Pláč jako snový obraz znamená uvolnění dlouho drženého bloku."
+    },
+    {
+        "id": "potopa",
+        "keyword": "Potopa (povodně)",
+        "emoji": "🌧️",
+        "description": "Obraz zkoušky. Emoce (voda), které vás v životě doslova zaplavují a 'zaplavují' i váš domov. Voda se chystá omýt něco starého, abyste mohli vystavět nové."
+    },
+    {
+        "id": "ptak",
+        "keyword": "Pták",
+        "emoji": "🦜",
+        "description": "Touha duše stoupat. Myšlenky a projekce budoucích plánů. Prasklo ptačí vejce? Cítíte zrod nového kreativního nápadu."
+    },
+    {
+        "id": "ruze",
+        "keyword": "Růže",
+        "emoji": "🌹",
+        "description": "Červená růže je vášeň a rozkvět vlastní duše, celistvost. Trny vás učí, že skutečná krása má limity, které by okolí mělo respektovat."
+    },
+    {
+        "id": "smrt",
+        "keyword": "Smrt (Úmrtí vaše nebo cizí)",
+        "emoji": "☠️",
+        "description": "Nelekejte se, tento sen je čistě symbolický a pozitivní. Smrt v říši snů znamená konec jedné éry a začátek druhé (např. smrt ega, opuštění starých toxických návyků). Transformace a přerod."
+    },
+    {
+        "id": "sovy",
+        "keyword": "Sova",
+        "emoji": "🦉",
+        "description": "Moudrost z temnoty, vhled za závoj moci a jasnovidnost. Sova vám nosí poselství, která byste mohli přehlédnout ve světle dne."
+    },
+    {
+        "id": "strom",
+        "keyword": "Strom",
+        "emoji": "🌳",
+        "description": "Strom je archetypálním symbolem vašich kořenů (rodina, historie) a větví (cíle, vztahy, kreativita). Padlý strom hlásí konec důležité etapy. Větvený, kvetoucí strom naznačuje harmonický rozvoj."
+    },
+    {
+        "id": "skola",
+        "keyword": "Škola / Zkouška",
+        "emoji": "📚",
+        "description": "Sny, kdy nic neumíte na důležitou zkoušku (ačkoli jste školu dávno opustili), svědčí o úzkosti z hodnocení a obavách, že zklamete 'autority' nebo nedosáhnete měřítek úspěchu."
+    },
+    {
+        "id": "telo",
+        "keyword": "Tělo (části těla)",
+        "emoji": "🫀",
+        "description": "Každá část těla má svůj symbolický jazyk. Srdce = emoce a láska; hlava = kontrola a ego; ruce = tvorba; nohy = stabilita a pohyb; záda = to, co nevidíme a nosíme jako zátěž."
+    },
+    {
+        "id": "tehotenstvi",
+        "keyword": "Těhotenství ve snu",
+        "emoji": "🤰",
+        "description": "U žen i mužů je těhotenství ve snu symbolem zrodu nového projektu, nápadu nebo části sebe. Snové těhotenství nejčastěji neznamená fyzické otěhotnění, ale tvůrčí potenciál, který roste uvnitř vás."
+    },
+    {
+        "id": "tma",
+        "keyword": "Tma",
+        "emoji": "🌑",
+        "description": "Strach z chybějících informací nebo bloudění do Stínu. Nechcete vidět to, co byste v záři reflektorů vidět měli."
+    },
+    {
+        "id": "utikani",
+        "keyword": "Útěk / Pronásledování",
+        "emoji": "🏃",
+        "description": "Jeden z nejčastějších a nejintenzivnějších snů. To, před čím utíkáte, je část vás samých – potlačený strach, emoce nebo aspekt identity. Zastavit se a otočit pro vás může být transformující zkušeností."
+    },
+    {
+        "id": "vesmir",
+        "keyword": "Vesmír / Planety",
+        "emoji": "🪐",
+        "description": "Sny o vesmíru odhalují touhu po přesahujícím smyslu, o velké perspektivě, nebo přání uniknout každodenním omezením. Planety mohou symbolizovat různé arche-typy nebo osoby ve vašem okolí."
+    },
+    {
+        "id": "vlasy",
+        "keyword": "Vlasy",
+        "emoji": "💇",
+        "description": "Síla a identita. Vypadávající vlasy symbolizují ztrátu sebedůvěry, maskulinity/ženskosti nebo pocit stárnutí."
+    },
+    {
+        "id": "vlak",
+        "keyword": "Vlak",
+        "emoji": "🚂",
+        "description": "Vaše životní směřování (kariéra, cíle), které jste si sice nevybrali a je limitováno 'kolejemi', tedy konvencemi a rigidním řádem."
+    },
+    {
+        "id": "vlci",
+        "keyword": "Vlk",
+        "emoji": "🐺",
+        "description": "Vlk je archetyp smečky, instinktů a volnosti. Sní-li o vlkovi muž, odráží jeho potlačenou dravost a touhu po svobodě. U ženy může být vlk symbolem přirozeného instinktu, který byl společností tlumen."
+    },
+    {
+        "id": "voda",
+        "keyword": "Voda (čistá / špinavá)",
+        "emoji": "💦",
+        "description": "Čistá voda zosobňuje léčení, plynutí a jasné zrcadlení emocí. Kalná voda odhaluje nezpracované negativní pocity a duchovní kontaminaci."
+    },
+    {
+        "id": "vzlety-padi",
+        "keyword": "Výtah (zaseklý / jedoucí)",
+        "emoji": "🛗",
+        "description": "Výtah je metaforou vašeho pohybu v sociální hierarchii nebo kariéře. Zaseklý výtah signalizuje blokaci v rozvoji. Výtah, který stoupá, přináší pozitivní kariérní nebo osobnostní posun."
+    },
+    {
+        "id": "zachrana",
+        "keyword": "Záchrana (záchrána být nebo zachraňovat)",
+        "emoji": "🦸",
+        "description": "Zachraňujete-li sami, cítíte zodpovědnost za druhé. Jste-li zachráněni, hledáte pomoc nebo vedení, které vám zatím chybí. Kdo vás zachránil? Ta osoba odráží vlastnosti, které potřebujete rozvíjet."
+    },
+    {
+        "id": "zapomenute-dite",
+        "keyword": "Zapomenuté / ztracené dítě",
+        "emoji": "👦",
+        "description": "Obrovsky významný sen upozorňující, že v reálném světě silně ignorujete pro vás dříve tolik cenné inner-child (vnitřní dítě), vaše koníčky, talenty a radost."
+    },
+    {
+        "id": "zemetreseni",
+        "keyword": "Zemětřesení",
+        "emoji": "💥",
+        "description": "Mohutné narušení vaší vnitřní stability a hodnot, na kterých jste dříve v životě pevně stáli (např. nečekaná zpráva, ztráta partnera, vyhoření)."
+    },
+    {
+        "id": "zivocich-ryba",
+        "keyword": "Ryba / Rybolov",
+        "emoji": "🐟",
+        "description": "Ryba je symbolem nevědomí a duchovního poznání (podobně jako Kristův symbol). Rybolov = hledání odpovědí nebo inspirace. Úspěšný úlovek naznačuje, že odpověď v sobě máte — stačí ji vytáhnout na světlo."
+    },
+    {
+        "id": "zlobratri",
+        "keyword": "Rodinní příslušníci",
+        "emoji": "👨‍👩‍👧",
+        "description": "Rodina ve snech reprezentuje různé části vaší vlastní psyché. Matka = pečující, intuitivní složka. Otec = autoritativní, disciplinující složka. Sourozenci = rivality a loajality uvnitř vás samotných."
+    },
+    {
+        "id": "zrcadlo",
+        "keyword": "Zrcadlo",
+        "emoji": "🪞",
+        "description": "Reflexe podstaty – čelit pravdě. Žádná tvář v zrcadle = ztráta sebereflexe a roztříštěná identita. Někdo jiný v zrcadle = promítáte své potlačené touhy navenek."
+    },
+    {
+        "id": "zuby",
+        "keyword": "Zuby (vypadávání)",
+        "emoji": "🦷",
+        "description": "Objevuje se při křečovitém potlačování slov (ztišíme hlas ze strachu konfrontace) nebo úzkosti spojené s obavami ze ztráty atraktivity a stárnutí. Zuby značí asertivitu a ztrátu schopnosti se 'zakousnout' do problému."
+    },
+    {
+        "id": "pavouk",
+        "keyword": "Pavouk",
+        "emoji": "🕷️",
+        "description": "Pavouk představuje trpělivost, kreativitu a osud. Pokud tká síť, budujete si pevnou základnu. Pokud se ho bojíte, cítíte se lapeni v situaci, kterou nemáte pod kontrolou."
+    },
+    {
+        "id": "mys",
+        "keyword": "Myš",
+        "emoji": "🐭",
+        "description": "Myš symbolizuje drobné nepříjemnosti nebo pocit malosti. Někdy varuje, že věnujete příliš pozornosti nepodstatným detailům na úkor velkého obrazu."
+    },
+    {
+        "id": "kun",
+        "keyword": "Kůň",
+        "emoji": "🐎",
+        "description": "Kůň je symbolem nespoutané energie, svobody a silných instinktů. Bílý kůň věstí duchovní rozvoj, černý kůň zase divoké emoce, které je třeba zkrotit."
+    },
+    {
+        "id": "orel",
+        "keyword": "Orel",
+        "emoji": "🦅",
+        "description": "Orel přináší nadhled a vítězství. Je to znamení vysokých ambicí a schopnosti vidět pravdu tam, kde ostatní tápou v mlze."
+    },
+    {
+        "id": "havran",
+        "keyword": "Havran / Krkavec",
+        "emoji": "🐦‍⬛",
+        "description": "Havran je poslem z neznáma. Často symbolizuje transformaci, magii a hlubokou moudrost, která přichází skrze pochopení stinných stránek života."
+    },
+    {
+        "id": "vcela",
+        "keyword": "Včela",
+        "emoji": "🐝",
+        "description": "Včela představuje píli, komunitu a hojnost. Slyšet její bzučení věstí dobrou zprávu, bodnutí zase varuje před nečekaným konfliktem v týmu."
+    },
+    {
+        "id": "motyl",
+        "keyword": "Motýl",
+        "emoji": "🦋",
+        "description": "Jasný symbol metamorfózy. Naznačuje, že procházíte obdobím lehkosti a krásné proměny, kdy staré já ustupuje nové, svobodnější verzi."
+    },
+    {
+        "id": "slunce",
+        "keyword": "Slunce",
+        "emoji": "☀️",
+        "description": "Slunce je nejvyšším symbolem energie, úspěchu a osvícení. Jasné slunce věstí období radosti, zatímco zastíněné slunce varuje před dočasným útlumem vitality."
+    },
+    {
+        "id": "svitani",
+        "keyword": "Svítání",
+        "emoji": "🌅",
+        "description": "Posvátný okamžik nového začátku. Naděje, která se rodí z tmy. Tento sen říká, že řešení vašeho problému je již na obzoru."
+    },
+    {
+        "id": "blesk",
+        "keyword": "Blesk",
+        "emoji": "⚡",
+        "description": "Náhlé prozření, inspirace nebo šokující změna. Blesk pročišťuje vzduch a přináší pravdu, i když může být zprvu děsivý."
+    },
+    {
+        "id": "snih",
+        "keyword": "Sníh",
+        "emoji": "❄️",
+        "description": "Sníh symbolizuje izolaci, čistotu, ale i emocionální chlad. Čerstvý bílý sníh značí nový nepopsaný list, tající sníh zase uvolnění starých bloků."
+    },
+    {
+        "id": "poust",
+        "keyword": "Poušť",
+        "emoji": "🏜️",
+        "description": "Období duchovního sucha nebo samoty. Hledáte studnu – svou vnitřní pravdu. Sen vás vyzývá k trpělivosti a šetření silami."
+    },
+    {
+        "id": "ostrov",
+        "keyword": "Ostrov",
+        "emoji": "🏝️",
+        "description": "Touha po úniku do bezpečí nebo pocit izolace od ostatních. Záleží, zda je ostrov rájem, nebo vězením uprostřed oceánu vašich emocí."
+    },
+    {
+        "id": "tanec",
+        "keyword": "Tanec",
+        "emoji": "💃",
+        "description": "Tanec je oslavou života a harmonie mezi tělem a duší. Pokud tančíte s lehkostí, jste v souladu se svým osudem."
+    },
+    {
+        "id": "polibek",
+        "keyword": "Polibek",
+        "emoji": "💋",
+        "description": "Symbol spojení, usmíření nebo touhy. Může jít o integraci části osobnosti, kterou jste dříve odmítali."
+    },
+    {
+        "id": "svatba",
+        "keyword": "Svatba",
+        "emoji": "💍",
+        "description": "Svatba ve snu neznamená vždy sňatek, ale hluboké spojení protikladů. Spojení rozumu a citu, nebo začátek nového, trvalého závazku."
+    },
+    {
+        "id": "plavani",
+        "keyword": "Plavání",
+        "emoji": "🏊",
+        "description": "Plavání v čisté vodě značí dobré zvládání emocí. Pokud bojujete s proudem, cítíte se přehlceni nároky okolního světa."
+    },
+    {
+        "id": "zabloudit",
+        "keyword": "Zabloudit / Bloudit",
+        "emoji": "🧭",
+        "description": "Podvědomý signál, že jste ztratili směr nebo integritu. Zastavte se a naslouchejte své intuici, ta vás vyvede na světlo."
+    },
+    {
+        "id": "prsten",
+        "keyword": "Prsten",
+        "emoji": "💍",
+        "description": "Nekonečno, věrnost a závazek. Najít prsten věstí nové přátelství, ztratit ho varuje před rozchodem nebo porušeným slibem."
+    },
+    {
+        "id": "kniha",
+        "keyword": "Kniha",
+        "emoji": "📖",
+        "description": "Kniha je symbolem vědění a životního příběhu. Otevřená kniha vybízí k učení, zavřená ukazuje na tajemství, které ještě není čas odhalit."
+    },
+    {
+        "id": "telefon",
+        "keyword": "Telefon",
+        "emoji": "📱",
+        "description": "Potřeba komunikace nebo zpráva z vašeho nitra. Zvonící telefon, který nezvedáte, značí ignorování důležitého vnitřního varování."
+    },
+    {
+        "id": "krabice",
+        "keyword": "Krabice / Skříňka",
+        "emoji": "📦",
+        "description": "Krabice skrývá potlačené emoce nebo skryté talenty. Prázdná krabice značí zklamání, plná zase nečekaný potenciál."
+    },
+    {
+        "id": "duch",
+        "keyword": "Duch / Přízrak",
+        "emoji": "👻",
+        "description": "Duch symbolizuje minulost, která vás stále pronásleduje. Je to nevyřešená emoce nebo vzpomínka, kterou je třeba nechat v klidu odejít."
+    },
+    {
+        "id": "demon",
+        "keyword": "Démon",
+        "emoji": "👿",
+        "description": "Zosobnění vašich nejtemnějších obav, stínů a závislostí. Boj s démonem je bojem o vlastní integritu a osvobození se od destruktivních vzorců."
+    },
+    {
+        "id": "buh",
+        "keyword": "Bůh / Vyšší bytost",
+        "emoji": "✨",
+        "description": "Setkání s posvátnem. Je to kontakt s vaším nejvyšším Já, které vám přináší klid, vedení a pocit hlubokého smyslu existence."
+    },
+    {
+        "id": "osud",
+        "keyword": "Osud / Kolo štěstí",
+        "emoji": "🎡",
+        "description": "Vesmírná karta! Naznačuje, že se věci daly do pohybu mimo vaši přímou kontrolu. Důvěřujte procesu a plyňte s proudem."
+    },
+    {
+        "id": "kletba",
+        "keyword": "Kletba",
+        "emoji": "🔮",
+        "description": "Cítíte se svázáni cizí vůlí nebo vlastními vinami. Je čas na rituální očistu a odpoutání se od negativity."
+    },
+    {
+        "id": "pozehnani",
+        "keyword": "Požehnání",
+        "emoji": "🙏",
+        "description": "Pocit hluboké vděčnosti a milosti. Vesmír vám potvrzuje, že kráčíte správnou cestou a jste pod ochranou."
+    },
+    {
+        "id": "porod",
+        "keyword": "Porod",
+        "emoji": "🍼",
+        "description": "Vrchol tvůrčího procesu. Po dlouhém čekání se rodí něco nového a převratného – nápad, vztah nebo vaše nové já."
+    },
+    {
+        "id": "labut",
+        "keyword": "Labuť",
+        "emoji": "🦢",
+        "description": "Labuť je symbolem elegance, věrnosti a čisté lásky. Vidět labuť plující po klidné hladině věstí období emočního klidu a harmonie v partnerství."
+    },
+    {
+        "id": "vlna",
+        "keyword": "Vlna (mořská)",
+        "emoji": "🌊",
+        "description": "Vlna představuje příliv emocí nebo situaci, která se na vás valí. Pokud ji sjedete jako surfař, zvládáte změny s grácií. Pokud vás smete, cítíte se emočně přehlceni."
+    },
+    {
+        "id": "vitr",
+        "keyword": "Vítr / Vichřice",
+        "emoji": "🌬️",
+        "description": "Vítr symbolizuje pohyb myšlenek a nezastavitelnou změnu. Jemný vánek přináší inspiraci, vichřice varuje před chaosem a nutností vyčistit si životní prostor."
+    },
+    {
+        "id": "hvezdny-prach",
+        "keyword": "Hvězdný prach / Třpyt",
+        "emoji": "✨",
+        "description": "Magické znamení! Naznačuje, že do vašeho života vstupuje prvek zázraku nebo nečekaného štěstí. Je to pobídka k tomu, abyste začali věřit v nemožné."
+    },
+    {
+        "id": "kometa",
+        "keyword": "Kometa / Padající hvězda",
+        "emoji": "☄️",
+        "description": "Kometa věstí zásadní, nečekanou a rychlou změnu. Je to vzácný symbol, který vás vybízí k odvážnému kroku, na který jste dříve neměli odvahu."
+    },
+    {
+        "id": "duha",
+        "keyword": "Duha",
+        "emoji": "🌈",
+        "description": "Univerzální symbol naděje a usmíření po těžkém období. Duha spojuje nebe a zemi a naznačuje, že vaše úsilí bude brzy odměněno duchovním mírem."
+    },
+    {
+        "id": "blesk-karta",
+        "keyword": "Blesk z čistého nebe",
+        "emoji": "🌩️",
+        "description": "Šokující zpráva nebo náhlý vhled, který změní vaše vnímání reality. Někdy je to nutné 'zboření' starých struktur, aby mohlo vzniknout něco pravdivějšího."
+    },
+    {
+        "id": "led",
+        "keyword": "Led / Zamrzlá voda",
+        "emoji": "🧊",
+        "description": "Led značí ustrnutí, chlad nebo potlačené city. Chodit po ledě je varováním před rizikovým jednáním, zatímco tající led věstí oteplení v citech."
+    },
+    {
+        "id": "sopka",
+        "keyword": "Sopka",
+        "emoji": "🌋",
+        "description": "Dlouho potlačovaný hněv nebo vášeň, která se dere na povrch. Erupce sopky varuje, že už své emoce déle neudržíte pod pokličkou."
+    },
+    {
+        "id": "jeskyne",
+        "keyword": "Jeskyně",
+        "emoji": "🧱",
+        "description": "Vstup do nejhlubších vrstev podvědomí. Hledáte v sobě poklad – skrytý talent nebo zapomenutou pravdu. Sen o jeskyni vás nabádá k meditaci a introspekci."
+    },
+    {
+        "id": "most",
+        "keyword": "Most",
+        "emoji": "🌉",
+        "description": "Most je symbolem přechodu a spojení. Přecházet most znamená postup do nové životní fáze. Zřícený most varuje před zmeškanou příležitostí nebo spálenými cestami."
+    },
+    {
+        "id": "schody",
+        "keyword": "Schody",
+        "emoji": "🪜",
+        "description": "Stoupat po schodech značí pokrok a úspěch. Sejít dolů může znamenat návrat ke kořenům nebo sestup do podvědomí. Točité schody naznačují spirituální vývoj."
+    },
+    {
+        "id": "vezeni",
+        "keyword": "Vězení",
+        "emoji": "⛓️",
+        "description": "Vězení ve snu je téměř vždy vnitřní. Jsou to vaše vlastní limitující přesvědčení, strachy nebo pocit viny, které vám brání v rozletu."
+    },
+    {
+        "id": "policie",
+        "keyword": "Policie / Stráž",
+        "emoji": "👮",
+        "description": "Symbol svědomí a vnitřní disciplíny. Policie vás zastavuje, když cítíte, že jste v bdělém životě překročili své vlastní morální hranice."
+    },
+    {
+        "id": "krizovatka",
+        "keyword": "Křižovatka",
+        "emoji": "🔀",
+        "description": "Zásadní životní rozhodnutí. Sen vám ukazuje, že máte na výběr a že každá cesta vede k jinému osudu. Poslouchejte své srdce, ne jen rozum."
+    },
+    {
+        "id": "poklad",
+        "keyword": "Poklad / Zlato",
+        "emoji": "💰",
+        "description": "Nalezení pokladu symbolizuje objevení vlastní hodnoty nebo skrytého daru. Není to o penězích, ale o bohatství vaší duše, které jste konečně spatřili."
+    },
+    {
+        "id": "zrcadlo-cele",
+        "keyword": "Zrcadlo (rozbité)",
+        "emoji": "🪞",
+        "description": "Rozbité zrcadlo značí roztříštěné sebevědomí nebo konec jedné iluze o sobě samém. Je to sice bolestný, ale nutný krok k uvidění skutečné pravdy."
+    },
+    {
+        "id": "hodiny-piskove",
+        "keyword": "Přesýpací hodiny",
+        "emoji": "⏳",
+        "description": "Neúprosný čas a konečnost. Sen vám připomíná, že některé příležitosti nebudou trvat věčně a že je čas začít jednat podle svých snů."
+    },
+    {
+        "id": "kotva",
+        "keyword": "Kotva",
+        "emoji": "⚓",
+        "description": "Hledání stability a jistoty. Kotva v hloubce znamená, že jste našli svůj střed. Pokud se nedaří zakotvit, cítíte se v životě unášeni cizími vlivy."
+    },
+    {
+        "id": "majak",
+        "keyword": "Maják",
+        "emoji": "🚨",
+        "description": "Vedení v temnotě. Světlo majáku vám ukazuje cestu skrze emočně náročné období. Je to symbol naděje a bezpečí, které máte nablízku."
+    },
+    {
+        "id": "zvon",
+        "keyword": "Zvon / Zvonění",
+        "emoji": "🔔",
+        "description": "Zvon je duchovním voláním. Ohlašuje důležitou událost, probuzení nebo nutnost věnovat pozornost něčemu, co jste dosud přehlíželi."
+    },
+    {
+        "id": "klic-zlaty",
+        "keyword": "Zlatý klíč",
+        "emoji": "🗝️",
+        "description": "Nejvyšší stupeň poznání! Zlatý klíč odemyká tajemství vaší duše a dává vám přístup k nekonečným možnostem. Využijte ho moudře."
+    },
+    {
+        "id": "mec",
+        "keyword": "Meč",
+        "emoji": "⚔️",
+        "description": "Symbol pravdy, odvahy a rozhodnosti. Mečem oddělujete to, co je pravdivé, od toho, co jsou jen iluze nebo lži. Vyžaduje ale čistý úmysl."
+    },
+    {
+        "id": "pohár",
+        "keyword": "Pohár / Grál",
+        "emoji": "🏆",
+        "description": "Naplnění, radost a přijímání lásky. Prázdný pohár značí emocionální vyprahlost, plný pohár věstí hojnost a duchovní dary."
+    },
+    {
+        "id": "hvezdarna",
+        "keyword": "Hvězdárna / Dalekohled",
+        "emoji": "🔭",
+        "description": "Touha po vyšším vědění a pochopení vesmírných zákonů. Dívat se do dálky znamená, že plánujete svou budoucnost s velkým vhledem."
+    },
+    {
+        "id": "labyrint",
+        "keyword": "Labyrint / Bludiště (řešení)",
+        "emoji": "🌀",
+        "description": "Na rozdíl od bludistě (kde se ztratíte), labyrint má cestu do středu. Představuje vaši spirituální cestu k vlastnímu jádru. Cesta je cíl."
+    },
+    {
+        "id": "pyramida",
+        "keyword": "Pyramida",
+        "emoji": "📐",
+        "description": "Symbol stability, historie a věčnosti. Stát pod pyramidou značí, že se opíráte o hluboké základy a že váš odkaz přetrvá."
+    },
+    {
+        "id": "sfinga",
+        "keyword": "Sfinga / Hádanka",
+        "emoji": "🦁",
+        "description": "Čelíte hádance svého života. Odpověď nehledejte vně, ale uvnitř sebe. Sfinga střeží bránu k vašemu vyššímu vědomí."
+    },
+    {
+        "id": "vlk-samotar",
+        "keyword": "Vlk samotář",
+        "emoji": "🐺",
+        "description": "Vaše potřeba svobody a nezávislosti. Sen o samotáři říká, že je v pořádku jít vlastní cestou, i když ji ostatní nechápou."
+    },
+    {
+        "id": "jelen",
+        "keyword": "Jelen / Laň",
+        "emoji": "🦌",
+        "description": "Jelen je králem lesa a symbolem jemné síly a ušlechtilosti. Vidět jelena znamená být v kontaktu s čistou přírodní silou a vlastní intuicí."
+    },
+    {
+        "id": "meduza",
+        "keyword": "Meduza",
+        "emoji": "🪼",
+        "description": "Meduza představuje neuchopitelné emoce nebo strach, který vás může 'zkamenět'. Je to varování před situacemi, které vypadají křehce, ale pálí."
+    },
+    {
+        "id": "slon",
+        "keyword": "Slon",
+        "emoji": "🐘",
+        "description": "Obrovská vnitřní síla, paměť a trpělivost. Slon ve snu naznačuje, že máte dostatek stability k tomu, abyste unesli i ty největší životní výzvy."
+    },
+    {
+        "id": "delphi",
+        "keyword": "Delfín",
+        "emoji": "🐬",
+        "description": "Delfín je symbolem inteligence, hravosti a radosti. Je to posel, který vás učí proplouvat emocemi s lehkostí a humorem."
+    },
+    {
+        "id": "fénix",
+        "keyword": "Fénix",
+        "emoji": "🐦‍🔥",
+        "description": "Nejmocnější symbol znovuzrození! I když se cítíte na popel, fénix slibuje, že povstanete silnější, moudřejší a zářivější než kdy dřív."
+    },
+    {
+        "id": "jednorozec",
+        "keyword": "Jednorožec",
+        "emoji": "🦄",
+        "description": "Znamení čistoty a zázraků. Jednorožec se objevuje těm, kteří mají čisté srdce a odvahu následovat své nejdivočejší a nejkrásnější sny."
+    },
+    {
+        "id": "drak",
+        "keyword": "Drak",
+        "emoji": "🐉",
+        "description": "Drak střeží poklad. Je to vaše nezměrná vnitřní síla a vášeň, kterou se musíte naučit ovládat, aby vás nespálila, ale chránila."
+    },
+    {
+        "id": "strom-zivota",
+        "keyword": "Strom života",
+        "emoji": "🌳",
+        "description": "Propojení všeho se vším. Cítíte se součástí velkého celku a chápete, že vaše kořeny jsou stejně důležité jako vaše koruna sahající k nebi."
+    },
+    {
+        "id": "andel-strazny",
+        "keyword": "Anděl strážný",
+        "emoji": "👼",
+        "description": "Silný pocit ochrany a vedení. I v té největší tmě nejste sami – vyšší síly vás drží za ruku a vedou k bezpečí."
+    },
+    {
+        "id": "svetlo-bile",
+        "keyword": "Bílé světlo",
+        "emoji": "⚪",
+        "description": "Absolutní pravda a vyčištění karmy. Setkání s bílým světlem je hluboce spirituální zážitek, který přináší klid, jenž přesahuje veškeré chápání."
+    },
+    {
+        "id": "vyhra",
+        "keyword": "Výhra (v loterii / soutěži)",
+        "emoji": "🎰",
+        "description": "Výhra symbolizuje nečekaný příliv energie nebo sebedůvěry. Podvědomí vám říká, že si zasloužíte úspěch a že ho máte na dosah ruky."
+    },
+    {
+        "id": "hlad",
+        "keyword": "Hlad / Žízeň",
+        "emoji": "🥣",
+        "description": "Duchovní nebo emocionální prázdnota. Cítíte v životě absenci něčeho podstatného – lásky, uznání nebo hlubšího smyslu, po kterém vaše duše touží."
+    },
+    {
+        "id": "poutnik",
+        "keyword": "Poutník / Cizinec",
+        "emoji": "🚶",
+        "description": "Poutník představuje vaši vlastní cestu za poznáním. Setkání s cizincem ve snu naznačuje, že do vašeho života brzy vstoupí nová, nečekaná perspektiva."
+    },
+    {
+        "id": "zlata-rybka",
+        "keyword": "Zlatá rybka",
+        "emoji": "🐠",
+        "description": "Symbol splněných přání. Pokud ji chytíte a pustíte, naznačuje to, že jste v souladu s vesmírným zákonem dávání a přijímání a že se vám vaše dobrota vrátí."
+    },
+    {
+        "id": "kvet-zivota",
+        "keyword": "Květ života / Geometrie",
+        "emoji": "💮",
+        "description": "Vnímání hluboké provázanosti všeho bytí. Tento posvátný symbol ve snu říká, že vše má svůj řád a že i ve zdánlivém chaosu existuje dokonalý plán."
+    },
+    {
+        "id": "jin-jang",
+        "keyword": "Jin a Jang / Rovnováha",
+        "emoji": "☯️",
+        "description": "Nutnost vyvážit protiklady ve vašem životě. Práce a odpočinek, dávání a braní, mužská a ženská energie. Jen v rovnováze najdete skutečný mír."
+    },
+    {
+        "id": "runy",
+        "keyword": "Runy / Staré písmo",
+        "emoji": "📜",
+        "description": "Runy mohou ve snu otevřít téma tradice, nejasného sdělení nebo hledání vlastní orientace. Nejde o pevnou zprávu z minulosti; význam se odvíjí od toho, co pro tebe runy znamenaly a jaký pocit ve snu zanechaly."
+    },
+    {
+        "id": "tarot",
+        "keyword": "Tarotová karta",
+        "emoji": "🃏",
+        "description": "Archetypální vedení. Karta, kterou ve snu vidíte, nese klíč k vaší aktuální situaci. Vesmír s vámi mluví skrze symboly, aby vám pomohl se rozhodnout."
+    },
+    {
+        "id": "kristalova-koule",
+        "keyword": "Křišťálová koule",
+        "emoji": "🔮",
+        "description": "Jasnovidnost a vhled do budoucnosti. Máte schopnost vidět za roh, pokud se přestanete bát své vlastní intuice a začnete věřit svým vizím."
+    },
+    {
+        "id": "kyvadlo",
+        "keyword": "Kyvadlo",
+        "emoji": "⏳",
+        "description": "Rozhodování a hledání pravdy. Kyvadlo vám ukazuje, že odpověď je 'ano' nebo 'ne', ale vyžaduje naprostý vnitřní klid, abyste ji mohli správně přečíst."
+    },
+    {
+        "id": "kadidlo",
+        "keyword": "Kadidlo / Kouř",
+        "emoji": "💨",
+        "description": "Očista a modlitba. Kouř kadidla odnáší vaše starosti k nebi a naznačuje, že nastal čas na rituální očištění prostoru i mysli od negativních vlivů."
+    },
+    {
+        "id": "svicka",
+        "keyword": "Svíčka",
+        "emoji": "🕯️",
+        "description": "Světlo v temnotě. Jediná svíčka symbolizuje individuální duši a naději, která nikdy neumírá. Pokud svíčka zhasne, bojíte se ztráty naděje."
+    },
+    {
+        "id": "oltar",
+        "keyword": "Oltář",
+        "emoji": "🏺",
+        "description": "Místo oběti a uctění. Co jste ochotni pustit, abyste získali něco vyššího? Oltář vás vyzývá k odevzdání ega a k napojení se na to, co vás přesahuje."
+    },
+    {
+        "id": "chram",
+        "keyword": "Chrám / Katedrála",
+        "emoji": "🕍",
+        "description": "Posvátný prostor ve vašem vnitru. Sen o chrámu je připomínkou, že vaše tělo je schránkou pro božskou jiskru a zaslouží si úctu a péči."
+    },
+    {
+        "id": "zricenina",
+        "keyword": "Zřícenina / Hrad",
+        "emoji": "🏰",
+        "description": "Zřícenina symbolizuje staré systémy víry nebo vztahy, které již dosloužily. Hrad pak ochranu a vaši vnitřní pevnost, kterou nikdo nemůže jen tak dobýt."
+    },
+    {
+        "id": "zahrada",
+        "keyword": "Zahrada / Ráj",
+        "emoji": "🏡",
+        "description": "Stav vaší duše. Rozkvetlá zahrada je znamením vnitřního klidu, zatímco zarostlá zahrada naznačuje, že zanedbáváte své duchovní potřeby."
+    },
+    {
+        "id": "zelva",
+        "keyword": "Želva",
+        "emoji": "🐢",
+        "description": "Moudrost, ochrana a pomalý, ale jistý pokrok. Želva vás učí, že není kam spěchat a že vaše vytrvalost vás dovede k cíli."
+    },
+    {
+        "id": "velryba",
+        "keyword": "Velryba",
+        "emoji": "🐋",
+        "description": "Vládce oceánu podvědomí. Velryba představuje hlubokou emocionální inteligenci a schopnost slyšet písně vesmíru v tichu vlastního nitra."
+    },
+    {
+        "id": "lek",
+        "keyword": "Lék / Elixír",
+        "emoji": "🧪",
+        "description": "Léčení, které přichází. Může jít o odpuštění sobě samému nebo o nalezení řešení vleklého problému, který vás dříve trápil."
+    },
+    {
+        "id": "pohadkova-bytost",
+        "keyword": "Víla / Elf",
+        "emoji": "🧚",
+        "description": "Prvek hravosti a spojení s přírodními duchy. Tyto bytosti vám připomínají, že svět je mnohem kouzelnější, než se na první pohled zdá."
+    },
+    {
+        "id": "brana",
+        "keyword": "Brána / Portál",
+        "emoji": "⛩️",
+        "description": "Zásadní životní předěl. Průchod branou je nevratný akt transformace. Jste připraveni nechat vše staré za sebou a vejít do nového světa?"
+    }
 ]

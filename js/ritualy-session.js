@@ -14,10 +14,12 @@
         COMPLETION: 'screen-completion',
     };
 
-    const MOOD_LABELS = { 1: 'Únava', 2: 'Neutrálně', 3: 'Klid', 4: 'Dobře', 5: 'Skvěle' };
+    const MOOD_LABELS = { 1: '😔', 2: '😐', 3: '😌', 4: '🌟', 5: '✨' };
+    const JOURNAL_MOOD_LABELS = { 1: 'Únava', 2: 'Neutrálně', 3: 'Klid', 4: 'Dobře', 5: 'Skvěle' };
     const STREAK_KEY  = 'mh_ritual_streak';
     const BEST_KEY    = 'mh_ritual_best_streak';
     const DATE_KEY    = 'mh_ritual_last_date';
+    const JOURNAL_KEY = 'mh_ritual_journal';
 
     /* ── Stav ─────────────────────────────────────────────────────── */
     let ritual       = null;
@@ -113,29 +115,21 @@
     }
 
     /* ── Screen management ───────────────────────────────────────── */
-    function showScreen(id) {
+    function showScreen(id, moveFocus = false) {
         Object.values(SCREENS).forEach(s => {
             const el = document.getElementById(s);
             if (el) { el.classList.remove('active'); }
         });
         const target = document.getElementById(id);
-        if (target) target.classList.add('active');
-    }
-
-    function focusScreenHeading(screenId) {
-        const screen = document.getElementById(screenId);
-        const heading = screen?.querySelector('[data-screen-heading]');
-        if (!screen || !heading) return;
-
-        window.requestAnimationFrame(() => {
-            if (screen.classList.contains('active')) heading.focus();
-        });
+        if (target) {
+            target.classList.add('active');
+            if (moveFocus) target.querySelector('[data-screen-heading]')?.focus({ preventScroll: true });
+        }
     }
 
     function updateProgress(stepIdx) {
         // stepIdx = -1 (before), 0-5 (steps), 6 (after), 7 (completion)
-        const total = 8; // Eight transitions from initial check-in to completion.
-        const pct   = Math.round(((stepIdx + 1) / total) * 100);
+        const pct = stepIdx < 0 ? 0 : Math.round(((stepIdx + 1) / 8) * 100);
         const bar   = document.getElementById('progress-bar');
         if (bar) {
             bar.dataset.progress = String(pct);
@@ -180,19 +174,19 @@
             cycle++;
             // Nádech (4s)
             circle.className = 'breath-guide inhale';
-            label.textContent  = 'Nadechni se…';
+            label.textContent  = 'Nadechněte se…';
             counter.textContent = cycle;
 
             setTimeout(() => {
                 // Zadržet (4s)
                 circle.className   = 'breath-guide hold';
-                label.textContent  = 'Na chvíli zadrž…';
+                label.textContent  = 'Zadržte…';
             }, 4000);
 
             setTimeout(() => {
                 // Výdech (6s)
                 circle.className   = 'breath-guide exhale';
-                label.textContent  = 'Pomalu vydechni…';
+                label.textContent  = 'Vydechněte pomalu…';
             }, 8000);
 
             setTimeout(() => {
@@ -220,14 +214,15 @@
         if (titleEl)   titleEl.textContent   = krok.title;
         if (subtextEl) subtextEl.textContent = krok.subtext;
 
+        titleEl?.focus({ preventScroll: true });
+
         // Mantra krok — speciální formátování
         if (idx === 4) {
             const parts = krok.text.split('\n\n');
             const intro = parts[0] || '';
             const mantraRaw = parts[1] || krok.text;
-            const cleanMantra = window.DOMPurify?.sanitize
-                ? window.DOMPurify.sanitize(mantraRaw, {ALLOWED_TAGS: []})
-                : String(mantraRaw).replace(/<[^>]*>/g, '');
+            // textContent below renders this as text, so an external sanitizer is unnecessary.
+            const cleanMantra = mantraRaw;
             if (textEl) {
                 textEl.innerHTML = '';
                 if (intro) {
@@ -261,7 +256,6 @@
             const btnNext = document.getElementById('btn-next');
             if (btnNext) btnNext.hidden = false;
         }
-        focusScreenHeading(SCREENS.STEP);
     }
 
     /* ── STREAK ──────────────────────────────────────────────────── */
@@ -286,10 +280,10 @@
 
     /* ── COMPLETION SCREEN ───────────────────────────────────────── */
     function showCompletion() {
-        showScreen(SCREENS.COMPLETION);
+        showScreen(SCREENS.COMPLETION, true);
         updateProgress(7);
         const counter = document.getElementById('step-counter');
-        if (counter) counter.textContent = 'Hotovo';
+        if (counter) counter.textContent = 'Hotovo ✦';
 
         // Subtitle
         const sub = document.getElementById('completion-subtitle');
@@ -309,7 +303,8 @@
         const lblEl   = document.getElementById('streak-label');
         if (numEl) numEl.textContent = streak;
         if (lblEl) {
-            lblEl.textContent = streak === 1 ? 'rituál dnes' : streak < 5 ? 'rituály v řadě' : 'rituálů v řadě';
+            const icon = streak >= 30 ? '🌟' : streak >= 7 ? '⭐' : '🔥';
+            lblEl.textContent = `${streak === 1 ? 'rituál dnes' : streak < 5 ? 'rituály v řadě' : 'rituálů v řadě'} ${icon}`;
         }
 
         // Journal prompts
@@ -322,7 +317,6 @@
 
         // Journal save (Premium gate)
         renderJournalAction();
-        focusScreenHeading(SCREENS.COMPLETION);
     }
 
     function renderJournalAction() {
@@ -390,7 +384,7 @@
             if (!isCurrentSession() || profile?.id !== ownerId) {
                 throw new Error('Journal account changed or expired');
             }
-            const content = `${ritual.nazev}\n${getTodayStr()}\nNálada: ${MOOD_LABELS[moodBefore]} → ${MOOD_LABELS[moodAfter]}\n\n${text}`;
+            const content = `${ritual.nazev}\n${getTodayStr()}\nNálada: ${JOURNAL_MOOD_LABELS[moodBefore]} → ${JOURNAL_MOOD_LABELS[moodAfter]}\n\n${text}`;
             const saved = await window.Auth.saveReading('journal', content, ownerId);
             if (!isCurrentSession()) throw new Error('Journal account changed');
             if (!saved?.id) throw new Error('Journal save not confirmed');
@@ -419,9 +413,7 @@
         ritual = window.RitualContent.getRitual(phase, sign);
         observedJournalOwnerId = getJournalSessionOwnerId();
         document.addEventListener('auth:changed', syncJournalSession);
-        window.addEventListener('storage', event => {
-            if (event.key === 'auth_user') syncJournalSession();
-        });
+        window.addEventListener('storage', event => { if (event.key === 'auth_user') syncJournalSession(); });
 
         // Header
         const headerName = document.getElementById('header-ritual-name');
@@ -435,7 +427,7 @@
             btn.addEventListener('click', () => {
                 moodBefore = parseInt(btn.dataset.mood, 10);
                 // Přejít na kroky
-                showScreen(SCREENS.STEP);
+                showScreen(SCREENS.STEP, true);
                 renderStep(0);
                 updateProgress(0);
             });
@@ -450,11 +442,10 @@
                     renderStep(currentStep);
                 } else {
                     // Všechny kroky hotovy → after check-in
-                    showScreen(SCREENS.AFTER);
+                    showScreen(SCREENS.AFTER, true);
                     updateProgress(6);
                     const counter = document.getElementById('step-counter');
                     if (counter) counter.textContent = 'Reflexe';
-                    focusScreenHeading(SCREENS.AFTER);
                 }
             });
         }
@@ -466,6 +457,8 @@
                 showCompletion();
             });
         });
+
+
 
         // Ukázat první screen
         showScreen(SCREENS.BEFORE);

@@ -28,7 +28,6 @@ import { sendOperationalAlert } from './services/alerts.js';
 import { REQUIRED_STRIPE_WEBHOOK_EVENTS } from './config/stripe-webhooks.js';
 import { createCheckoutResultRouter } from './routes/checkout-result.js';
 import { isPaidRelationshipSession } from './services/relationship-tarot.js';
-import { resolveAnnualHoroscopeYear } from './services/annual-horoscope-year.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -69,12 +68,18 @@ import {
     PLAN_TYPES,
     PREMIUM_PLAN_TYPES,
     SUBSCRIPTION_PLANS,
+    getPublicPlanManifest,
     getPlanTypeForPlanId,
     isPremiumPlanType,
     normalizePlanType
 } from './config/constants.js';
 
 const PLANS = SUBSCRIPTION_PLANS;
+const PUBLIC_CHECKOUT_PLAN_IDS = new Set(
+    getPublicPlanManifest().plans
+        .filter(plan => plan.checkoutEnabled)
+        .map(plan => plan.id)
+);
 const USE_LIVE_STRIPE_PRICE_IDS = stripeSecretKey.startsWith('sk_live_');
 const CHECKOUT_CONTEXT_METADATA_KEYS = new Set([
     'entry_source',
@@ -1177,13 +1182,16 @@ router.get('/subscription/status', authenticateToken, async (req, res) => {
                 pauseUntil: null,
                 canCancel: false,
                 canResume: false,
-                needsPaymentUpdate: false,
-                canManagePayments: Boolean(userData?.stripe_customer_id),
-                hasBillingSubscription: false
+                canReactivate: false,
+                canManageBilling: Boolean(userData?.stripe_customer_id),
+                hasStripeSubscription: false,
+                needsPaymentUpdate: false
             });
         }
 
-        const canCancel = !!subscription.stripe_subscription_id &&
+        const hasStripeSubscription = Boolean(subscription.stripe_subscription_id);
+        const canManageBilling = Boolean(userData?.stripe_customer_id);
+        const canCancel = hasStripeSubscription &&
             ['active', 'trialing', 'past_due', 'unpaid', 'incomplete'].includes(subscription.status);
 
         res.json({
@@ -1192,10 +1200,11 @@ router.get('/subscription/status', authenticateToken, async (req, res) => {
             currentPeriodEnd: subscription.current_period_end,
             pauseUntil: subscription.pause_until || null,
             canCancel,
-            canResume: subscription.status === 'paused' && Boolean(subscription.stripe_subscription_id),
-            needsPaymentUpdate: ['past_due', 'unpaid', 'incomplete'].includes(subscription.status),
-            canManagePayments: Boolean(userData?.stripe_customer_id),
-            hasBillingSubscription: Boolean(subscription.stripe_subscription_id)
+            canResume: subscription.status === 'paused' && hasStripeSubscription,
+            canReactivate: subscription.status === 'cancel_pending' && hasStripeSubscription,
+            canManageBilling,
+            hasStripeSubscription,
+            needsPaymentUpdate: ['past_due', 'unpaid', 'incomplete'].includes(subscription.status)
         });
     } catch (error) {
         console.error('Subscription Status Error:', error);
@@ -1282,8 +1291,6 @@ router.post('/create-checkout-session', authenticateToken, async (req, res) => {
             return res.status(400).json({ error: 'Cannot create session for free plan' });
         }
 
-        // Get or create Stripe customer to link subscriptions
-        const customerId = await getOrCreateStripeCustomer(user.id, user.email);
         const { data: existingSubscription, error: existingSubscriptionError } = await supabase
             .from('subscriptions')
             .select('plan_type, status, stripe_subscription_id, current_period_end')
@@ -1298,6 +1305,9 @@ router.post('/create-checkout-session', authenticateToken, async (req, res) => {
             BLOCKED_CHECKOUT_SUBSCRIPTION_STATUSES.has(existingSubscription?.status);
 
         if (hasBlockingSubscription) {
+            // Existing members must still be able to reach billing recovery,
+            // including when an older client sends a retired plan ID.
+            const customerId = await getOrCreateStripeCustomer(user.id, user.email);
             const needsPaymentRecovery = ['past_due', 'unpaid', 'incomplete'].includes(existingSubscription?.status);
             const isPausedSubscription = existingSubscription?.status === 'paused';
             let portalUrl = null;
@@ -1343,6 +1353,23 @@ router.post('/create-checkout-session', authenticateToken, async (req, res) => {
                 portalUrl
             });
         }
+
+        if (!PUBLIC_CHECKOUT_PLAN_IDS.has(planId)) {
+            await recordFunnelEvent('checkout_validation_failed', {
+                userId: user.id,
+                source,
+                feature,
+                planId,
+                planType: plan.type,
+                metadata: { ...checkoutContextMetadata, reason: 'plan_not_publicly_available' }
+            });
+            return res.status(400).json({
+                error: 'Tento plán už není dostupný. Vyber si aktuální členství.'
+            });
+        }
+
+        // Create Stripe customer only after a new checkout plan is approved.
+        const customerId = await getOrCreateStripeCustomer(user.id, user.email);
 
         const stripePriceId = getConfiguredStripePriceId(planId);
 
@@ -2017,12 +2044,7 @@ async function handleRocniHoroskopPurchase(session, stripeEventId = null) {
     const orderInput = await getOneTimeOrderInput(session.metadata?.orderId);
     const payload = orderInput?.payload || {};
     const productId = session.metadata?.productId || orderInput?.product_id || 'rocni_horoskop_2026';
-    const productYear = resolveAnnualHoroscopeYear({
-        productId,
-        productYear: session.metadata?.productYear,
-        payloadYear: payload.productYear,
-        createdAt: orderInput?.created_at
-    });
+    const productYear = session.metadata?.productYear || new Date().getFullYear();
     const source = session.metadata?.source || 'annual_horoscope_checkout';
     const customerName = orderInput?.customer_name || session.metadata?.customerName;
     const birthDate = payload.birthDate || session.metadata?.birthDate;
@@ -2046,7 +2068,8 @@ async function handleRocniHoroskopPurchase(session, stripeEventId = null) {
     }
 
     if (!customerName || !birthDate || !sign || !customerEmail) {
-        throw new Error('[HOROSKOP] Paid annual horoscope checkout is missing required fulfillment data.');
+        console.error('[HOROSKOP] Missing metadata in checkout session:', session.id);
+        return;
     }
 
     console.log(`[HOROSKOP] Generating PDF for paid session ${session.id} (${sign})`);
@@ -2074,14 +2097,7 @@ async function handleRocniHoroskopPurchase(session, stripeEventId = null) {
     setImmediate(async () => {
         try {
             const { fulfillRocniHoroskopOrder } = await import('./services/one-time-fulfillment.js');
-            await fulfillRocniHoroskopOrder({
-                customerName,
-                customerEmail,
-                payload: { birthDate, sign, productYear },
-                productId,
-                productYear,
-                createdAt: orderInput?.created_at
-            });
+            await fulfillRocniHoroskopOrder({ customerName, customerEmail, payload: { birthDate, sign } });
             await markOneTimeOrderInputFulfilled(orderInput?.id);
             await recordFunnelEvent('one_time_pdf_delivered', {
                 source,
@@ -2125,11 +2141,19 @@ async function handlePersonalMapPurchase(session, stripeEventId = null) {
     const orderInput = await getOneTimeOrderInput(session.metadata?.orderId);
     const payload = orderInput?.payload || {};
     const productId = session.metadata?.productId || orderInput?.product_id || 'osobni_mapa_2026';
+    const productYear = session.metadata?.productYear;
     const customerName = orderInput?.customer_name || session.metadata?.customerName;
     const birthDate = payload.birthDate || session.metadata?.birthDate;
+    const birthTime = payload.birthTime || session.metadata?.birthTime || '';
+    const birthPlace = payload.birthPlace || session.metadata?.birthPlace || '';
     const sign = payload.sign || session.metadata?.sign;
+    const grammaticalGender = payload.grammaticalGender || session.metadata?.grammaticalGender || 'neutral';
+    const focusArea = payload.focusArea || session.metadata?.focusArea || 'other';
     const focus = payload.focus || session.metadata?.focus || '';
+    const productPeriodStart = payload.productPeriodStart || session.metadata?.productPeriodStart || '';
+    const productPeriodEnd = payload.productPeriodEnd || session.metadata?.productPeriodEnd || '';
     const customerEmail = orderInput?.customer_email || session.metadata?.email || session.customer_email || session.customer_details?.email;
+    const year = Number(productYear) || new Date().getFullYear();
     const source = session.metadata?.source || 'personal_map_checkout';
 
     if (orderInput?.status === 'fulfilled') {
@@ -2175,10 +2199,23 @@ async function handlePersonalMapPurchase(session, stripeEventId = null) {
     setImmediate(async () => {
         try {
             const { fulfillPersonalMapOrder } = await import('./services/one-time-fulfillment.js');
-            await fulfillPersonalMapOrder({ orderId: orderInput.id });
-            if (!await markOneTimeOrderInputFulfilled(orderInput.id)) {
-                throw new Error('Personal map accepted by provider but fulfillment state could not be saved');
-            }
+            await fulfillPersonalMapOrder({
+                customerName,
+                customerEmail,
+                payload: {
+                    birthDate,
+                    birthTime,
+                    birthPlace,
+                    sign,
+                    grammaticalGender,
+                    focusArea,
+                    focus,
+                    productYear: year,
+                    productPeriodStart,
+                    productPeriodEnd
+                }
+            });
+            await markOneTimeOrderInputFulfilled(orderInput?.id);
             await recordFunnelEvent('one_time_pdf_delivered', {
                 source,
                 feature: productId,

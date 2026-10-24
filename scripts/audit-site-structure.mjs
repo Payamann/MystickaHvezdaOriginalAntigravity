@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { isOlderRuntimeVersion, RELEASE_RUNTIME_VERSIONS } from './lib/release-runtime-versions.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -50,13 +51,8 @@ const publicSourceExtensions = new Set([
     '.yaml',
     '.yml'
 ]);
-// Keep these release-critical versions aligned with refresh-auth-asset-versions.mjs.
 const criticalAssetVersions = new Map([
-    ['js/dist/core.js', '20261021-footer-support-locale'],
-    ['js/dist/components.js', '20261021-footer-support-locale'],
-    ['js/dist/auth-client.js', '20261020-02-register-password-policy'],
-    ['js/dist/templates.js', '20261021-celtic-footer-star-svg'],
-    ['js/dist/horoscope.js', '20261020-journal-context-consent']
+    ['js/dist/auth-client.js', RELEASE_RUNTIME_VERSIONS.get('auth-client')]
 ]);
 const nonCanonicalOrigin = siteOrigin.replace('https://www.', 'https://');
 const allowedNonCanonicalOriginLines = new Map([
@@ -406,11 +402,11 @@ function auditCriticalAssetVersions(file, html) {
         if (!expectedVersion) continue;
 
         const actualVersion = parsed.searchParams.get('v');
-        if (actualVersion !== expectedVersion) {
+        if (isOlderRuntimeVersion(actualVersion, expectedVersion)) {
             report(
                 'stale_critical_asset_version',
                 relative(file),
-                `${assetPath} must use ?v=${expectedVersion}, got ${actualVersion || '<missing>'}`
+                `${assetPath} must use ?v=${expectedVersion} or newer, got ${actualVersion || '<missing>'}`
             );
         }
     }

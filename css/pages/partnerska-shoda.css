@@ -335,7 +335,13 @@ html body .mh-inline-de7ffff2a8 { opacity: 0.8; }
 }
 
 .synastry-next-grid--focused {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 1fr);
+    max-width: 48rem;
+    margin-inline: auto;
+}
+
+.synastry-next-grid--focused .synastry-next-card--primary {
+    grid-column: 1;
 }
 
 .synastry-next-card,
@@ -419,6 +425,99 @@ html body .mh-inline-de7ffff2a8 { opacity: 0.8; }
 .compat-index-section {
     padding-top: var(--space-xl);
     scroll-margin-top: 96px;
+}
+
+.synastry-directory-disclosure,
+.synastry-next-options {
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.035);
+}
+
+.synastry-directory-disclosure > summary,
+.synastry-next-options > summary,
+.synastry-faq-item > summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 48px;
+    padding: 0.8rem 1rem;
+    color: var(--color-mystic-gold);
+    font-weight: 700;
+    line-height: 1.4;
+    cursor: pointer;
+    list-style: none;
+}
+
+.synastry-directory-disclosure > summary::-webkit-details-marker,
+.synastry-next-options > summary::-webkit-details-marker,
+.synastry-faq-item > summary::-webkit-details-marker {
+    display: none;
+}
+
+.synastry-directory-disclosure > summary::after,
+.synastry-next-options > summary::after,
+.synastry-faq-item > summary::after {
+    content: "+";
+    flex: 0 0 auto;
+    color: var(--color-mystic-gold);
+    font-size: 1.2rem;
+}
+
+.synastry-directory-disclosure[open] > summary::after,
+.synastry-next-options[open] > summary::after,
+.synastry-faq-item[open] > summary::after {
+    content: "−";
+}
+
+.synastry-directory-disclosure > summary:focus-visible,
+.synastry-next-options > summary:focus-visible,
+.synastry-faq-item > summary:focus-visible {
+    outline: 2px solid var(--color-mystic-gold);
+    outline-offset: 3px;
+    border-radius: var(--radius-md);
+}
+
+.synastry-directory-disclosure > .section__subtitle {
+    margin: 0;
+    padding: 0 1rem 1rem;
+}
+
+.synastry-directory-disclosure > .synastry-intent-grid,
+.synastry-directory-disclosure > .compat-index-grid {
+    padding: 0 1rem 1rem;
+}
+
+.synastry-next-options {
+    align-self: start;
+    padding: 0.15rem 0.8rem 0.8rem;
+}
+
+.synastry-next-options > summary {
+    padding-inline: 0.2rem;
+}
+
+.synastry-next-grid--secondary {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin-top: var(--space-sm);
+}
+
+.synastry-faq-item {
+    display: block;
+    min-height: 0;
+    padding: 0;
+}
+
+.synastry-faq-item > summary {
+    color: var(--color-starlight);
+    font-family: var(--font-heading);
+    font-size: 1.02rem;
+}
+
+.synastry-faq-item > p {
+    margin: 0;
+    padding: 0 1rem 1rem;
 }
 
 .compat-index-grid {

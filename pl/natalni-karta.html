@@ -17,8 +17,7 @@
 
     <link rel="icon" type="image/svg+xml" href="/img/icons/mh-favicon.svg">
     <link rel="manifest" href="../manifest.json">
-    <link rel="stylesheet" href="/fonts/local-fonts.css">
-    <link rel="stylesheet" href="../css/style.v2.min.css?v=20261018-release-candidate">
+    <link rel="stylesheet" href="../css/style.v2.min.css?v=20261023-release-todo">
     <link rel="stylesheet" href="../css/pages/pl-natalni-karta.css">
     
     <link rel="canonical" href="https://www.mystickahvezda.cz/pl/natalni-karta.html">
@@ -26,7 +25,7 @@
     <link rel="alternate" hreflang="sk" href="https://www.mystickahvezda.cz/sk/natalni-karta.html">
     <link rel="alternate" hreflang="pl" href="https://www.mystickahvezda.cz/pl/natalni-karta.html">
     <script src="/js/dist/analytics-init.js" defer></script>
-    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Co muszę podać?", "acceptedAnswer": {"@type": "Answer", "text": "Datę urodzenia, możliwie dokładną godzinę i miejsce. Im dokładniejsza godzina, tym precyzyjniejszy ascendent i podział domów."}}, {"@type": "Question", "name": "Nie znam dokładnej godziny urodzenia. Czy to ma sens?", "acceptedAnswer": {"@type": "Answer", "text": "Tak. Bez godziny nadal zobaczysz orientacyjne położenia planet w znakach. Ascendent i domy nie będą dostępne."}}, {"@type": "Question", "name": "Czy obliczenie kosmogramu jest darmowe?", "acceptedAnswer": {"@type": "Answer", "text": "Podstawowe obliczenie i podgląd są darmowe. Szczegółowa osobista analiza z interpretacją jest częścią członkostwa premium."}}, {"@type": "Question", "name": "Jak często wracać do kosmogramu?", "acceptedAnswer": {"@type": "Answer", "text": "Kosmogram się nie zmienia — zmienia się twoja sytuacja życiowa. Warto wrócić przy dużych decyzjach albo raz w roku przy urodzinach."}}]}</script>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Co muszę podać?", "acceptedAnswer": {"@type": "Answer", "text": "Datę urodzenia, możliwie dokładną godzinę i miejsce. Im dokładniejsza godzina, tym precyzyjniejszy ascendent i podział domów."}}, {"@type": "Question", "name": "Nie znam dokładnej godziny urodzenia. Czy to ma sens?", "acceptedAnswer": {"@type": "Answer", "text": "Tak. Położenie planet w znakach obowiązuje też bez godziny. Tracisz tylko ascendent i domy — wykład będzie nieco ogólniejszy."}}, {"@type": "Question", "name": "Czy obliczenie kosmogramu jest darmowe?", "acceptedAnswer": {"@type": "Answer", "text": "Podstawowe obliczenie i podgląd są darmowe. Szczegółowa osobista analiza z interpretacją jest częścią członkostwa premium."}}, {"@type": "Question", "name": "Jak często wracać do kosmogramu?", "acceptedAnswer": {"@type": "Answer", "text": "Kosmogram się nie zmienia — zmienia się twoja sytuacja życiowa. Warto wrócić przy dużych decyzjach albo raz w roku przy urodzinach."}}]}</script>
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
@@ -34,21 +33,20 @@
 <meta property="og:image:alt" content="Kosmogram | Mistyczna Gwiazda">
 <meta name="twitter:image:alt" content="Kosmogram | Mistyczna Gwiazda">
 
-    <link rel="stylesheet" href="/css/atlas-web.css?v=20261020-03-horoscope-day-switcher-atlas">
-    <link rel="stylesheet" href="/css/atlas-remaining.css?v=20261020-01-remaining-surface-polish">
+    <link rel="stylesheet" href="/css/atlas-web.css?v=20261023-release-todo">
+    <link rel="stylesheet" href="/css/atlas-remaining.css?v=20261023-release-todo">
 </head>
 
 <body class="atlas-page atlas-remaining-page atlas-language-page">
-    <a href="#main-content" class="skip-link">Przejdź do treści</a>
     <div id="header-placeholder"></div>
 
-    <main id="main-content" tabindex="-1">
+    <main id="main-content">
         <section class="section section--hero mh-inline-cda7496188">
             <div class="container text-center">
                 <h1 class="hero__title mb-xl">
-                    <span class="text-gradient">Podstawowy kosmogram urodzeniowy</span>
+                    <span class="text-gradient">Odkryj Swój Kod Kosmiczny</span>
                 </h1>
-                <p class="hero__subtitle">Sprawdź podstawowe położenia planet w znakach na podstawie daty i miejsca urodzenia.</p>
+                <p class="hero__subtitle">Twój kosmogram to mapa nieba w momencie Twoich narodzin. Odkryj swój ukryty potencjał.</p>
             </div>
         </section>
 
@@ -56,30 +54,27 @@
             <div class="container">
                 <div class="grid grid-2 mh-inline-95a7c43a87">
                     <div class="card">
-                        <h2 class="section__title mb-lg">Dane urodzenia</h2>
-                        <form id="natal-form" class="email-form" novalidate>
+                        <h2 class="section__title mb-lg">Dane Urodzenia</h2>
+                        <form id="natal-form" class="email-form">
                             <div class="form-group">
                                 <label for="birth-date">Data urodzenia</label>
-                                <input type="date" id="birth-date" name="birthDate" class="email-form__input" required>
+                                <input type="date" id="birth-date" class="email-form__input" required>
                             </div>
                             <div class="form-group">
                                 <label for="birth-time">Godzina urodzenia (jeśli znasz)</label>
-                                <input type="time" id="birth-time" name="birthTime" class="email-form__input">
+                                <input type="time" id="birth-time" class="email-form__input">
                             </div>
                             <div class="form-group">
                                 <label for="birth-place">Miejsce urodzenia</label>
-                                <input type="text" id="birth-place" name="birthPlace" class="email-form__input" placeholder="Wpisz miasto..." required>
+                                <input type="text" id="birth-place" class="email-form__input" placeholder="Wpisz miasto..." required>
                             </div>
-                            <button id="calculate-natal" type="submit" class="btn btn--primary btn--full mt-lg">Oblicz Kosmogram</button>
-                            <p id="locale-natal-status" role="status" aria-live="polite" aria-atomic="true"></p>
+                            <button id="calculate-natal" type="submit" class="btn btn--primary btn--full mt-lg">Oblicz kosmogram</button>
                         </form>
                     </div>
-                    <div id="natal-result" class="text-center" tabindex="-1" aria-labelledby="locale-natal-heading">
-                        <h2 id="locale-natal-heading" class="sr-only">Wynik obliczenia</h2>
-                        <div id="locale-natal-output"></div>
+                    <div id="natal-result" class="text-center" role="status" aria-live="polite" aria-atomic="true">
                         <div class="natal-chart-container">
-                            <img src="/img/atlas/tools-v1/01-astrolab.webp" srcset="/img/atlas/tools-v1/01-astrolab-240.webp 240w, /img/atlas/tools-v1/01-astrolab-360.webp 360w, /img/atlas/tools-v1/01-astrolab-480.webp 480w, /img/atlas/tools-v1/01-astrolab-800.webp 800w, /img/atlas/tools-v1/01-astrolab.webp 1200w" sizes="280px" alt="Kosmogram" class="mh-inline-ba6f49e964" width="200" height="200">
-                            <p class="mh-inline-72fcb7372d">Podstawowe obliczenie położeń planet i znaków wyświetli się tutaj.</p>
+                            <img src="/img/atlas/tools-v1/01-astrolab.webp" alt="Kosmogram" class="mh-inline-ba6f49e964" width="200" height="200">
+                            <p class="mh-inline-72fcb7372d">Podaj dane, aby wyświetlić kosmogram</p>
                         </div>
                     </div>
                 </div>
@@ -90,9 +85,9 @@
             <div class="container">
                 <div class="card">
                     <h2>Co pokaże ci kosmogram</h2>
-                    <p>Kosmogram (karta natalna) to mapa nieba w dokładnym momencie twoich narodzin. Pokazuje obliczone położenia Słońca, Księżyca i planet w znakach.</p>
-                    <p>Do obliczenia potrzebujesz daty i miejsca urodzenia. Godzinę możesz podać, jeśli ją znasz; bez niej zobaczysz orientacyjne położenia planet w znakach, ale ascendent i domy nie będą dostępne.</p>
-                    <p>Tutaj otrzymasz podstawowe zestawienie obliczonych położeń planet. Pełna wizualizacja i interpretacja są dostępne na czeskiej stronie kosmogramu.</p>
+                    <p>Kosmogram (karta natalna) to mapa nieba w dokładnym momencie twoich narodzin. Pokazuje położenie Słońca, Księżyca i planet w znakach i domach — a z tego twoje mocne strony, powtarzające się schematy i tematy, które wracają w twoim życiu.</p>
+                    <p>Do obliczenia potrzebujesz daty, godziny i miejsca urodzenia. Godzina jest ważna ze względu na ascendent i domy; jeśli nie znasz jej dokładnie, wykład będzie ogólniejszy, ale nadal wartościowy.</p>
+                    <p>Wynikiem nie jest tabela pojęć, lecz zrozumiała analiza: jak działasz na zewnątrz, czego potrzebujesz w relacjach, gdzie leży twoja naturalna siła.</p>
                 </div>
 
                 <div>
@@ -104,7 +99,7 @@
                     </article>
                     <article class="card">
                         <h3>Nie znam dokładnej godziny urodzenia. Czy to ma sens?</h3>
-                        <p>Tak. Bez godziny nadal zobaczysz orientacyjne położenia planet w znakach. Ascendent i domy nie będą dostępne.</p>
+                        <p>Tak. Położenie planet w znakach obowiązuje też bez godziny. Tracisz tylko ascendent i domy — wykład będzie nieco ogólniejszy.</p>
                     </article>
                     <article class="card">
                         <h3>Czy obliczenie kosmogramu jest darmowe?</h3>
@@ -118,15 +113,12 @@
 
                 <div class="card">
                     <h3>Zobacz też</h3>
-                    <details>
-                        <summary>Inne narzędzia</summary>
-                        <div class="related-links">
-                            <a href="horoskopy.html" class="related-chip"> Horoskop dzienny</a>
-                            <a href="tarot.html" class="related-chip">Tarot online</a>
-                            <a href="kristalova-koule.html" class="related-chip">Kryształowa kula</a>
-                            <a href="andelske-karty.html" class="related-chip">Karta anielska dnia</a>
+                    <div class="related-links">
+                        <a href="horoskopy.html" class="related-chip"><svg class="mh-symbol mh-symbol--inline" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#star"></use></svg> Horoskop dzienny</a>
+                        <a href="tarot.html" class="related-chip"><svg class="mh-symbol mh-symbol--inline" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#star"></use></svg> Tarot online</a>
+                        <a href="kristalova-koule.html" class="related-chip"><svg class="mh-symbol mh-symbol--inline" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#crystal"></use></svg> Kryształowa kula</a>
+                        <a href="andelske-karty.html" class="related-chip"><svg class="mh-symbol mh-symbol--inline" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#angel"></use></svg> Karta anielska dnia</a>
                     </div>
-                    </details>
                 </div>
             </div>
         </section>
@@ -135,10 +127,9 @@
 
     <div id="footer-placeholder"></div>
     <script src="../js/dist/api-config.js" defer></script>
-    <script src="../js/dist/templates.js?v=20261021-celtic-footer-star-svg" defer></script>
-    <script src="../js/dist/auth-client.js?v=20261020-02-register-password-policy" defer></script>
-    <script src="../js/dist/components.js?v=20261021-footer-support-locale" defer></script>
-    <script type="module" src="../js/dist/locale-natal.js?v=20261020-prague-max-refresh"></script>
-    <script type="module" src="../js/dist/main.js?v=20261018-status-icons"></script>
+    <script src="../js/dist/templates.js" defer></script>
+    <script src="../js/dist/components.js" defer></script>
+    <script type="module" src="../js/dist/main.js"></script>
+    <script src="../js/dist/localized-natal-chart.js?v=20261022-natal-result" defer></script>
 </body>
 </html>

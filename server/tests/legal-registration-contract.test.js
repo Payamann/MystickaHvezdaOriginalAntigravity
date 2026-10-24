@@ -17,11 +17,14 @@ describe('Registration legal contract', () => {
         const privacyVersion = getDocumentVersion(read('soukromi.html'));
         const termsVersion = getDocumentVersion(read('podminky.html'));
         const serverAuth = read('server/auth.js');
+        const clientAuth = read('js/prihlaseni.js');
 
         expect(privacyVersion).toBeTruthy();
         expect(termsVersion).toBeTruthy();
         expect(privacyVersion).toBe(CURRENT_PRIVACY_VERSION);
         expect(termsVersion).toBe(CURRENT_TERMS_VERSION);
+        expect(clientAuth.match(/const TERMS_VERSION = '([^']+)'/)?.[1]).toBe(termsVersion);
+        expect(clientAuth.match(/const PRIVACY_VERSION = '([^']+)'/)?.[1]).toBe(privacyVersion);
         expect(serverAuth).toContain('CURRENT_TERMS_VERSION');
         expect(serverAuth).toContain('CURRENT_PRIVACY_VERSION');
         expect(serverAuth).toContain("from('user_consents')");

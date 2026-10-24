@@ -13,7 +13,7 @@
 import request from 'supertest';
 import app from '../index.js';
 import jwt from 'jsonwebtoken';
-import { SUBSCRIPTION_PLANS } from '../config/constants.js';
+import { getPublicPlanManifest } from '../config/constants.js';
 import { buildCheckoutRecoveryConfig, buildPricingCancelUrl, buildProfileSuccessUrl } from '../payment.js';
 import { supabase } from '../db-supabase.js';
 
@@ -152,6 +152,11 @@ describe('💳 Payment Checkout Session', () => {
             expect(res.status).toBe(200);
             expect(res.body.planType).toBe('vip_majestrat');
             expect(res.body.status).toBe('active');
+            expect(res.body).toMatchObject({
+                canManageBilling: false,
+                hasStripeSubscription: false,
+                canReactivate: false
+            });
         });
 
         test('chybějící planId vrátí 400', async () => {
@@ -215,12 +220,12 @@ describe('💳 Payment Checkout Session', () => {
         });
     });
 
-    // ── Platné plany — přijaté jako validní (i když Supabase selže) ──────────
+    // ── Veřejné placené plány — přijaté jako validní (i když Supabase selže) ─
 
-    describe('Platné planId hodnoty', () => {
-        const validPlans = Object.entries(SUBSCRIPTION_PLANS)
-            .filter(([, plan]) => plan.price > 0)
-            .map(([planId]) => planId);
+    describe('Veřejné placené planId hodnoty', () => {
+        const validPlans = getPublicPlanManifest().plans
+            .filter(plan => plan.checkoutEnabled)
+            .map(plan => plan.id);
 
         validPlans.forEach(planId => {
             test(`planId "${planId}" projde validací (ne 400)`, async () => {
@@ -243,6 +248,22 @@ describe('💳 Payment Checkout Session', () => {
                 expect(res.status).not.toBe(403);
             });
         });
+
+        test.each(['pruvodce-rocne', 'osviceni', 'osviceni-rocne', 'vip-majestrat'])(
+            'historický plán "%s" nelze nově koupit',
+            async planId => {
+                const csrf = await getCsrfToken();
+                const token = makeTestToken(`legacy-plan-${planId}`);
+                const res = await request(app)
+                    .post('/api/payment/create-checkout-session')
+                    .set('Authorization', `Bearer ${token}`)
+                    .set('x-csrf-token', csrf)
+                    .send({ planId });
+
+                expect(res.status).toBe(400);
+                expect(res.body.error).toMatch(/plán už není dostupný/i);
+            }
+        );
 
         test('checkout-cancel save offer (offer=cancel_save) projde validací', async () => {
             const csrf = await getCsrfToken();

@@ -17,7 +17,7 @@
 
     <link rel="icon" type="image/svg+xml" href="/img/icons/mh-favicon.svg">
     <link rel="manifest" href="../manifest.json">
-    <link rel="stylesheet" href="../css/style.v2.min.css?v=20261018-release-candidate">
+    <link rel="stylesheet" href="../css/style.v2.min.css?v=20261023-release-todo">
     <link rel="stylesheet" href="../css/pages/sk-natalni-karta.css">
     
     <link rel="canonical" href="https://www.mystickahvezda.cz/sk/natalni-karta.html">
@@ -25,7 +25,7 @@
     <link rel="alternate" hreflang="sk" href="https://www.mystickahvezda.cz/sk/natalni-karta.html">
     <link rel="alternate" hreflang="pl" href="https://www.mystickahvezda.cz/pl/natalni-karta.html">
     <script src="/js/dist/analytics-init.js" defer></script>
-    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Čo všetko potrebujem zadať?", "acceptedAnswer": {"@type": "Answer", "text": "Dátum narodenia, čo najpresnejší čas a miesto. Čím presnejší čas, tým presnejší ascendent a rozdelenie domov."}}, {"@type": "Question", "name": "Neviem presný čas narodenia. Má to zmysel?", "acceptedAnswer": {"@type": "Answer", "text": "Áno. Aj bez času sa zobrazia orientačné polohy planét v znameniach. Ascendent ani domy nebudú dostupné."}}, {"@type": "Question", "name": "Je výpočet natálnej karty zadarmo?", "acceptedAnswer": {"@type": "Answer", "text": "Základný výpočet a náhľad sú zadarmo. Podrobný osobný rozbor s interpretáciou je súčasťou prémiového členstva."}}, {"@type": "Question", "name": "Ako často sa mám k natálnej karte vracať?", "acceptedAnswer": {"@type": "Answer", "text": "Karta sa nemení — mení sa tvoja životná situácia. Oplatí sa vrátiť pri veľkých rozhodnutiach alebo raz za rok pri narodeninách."}}]}</script>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Čo všetko potrebujem zadať?", "acceptedAnswer": {"@type": "Answer", "text": "Dátum narodenia, čo najpresnejší čas a miesto. Čím presnejší čas, tým presnejší ascendent a rozdelenie domov."}}, {"@type": "Question", "name": "Neviem presný čas narodenia. Má to zmysel?", "acceptedAnswer": {"@type": "Answer", "text": "Áno. Postavenie planét v znameniach platí aj bez času. Prídeš len o ascendent a domy — výklad bude o niečo všeobecnejší."}}, {"@type": "Question", "name": "Je výpočet natálnej karty zadarmo?", "acceptedAnswer": {"@type": "Answer", "text": "Základný výpočet a náhľad sú zadarmo. Podrobný osobný rozbor s interpretáciou je súčasťou prémiového členstva."}}, {"@type": "Question", "name": "Ako často sa mám k natálnej karte vracať?", "acceptedAnswer": {"@type": "Answer", "text": "Karta sa nemení — mení sa tvoja životná situácia. Oplatí sa vrátiť pri veľkých rozhodnutiach alebo raz za rok pri narodeninách."}}]}</script>
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
@@ -33,21 +33,20 @@
 <meta property="og:image:alt" content="Natálna Karta | Mystická Hviezda">
 <meta name="twitter:image:alt" content="Natálna Karta | Mystická Hviezda">
 
-    <link rel="stylesheet" href="/css/atlas-web.css?v=20261020-03-horoscope-day-switcher-atlas">
-    <link rel="stylesheet" href="/css/atlas-remaining.css?v=20261020-01-remaining-surface-polish">
+    <link rel="stylesheet" href="/css/atlas-web.css?v=20261023-release-todo">
+    <link rel="stylesheet" href="/css/atlas-remaining.css?v=20261023-release-todo">
 </head>
 
 <body class="atlas-page atlas-remaining-page atlas-language-page">
-    <a href="#main-content" class="skip-link">Preskočiť na obsah</a>
     <div id="header-placeholder"></div>
 
-    <main id="main-content" tabindex="-1">
+    <main id="main-content">
         <section class="section section--hero mh-inline-e3e4c16824">
             <div class="container text-center">
                 <h1 class="hero__title mb-xl">
-                    <span class="text-gradient">Objav svoj vesmírny kód</span>
+                    <span class="text-gradient">Objavte Svoj Vesmírny Kód</span>
                 </h1>
-                <p class="hero__subtitle">Natálna karta zobrazuje vypočítané polohy planét v čase narodenia. Výsledok je astrologický výpočet na zamyslenie.</p>
+                <p class="hero__subtitle">Vaša natálna karta je mapa oblohy v okamihu vášho narodenia. Objavte svoj skrytý potenciál.</p>
             </div>
         </section>
 
@@ -55,30 +54,27 @@
             <div class="container">
                 <div class="grid grid-2 mh-inline-2df0356992">
                     <div class="card">
-                        <h2 class="section__title mb-lg">Údaje narodenia</h2>
-                        <form id="natal-form" class="email-form" novalidate>
+                        <h2 class="section__title mb-lg">Údaje Narodenia</h2>
+                        <form id="natal-form" class="email-form">
                             <div class="form-group">
                                 <label for="birth-date">Dátum narodenia</label>
-                                <input type="date" id="birth-date" name="birthDate" class="email-form__input" required>
+                                <input type="date" id="birth-date" class="email-form__input" required>
                             </div>
                             <div class="form-group">
-                                <label for="birth-time">Čas narodenia (ak poznáš)</label>
-                                <input type="time" id="birth-time" name="birthTime" class="email-form__input">
+                                <label for="birth-time">Čas narodenia (ak poznáte)</label>
+                                <input type="time" id="birth-time" class="email-form__input">
                             </div>
                             <div class="form-group">
                                 <label for="birth-place">Miesto narodenia</label>
-                                <input type="text" id="birth-place" name="birthPlace" class="email-form__input" placeholder="Zadaj mesto..." required>
+                                <input type="text" id="birth-place" class="email-form__input" placeholder="Zadajte mesto..." required>
                             </div>
                             <button id="calculate-natal" type="submit" class="btn btn--primary btn--full mt-lg">Vypočítať natálnu kartu</button>
-                            <p id="locale-natal-status" role="status" aria-live="polite" aria-atomic="true"></p>
                         </form>
                     </div>
-                    <div id="natal-result" class="text-center" tabindex="-1" aria-labelledby="locale-natal-heading">
-                        <h2 id="locale-natal-heading" class="sr-only">Výsledok výpočtu</h2>
-                        <div id="locale-natal-output"></div>
+                    <div id="natal-result" class="text-center" role="status" aria-live="polite" aria-atomic="true">
                         <div class="natal-chart-container">
-                            <img src="/img/atlas/tools-v1/01-astrolab.webp" srcset="/img/atlas/tools-v1/01-astrolab-240.webp 240w, /img/atlas/tools-v1/01-astrolab-360.webp 360w, /img/atlas/tools-v1/01-astrolab-480.webp 480w, /img/atlas/tools-v1/01-astrolab-800.webp 800w, /img/atlas/tools-v1/01-astrolab.webp 1200w" sizes="280px" alt="Natálna karta" class="mh-inline-d818421134" width="200" height="200">
-                            <p class="mh-inline-d966b0addf">Základný výpočet polôh planét a znamení sa zobrazí tu.</p>
+                            <img src="/img/atlas/tools-v1/01-astrolab.webp" alt="Natálna karta" class="mh-inline-d818421134" width="200" height="200">
+                            <p class="mh-inline-d966b0addf">Zadajte údaje pre vygenerovanie mapy</p>
                         </div>
                     </div>
                 </div>
@@ -88,10 +84,10 @@
         <section class="section">
             <div class="container">
                 <div class="card">
-                    <h2>Čo ukazuje natálna karta</h2>
-                    <p>Natálna karta je mapa oblohy v presnom okamihu tvojho narodenia. Ukazuje vypočítané polohy Slnka, Mesiaca a planét v znameniach.</p>
-                    <p>Na výpočet potrebuješ dátum a miesto narodenia. Čas môžeš zadať, ak ho poznáš; bez neho sa zobrazia orientačné polohy planét v znameniach, no ascendent ani domy nebudú dostupné.</p>
-                    <p>Tu dostaneš základný prehľad vypočítaných polôh planét. Úplná vizualizácia a osobný rozbor sú dostupné na českej stránke natálnej karty.</p>
+                    <h2>Čo ti prezradí natálna karta</h2>
+                    <p>Natálna karta je mapa oblohy v presnom okamihu tvojho narodenia. Ukazuje postavenie Slnka, Mesiaca a planét v znameniach a domoch — a z toho tvoje silné stránky, opakujúce sa vzorce aj témy, ktoré sa ti v živote vracajú.</p>
+                    <p>Na výpočet potrebuješ dátum, čas a miesto narodenia. Čas je dôležitý kvôli ascendentu a domom; ak ho nepoznáš presne, výklad bude všeobecnejší, ale stále užitočný.</p>
+                    <p>Výsledkom nie je tabuľka pojmov, ale zrozumiteľný rozbor: ako pôsobíš navonok, čo potrebuješ v vzťahoch, kde je tvoja prirodzená sila a na čo si dávať pozor.</p>
                 </div>
 
                 <div>
@@ -103,7 +99,7 @@
                     </article>
                     <article class="card">
                         <h3>Neviem presný čas narodenia. Má to zmysel?</h3>
-                        <p>Áno. Aj bez času sa zobrazia orientačné polohy planét v znameniach. Ascendent ani domy nebudú dostupné.</p>
+                        <p>Áno. Postavenie planét v znameniach platí aj bez času. Prídeš len o ascendent a domy — výklad bude o niečo všeobecnejší.</p>
                     </article>
                     <article class="card">
                         <h3>Je výpočet natálnej karty zadarmo?</h3>
@@ -117,15 +113,12 @@
 
                 <div class="card">
                     <h3>Pokračuj na Mystickej Hviezde</h3>
-                    <details>
-                        <summary>Ďalšie nástroje</summary>
-                        <div class="related-links">
-                            <a href="horoskopy.html" class="related-chip"> Denný horoskop</a>
-                            <a href="tarot.html" class="related-chip">Tarotové výklady</a>
-                            <a href="kristalova-koule.html" class="related-chip">Krištáľová guľa</a>
-                            <a href="tarot-ano-nie.html" class="related-chip">Tarot ÁNO / NIE</a>
+                    <div class="related-links">
+                        <a href="horoskopy.html" class="related-chip"><svg class="mh-symbol mh-symbol--inline" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#star"></use></svg> Denný horoskop</a>
+                        <a href="tarot.html" class="related-chip"><svg class="mh-symbol mh-symbol--inline" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#star"></use></svg> Tarotové výklady</a>
+                        <a href="kristalova-koule.html" class="related-chip"><svg class="mh-symbol mh-symbol--inline" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#crystal"></use></svg> Krištáľová guľa</a>
+                        <a href="tarot-ano-nie.html" class="related-chip"><svg class="mh-symbol mh-symbol--inline" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><use href="/img/icons/mh-symbols.svg#star"></use></svg> Tarot ÁNO / NIE</a>
                     </div>
-                    </details>
                 </div>
             </div>
         </section>
@@ -134,10 +127,9 @@
 
     <div id="footer-placeholder"></div>
     <script src="../js/dist/api-config.js" defer></script>
-    <script src="../js/dist/templates.js?v=20261021-celtic-footer-star-svg" defer></script>
-    <script src="../js/dist/auth-client.js?v=20261020-02-register-password-policy" defer></script>
-    <script src="../js/dist/components.js?v=20261021-footer-support-locale" defer></script>
-    <script type="module" src="../js/dist/locale-natal.js?v=20261020-prague-max-refresh"></script>
-    <script type="module" src="../js/dist/main.js?v=20261018-status-icons"></script>
+    <script src="../js/dist/templates.js" defer></script>
+    <script src="../js/dist/components.js" defer></script>
+    <script type="module" src="../js/dist/main.js"></script>
+    <script src="../js/dist/localized-natal-chart.js?v=20261022-natal-result" defer></script>
 </body>
 </html>

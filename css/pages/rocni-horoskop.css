@@ -7,9 +7,9 @@
       --gold: #d4af37;
       --gold-light: #f1d875;
       --gold-dim: rgba(212,175,55,0.15);
-      --navy: #0b1929;
-      --navy-mid: #102638;
-      --navy-light: #143247;
+      --navy: #06061a;
+      --navy-mid: #0d0d2b;
+      --navy-light: #131340;
       --text: #e8e0d0;
       --text-dim: rgba(232,224,208,0.6);
       --radius: 12px;
@@ -50,7 +50,7 @@
       display: flex; flex-direction: column; align-items: center; justify-content: center;
       padding: 120px 24px 80px;
       background:
-        radial-gradient(ellipse at 50% 0%, rgba(79,132,151,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse at 50% 0%, rgba(139,90,180,0.12) 0%, transparent 60%),
         radial-gradient(ellipse at 80% 80%, rgba(212,175,55,0.06) 0%, transparent 50%),
         var(--navy);
       text-align: center;
@@ -198,7 +198,7 @@
       background-repeat: no-repeat; background-position: right 14px center;
       padding-right: 40px; cursor: pointer;
     }
-    .form-group select option { background: var(--navy-mid); color: var(--text); }
+    .form-group select option { background: #0d0d2b; color: var(--text); }
     .form-group input:focus, .form-group select:focus {
       border-color: rgba(212,175,55,0.5);
     }
@@ -221,8 +221,7 @@
       max-width: 430px; margin: 16px auto 0; font-size: 12.5px; color: var(--text-dim);
       line-height: 1.55; text-align: left;
     }
-    .form-note__icon { color: var(--gold); flex: 0 0 auto; margin-top: 1px; line-height: 0; }
-    .form-note__icon .mh-symbol { width: 18px; height: 18px; }
+    .form-note span { color: var(--gold); flex: 0 0 auto; margin-top: 1px; }
 
     .order-summary {
       display: grid; gap: 10px; margin-top: 18px;
@@ -262,7 +261,7 @@
       align-items: center;
       border: 1px solid rgba(212,175,55,0.28);
       border-radius: 14px;
-      background: linear-gradient(135deg, rgba(212,175,55,0.09), rgba(79,132,151,0.08));
+      background: linear-gradient(135deg, rgba(212,175,55,0.09), rgba(139,90,180,0.08));
     }
     .annual-product-bridge span {
       display: block; color: var(--gold); font-size: 11px; font-weight: 700;
@@ -388,3 +387,6 @@
       html { scroll-behavior: auto; }
       .hero-cta, .status-action--ghost, .nav-back { transition: none; }
     }
+
+/* Retired purchase receipt visibility: author layout must respect hidden. */
+[hidden] { display: none !important; }
