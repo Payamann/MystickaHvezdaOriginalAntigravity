@@ -680,7 +680,8 @@ test.describe('Ceník — platební tlačítka', () => {
 
         const gate = page.locator('#login-gate-test-host .login-gate');
         await expect(gate).toBeVisible();
-        await expect(gate.locator('.login-gate__hint')).toContainText('Členství a jeho cenu potvrdíš až v zabezpečené platební bráně');
+        await expect(gate.locator('.login-gate__hint')).toContainText('199 Kč/měsíc');
+        await expect(gate.locator('.login-gate__hint')).toContainText('K aktivaci je potřeba karta.');
         await expect(gate.locator('.login-gate-btn')).toContainText('Pokračovat k členství');
         await expect(gate).not.toContainText('Přihlásit se zdarma');
 

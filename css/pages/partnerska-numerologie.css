@@ -1,0 +1,170 @@
+.partner-calculator-section {
+    scroll-margin-top: 5rem;
+}
+
+.partner-calculator {
+    margin-top: 1.5rem;
+    padding: clamp(1.25rem, 3vw, 2rem);
+    border: 1px solid rgba(222, 194, 139, 0.28);
+    border-radius: 12px;
+    background: rgba(14, 32, 49, 0.92);
+}
+
+.partner-calculator__fields,
+.partner-result__cards {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.partner-calculator__field label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #f2eadc;
+    font-weight: 700;
+}
+
+.partner-calculator__field input {
+    width: 100%;
+    min-height: 48px;
+    padding: 0.75rem;
+    border: 1px solid rgba(222, 194, 139, 0.42);
+    border-radius: 8px;
+    background: #081724;
+    color: #fff;
+    color-scheme: dark;
+    font: inherit;
+}
+
+.partner-calculator__field input:focus-visible,
+.partner-calculator__submit:focus-visible,
+.partner-result-card a:focus-visible {
+    outline: 2px solid #dec28b;
+    outline-offset: 3px;
+}
+
+.partner-calculator__field input[aria-invalid="true"] {
+    border-color: #ff9d9d;
+}
+
+.partner-calculator__field small {
+    display: block;
+    margin-top: 0.45rem;
+    color: #b8c3cc;
+    line-height: 1.5;
+}
+
+.partner-calculator__submit {
+    margin-top: 1.25rem;
+    min-height: 48px;
+}
+
+.partner-calculator__error {
+    margin-bottom: 1rem;
+    padding: 0.8rem 1rem;
+    border-left: 3px solid #ff9d9d;
+    background: rgba(120, 28, 43, 0.25);
+    color: #ffe5e5;
+}
+
+.partner-result {
+    margin-top: 2rem;
+    scroll-margin-top: 5rem;
+}
+
+.partner-result:focus {
+    outline: none;
+}
+
+.partner-result__eyebrow,
+.partner-result-card__label {
+    color: #dec28b;
+    font-size: 0.76rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.partner-result__cards {
+    margin: 1.25rem 0;
+}
+
+.partner-result-card {
+    min-width: 0;
+    padding: clamp(1.25rem, 3vw, 1.75rem);
+    border: 1px solid rgba(222, 194, 139, 0.32);
+    border-radius: 12px;
+    background: #0e2031;
+}
+
+.partner-result-card__number {
+    display: block;
+    margin: 0.55rem 0;
+    color: #dec28b;
+    font: 400 clamp(3rem, 8vw, 4.5rem)/1 Georgia, serif;
+}
+
+.partner-result-card h4 {
+    margin: 0 0 0.4rem;
+    color: #f2eadc;
+    font-size: 1.2rem;
+}
+
+.partner-result-card__summary,
+.partner-result-card__question {
+    line-height: 1.65;
+}
+
+.partner-result-card__summary {
+    margin: 0 0 1rem;
+    color: #c1ccd5;
+}
+
+.partner-result-card__question {
+    padding-top: 1rem;
+    border-top: 1px solid rgba(222, 194, 139, 0.2);
+    color: #e2e7eb;
+}
+
+.partner-result-card a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: #dec28b;
+    font-weight: 700;
+}
+
+.partner-result__reflection {
+    padding: 1.25rem 1.5rem;
+    border-left: 3px solid #b99b63;
+    background: #142c3e;
+}
+
+.partner-result__reflection h4 {
+    margin: 0 0 0.75rem;
+    color: #f2eadc;
+}
+
+.partner-result__reflection ul {
+    margin: 0;
+    padding-left: 1.2rem;
+    color: #d4dce2;
+    line-height: 1.7;
+}
+
+@media (max-width: 640px) {
+    .partner-calculator__fields,
+    .partner-result__cards {
+        grid-template-columns: 1fr;
+    }
+
+    .partner-calculator__submit {
+        width: 100%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .partner-result {
+        scroll-behavior: auto;
+    }
+}

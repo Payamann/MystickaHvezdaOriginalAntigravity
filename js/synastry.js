@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
 const SYNASTRY_FEATURE = 'partnerska_detail';
 const SYNASTRY_PLAN_ID = 'pruvodce';
 const SYNASTRY_RESULT_SOURCE = 'partner_match_result';
-const SYNASTRY_PAYMENT_REASSURANCE = 'Cena se zobraz\u00ed ve Stripe p\u0159ed potvrzen\u00edm. Zru\u0161en\u00ed najdete v profilu.';
+const SYNASTRY_PAYMENT_REASSURANCE = 'Členství: 7 dní za 0 Kč, potom automaticky 199 Kč/měsíc, pokud ho nezrušíš. K aktivaci je potřeba karta. Zrušení v profilu.';
 const PERSONAL_MAP_PRODUCT_ID = 'osobni_mapa_2026';
 const PERSONAL_MAP_PRODUCT_TYPE = 'personal_map';
 let personalMapOfferViewed = false;
@@ -966,45 +966,14 @@ async function typewriterEffect(element, text) {
 
 function renderTeaser(container, totalScore = null) {
     const contentDiv = container.querySelector('.ai-content');
-    const scoreLabel = typeof totalScore === 'number'
-        ? `${totalScore}%`
-        : (document.getElementById('total-score')?.textContent || 'vaši');
-
-    // 1. Add Blur
-    contentDiv.classList.add('blur-content');
-
-    // 2. Set Dummy Text for visual bulk
-    contentDiv.innerHTML = `
-        <p>Váš vztah vykazuje silné karmické propojení, které se projevuje zejména v oblasti emocí. Hvězdy naznačují, že jste se nepotkali náhodou.</p>
-        <p>Ačkoliv je vaše komunikace dynamická, existují zde aspekty, na které si musíte dát pozor. Saturn ve vašem horoskopu vytváří...</p>
-        <p>Pro dlouhodobou stabilitu je klíčové pochopit...</p>
-        <br><br><br>
-    `;
-
-    // 3. Add Overlay Button
-    // Check if overlay already exists
-    if (!container.querySelector('.teaser-overlay')) {
-        const overlay = document.createElement('div');
-        overlay.className = 'teaser-overlay';
-        overlay.innerHTML = `
-            <div class="synastry-teaser-card">
-                <h3 class="synastry-teaser-card__title">Odemkněte tajemství vašeho vztahu</h3>
-                <p class="synastry-teaser-card__copy">Zjistěte, proč máte ${document.getElementById('total-score').textContent} shodu a co vás čeká.</p>
-                <a href="${buildSynastryUpgradeUrl('synastry_teaser_overlay')}" class="btn btn--primary synastry-upgrade-btn">${getSynastryUpgradeLabel('teaser')}</a>
-                ${getSynastryPaymentReassuranceHtml()}
-            </div>
-        `;
-        container.classList.add('teaser-overlay-host');
-        container.appendChild(overlay);
-        const teaserCopy = overlay.querySelector('p');
-        if (teaserCopy) {
-            teaserCopy.textContent = `Zjistěte, proč máte ${scoreLabel} shodu a co vás čeká.`;
-        }
-        overlay.querySelector('.synastry-upgrade-btn')?.addEventListener('click', (event) => {
-            event.preventDefault();
-            startSynastryUpgradeFlow('synastry_teaser_overlay');
-        });
-    }
+    const scoreLabel = typeof totalScore === 'number' ? `${totalScore}%` : 'základní';
+    contentDiv.classList.remove('blur-content');
+    container.classList.remove('teaser-overlay-host');
+    container.querySelector('.teaser-overlay')?.remove();
+    contentDiv.replaceChildren();
+    const note = document.createElement('p');
+    note.textContent = `Základní skóre ${scoreLabel} je symbolický astrologický pohled, ne měření kvality vztahu. Členský rozbor propojí vypočtené aspekty s tématy komunikace, emocí a vzájemných dohod. Osobní výklad se v bezplatné ukázce negeneruje.`;
+    contentDiv.appendChild(note);
 }
 
 function animateValue(id, start, end, duration) {

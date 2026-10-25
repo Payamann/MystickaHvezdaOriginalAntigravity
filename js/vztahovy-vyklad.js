@@ -103,6 +103,17 @@
         try { window.MH_ANALYTICS?.trackEvent?.(eventName, { source, ...metadata }); } catch { /* non-blocking */ }
         void csrf().then(token => fetch('/api/payment/funnel-event', { method: 'POST', keepalive: true, credentials: 'same-origin', headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': token }, body: JSON.stringify({ eventName, source, feature: 'relationship_tarot', planType: 'relationship_tarot', metadata }) })).catch(() => {});
     }
+    // Finish the entry-click receipt after navigation so the event cannot be lost on unload.
+    try {
+        const receiptKey = 'mh_relationship_entry_click';
+        const receipt = JSON.parse(sessionStorage.getItem(receiptKey) || 'null');
+        sessionStorage.removeItem(receiptKey);
+        if (receipt?.source === source && source === 'partner_match_result'
+            && receipt.flowId === flowId && receipt.placement === 'synastry_result_next_step'
+            && Number.isFinite(receipt.at) && Date.now() >= receipt.at && Date.now() - receipt.at < 5 * 60 * 1000) {
+            track('one_time_product_cta_clicked', { funnel_step: 'entry_offer', placement: receipt.placement });
+        }
+    } catch { /* Optional analytics must never block the order page. */ }
     track('one_time_product_viewed', { funnel_step: 'product_page' });
     form.addEventListener('input', () => track('one_time_form_started', { funnel_step: 'form_start' }), { once: true });
     document.querySelectorAll('[data-reading-cta]').forEach(link => link.addEventListener('click', () => track('one_time_product_cta_clicked', { funnel_step: 'product_to_form', placement: link.dataset.readingCta || 'unknown' })));

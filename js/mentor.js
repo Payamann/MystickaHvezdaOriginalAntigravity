@@ -7,7 +7,7 @@ let chatInput, sendBtn, messagesContainer, typingIndicator;
 const MENTOR_DAILY_LIMIT = 3;
 const MENTOR_PENDING_PROMPT_KEY = 'mentor_pending_prompt_v1';
 const MENTOR_PENDING_PROMPT_MAX_AGE_MS = 30 * 60 * 1000;
-const MENTOR_PAYMENT_REASSURANCE = 'Cena se zobraz\u00ed ve Stripe p\u0159ed potvrzen\u00edm. Zru\u0161en\u00ed najdete v profilu.';
+const MENTOR_PAYMENT_REASSURANCE = '7 dní za 0 Kč, potom automaticky 199 Kč/měsíc, pokud nezrušíš. K aktivaci je potřeba karta. Zrušení v profilu.';
 
 function getMentorUsageStorageKey(date = new Date()) {
     return `mh_daily_mentor_${date.toDateString()}`;

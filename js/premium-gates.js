@@ -473,7 +473,7 @@ window.Premium = {
         gate.className = 'login-gate';
         gate.innerHTML = `
             <p class="login-gate__message">${safeMsg}</p>
-            <p class="login-gate__hint">Účet si vytvoříš zdarma. Členství a jeho cenu potvrdíš až v zabezpečené platební bráně.</p>
+            <p class="login-gate__hint">Účet si vytvoříš zdarma. Členství: 7 dní za 0 Kč, potom automaticky 199 Kč/měsíc, pokud nezrušíš. K aktivaci je potřeba karta. Cena a podmínky se potvrdí ve Stripe.</p>
             <button class="btn btn--primary login-gate-btn">Pokračovat k členství</button>
         `;
 

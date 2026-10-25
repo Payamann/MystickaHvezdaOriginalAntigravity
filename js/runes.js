@@ -8,7 +8,7 @@ import { getPragueDateKey } from './utils/prague-date.js';
 let runesData = [];
 let drawnRune = null;
 const RUNES_DEEP_FEATURE = 'runy_hluboky_vyklad';
-const RUNES_PAYMENT_REASSURANCE = 'Cena se zobraz\u00ed ve Stripe p\u0159ed potvrzen\u00edm. Zru\u0161en\u00ed najdete v profilu.';
+const RUNES_PAYMENT_REASSURANCE = '7 dní za 0 Kč, potom automaticky 199 Kč/měsíc, pokud nezrušíš. K aktivaci je potřeba karta. Zrušení v profilu.';
 
 function apiBase() {
     return window.API_CONFIG?.BASE_URL || '/api';

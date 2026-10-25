@@ -636,3 +636,12 @@ body.page-natal .natal-chart-container {
         max-width: none !important;
     }
 }
+
+/* Keep chart and computed values inside their grid cell, including intrinsic SVG width. */
+body.page-natal .mh-inline-8318922717 > * { min-width: 0; max-width: 100%; }
+body.page-natal .natal-chart-container { min-width: 0; width: 100%; }
+body.page-natal #chart-results { min-width: 0; max-width: 100%; overflow-wrap: anywhere; }
+body.page-natal .natal-svg { display: block; max-width: 100%; }
+@media (max-width: 760px) {
+  body.page-natal .mh-inline-8318922717 { grid-template-columns: minmax(0, 1fr); }
+}

@@ -533,7 +533,8 @@ async function displayInterpretation(name, birthDate, birthTime, lifePath, desti
 
                     <div class="premium-lock-overlay">
                         <div class="lock-icon">🔒</div>
-                        <p class="lock-text">Detailní rozbor je Premium funkce</p>
+                        <p class="lock-text">Detailní rozbor je členská funkce</p>
+                        <p class="text-sm">7 dní za 0 Kč, potom automaticky 199 Kč/měsíc, pokud nezrušíš. K aktivaci je potřeba karta.</p>
                         <button class="btn btn--gold unlock-btn numerology-upgrade-btn">Odemknout plný rozbor</button>
                     </div>
                 </div>

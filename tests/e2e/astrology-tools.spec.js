@@ -116,6 +116,15 @@ test.describe('Natální karta', () => {
         await expect(page.locator('#res-sun')).toContainText('Kozoroh');
         await expect(page.locator('#res-moon')).not.toHaveText('--');
         await expect(page.locator('#res-asc')).not.toHaveText('--');
+        const resultBounds = await page.locator('#chart-results').evaluate(el => {
+            const rect = el.getBoundingClientRect();
+            const card = el.closest('.card').getBoundingClientRect();
+            return { left: rect.left, right: rect.right, cardRight: card.right, viewport: window.innerWidth };
+        });
+        expect(resultBounds.left).toBeGreaterThanOrEqual(0);
+        expect(resultBounds.right).toBeLessThanOrEqual(resultBounds.viewport + 1);
+        expect(resultBounds.cardRight).toBeLessThanOrEqual(resultBounds.viewport + 1);
+
         await expect(page.locator('#natal-element-value')).not.toHaveText('--');
         await expect(page.locator('#natal-planets-list li')).toHaveCount(10);
         await expect(page.locator('#natal-planets-list')).toContainText('Pluto');
@@ -135,6 +144,7 @@ test.describe('Natální karta', () => {
     test('premium teaser slibuje konkrétní výklad, ne úplný osud', async ({ page }) => {
         await page.evaluate(() => {
             window.Auth = {
+                user: { id: 'e2e-natal-owner' },
                 isLoggedIn: () => true,
                 isPremium: () => true,
                 saveReading: async () => ({ id: 'e2e-natal-reading' })
@@ -153,9 +163,9 @@ test.describe('Natální karta', () => {
         await page.locator('#natal-form button[type="submit"]').click();
 
         const teaser = page.locator('.teaser-overlay');
-        await expect(teaser).toContainText('celý výklad své natální mapy');
+        await expect(teaser).toContainText('podrobnější výklad své natální mapy');
         await expect(teaser).toContainText('Pokračovat s Premium');
-        await expect(page.locator('.natal-teaser-reassurance')).toContainText('Cena se zobraz\u00ed ve Stripe p\u0159ed potvrzen\u00edm. Zru\u0161en\u00ed najdete v profilu.');
+        await expect(page.locator('.natal-teaser-reassurance')).toContainText('199 Kč/měsíc');
         await expect(teaser).not.toContainText('úplný osud');
     });
 

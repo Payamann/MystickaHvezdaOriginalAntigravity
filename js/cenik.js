@@ -133,12 +133,12 @@ const FEATURE_PREVIEW_DESTINATIONS = {
     tarot: { path: '/tarot.html', label: 'Nejd\u0159\u00edv otev\u0159\u00edt tarot zdarma' },
     tarot_celtic_cross: {
         path: '/tarot.html',
-        label: 'Vr\u00e1tit se ke Keltsk\u00e9mu k\u0159\u00ed\u017ei zdarma',
+        label: 'Prohl\u00e9dnout uk\u00e1zku Keltsk\u00e9ho k\u0159\u00ed\u017ee',
         params: { feature: 'tarot_celtic_cross', intent: 'celtic_cross', spread: 'celtic_cross' }
     },
     tarot_multi_card: {
         path: '/tarot.html',
-        label: 'Vr\u00e1tit se k v\u00fdkladu 3 karet zdarma',
+        label: 'Prohl\u00e9dnout uk\u00e1zku t\u0159\u00ed karet',
         params: { feature: 'tarot_multi_card', intent: 'three_cards', spread: 'three_cards' }
     },
     weekly_horoscope: { path: '/horoskopy.html', label: 'Nejd\u0159\u00edv otev\u0159\u00edt horoskopy zdarma' }
@@ -329,7 +329,7 @@ function updatePricingCopy() {
     const guideCard = document.querySelector('[data-price-plan="pruvodce"]')?.closest('.card--pricing');
 
     if (heroTitle) {
-        heroTitle.innerHTML = 'Jedno členství. <span class="text-gradient">Všechny hlubší výklady.</span>';
+        heroTitle.innerHTML = 'Jedno členství. <span class="text-gradient">Hlubší členské nástroje.</span>';
     }
 
     if (heroSubtitle) {
@@ -349,7 +349,7 @@ function updatePricingCopy() {
         setFeatureText(guideFeatures[0], 'Tarotové výklady včetně Keltského kříže');
         setFeatureText(guideFeatures[1], 'Astrokartografie, natální karta a numerologie');
         setFeatureText(guideFeatures[2], 'Týdenní a měsíční horoskopy');
-        setFeatureText(guideFeatures[3], 'Historie výkladů a souvislosti v čase');
+        setFeatureText(guideFeatures[3], 'Navazující výklady a souvislosti v historii');
         if (guideCta) guideCta.textContent = 'Začít 7 dní za 0 Kč';
     }
 }
