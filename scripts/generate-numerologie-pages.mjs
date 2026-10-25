@@ -126,6 +126,7 @@ function renderPage(number, entry, allNumbers) {
                 <div class="card">
                     <h2>❤️ Vztahy</h2>
                     <p>${escapeHtml(entry.relationships)}</p>
+                    <p>Chceš se na toto téma podívat ve dvojici? V <a href="../partnerska-numerologie.html?source=life_path_relationships">partnerské numerologii podle data narození</a> si zdarma spočítáš obě životní čísla a dostaneš podněty pro společný rozhovor.</p>
                     <h3>💼 Kariéra</h3>
                     <p>${escapeHtml(entry.career)}</p>
                 </div>
@@ -140,7 +141,7 @@ function renderPage(number, entry, allNumbers) {
                     <p>Spočítá se z celého data narození. Zabere to pár vteřin a je to zdarma.</p>
                     <p>
                         <a href="../kalkulacka-cisla-osudu.html?source=numerology_number_detail&feature=numerologie_vyklad" class="btn btn--primary">Spočítat číslo osudu zdarma</a>
-                        <a href="../numerologie.html?source=numerology_number_detail&feature=numerologie_vyklad" class="btn btn--secondary">Kompletní numerologický rozbor</a>
+                        <a href="../numerologie.html?source=numerology_number_detail&feature=numerologie_vyklad" class="btn btn--secondary">Numerologický rozbor v členství</a>
                     </p>
                 </div>
 
