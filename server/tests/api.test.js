@@ -4,6 +4,7 @@
  */
 
 import request from 'supertest';
+import { jest } from '@jest/globals';
 import jwt from 'jsonwebtoken';
 import app from '../index.js';
 import { supabase } from '../db-supabase.js';
@@ -950,6 +951,17 @@ describe('API Endpoint Tests', () => {
 
     describe('Programmatic Horoscope Sitemap', () => {
         test('GET /horoskop/sitemap-horoscopes.xml returns canonical sitemap URLs', async () => {
+            const today = getPragueTodayStr();
+            const yesterday = shiftIsoDate(today, -1);
+            const response = JSON.stringify({ prediction: 'Dnes si vyber jeden drobný krok.', affirmation: 'Dávám si prostor.', luckyNumbers: [1, 2, 3, 4] });
+            await supabase.from('cache_horoscopes').delete().neq('cache_key', '');
+            await supabase.from('cache_horoscopes').upsert([
+                { cache_key: `beran_daily_${today}_v3-cs-nocontext`, sign: 'Beran', response },
+                { cache_key: `rak_daily_${yesterday}_v3-cs-nocontext`, sign: 'Rak', response: '{broken' },
+                { cache_key: `lev_daily_${today}_v3-cs-privatecontext`, sign: 'Lev', response },
+                { cache_key: `beran_daily_${shiftIsoDate(today, -61)}_v3-cs-nocontext`, sign: 'Beran', response },
+                { cache_key: `beran_daily_${shiftIsoDate(today, 1)}_v3-cs-nocontext`, sign: 'Beran', response }
+            ]);
             const res = await request(app)
                 .get('/horoskop/sitemap-horoscopes.xml')
                 .expect(200);
@@ -958,12 +970,28 @@ describe('API Endpoint Tests', () => {
             expect(res.text).toContain('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">');
             expect(res.text).toContain('<loc>https://www.mystickahvezda.cz/horoskop/beran/');
             expect(res.text).not.toContain('<loc>https://mystickahvezda.cz/horoskop/');
-            expect((res.text.match(/<url>/g) || [])).toHaveLength(61 * 12);
-
-            const today = getPragueTodayStr();
+            expect((res.text.match(/<url>/g) || [])).toHaveLength(1);
+            expect(res.headers['cache-control']).toBe('public, max-age=300, s-maxage=3600, must-revalidate');
+            expect(res.text).not.toContain(`/horoskop/rak/${yesterday}</loc>`);
+            expect(res.text).not.toContain(`/horoskop/lev/${today}</loc>`);
+            expect(res.text).not.toContain(shiftIsoDate(today, -61));
             const tomorrow = shiftIsoDate(today, 1);
             expect(res.text).toContain(`/horoskop/beran/${today}</loc>`);
             expect(res.text).not.toContain(`/horoskop/beran/${tomorrow}</loc>`);
+        });
+
+        test('cache outage returns a non-cacheable error instead of an empty successful sitemap', async () => {
+            const originalFrom = supabase.from.bind(supabase);
+            const spy = jest.spyOn(supabase, 'from').mockImplementation(table => {
+                if (table !== 'cache_horoscopes') return originalFrom(table);
+                return { select: () => ({ in: async () => ({ data: null, error: { message: 'Synthetic cache outage' } }) }) };
+            });
+            try {
+                const res = await request(app).get('/horoskop/sitemap-horoscopes.xml').expect(503);
+                expect(res.headers['cache-control']).toBe('no-store');
+                expect(res.text).not.toContain('<urlset');
+                expect(res.text).not.toContain('Synthetic cache outage');
+            } finally { spy.mockRestore(); }
         });
 
         test('GET /horoskop/:sign/:date serves CSP-safe HTML with built assets', async () => {

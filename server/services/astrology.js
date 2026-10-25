@@ -1635,6 +1635,26 @@ export async function getCachedHoroscope(cacheKey, now = new Date()) {
     }
 }
 
+// Read only explicitly requested public cache keys; never generate missing content.
+// Propagate database failures so a sitemap cannot silently publish an empty result.
+export async function getCachedHoroscopeBatch(cacheKeys, now = new Date()) {
+    const results = new Map();
+    const pending = [];
+    for (const key of new Set(cacheKeys)) {
+        const reviewed = getReviewedHoroscope(key, now);
+        if (reviewed) results.set(key, reviewed);
+        else pending.push(key);
+    }
+    for (let offset = 0; offset < pending.length; offset += 100) {
+        const { data, error } = await supabase.from('cache_horoscopes')
+            .select('cache_key, response, period_label, generated_at')
+            .in('cache_key', pending.slice(offset, offset + 100));
+        if (error) throw error;
+        for (const row of data || []) results.set(row.cache_key, row);
+    }
+    return results;
+}
+
 // Save horoscope to database cache
 export async function saveCachedHoroscope(cacheKey, sign, period, response, periodLabel) {
     try {

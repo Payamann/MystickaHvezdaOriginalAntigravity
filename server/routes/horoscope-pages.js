@@ -9,7 +9,7 @@
  */
 import express from 'express';
 import { publicAssetVersioning } from '../utils/public-assets.js';
-import { getCachedHoroscope } from '../services/astrology.js';
+import { getCachedHoroscope, getCachedHoroscopeBatch } from '../services/astrology.js';
 import { normalizeHoroscopeAiResponse } from '../services/horoscope-response.js';
 import { setHtmlContentSecurityPolicy } from '../utils/csp.js';
 
@@ -81,18 +81,31 @@ function buildUnavailableHoroscopePage() {
 
 // ============================================================
 // DYNAMIC SITEMAP — /horoskop/sitemap-horoscopes.xml
-// Covers today and the last 60 days for all 12 signs. Future pages are noindex.
+// Includes only usable public cached readings from today and the last 60 days.
 // ============================================================
-router.get('/sitemap-horoscopes.xml', (req, res) => {
-    const today = getTodayStr();
-    const dates = [];
-    for (let i = -60; i <= 0; i++) {
-        dates.push(shiftDate(today, i));
-    }
+router.get('/sitemap-horoscopes.xml', async (req, res) => {
+    try {
+        const today = getTodayStr();
+        const dates = [];
+        for (let i = -60; i <= 0; i++) {
+            dates.push(shiftDate(today, i));
+        }
 
-    const urls = [];
-    for (const date of dates) {
-        for (const slug of Object.keys(SIGN_MAP)) {
+        const entries = dates.flatMap(date => Object.entries(SIGN_MAP).map(([slug, sign]) => {
+            const normalized = sign.name.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+            return { slug, date, key: `${normalized}_daily_${date}_v3-cs-nocontext` };
+        }));
+        const cache = await getCachedHoroscopeBatch(entries.map(entry => entry.key));
+        const urls = [];
+        for (const entry of entries) {
+            const { slug, date } = entry;
+            const cached = cache.get(entry.key);
+            if (!cached) continue;
+            try {
+                normalizeHoroscopeAiResponse(cached.response, {
+                    allowMissingSupplemental: cached.source === 'reviewed:pilot-v2'
+                });
+            } catch { continue; }
             const loc = `${SITE_ORIGIN}/horoskop/${slug}/${date}`;
             const priority = date === today ? '1.0' : '0.7';
             urls.push(`  <url>
@@ -102,16 +115,19 @@ router.get('/sitemap-horoscopes.xml', (req, res) => {
     <priority>${priority}</priority>
   </url>`);
         }
+
+        const xml = `<?xml version="1.0" encoding="UTF-8"?>
+    <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    ${urls.join('\n')}
+    </urlset>`;
+
+        res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+        res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=3600, must-revalidate');
+        res.send(xml);
+    } catch {
+        res.setHeader('Cache-Control', 'no-store');
+        res.status(503).send('Horoscope sitemap temporarily unavailable');
     }
-
-    const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${urls.join('\n')}
-</urlset>`;
-
-    res.setHeader('Content-Type', 'application/xml; charset=utf-8');
-    res.setHeader('Cache-Control', 'public, max-age=3600, s-maxage=43200');
-    res.send(xml);
 });
 
 // ============================================================
