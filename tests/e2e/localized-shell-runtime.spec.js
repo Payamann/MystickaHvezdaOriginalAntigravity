@@ -3,16 +3,24 @@ import { waitForPageReady } from './helpers.js';
 
 const localizedPages = [
     ['/sk/index.html', 'sk'],
+    ['/sk/horoskopy.html', 'sk'],
     ['/sk/andelske-karty.html', 'sk'],
     ['/sk/kristalova-koule.html', 'sk'],
     ['/sk/natalni-karta.html', 'sk'],
     ['/sk/tarot.html', 'sk'],
     ['/sk/tarot-ano-nie.html', 'sk'],
     ['/pl/index.html', 'pl'],
+    ['/pl/horoskopy.html', 'pl'],
     ['/pl/andelske-karty.html', 'pl'],
     ['/pl/kristalova-koule.html', 'pl'],
     ['/pl/natalni-karta.html', 'pl'],
-    ['/pl/tarot.html', 'pl']
+    ['/pl/tarot.html', 'pl'],
+    ['/en/', 'en'],
+    ['/en/horoscopes.html', 'en'],
+    ['/en/birth-chart.html', 'en'],
+    ['/en/crystal-ball.html', 'en'],
+    ['/en/tarot.html', 'en'],
+    ['/en/angel-cards.html', 'en']
 ];
 
 for (const [route, locale] of localizedPages) {

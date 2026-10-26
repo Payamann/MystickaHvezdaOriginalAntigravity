@@ -51,3 +51,19 @@ describe('horoscope fallback content contract', () => {
         expect(SYSTEM_PROMPTS.horoscope).toContain(HOROSCOPE_VOICE_CONTRACTS.cs);
     });
 });
+
+
+describe('English horoscope fallback', () => {
+    const englishSigns = ['Aries', 'Taurus', 'Gemini', 'Cancer', 'Leo', 'Virgo', 'Libra', 'Scorpio', 'Sagittarius', 'Capricorn', 'Aquarius', 'Pisces'];
+    test.each(englishSigns)('%s stays English with the correct sign and period structure', sign => {
+        for (const period of PERIODS) {
+            const fallback = buildHoroscopeFallback({ sign, period, lang: 'en' });
+            expect(fallback.prediction).toContain(sign);
+            expect(countSentences(fallback.prediction)).toBe(PERIOD_SENTENCE_COUNTS[period]);
+            expect(fallback.affirmation).toMatch(/^I /);
+            expect(fallback.periodLabel).toMatch(/Daily|Weekly|Monthly/);
+            const canonical = SIGNS[englishSigns.indexOf(sign)];
+            expect(fallback).toEqual(buildHoroscopeFallback({ sign: canonical, period, lang: 'en' }));
+        }
+    });
+});

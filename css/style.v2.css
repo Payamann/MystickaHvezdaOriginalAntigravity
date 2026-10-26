@@ -15694,3 +15694,20 @@ body.page-profile .cookie-banner__actions .btn {
 @media (min-width: 993px) {
   html[lang="pl"] body.atlas-page .header .container { max-width: 1320px; }
 }
+
+/* Native language choice remains keyboard accessible in desktop and mobile navigation. */
+.language-select {
+  min-height: 44px;
+  max-width: 100%;
+  padding: 8px 10px;
+  color: var(--color-starlight);
+  background: #0b1929;
+  border: 1px solid rgba(212, 175, 55, .4);
+  border-radius: 4px;
+  font: inherit;
+  font-size: .75rem;
+  color-scheme: dark;
+  cursor: pointer;
+}
+.language-select:focus-visible { outline: 2px solid var(--color-mystic-gold); outline-offset: 3px; }
+@media (max-width: 992px) { .nav__language { padding: 8px 16px; } }

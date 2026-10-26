@@ -39,6 +39,26 @@
                 sun: 'Słońce', moon: 'Księżyc', mercury: 'Merkury', venus: 'Wenus', mars: 'Mars',
                 jupiter: 'Jowisz', saturn: 'Saturn', uranus: 'Uran', neptune: 'Neptun', pluto: 'Pluton'
             }
+        },
+        en: {
+            loading: 'Calculating your birth chart…',
+            title: 'Your birth chart',
+            sun: 'Sun',
+            moon: 'Moon',
+            ascendant: 'Ascendant',
+            unavailable: 'Could not be determined',
+            more: 'Show other planets',
+            note: 'This is an approximate, symbolic map. Calculating the ascendant and houses requires the most accurate birth time and a recognized birth location available.',
+            error: 'Your chart could not be calculated right now. Check your details and try again.',
+            signs: {
+                aries: 'Aries', taurus: 'Taurus', gemini: 'Gemini', cancer: 'Cancer',
+                leo: 'Leo', virgo: 'Virgo', libra: 'Libra', scorpio: 'Scorpio',
+                sagittarius: 'Sagittarius', capricorn: 'Capricorn', aquarius: 'Aquarius', pisces: 'Pisces'
+            },
+            planets: {
+                sun: 'Sun', moon: 'Moon', mercury: 'Mercury', venus: 'Venus', mars: 'Mars',
+                jupiter: 'Jupiter', saturn: 'Saturn', uranus: 'Uranus', neptune: 'Neptune', pluto: 'Pluto'
+            }
         }
     };
 
@@ -51,7 +71,7 @@
         const button = document.getElementById('calculate-natal');
         if (!form || !result || !date || !time || !place || !button) return;
 
-        const language = copyByLanguage[document.documentElement.lang] || copyByLanguage.sk;
+        const language = copyByLanguage[document.documentElement.lang.toLowerCase().slice(0, 2)] || copyByLanguage.sk;
         const initialButtonText = button.textContent;
 
         form.addEventListener('submit', async (event) => {

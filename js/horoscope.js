@@ -99,6 +99,182 @@ function getSavedZodiacSign() {
     }
 }
 
+const HOROSCOPE_UI_COPY = {
+    cs: {
+        periodLabels: { daily: 'Denni horoskop', weekly: 'Tydenni horoskop', monthly: 'Mesicni horoskop' },
+        periodDateLabels: { daily: 'Dnes', weekly: 'Tento tyden', monthly: 'Tento mesic' },
+        loadingMessages: [
+            'Načítám výklad pro tvé znamení…',
+            'Připravuji jeho zobrazení…'
+        ],
+        loadingLabel: 'Načítám výklad…',
+        missingPrediction: 'Energie jsou dnes nejasne...',
+        loadDateError: 'Výklad se nepodařilo načíst.',
+        limitError: 'Dnešní limit výkladů je vyčerpaný. Další výklad bude dostupný zítra.',
+        loadError: 'Výklad se teď nepodařilo načíst. Zkus to prosím později.',
+        feedback: {
+            eyebrow: 'Další krok',
+            prompt: 'Co s tebou tenhle vhled udělal?',
+            resonanceLabel: 'Zpětná vazba k výkladu',
+            focusLabel: 'Téma pro navazující vhled',
+            fits: 'Sedí', neutral: 'Ještě nevím', miss: 'Netrefilo se',
+            relationships: 'Vztahy', work: 'Práce', energy: 'Energie',
+            journal: 'Zapsat reflexi', weekly: 'Odemknout týdenní souvislost',
+            saving: 'Ukládám zpětnou vazbu...',
+            saved: 'Uloženo. Další vhledy se díky tomu můžou lépe zaměřit.',
+            saveError: 'Nepodařilo se uložit. Zkus to znovu.',
+            favorite: 'Pridat do oblibenych'
+        },
+        upsell: {
+            authReason: 'Pro tento typ horoskopu je potřeba účet, protože pracuje s hlubším osobním kontextem.',
+            weeklyTitle: 'Odemknete tydenni vyhled',
+            weeklyCopy: 'Tydenni horoskop spojuje jednotlive dny do jednoho smeru a ukaze, kde ma smysl pridat a kde ubrat.',
+            monthlyTitle: 'Odemknete mesicni vyhled',
+            monthlyCopy: 'Mesicni horoskop dava sirsi kontext a pomuze vam cist delsi cyklus misto jedine dnesni nalady.',
+            eyebrow: 'Premium odemkne vic',
+            button: 'Odemknout Hvezdneho Pruvodce',
+            plans: 'Nejdriv si projit plany'
+        }
+    },
+    sk: {
+        periodLabels: { daily: 'Denný horoskop', weekly: 'Týždenný horoskop', monthly: 'Mesačný horoskop' },
+        periodDateLabels: { daily: 'Dnes', weekly: 'Tento týždeň', monthly: 'Tento mesiac' },
+        loadingMessages: [
+            'Načítavam horoskop pre tvoje znamenie…',
+            'Pripravujem dnešný výklad…',
+            'Spájam jednotlivé témy…',
+            'Už len chvíľu…'
+        ],
+        loadingLabel: 'Načítavam horoskop…',
+        missingPrediction: 'Dnešný výklad sa nepodarilo pripraviť.',
+        loadDateError: 'Horoskop sa nepodarilo načítať.',
+        limitError: 'Dnešný limit horoskopov je vyčerpaný. Ďalší výklad bude dostupný zajtra.',
+        loadError: 'Horoskop sa teraz nepodarilo načítať. Skús to prosím neskôr.',
+        feedback: {
+            eyebrow: 'Ďalší krok',
+            prompt: 'Čo v tebe tento výklad zanechal?',
+            resonanceLabel: 'Spätná väzba k výkladu',
+            focusLabel: 'Téma pre ďalší pohľad',
+            fits: 'Sedí', neutral: 'Ešte neviem', miss: 'Nesedí',
+            relationships: 'Vzťahy', work: 'Práca', energy: 'Energia',
+            journal: 'Zapísať reflexiu', weekly: 'Odomknúť týždenný kontext',
+            saving: 'Ukladám spätnú väzbu…',
+            saved: 'Uložené. Ďalšie pohľady sa vďaka tomu môžu lepšie zamerať.',
+            saveError: 'Nepodarilo sa uložiť. Skús to znova.',
+            favorite: 'Pridať medzi obľúbené'
+        },
+        upsell: {
+            authReason: 'Na tento typ horoskopu potrebuješ účet, pretože pracuje s hlbším osobným kontextom.',
+            weeklyTitle: 'Odomkni si týždenný výhľad',
+            weeklyCopy: 'Týždenný horoskop spája jednotlivé dni do spoločného smeru a pomáha rozpoznať, kde pridať a kde ubrať.',
+            monthlyTitle: 'Odomkni si mesačný výhľad',
+            monthlyCopy: 'Mesačný horoskop prináša širší kontext a pomôže ti vnímať dlhší cyklus, nielen dnešnú náladu.',
+            eyebrow: 'Členstvo ponúka viac',
+            button: 'Odomknúť Hviezdneho sprievodcu',
+            plans: 'Najprv si pozrieť plány',
+            notice: 'Účet, cenník, platba a správy k členstvu sú zatiaľ v češtine. Cena je uvedená v českých korunách.'
+        }
+    },
+    pl: {
+        periodLabels: { daily: 'Horoskop dzienny', weekly: 'Horoskop tygodniowy', monthly: 'Horoskop miesięczny' },
+        periodDateLabels: { daily: 'Dzisiaj', weekly: 'W tym tygodniu', monthly: 'W tym miesiącu' },
+        loadingMessages: [
+            'Wczytuję horoskop dla Twojego znaku…',
+            'Przygotowuję dzisiejszy odczyt…',
+            'Łączę poszczególne wątki…',
+            'Jeszcze chwila…'
+        ],
+        loadingLabel: 'Wczytuję horoskop…',
+        missingPrediction: 'Nie udało się przygotować dzisiejszego horoskopu.',
+        loadDateError: 'Nie udało się wczytać horoskopu.',
+        limitError: 'Wykorzystano dzisiejszy limit horoskopów. Kolejny będzie dostępny jutro.',
+        loadError: 'Nie udało się teraz wczytać horoskopu. Spróbuj ponownie później.',
+        feedback: {
+            eyebrow: 'Co dalej?',
+            prompt: 'Co zostało z Tobą po tym odczycie?',
+            resonanceLabel: 'Twoja opinia o odczycie',
+            focusLabel: 'Temat kolejnego odczytu',
+            fits: 'Pasuje', neutral: 'Jeszcze nie wiem', miss: 'Nie pasuje',
+            relationships: 'Relacje', work: 'Praca', energy: 'Energia',
+            journal: 'Zapisz refleksję', weekly: 'Odblokuj szerszy kontekst tygodnia',
+            saving: 'Zapisuję opinię…',
+            saved: 'Zapisano. Dzięki temu kolejne odczyty mogą lepiej odpowiadać Twoim potrzebom.',
+            saveError: 'Nie udało się zapisać. Spróbuj ponownie.',
+            favorite: 'Dodaj do ulubionych'
+        },
+        upsell: {
+            authReason: 'Do tego typu horoskopu potrzebujesz konta, ponieważ korzysta z szerszego kontekstu osobistego.',
+            weeklyTitle: 'Odblokuj horoskop tygodniowy',
+            weeklyCopy: 'Horoskop tygodniowy łączy poszczególne dni w szerszy obraz i pomaga zobaczyć, gdzie warto dodać, a gdzie odpuścić.',
+            monthlyTitle: 'Odblokuj horoskop miesięczny',
+            monthlyCopy: 'Horoskop miesięczny daje szerszy kontekst i pomaga spojrzeć na dłuższy cykl zamiast tylko na dzisiejszy nastrój.',
+            eyebrow: 'Członkostwo daje więcej',
+            button: 'Odblokuj Gwiezdnego Przewodnika',
+            plans: 'Najpierw zobacz plany',
+            notice: 'Konto, cennik, płatność i wiadomości dotyczące członkostwa są na razie po czesku. Cena jest podana w koronach czeskich.'
+        }
+    },
+    en: {
+        periodLabels: { daily: 'Daily horoscope', weekly: 'Weekly horoscope', monthly: 'Monthly horoscope' },
+        periodDateLabels: { daily: 'Today', weekly: 'This week', monthly: 'This month' },
+        loadingPrompt: 'Tuning in to your sign’s themes…',
+        activationLoadingTitle: sign => `Preparing your first personal horoscope — ${sign}`,
+        activationLoadingCopy: 'Your account is ready. There is nothing else to set up; your reading will appear here.',
+        activationCompleteTitle: sign => `Today’s horoscope is ready — ${sign}`,
+        activationCompleteCopy: 'Your reading is just below. Tomorrow, your sign will be selected automatically.',
+        loadingMessages: [
+            'Loading your sign’s horoscope…',
+            'Preparing today’s reading…',
+            'Bringing the themes together…',
+            'Just a moment…'
+        ],
+        loadingLabel: 'Loading horoscope…',
+        missingPrediction: 'Today’s horoscope could not be prepared.',
+        loadDateError: 'The horoscope could not be loaded.',
+        limitError: 'You have reached today’s horoscope limit. Your next reading will be available tomorrow.',
+        loadError: 'The horoscope could not be loaded right now. Please try again later.',
+        feedback: {
+            eyebrow: 'Next step',
+            prompt: 'What did this reading bring up for you?',
+            resonanceLabel: 'Feedback on this reading',
+            focusLabel: 'Topic for a follow-up reading',
+            fits: 'It resonates', neutral: 'I’m not sure yet', miss: 'It doesn’t fit',
+            relationships: 'Relationships', work: 'Work', energy: 'Energy',
+            journal: 'Write a reflection', weekly: 'Unlock the weekly context',
+            saving: 'Saving your feedback…',
+            saved: 'Saved. This can help shape future readings around your interests.',
+            saveError: 'Could not save your feedback. Please try again.',
+            favorite: 'Add to favorites'
+        },
+        upsell: {
+            authReason: 'An account is needed for this horoscope because it uses a broader personal context.',
+            weeklyTitle: 'Unlock your weekly outlook',
+            weeklyCopy: 'The weekly horoscope brings the days together and helps you notice where it may be useful to lean in or ease off.',
+            monthlyTitle: 'Unlock your monthly outlook',
+            monthlyCopy: 'The monthly horoscope offers a wider frame for reflecting on a longer cycle, beyond today’s mood.',
+            eyebrow: 'Membership offers more',
+            button: 'Unlock the Star Guide',
+            plans: 'View membership plans first',
+            notice: 'Account setup, plans, payment, and membership messages are currently in Czech. Prices are shown in Czech koruna.'
+        }
+    }
+};
+
+function getHoroscopeLanguage() {
+    const path = window.location.pathname;
+    if (path.includes('/sk/')) return 'sk';
+    if (path.includes('/pl/')) return 'pl';
+    if (path.includes('/en/')) return 'en';
+
+    const documentLanguage = document.documentElement?.lang?.slice(0, 2).toLowerCase();
+    if (documentLanguage === 'sk' || documentLanguage === 'pl' || documentLanguage === 'en') return documentLanguage;
+    return 'cs';
+}
+
+function getHoroscopeUiCopy(language = getHoroscopeLanguage()) {
+    return HOROSCOPE_UI_COPY[language] || HOROSCOPE_UI_COPY.cs;
+}
+
 function setHoroscopeFeedbackStatus(strip, message, state = 'neutral') {
     const status = strip?.querySelector?.('.horoscope-feedback__status');
     if (!status) return;
@@ -109,8 +285,10 @@ function setHoroscopeFeedbackStatus(strip, message, state = 'neutral') {
 async function saveHoroscopeFeedback(readingId, payload, strip, trigger) {
     if (!readingId || !window.Auth?.saveReadingFeedback) return null;
 
+    const copy = getHoroscopeUiCopy().feedback;
+
     if (trigger) trigger.disabled = true;
-    setHoroscopeFeedbackStatus(strip, 'Ukládám zpětnou vazbu...', 'pending');
+    setHoroscopeFeedbackStatus(strip, copy.saving, 'pending');
 
     const result = await window.Auth.saveReadingFeedback(readingId, {
         ...payload,
@@ -121,17 +299,18 @@ async function saveHoroscopeFeedback(readingId, payload, strip, trigger) {
     if (trigger) trigger.disabled = false;
 
     if (!result?.success) {
-        setHoroscopeFeedbackStatus(strip, 'Nepodařilo se uložit. Zkus to znovu.', 'error');
+        setHoroscopeFeedbackStatus(strip, copy.saveError, 'error');
         return null;
     }
 
-    setHoroscopeFeedbackStatus(strip, 'Uloženo. Další vhledy se díky tomu můžou lépe zaměřit.', 'success');
+    setHoroscopeFeedbackStatus(strip, copy.saved, 'success');
     return result;
 }
 
 function renderHoroscopeFeedbackAction(container, readingId, period) {
     if (!container || !readingId) return;
 
+    const copy = getHoroscopeUiCopy().feedback;
     container.querySelector('.horoscope-feedback')?.remove();
 
     const showWeeklyUpgrade = !window.Auth?.isPremium?.();
@@ -139,22 +318,22 @@ function renderHoroscopeFeedbackAction(container, readingId, period) {
     wrapper.className = 'horoscope-feedback';
     wrapper.innerHTML = `
         <div class="horoscope-feedback__header">
-            <span class="horoscope-feedback__eyebrow">Další krok</span>
-            <strong>Co s tebou tenhle vhled udělal?</strong>
+            <span class="horoscope-feedback__eyebrow">${copy.eyebrow}</span>
+            <strong>${copy.prompt}</strong>
         </div>
-        <div class="horoscope-feedback__chips" aria-label="Zpětná vazba k výkladu">
-            <button type="button" class="horoscope-feedback__chip" data-resonance="fits">Sedí</button>
-            <button type="button" class="horoscope-feedback__chip" data-resonance="neutral">Ještě nevím</button>
-            <button type="button" class="horoscope-feedback__chip" data-resonance="miss">Netrefilo se</button>
+        <div class="horoscope-feedback__chips" aria-label="${copy.resonanceLabel}">
+            <button type="button" class="horoscope-feedback__chip" data-resonance="fits">${copy.fits}</button>
+            <button type="button" class="horoscope-feedback__chip" data-resonance="neutral">${copy.neutral}</button>
+            <button type="button" class="horoscope-feedback__chip" data-resonance="miss">${copy.miss}</button>
         </div>
-        <div class="horoscope-feedback__chips" aria-label="Téma pro navazující vhled">
-            <button type="button" class="horoscope-feedback__chip" data-focus="relationships">Vztahy</button>
-            <button type="button" class="horoscope-feedback__chip" data-focus="work">Práce</button>
-            <button type="button" class="horoscope-feedback__chip" data-focus="energy">Energie</button>
+        <div class="horoscope-feedback__chips" aria-label="${copy.focusLabel}">
+            <button type="button" class="horoscope-feedback__chip" data-focus="relationships">${copy.relationships}</button>
+            <button type="button" class="horoscope-feedback__chip" data-focus="work">${copy.work}</button>
+            <button type="button" class="horoscope-feedback__chip" data-focus="energy">${copy.energy}</button>
         </div>
         <div class="horoscope-feedback__actions">
-            <a class="btn btn--glass btn--sm" href="/profil.html#journal-input" data-next-action="journal">Zapsat reflexi</a>
-            ${showWeeklyUpgrade ? '<button type="button" class="btn btn--secondary btn--sm" data-next-action="premium">Odemknout týdenní souvislost</button>' : ''}
+            <a class="btn btn--glass btn--sm" href="/profil.html#journal-input" data-next-action="journal">${copy.journal}</a>
+            ${showWeeklyUpgrade ? `<button type="button" class="btn btn--secondary btn--sm" data-next-action="premium">${copy.weekly}</button>` : ''}
         </div>
         <p class="horoscope-feedback__status" aria-live="polite"></p>
     `;
@@ -197,21 +376,21 @@ function renderHoroscopeFeedbackAction(container, readingId, period) {
     container.appendChild(wrapper);
 }
 
-function buildHoroscopeUpsell(period) {
+function buildHoroscopeUpsell(period, language = getHoroscopeLanguage()) {
     const isWeekly = period === 'weekly';
-    const title = isWeekly ? 'Odemknete tydenni vyhled' : 'Odemknete mesicni vyhled';
-    const copy = isWeekly
-        ? 'Tydenni horoskop spojuje jednotlive dny do jednoho smeru a ukaze, kde ma smysl pridat a kde ubrat.'
-        : 'Mesicni horoskop dava sirsi kontext a pomuze vam cist delsi cyklus misto jedine dnesni nalady.';
+    const ui = getHoroscopeUiCopy(language).upsell;
+    const title = isWeekly ? ui.weeklyTitle : ui.monthlyTitle;
+    const copy = isWeekly ? ui.weeklyCopy : ui.monthlyCopy;
 
     return `
         <div class="card glass-card horoscope-upsell">
-            <div class="horoscope-upsell__eyebrow">Premium odemkne vic</div>
+            <div class="horoscope-upsell__eyebrow">${ui.eyebrow}</div>
             <h3 class="horoscope-upsell__title">${title}</h3>
             <p class="horoscope-upsell__copy">${copy}</p>
+            ${ui.notice ? `<p class="horoscope-upsell__copy">${ui.notice}</p>` : ''}
             <div class="horoscope-upsell__actions">
-                <button type="button" class="btn btn--primary horoscope-upsell-btn" data-plan="pruvodce" data-source="horoscope_inline_upsell" data-feature="${period}_horoscope">Odemknout Hvezdneho Pruvodce</button>
-                <a href="${buildHoroscopeUpgradeUrl(period)}" class="btn btn--glass">Nejdriv si projit plany</a>
+                <button type="button" class="btn btn--primary horoscope-upsell-btn" data-plan="pruvodce" data-source="horoscope_inline_upsell" data-feature="${period}_horoscope">${ui.button}</button>
+                <a href="${buildHoroscopeUpgradeUrl(period)}" class="btn btn--glass">${ui.plans}</a>
             </div>
         </div>
     `;
@@ -241,6 +420,8 @@ function initHoroscope() {
     const natalCta = document.getElementById('horoscope-natal-cta');
 
     let currentPeriod = 'daily';
+    const currentLang = getHoroscopeLanguage();
+    const uiCopy = getHoroscopeUiCopy(currentLang);
     let activationResultTracked = false;
     let activationOfferTracked = false;
     let activationSignName = '';
@@ -351,12 +532,6 @@ function initHoroscope() {
     const detailRelationships = document.getElementById('detail-relationships');
     const detailNumbers = document.getElementById('detail-numbers');
     const sectionBadge = document.querySelector('.horoscope-wrapper .section__badge');
-    const periodLabels = {
-        daily: 'Denni horoskop',
-        weekly: 'Tydenni horoskop',
-        monthly: 'Mesicni horoskop'
-    };
-
     const setActivePeriod = (period) => {
         currentPeriod = normalizeHoroscopePeriod(period) || 'daily';
         tabs.forEach((item) => {
@@ -366,7 +541,7 @@ function initHoroscope() {
         });
 
         if (sectionBadge) {
-            sectionBadge.textContent = periodLabels[currentPeriod] || 'Denni horoskop';
+            sectionBadge.textContent = uiCopy.periodLabels[currentPeriod] || uiCopy.periodLabels.daily;
         }
     };
 
@@ -376,7 +551,7 @@ function initHoroscope() {
     loadingState.innerHTML = `
         <div class="text-center">
             <span class="loading-spinner horoscope-loading__spinner"></span>
-            <p class="fade-in-text horoscope-loading__text">Naladeni na energii vaseho znameni...</p>
+            <p class="fade-in-text horoscope-loading__text">${uiCopy.loadingPrompt || 'Naladeni na energii vaseho znameni...'}</p>
         </div>
     `;
 
@@ -394,9 +569,9 @@ function initHoroscope() {
         if (!activationPanel) return;
         activationPanel.hidden = false;
         activationPanel.dataset.state = 'loading';
-        if (activationTitle) activationTitle.textContent = `Připravuji první osobní horoskop — ${signName}`;
+        if (activationTitle) activationTitle.textContent = uiCopy.activationLoadingTitle?.(signName) || `Připravuji první osobní horoskop — ${signName}`;
         if (activationCopy) {
-            activationCopy.textContent = 'Účet je hotový. Nic dalšího nenastavujete — výsledek se zobrazí rovnou tady.';
+            activationCopy.textContent = uiCopy.activationLoadingCopy || 'Účet je hotový. Nic dalšího nenastavujete — výsledek se zobrazí rovnou tady.';
         }
     };
 
@@ -404,9 +579,9 @@ function initHoroscope() {
         if (!activationPanel) return;
         activationPanel.hidden = false;
         activationPanel.dataset.state = 'complete';
-        if (activationTitle) activationTitle.textContent = `Dnešní horoskop je připravený — ${signName}`;
+        if (activationTitle) activationTitle.textContent = uiCopy.activationCompleteTitle?.(signName) || `Dnešní horoskop je připravený — ${signName}`;
         if (activationCopy) {
-            activationCopy.textContent = 'Přečtěte si ho níže. Zítra se vaše znamení otevře automaticky, takže ho nemusíte vybírat znovu.';
+            activationCopy.textContent = uiCopy.activationCompleteCopy || 'Přečtěte si ho níže. Zítra se vaše znamení otevře automaticky, takže ho nemusíte vybírat znovu.';
         }
 
         showActivationOffer(signName);
@@ -428,10 +603,10 @@ function initHoroscope() {
         if (!detailText) return;
 
         const reasonText = reason === 'auth'
-            ? '<p class="horoscope-upsell-reason">Pro tenhle typ horoskopu je potreba ucet, protoze si uklada hlubsi osobni kontext.</p>'
+            ? `<p class="horoscope-upsell-reason">${uiCopy.upsell.authReason}</p>`
             : '';
 
-        detailText.innerHTML = `${reasonText}${buildHoroscopeUpsell(period)}`;
+        detailText.innerHTML = `${reasonText}${buildHoroscopeUpsell(period, currentLang)}`;
         if (detailWork) {
             detailWork.innerHTML = '';
             detailWork.hidden = true;
@@ -486,7 +661,7 @@ function initHoroscope() {
     const selectZodiac = async (card, skipScroll = false) => {
         // Invalidate the previous result before observers see a different sign.
         if (detailSection) detailSection.dataset.loaded = 'false';
-        if (detailDate) detailDate.textContent = 'Načítám výklad…';
+        if (detailDate) detailDate.textContent = uiCopy.loadingLabel;
         if (detailWork) { detailWork.textContent = ''; detailWork.hidden = true; }
         if (detailRelationships) detailRelationships.hidden = true;
         if (detailNumbers) detailNumbers.parentElement.hidden = true;
@@ -511,42 +686,10 @@ function initHoroscope() {
             resultArt.dataset.sign = card.getAttribute('href')?.replace(/^#/, '') || '';
         }
 
-        const path = window.location.pathname;
-        let currentLang = 'cs';
-        if (path.includes('/sk/')) currentLang = 'sk';
-        else if (path.includes('/pl/')) currentLang = 'pl';
-
-        const periodLabels = {
-            cs: { daily: 'Dnes', weekly: 'Tento tyden', monthly: 'Tento mesic' },
-            sk: { daily: 'Dnes', weekly: 'Tento tyzden', monthly: 'Tento mesiac' },
-            pl: { daily: 'Dzisiaj', weekly: 'W tym tygodniu', monthly: 'W tym miesiacu' }
-        };
-
         if (contentContainer) contentContainer.classList.add('hidden');
         loadingState.classList.remove('hidden');
 
-        const loadingMessages = {
-            cs: [
-                'Načítám výklad pro tvé znamení…',
-                'Připravuji jeho zobrazení…'
-            ],
-            sk: [
-                'Nadvazujem spojenie s Vesmirom...',
-                'Citam postavenie vasich hviezd...',
-                'Analyzujem planetarne vplyvy...',
-                'Prekladam spravy osudu...',
-                'Finalizujem vasu predpoved...'
-            ],
-            pl: [
-                'Nawiazuje polaczenie z Wszechswiatem...',
-                'Czytam uklad Twoich gwiazd...',
-                'Analizuje wplywy planetarne...',
-                'Tlumacze przeslania losu...',
-                'Finalizuje Twoja przepowiednie...'
-            ]
-        };
-
-        const currentMsgs = loadingMessages[currentLang] || loadingMessages.cs;
+        const currentMsgs = uiCopy.loadingMessages;
         const loadingText = loadingState.querySelector('p');
         let msgIndex = 0;
 
@@ -588,7 +731,7 @@ function initHoroscope() {
                 lang: currentLang
             });
 
-            const dateLocales = { cs: 'cs-CZ', sk: 'sk-SK', pl: 'pl-PL' };
+            const dateLocales = { cs: 'cs-CZ', sk: 'sk-SK', pl: 'pl-PL', en: 'en-GB' };
             const today = new Date().toLocaleDateString(dateLocales[currentLang] || 'cs-CZ', {
                 timeZone: 'Europe/Prague',
                 day: 'numeric',
@@ -598,7 +741,7 @@ function initHoroscope() {
             });
 
             if (detailDate) {
-                detailDate.innerText = `${periodLabels[currentLang][currentPeriod] || periodLabels.cs[currentPeriod]} - ${today}`;
+                detailDate.innerText = `${uiCopy.periodDateLabels[currentPeriod] || uiCopy.periodDateLabels.daily} - ${today}`;
             }
 
             let predictionData;
@@ -610,10 +753,10 @@ function initHoroscope() {
                 predictionData = { prediction: data.response, affirmation: null, luckyNumbers: null };
             }
 
-            let cleanPrediction = predictionData.prediction || 'Energie jsou dnes nejasne...';
+            let cleanPrediction = predictionData.prediction || uiCopy.missingPrediction;
             const affirmationPatterns = [
-                /\*\*?(?:Afirmace|Afirmacia|Afirmacja):?\*?\*?\s*[^*]*\*?/gi,
-                /(?:Afirmace|Afirmacia|Afirmacja):\s*.+$/gim
+                /\*\*?(?:Afirmace|Afirmacia|Afirmacja|Affirmation):?\*?\*?\s*[^*]*\*?/gi,
+                /(?:Afirmace|Afirmacia|Afirmacja|Affirmation):\s*.+$/gim
             ];
 
             for (const pattern of affirmationPatterns) {
@@ -621,7 +764,7 @@ function initHoroscope() {
                 if (match && !extractedAffirmation) {
                     extractedAffirmation = match[0]
                         .replace(/\*+/g, '')
-                        .replace(/^(?:Afirmace|Afirmacia|Afirmacja):?\s*/i, '')
+                        .replace(/^(?:Afirmace|Afirmacia|Afirmacja|Affirmation):?\s*/i, '')
                         .trim();
                 }
                 cleanPrediction = cleanPrediction.replace(pattern, '').trim();
@@ -632,7 +775,7 @@ function initHoroscope() {
             }
 
             if (detailWork) {
-                const affLabel = { cs: 'Afirmace', sk: 'Afirmacia', pl: 'Afirmacja' }[currentLang] || 'Afirmace';
+                const affLabel = { cs: 'Afirmace', sk: 'Afirmacia', pl: 'Afirmacja', en: 'Affirmation' }[currentLang] || 'Afirmace';
                 const affirmationText = predictionData.affirmation || extractedAffirmation;
                 detailWork.hidden = !affirmationText;
                 if (affirmationText) {
@@ -679,7 +822,7 @@ function initHoroscope() {
                         favoriteBtn.className = 'text-center favorite-reading-action';
                         favoriteBtn.innerHTML = `
                             <button id="favorite-horoscope-btn" class="btn btn--glass favorite-reading-action__button">
-                                <span class="favorite-icon">&#9733;</span> Pridat do oblibenych
+                                <span class="favorite-icon">&#9733;</span> ${uiCopy.feedback.favorite}
                             </button>
                         `;
                         contentContainer.appendChild(favoriteBtn);
@@ -694,15 +837,15 @@ function initHoroscope() {
             }
         } catch (error) {
             console.error('Horoscope error:', error);
-            if (detailDate) detailDate.textContent = 'Výklad se nepodařilo načíst.';
+            if (detailDate) detailDate.textContent = uiCopy.loadDateError;
 
             if (detailText) {
                 if (error.status === 402 || error.code === 'PREMIUM_REQUIRED') {
                     renderInlineUpsell(currentPeriod, 'premium');
                 } else if (error.status === 429) {
-                    detailText.innerText = 'Dnešní limit výkladů je vyčerpaný. Další výklad bude dostupný zítra.';
+                    detailText.innerText = uiCopy.limitError;
                 } else {
-                    detailText.innerText = 'Výklad se teď nepodařilo načíst. Zkus to prosím později.';
+                    detailText.innerText = uiCopy.loadError;
                 }
             }
         } finally {

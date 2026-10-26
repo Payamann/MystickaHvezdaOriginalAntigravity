@@ -116,6 +116,19 @@ body.atlas-language-page .natal-local-result__more summary { cursor:pointer; col
 body.atlas-language-page .natal-local-result__more li { padding:5px 0; color:#c3c9cb; }
 body.atlas-language-page .natal-local-result__note { color:#c3c9cb; font-size:13px; line-height:1.7; }
 @media(max-width:600px) { body.atlas-language-page .natal-local-result__facts { grid-template-columns:1fr; } }
+
+/* Birth details are a form, not the shared horizontal newsletter row. */
+body.atlas-language-page #natal-form { display:grid; width:100%; grid-template-columns:minmax(0,1fr); gap:18px; align-items:stretch; }
+body.atlas-language-page #natal-form .form-group { min-width:0; }
+body.atlas-language-page #natal-form label { display:block; margin-bottom:8px; }
+body.atlas-language-page #natal-form input { width:100%; max-width:100%; min-width:0; box-sizing:border-box; }
+body.atlas-language-page .mh-inline-95a7c43a87 { grid-template-columns:repeat(2,minmax(0,1fr)); gap:2rem; }
+body.atlas-language-page .mh-inline-95a7c43a87 > * { min-width:0; }
+body.atlas-language-page .natal-chart-container { position:relative; min-height:260px; display:grid; place-items:center; }
+body.atlas-language-page .natal-chart-container img { max-width:360px; }
+body.atlas-page.atlas-language-page .mh-inline-cda7496188 { min-height:0; display:block; padding-top:112px; padding-bottom:24px; }
+body.atlas-language-page .mh-inline-cda7496188 + .section { padding-top:24px; }
+@media(max-width:768px) { body.atlas-language-page .mh-inline-95a7c43a87 { grid-template-columns:minmax(0,1fr); } }
 @media(max-width:360px) {
  body:is(.atlas-localized-yes-no,.atlas-localized-crystal) .logo__text { font-size:16px; }
  body:is(.atlas-localized-yes-no,.atlas-localized-crystal) .header__inner { gap:8px; }

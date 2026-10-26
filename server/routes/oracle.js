@@ -5,7 +5,7 @@
 import express from 'express';
 import { aiLimiter, authenticateToken, requireFeature, requirePremiumSoft, optionalPremiumCheck } from '../middleware.js';
 import { callClaude } from '../services/claude.js';
-import { CZECH_READING_VOICE_CONTRACT, SYSTEM_PROMPTS } from '../config/prompts.js';
+import { CZECH_READING_VOICE_CONTRACT, ENGLISH_READING_VOICE_CONTRACT, SYSTEM_PROMPTS } from '../config/prompts.js';
 import { assertCzechReadingVoice } from '../services/reading-quality.js';
 import {
     calculateMoonPhase,
@@ -45,6 +45,7 @@ const ANON_CRYSTAL_BALL_FREE_LIMIT = parseAnonymousCrystalBallFreeLimit(
 
 const DEFAULT_UPSELL_PLAN_ID = 'pruvodce';
 const ORACLE_LANGUAGES = Object.freeze({
+    en: 'English (EN)',
     cs: 'češtině (CZ)',
     sk: 'slovenčine (SK)',
     pl: 'poľštine (PL)'
@@ -52,7 +53,7 @@ const ORACLE_LANGUAGES = Object.freeze({
 
 export function buildOracleSystemPrompt(basePrompt, requestedLang = 'cs') {
     const lang = Object.hasOwn(ORACLE_LANGUAGES, requestedLang) ? requestedLang : 'cs';
-    const voiceContract = lang === 'cs' ? `\n\n${CZECH_READING_VOICE_CONTRACT}` : '';
+    const voiceContract = lang === 'cs' ? `\n\n${CZECH_READING_VOICE_CONTRACT}` : lang === 'en' ? `\n\n${ENGLISH_READING_VOICE_CONTRACT}` : '';
 
     return {
         lang,
@@ -128,6 +129,7 @@ function buildBirthCalculationInput(source = {}, overrides = {}) {
 // ─── Crystal Ball ──────────────────────────────────────────────────────────────
 
 function buildFallbackCrystalBallResponse({ question, moonPhase, lang = 'cs' }) {
+    if (lang === 'en') return `Question: “${question}”\n\nThis is a basic prompt for reflection. Write down what you already know and what still needs checking. Choose one small step within your control; a symbolic answer does not decide for you.`;
     if (lang === 'sk') return `Otázka: „${question}“\n\nToto je základný podnet k zamysleniu. Spíš si, čo už o situácii vieš a čo si ešte potrebuješ overiť. Vyber jeden malý krok, ktorý je v tvojich rukách; symbolická odpoveď nerozhoduje za teba.`;
     if (lang === 'pl') return `Pytanie: „${question}”\n\nTo podstawowa wskazówka do refleksji. Zapisz, co już wiesz o sytuacji, a co wymaga sprawdzenia. Wybierz jeden mały krok, na który masz wpływ; symboliczna odpowiedź nie podejmuje decyzji za ciebie.`;
     return [
@@ -143,6 +145,7 @@ router.post('/crystal-ball', optionalPremiumCheck, aiLimiter, async (req, res) =
         const { question, history = [], lang = 'cs' } = req.body;
 
         const errorMsgs = {
+            en: 'A question is required (maximum 1000 characters).',
             'cs': 'Otázka je povinná (max 1000 znaků).',
             'sk': 'Otázka je povinná (max 1000 znakov).',
             'pl': 'Pytanie jest wymagane (maks. 1000 znaków).'
@@ -168,15 +171,15 @@ router.post('/crystal-ball', optionalPremiumCheck, aiLimiter, async (req, res) =
                         // SOFT WALL: Show upgrade offer instead of hard block
                         return res.status(402).json({
                             success: false,
-                            error: 'Denní limit 3 otázek byl vyčerpán.',
+                            error: lang === 'en' ? 'Your daily limit of 3 questions has been reached.' : 'Denní limit 3 otázek byl vyčerpán.',
                             code: 'LIMIT_REACHED',
                             feature: 'crystal_ball_unlimited',
                             upsell: buildSubscriptionUpsell({
-                                title: 'Chcete neomezený přístup ke Křišťálové kouli?',
-                                message: 'Zažijte bez omezení. Hvězdný Průvodce vám otevře neomezený přístup.',
+                                title: lang === 'en' ? 'Would you like unlimited Crystal Ball access?' : 'Chcete neomezený přístup ke Křišťálové kouli?',
+                                message: lang === 'en' ? 'The Hvězdný Průvodce plan includes unlimited Crystal Ball questions.' : 'Zažijte bez omezení. Hvězdný Průvodce vám otevře neomezený přístup.',
                                 feature: 'crystal_ball_unlimited',
                                 source: 'crystal_ball_upsell',
-                                features: [
+                                features: lang === 'en' ? ['Unlimited questions', 'Deeper reflections', 'Save your history'] : [
                                     '✓ Neomezené otázky',
                                     '✓ Hlubší vhledy',
                                     '✓ Uložit historii'
@@ -188,6 +191,7 @@ router.post('/crystal-ball', optionalPremiumCheck, aiLimiter, async (req, res) =
                 } catch (limitError) {
                     console.warn('Crystal Ball quota reservation failed:', limitError);
                     const limitCheckMessages = {
+                        en: 'We could not check your daily limit. Please try again shortly.',
                         cs: 'Denní limit se teď nepodařilo ověřit. Zkus to prosím za chvíli znovu.',
                         sk: 'Denný limit sa teraz nepodarilo overiť. Skús to, prosím, o chvíľu znova.',
                         pl: 'Nie udało się teraz sprawdzić limitu dziennego. Spróbuj ponownie za chwilę.'
@@ -205,7 +209,7 @@ router.post('/crystal-ball', optionalPremiumCheck, aiLimiter, async (req, res) =
                     trackPaywallHit(null, 'crystal_ball_register_gate').catch(() => {});
                     return res.status(402).json({
                         success: false,
-                        error: 'První otázka je zdarma. Zaregistruj se zdarma a ptej se dál.',
+                        error: lang === 'en' ? 'Your first question is free. Create a free account to ask more questions.' : 'První otázka je zdarma. Zaregistruj se zdarma a ptej se dál.',
                         code: 'REGISTRATION_REQUIRED',
                         feature: 'kristalova_koule'
                     });
@@ -279,7 +283,7 @@ router.post('/crystal-ball', optionalPremiumCheck, aiLimiter, async (req, res) =
             }
         }
         console.error('Crystal Ball Error:', error);
-        res.status(500).json({ success: false, error: 'Křišťálová koule je zahalena mlhou...' });
+        res.status(500).json({ success: false, error: req.body?.lang === 'en' ? 'The Crystal Ball is temporarily unavailable. Please try again later.' : 'Křišťálová koule je zahalena mlhou...' });
     }
 });
 

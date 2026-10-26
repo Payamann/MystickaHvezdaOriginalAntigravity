@@ -140,12 +140,16 @@ const CZECH_SIGN_PROFILES = Object.freeze({
 });
 
 const FALLBACK_LABELS = Object.freeze({
+    en: Object.freeze({ daily: 'Daily inspiration', weekly: 'Weekly horoscope', monthly: 'Monthly horoscope' }),
     cs: Object.freeze({ daily: 'Denní inspirace', weekly: 'Týdenní horoskop', monthly: 'Měsíční horoskop' }),
     sk: Object.freeze({ daily: 'Denná inšpirácia', weekly: 'Týždenný horoskop', monthly: 'Mesačný horoskop' }),
     pl: Object.freeze({ daily: 'Dzienna inspiracja', weekly: 'Horoskop tygodniowy', monthly: 'Horoskop miesięczny' })
 });
 
 const FALLBACK_SIGN_NORMALIZATION = Object.freeze({
+    Aries: 'Beran', Taurus: 'Býk', Gemini: 'Blíženci', Cancer: 'Rak',
+    Leo: 'Lev', Virgo: 'Panna', Libra: 'Váhy', Scorpio: 'Štír',
+    Sagittarius: 'Střelec', Capricorn: 'Kozoroh', Aquarius: 'Vodnář', Pisces: 'Ryby',
     Baran: 'Beran',
     Škorpión: 'Štír',
     Strelec: 'Střelec',
@@ -192,7 +196,14 @@ function buildCzechPrediction(profile, period) {
 }
 
 function buildGenericLocalizedPrediction(sign, period, lang) {
+    const englishNames = { Beran: 'Aries', Býk: 'Taurus', Blíženci: 'Gemini', Rak: 'Cancer', Lev: 'Leo', Panna: 'Virgo', Váhy: 'Libra', Štír: 'Scorpio', Střelec: 'Sagittarius', Kozoroh: 'Capricorn', Vodnář: 'Aquarius', Ryby: 'Pisces' };
+    const englishSign = englishNames[FALLBACK_SIGN_NORMALIZATION[sign] || sign] || 'your sign';
     const localized = {
+        en: {
+            daily: [`Use the symbolism of ${englishSign} as a prompt to notice what needs your attention today.`, 'Separate what you know from what you are assuming.', 'Choose one small step within your control and try it today.'],
+            weekly: [`This week, use the symbolism of ${englishSign} to reflect on your direction.`, 'In relationships, name your needs without guessing another person’s intentions.', 'At work, choose one priority you can finish.', 'Notice where uncertainty leads you to postpone a choice.', 'By the end of the week, try one small step whose result you can assess.'],
+            monthly: [`This month, use the symbolism of ${englishSign} as a starting point for reflection.`, 'In relationships, speak openly and leave room for a reply.', 'At work, connect your longer-term direction to one manageable goal.', 'Make regular rest part of your routine.', 'Notice which expectations come from habit rather than your current needs.', 'Halfway through the month, review what is working and adjust one thing.', 'At the end of the month, keep a habit that has made a useful difference.']
+        },
         sk: {
             daily: [
                 `Dnešná energia znamenia ${sign} ťa pozýva vrátiť pozornosť k tomu, čo je teraz podstatné.`,
@@ -262,6 +273,8 @@ export function buildHoroscopeFallback({ sign, period = 'daily', lang = 'cs' } =
         prediction,
         affirmation: normalizedLang === 'cs'
             ? profile.affirmation
+            : normalizedLang === 'en'
+                ? 'I give my attention to what I can influence and turn reflection into one small, thoughtful step today.'
             : normalizedLang === 'sk'
                 ? 'Dôverujem svojmu vnútornému kompasu a premieňam dnešný vhľad na vedomý krok.'
                 : 'Ufam swojemu wewnętrznemu kompasowi i zamieniam dzisiejszy wgląd w świadomy krok.',

@@ -25,8 +25,15 @@ const SIGN_ACCUSATIVE = {
     'Střelec': 'Střelce', 'Kozoroh': 'Kozoroha', 'Vodnář': 'Vodnáře', 'Ryby': 'Ryby'
 };
 
-// Normalization map from SK/PL to CZ
+const ENGLISH_ZODIAC_SIGNS = Object.freeze({
+    Aries: 'Beran', Taurus: 'Býk', Gemini: 'Blíženci', Cancer: 'Rak',
+    Leo: 'Lev', Virgo: 'Panna', Libra: 'Váhy', Scorpio: 'Štír',
+    Sagittarius: 'Střelec', Capricorn: 'Kozoroh', Aquarius: 'Vodnář', Pisces: 'Ryby',
+});
+
+// Normalization map from EN/SK/PL to canonical Czech keys.
 const ZODIAC_NORMALIZATION = {
+    ...ENGLISH_ZODIAC_SIGNS,
     // Slovak
     'Baran': 'Beran',
     'Škorpión': 'Štír',
@@ -99,19 +106,19 @@ router.post('/', optionalPremiumCheck, async (req, res) => {
         }
 
         if (!sign || !VALID_ZODIAC_SIGNS.includes(sign)) {
-            return res.status(400).json({ success: false, error: 'Neplatné znamení zvěrokruhu.' });
+            return res.status(400).json({ success: false, error: lang === 'en' ? 'Invalid zodiac sign.' : 'Neplatné znamení zvěrokruhu.' });
         }
 
         if (!['daily', 'weekly', 'monthly'].includes(period)) {
-            return res.status(400).json({ success: false, error: 'Neplatné období.' });
+            return res.status(400).json({ success: false, error: lang === 'en' ? 'Invalid period.' : 'Neplatné období.' });
         }
 
         // Supported languages
-        const supportedLangs = ['cs', 'sk', 'pl'];
+        const supportedLangs = ['cs', 'sk', 'pl', 'en'];
         const targetLang = supportedLangs.includes(lang) ? lang : 'cs';
 
         // Language names for the prompt
-        const langNames = { 'cs': 'česky', 'sk': 'slovensky', 'pl': 'polsky' };
+        const langNames = { 'cs': 'česky', 'sk': 'slovensky', 'pl': 'polsky', 'en': 'anglicky' };
         const langName = langNames[targetLang];
 
         // PREMIUM GATE: Free users can only access daily horoscope (bypass in dev)
@@ -119,6 +126,7 @@ router.post('/', optionalPremiumCheck, async (req, res) => {
             const feature = period === 'weekly' ? 'weekly_horoscope' : 'monthly_horoscope';
             trackPaywallHit(req.user?.id, feature).catch(() => {});
             const errorMsgs = {
+                en: 'Weekly and monthly horoscopes are available to Premium users only.',
                 'cs': 'Týdenní a měsíční horoskopy jsou dostupné pouze pro Premium uživatele.',
                 'sk': 'Týždenné a mesačné horoskopy sú dostupné iba pre Premium používateľov.',
                 'pl': 'Horoskopy tygodniowe i miesięczne są dostępne tylko pro użytkowników Premium.'
@@ -176,6 +184,7 @@ router.post('/', optionalPremiumCheck, async (req, res) => {
 
         // Labels mapping
         const labels = {
+            en: { daily: 'Daily inspiration', weekly: 'Weekly horoscope', monthly: 'Monthly horoscope' },
             'cs': { 'daily': 'Denní inspirace', 'weekly': 'Týdenní horoskop', 'monthly': 'Měsíční horoskop' },
             'sk': { 'daily': 'Denná inšpirácia', 'weekly': 'Týždenný horoskop', 'monthly': 'Mesačný horoskop' },
             'pl': { 'daily': 'Dzienna inspiracja', 'weekly': 'Horoskop tygodniowy', 'monthly': 'Horoskop miesięczny' }
@@ -202,7 +211,7 @@ router.post('/', optionalPremiumCheck, async (req, res) => {
         };
         const signEnergy = SIGN_ENERGY[sign] ? `\nENERGIE ZNAMENÍ ${sign.toUpperCase()}: ${SIGN_ENERGY[sign]}. Přizpůsob tón, metafory a radu této energii.` : '';
 
-        const dateLocales = { 'cs': 'cs-CZ', 'sk': 'sk-SK', 'pl': 'pl-PL' };
+        const dateLocales = { 'cs': 'cs-CZ', 'sk': 'sk-SK', 'pl': 'pl-PL', 'en': 'en-GB' };
         const today = new Date();
         const dateStr = today.toLocaleDateString(dateLocales[targetLang], { timeZone: 'Europe/Prague' });
 
@@ -219,7 +228,15 @@ router.post('/', optionalPremiumCheck, async (req, res) => {
 
         periodPrompt = `${voiceContract}\n\n${periodPrompt.slice(ROLE_PREAMBLE.length)}`;
 
-        const message = `Vygeneruj horoskop pro znamení ${sign} na ${dateStr}.`;
+        if (targetLang === 'en') {
+            const englishSign = Object.keys(ENGLISH_ZODIAC_SIGNS).find(key => ENGLISH_ZODIAC_SIGNS[key] === sign) || sign;
+            const sentenceCount = { daily: 3, weekly: 5, monthly: 7 }[period];
+            periodPrompt = `${voiceContract}
+Create a ${period} symbolic horoscope for ${englishSign} for ${dateStr} (Europe/Prague). Use the traditional themes of this sign, without claiming a verified transit. Return only valid JSON with prediction (exactly ${sentenceCount} sentences), affirmation (a personal first-person present-tense reflection of 15–25 words) and luckyNumbers (four distinct integers from 1 to 49, for play rather than promised luck). Include one practical choice; for longer periods also consider relationships, work and rest without medical or financial advice. Do not invent key dates.${contextInstruction}`;
+        }
+        const message = targetLang === 'en'
+            ? `Generate the ${period} horoscope for ${sign} for ${dateStr} in English.`
+            : `Vygeneruj horoskop pro znamení ${sign} na ${dateStr}.`;
 
         const response = await callClaude(periodPrompt, message, null, {
             feature: `horoscope_${period}`
@@ -243,7 +260,7 @@ router.post('/', optionalPremiumCheck, async (req, res) => {
         // Fallback: return a static horoscope so users aren't left with empty page
         const { sign: bodySign, period: bodyPeriod = 'daily', lang: bodyLang = 'cs' } = req.body || {};
         const signName = bodySign || 'neznámé znamení';
-        const supportedLangs = ['cs', 'sk', 'pl'];
+        const supportedLangs = ['cs', 'sk', 'pl', 'en'];
         const fallbackTargetLang = supportedLangs.includes(bodyLang) ? bodyLang : 'cs';
         const fallbackPeriod = ['daily', 'weekly', 'monthly'].includes(bodyPeriod) ? bodyPeriod : 'daily';
 
@@ -316,7 +333,7 @@ router.post('/', optionalPremiumCheck, async (req, res) => {
             'Baran': 'Beran', 'Škorpión': 'Štír', 'Strelec': 'Střelec',
             'Kozorožec': 'Kozoroh', 'Vodnár': 'Vodnář',
         };
-        const signKey = SIGN_NORMALIZATION_FALLBACK[signName] || signName;
+        const signKey = ZODIAC_NORMALIZATION[signName] || SIGN_NORMALIZATION_FALLBACK[signName] || signName;
         const signData = SIGN_FALLBACKS[signKey] || SIGN_FALLBACKS['Beran'];
         const legacyLocalizedAffirmation = signData[fallbackTargetLang]?.affirmation;
         const fb = buildHoroscopeFallback({

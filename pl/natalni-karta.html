@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="description" content="Stwórz swój osobisty kosmogram i odkryj pozycje planet w momencie Twoich narodzin.">
+    <meta name="description" content="Podaj datę, godzinę i miejsce urodzenia. Zobacz po polsku pozycje Słońca, Księżyca i pozostałych planet; ascendent zależy od dokładności danych.">
     <meta name="keywords" content="kosmogram, horoskop urodzeniowy, planety, astrologia">
     <meta name="theme-color" content="#0b1929">
 
     <meta property="og:type" content="website">
-    <meta property="og:title" content="Kosmogram | Mistyczna Gwiazda">
-    <meta property="og:description" content="Stwórz swój osobisty kosmogram i odkryj pozycje planet w momencie Twoich narodzin.">
+    <meta property="og:title" content="Kosmogram online: pozycje planet | Mistyczna Gwiazda">
+    <meta property="og:description" content="Podaj datę, godzinę i miejsce urodzenia. Zobacz po polsku pozycje Słońca, Księżyca i pozostałych planet; ascendent zależy od dokładności danych.">
     <meta property="og:image" content="https://www.mystickahvezda.cz/img/search-preview/natal-pl.webp">
     <meta property="og:locale" content="pl_PL">
     
-    <title>Kosmogram | Mistyczna Gwiazda</title>
+    <title>Kosmogram online: pozycje planet | Mistyczna Gwiazda</title>
 
     <link rel="icon" type="image/svg+xml" href="/img/icons/mh-favicon.svg">
     <link rel="manifest" href="../manifest.json">
@@ -21,11 +21,13 @@
     <link rel="stylesheet" href="../css/pages/pl-natalni-karta.css">
     
     <link rel="canonical" href="https://www.mystickahvezda.cz/pl/natalni-karta.html">
+    <link rel="alternate" hreflang="en" href="https://www.mystickahvezda.cz/en/birth-chart.html">
     <link rel="alternate" hreflang="cs" href="https://www.mystickahvezda.cz/natalni-karta.html">
+    <link rel="alternate" hreflang="x-default" href="https://www.mystickahvezda.cz/natalni-karta.html">
     <link rel="alternate" hreflang="sk" href="https://www.mystickahvezda.cz/sk/natalni-karta.html">
     <link rel="alternate" hreflang="pl" href="https://www.mystickahvezda.cz/pl/natalni-karta.html">
     <script src="/js/dist/analytics-init.js" defer></script>
-    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Co muszę podać?", "acceptedAnswer": {"@type": "Answer", "text": "Datę urodzenia, możliwie dokładną godzinę i miejsce. Im dokładniejsza godzina, tym precyzyjniejszy ascendent i podział domów."}}, {"@type": "Question", "name": "Nie znam dokładnej godziny urodzenia. Czy to ma sens?", "acceptedAnswer": {"@type": "Answer", "text": "Tak. Położenie planet w znakach obowiązuje też bez godziny. Tracisz tylko ascendent i domy — wykład będzie nieco ogólniejszy."}}, {"@type": "Question", "name": "Czy obliczenie kosmogramu jest darmowe?", "acceptedAnswer": {"@type": "Answer", "text": "Podstawowe obliczenie i podgląd są darmowe. Szczegółowa osobista analiza z interpretacją jest częścią członkostwa premium."}}, {"@type": "Question", "name": "Jak często wracać do kosmogramu?", "acceptedAnswer": {"@type": "Answer", "text": "Kosmogram się nie zmienia — zmienia się twoja sytuacja życiowa. Warto wrócić przy dużych decyzjach albo raz w roku przy urodzinach."}}]}</script>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Co muszę podać?", "acceptedAnswer": {"@type": "Answer", "text": "Data i miejsce urodzenia są wymagane; godzinę możesz dodać, jeśli ją znasz. Dokładność godziny i rozpoznanie miejsca wpływają na obliczenie ascendentu."}}, {"@type": "Question", "name": "Nie znam dokładnej godziny urodzenia. Czy to ma sens?", "acceptedAnswer": {"@type": "Answer", "text": "Możesz sprawdzić orientacyjne pozycje planet. Bez dokładnej godziny część danych może być niedokładna, zwłaszcza Księżyc i ascendent. Uwzględnij to przy czytaniu wyniku."}}, {"@type": "Question", "name": "Czy obliczenie kosmogramu jest darmowe?", "acceptedAnswer": {"@type": "Answer", "text": "Podstawowe pozycje zobaczysz tutaj za darmo. Strona pokazuje zestawienie pozycji, a nie szczegółową osobistą interpretację. Konto, cennik i płatne usługi serwisu są na razie po czesku."}}, {"@type": "Question", "name": "Co znajdę w wyniku?", "acceptedAnswer": {"@type": "Answer", "text": "Znaki i stopnie Słońca, Księżyca oraz pozostałych planet. Ascendent pojawi się, jeśli da się go określić z podanych danych. Wynik nie jest przepowiednią przyszłości."}}]}</script>
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
@@ -35,6 +37,9 @@
 
     <link rel="stylesheet" href="/css/atlas-web.css?v=20261023-release-todo">
     <link rel="stylesheet" href="/css/atlas-remaining.css?v=20261023-release-todo">
+    <meta name="twitter:title" content="Kosmogram online: pozycje planet | Mistyczna Gwiazda">
+    <meta name="twitter:description" content="Podaj datę, godzinę i miejsce urodzenia. Zobacz po polsku pozycje Słońca, Księżyca i pozostałych planet; ascendent zależy od dokładności danych.">
+    <meta property="og:url" content="https://www.mystickahvezda.cz/pl/natalni-karta.html">
 </head>
 
 <body class="atlas-page atlas-remaining-page atlas-language-page">
@@ -43,10 +48,8 @@
     <main id="main-content">
         <section class="section section--hero mh-inline-cda7496188">
             <div class="container text-center">
-                <h1 class="hero__title mb-xl">
-                    <span class="text-gradient">Odkryj Swój Kod Kosmiczny</span>
-                </h1>
-                <p class="hero__subtitle">Twój kosmogram to mapa nieba w momencie Twoich narodzin. Odkryj swój ukryty potencjał.</p>
+                <h1 class="hero__title mb-xl"><span class="text-gradient">Kosmogram: pozycje planet przy urodzeniu</span></h1>
+                <p class="hero__subtitle">Podaj dane urodzenia i zobacz podstawowe pozycje Słońca, Księżyca oraz planet. Wynik to orientacyjne zestawienie pomocne przy poznawaniu astrologii.</p>
             </div>
         </section>
 
@@ -85,9 +88,9 @@
             <div class="container">
                 <div class="card">
                     <h2>Co pokaże ci kosmogram</h2>
-                    <p>Kosmogram (karta natalna) to mapa nieba w dokładnym momencie twoich narodzin. Pokazuje położenie Słońca, Księżyca i planet w znakach i domach — a z tego twoje mocne strony, powtarzające się schematy i tematy, które wracają w twoim życiu.</p>
-                    <p>Do obliczenia potrzebujesz daty, godziny i miejsca urodzenia. Godzina jest ważna ze względu na ascendent i domy; jeśli nie znasz jej dokładnie, wykład będzie ogólniejszy, ale nadal wartościowy.</p>
-                    <p>Wynikiem nie jest tabela pojęć, lecz zrozumiała analiza: jak działasz na zewnątrz, czego potrzebujesz w relacjach, gdzie leży twoja naturalna siła.</p>
+                    <p>Kosmogram powstaje na podstawie daty, godziny i miejsca urodzenia. Ten kalkulator wyświetla znaki i stopnie Słońca, Księżyca oraz pozostałych planet, a przy dostępnych danych także ascendent.</p>
+                    <p>Godzinę możesz pozostawić pustą. Wtedy niektóre pozycje są jedynie orientacyjne. Nawet przy podanej godzinie znaczenie ma poprawne rozpoznanie miejsca urodzenia.</p>
+                    <p>Wynik to krótkie zestawienie pozycji, a nie osobista interpretacja cech, relacji czy przyszłości. Symbolikę astrologiczną możesz wykorzystać do własnej nauki i refleksji.</p>
                 </div>
 
                 <div>
@@ -95,19 +98,19 @@
                     <h2>Pytania o kosmogram</h2>
                     <article class="card">
                         <h3>Co muszę podać?</h3>
-                        <p>Datę urodzenia, możliwie dokładną godzinę i miejsce. Im dokładniejsza godzina, tym precyzyjniejszy ascendent i podział domów.</p>
+                        <p>Data i miejsce urodzenia są wymagane; godzinę możesz dodać, jeśli ją znasz. Dokładność godziny i rozpoznanie miejsca wpływają na obliczenie ascendentu.</p>
                     </article>
                     <article class="card">
                         <h3>Nie znam dokładnej godziny urodzenia. Czy to ma sens?</h3>
-                        <p>Tak. Położenie planet w znakach obowiązuje też bez godziny. Tracisz tylko ascendent i domy — wykład będzie nieco ogólniejszy.</p>
+                        <p>Możesz sprawdzić orientacyjne pozycje planet. Bez dokładnej godziny część danych może być niedokładna, zwłaszcza Księżyc i ascendent. Uwzględnij to przy czytaniu wyniku.</p>
                     </article>
                     <article class="card">
                         <h3>Czy obliczenie kosmogramu jest darmowe?</h3>
-                        <p>Podstawowe obliczenie i podgląd są darmowe. Szczegółowa osobista analiza z interpretacją jest częścią członkostwa premium.</p>
+                        <p>Podstawowe pozycje zobaczysz tutaj za darmo. Strona pokazuje zestawienie pozycji, a nie szczegółową osobistą interpretację. Konto, cennik i płatne usługi serwisu są na razie po czesku.</p>
                     </article>
                     <article class="card">
-                        <h3>Jak często wracać do kosmogramu?</h3>
-                        <p>Kosmogram się nie zmienia — zmienia się twoja sytuacja życiowa. Warto wrócić przy dużych decyzjach albo raz w roku przy urodzinach.</p>
+                        <h3>Co znajdę w wyniku?</h3>
+                        <p>Znaki i stopnie Słońca, Księżyca oraz pozostałych planet. Ascendent pojawi się, jeśli da się go określić z podanych danych. Wynik nie jest przepowiednią przyszłości.</p>
                     </article>
                 </div>
 

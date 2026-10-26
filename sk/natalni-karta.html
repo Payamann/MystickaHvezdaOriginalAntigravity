@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="description" content="Vytvorte si svoju osobnú natálnu kartu a objavte pozície planét v okamihu vášho narodenia.">
+    <meta name="description" content="Zadaj dátum, čas a miesto narodenia. Zobraz si základné polohy Slnka, Mesiaca a ďalších planét po slovensky; ascendent závisí od presnosti údajov.">
     <meta name="keywords" content="natálna karta, horoskop narodenia, planéty, astrológia">
     <meta name="theme-color" content="#0b1929">
 
     <meta property="og:type" content="website">
-    <meta property="og:title" content="Natálna Karta | Mystická Hviezda">
-    <meta property="og:description" content="Vytvorte si svoju osobnú natálnu kartu a objavte pozície planét v okamihu vášho narodenia.">
+    <meta property="og:title" content="Natálna karta online: polohy planét | Mystická Hviezda">
+    <meta property="og:description" content="Zadaj dátum, čas a miesto narodenia. Zobraz si základné polohy Slnka, Mesiaca a ďalších planét po slovensky; ascendent závisí od presnosti údajov.">
     <meta property="og:image" content="https://www.mystickahvezda.cz/img/search-preview/natal-sk.webp">
     <meta property="og:locale" content="sk_SK">
     
-    <title>Natálna Karta | Mystická Hviezda</title>
+    <title>Natálna karta online: polohy planét | Mystická Hviezda</title>
 
     <link rel="icon" type="image/svg+xml" href="/img/icons/mh-favicon.svg">
     <link rel="manifest" href="../manifest.json">
@@ -21,11 +21,13 @@
     <link rel="stylesheet" href="../css/pages/sk-natalni-karta.css">
     
     <link rel="canonical" href="https://www.mystickahvezda.cz/sk/natalni-karta.html">
+    <link rel="alternate" hreflang="en" href="https://www.mystickahvezda.cz/en/birth-chart.html">
     <link rel="alternate" hreflang="cs" href="https://www.mystickahvezda.cz/natalni-karta.html">
+    <link rel="alternate" hreflang="x-default" href="https://www.mystickahvezda.cz/natalni-karta.html">
     <link rel="alternate" hreflang="sk" href="https://www.mystickahvezda.cz/sk/natalni-karta.html">
     <link rel="alternate" hreflang="pl" href="https://www.mystickahvezda.cz/pl/natalni-karta.html">
     <script src="/js/dist/analytics-init.js" defer></script>
-    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Čo všetko potrebujem zadať?", "acceptedAnswer": {"@type": "Answer", "text": "Dátum narodenia, čo najpresnejší čas a miesto. Čím presnejší čas, tým presnejší ascendent a rozdelenie domov."}}, {"@type": "Question", "name": "Neviem presný čas narodenia. Má to zmysel?", "acceptedAnswer": {"@type": "Answer", "text": "Áno. Postavenie planét v znameniach platí aj bez času. Prídeš len o ascendent a domy — výklad bude o niečo všeobecnejší."}}, {"@type": "Question", "name": "Je výpočet natálnej karty zadarmo?", "acceptedAnswer": {"@type": "Answer", "text": "Základný výpočet a náhľad sú zadarmo. Podrobný osobný rozbor s interpretáciou je súčasťou prémiového členstva."}}, {"@type": "Question", "name": "Ako často sa mám k natálnej karte vracať?", "acceptedAnswer": {"@type": "Answer", "text": "Karta sa nemení — mení sa tvoja životná situácia. Oplatí sa vrátiť pri veľkých rozhodnutiach alebo raz za rok pri narodeninách."}}]}</script>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Čo všetko potrebujem zadať?", "acceptedAnswer": {"@type": "Answer", "text": "Dátum a miesto narodenia sú povinné; čas môžeš doplniť, ak ho poznáš. Presnosť času a rozpoznanie miesta ovplyvňujú výpočet ascendentu."}}, {"@type": "Question", "name": "Neviem presný čas narodenia. Má to zmysel?", "acceptedAnswer": {"@type": "Answer", "text": "Môžeš si pozrieť orientačné polohy planét. Bez presného času môžu byť niektoré údaje nepresné, najmä Mesiac a ascendent; ber to do úvahy pri čítaní výsledku."}}, {"@type": "Question", "name": "Je výpočet natálnej karty zadarmo?", "acceptedAnswer": {"@type": "Answer", "text": "Základné polohy si tu zobrazíš zadarmo. Stránka ponúka prehľad polôh, nie podrobný osobný rozbor. Účet, cenník a platené služby webu sú zatiaľ v češtine."}}, {"@type": "Question", "name": "Čo nájdem vo výsledku?", "acceptedAnswer": {"@type": "Answer", "text": "Znamenie a stupne Slnka, Mesiaca a ďalších planét. Ascendent sa zobrazí, ak ho možno z dodaných údajov určiť. Výsledok nie je predpoveďou budúcnosti."}}]}</script>
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
@@ -35,6 +37,9 @@
 
     <link rel="stylesheet" href="/css/atlas-web.css?v=20261023-release-todo">
     <link rel="stylesheet" href="/css/atlas-remaining.css?v=20261023-release-todo">
+    <meta name="twitter:title" content="Natálna karta online: polohy planét | Mystická Hviezda">
+    <meta name="twitter:description" content="Zadaj dátum, čas a miesto narodenia. Zobraz si základné polohy Slnka, Mesiaca a ďalších planét po slovensky; ascendent závisí od presnosti údajov.">
+    <meta property="og:url" content="https://www.mystickahvezda.cz/sk/natalni-karta.html">
 </head>
 
 <body class="atlas-page atlas-remaining-page atlas-language-page">
@@ -43,10 +48,8 @@
     <main id="main-content">
         <section class="section section--hero mh-inline-e3e4c16824">
             <div class="container text-center">
-                <h1 class="hero__title mb-xl">
-                    <span class="text-gradient">Objavte Svoj Vesmírny Kód</span>
-                </h1>
-                <p class="hero__subtitle">Vaša natálna karta je mapa oblohy v okamihu vášho narodenia. Objavte svoj skrytý potenciál.</p>
+                <h1 class="hero__title mb-xl"><span class="text-gradient">Natálna karta: polohy pri narodení</span></h1>
+                <p class="hero__subtitle">Zadaj údaje narodenia a pozri si základné postavenie Slnka, Mesiaca a planét. Výsledok je orientačný prehľad, ktorý môžeš použiť pri štúdiu astrológie.</p>
             </div>
         </section>
 
@@ -54,19 +57,19 @@
             <div class="container">
                 <div class="grid grid-2 mh-inline-2df0356992">
                     <div class="card">
-                        <h2 class="section__title mb-lg">Údaje Narodenia</h2>
+                        <h2 class="section__title mb-lg">Údaje narodenia</h2>
                         <form id="natal-form" class="email-form">
                             <div class="form-group">
                                 <label for="birth-date">Dátum narodenia</label>
                                 <input type="date" id="birth-date" class="email-form__input" required>
                             </div>
                             <div class="form-group">
-                                <label for="birth-time">Čas narodenia (ak poznáte)</label>
+                                <label for="birth-time">Čas narodenia (ak poznáš)</label>
                                 <input type="time" id="birth-time" class="email-form__input">
                             </div>
                             <div class="form-group">
                                 <label for="birth-place">Miesto narodenia</label>
-                                <input type="text" id="birth-place" class="email-form__input" placeholder="Zadajte mesto..." required>
+                                <input type="text" id="birth-place" class="email-form__input" placeholder="Zadaj mesto..." required>
                             </div>
                             <button id="calculate-natal" type="submit" class="btn btn--primary btn--full mt-lg">Vypočítať natálnu kartu</button>
                         </form>
@@ -74,7 +77,7 @@
                     <div id="natal-result" class="text-center" role="status" aria-live="polite" aria-atomic="true">
                         <div class="natal-chart-container">
                             <img src="/img/atlas/tools-v1/01-astrolab.webp" alt="Natálna karta" class="mh-inline-d818421134" width="200" height="200">
-                            <p class="mh-inline-d966b0addf">Zadajte údaje pre vygenerovanie mapy</p>
+                            <p class="mh-inline-d966b0addf">Zadaj údaje a zobraz polohy planét</p>
                         </div>
                     </div>
                 </div>
@@ -85,9 +88,9 @@
             <div class="container">
                 <div class="card">
                     <h2>Čo ti prezradí natálna karta</h2>
-                    <p>Natálna karta je mapa oblohy v presnom okamihu tvojho narodenia. Ukazuje postavenie Slnka, Mesiaca a planét v znameniach a domoch — a z toho tvoje silné stránky, opakujúce sa vzorce aj témy, ktoré sa ti v živote vracajú.</p>
-                    <p>Na výpočet potrebuješ dátum, čas a miesto narodenia. Čas je dôležitý kvôli ascendentu a domom; ak ho nepoznáš presne, výklad bude všeobecnejší, ale stále užitočný.</p>
-                    <p>Výsledkom nie je tabuľka pojmov, ale zrozumiteľný rozbor: ako pôsobíš navonok, čo potrebuješ v vzťahoch, kde je tvoja prirodzená sila a na čo si dávať pozor.</p>
+                    <p>Natálna karta vychádza z dátumu, času a miesta narodenia. Tento nástroj zobrazí znamenia a stupne Slnka, Mesiaca a ďalších planét; pri dostupných údajoch aj ascendent.</p>
+                    <p>Čas môžeš nechať prázdny. Bez neho však niektoré polohy zostávajú len orientačné. Aj pri zadanom čase záleží na tom, či sa miesto narodenia správne rozpozná.</p>
+                    <p>Výsledok je stručný prehľad polôh, nie osobný výklad vlastností, vzťahov alebo budúcnosti. Astrologickú symboliku môžeš použiť ako tému na vlastné štúdium a zamyslenie.</p>
                 </div>
 
                 <div>
@@ -95,19 +98,19 @@
                     <h2>Otázky k natálnej karte</h2>
                     <article class="card">
                         <h3>Čo všetko potrebujem zadať?</h3>
-                        <p>Dátum narodenia, čo najpresnejší čas a miesto. Čím presnejší čas, tým presnejší ascendent a rozdelenie domov.</p>
+                        <p>Dátum a miesto narodenia sú povinné; čas môžeš doplniť, ak ho poznáš. Presnosť času a rozpoznanie miesta ovplyvňujú výpočet ascendentu.</p>
                     </article>
                     <article class="card">
                         <h3>Neviem presný čas narodenia. Má to zmysel?</h3>
-                        <p>Áno. Postavenie planét v znameniach platí aj bez času. Prídeš len o ascendent a domy — výklad bude o niečo všeobecnejší.</p>
+                        <p>Môžeš si pozrieť orientačné polohy planét. Bez presného času môžu byť niektoré údaje nepresné, najmä Mesiac a ascendent; ber to do úvahy pri čítaní výsledku.</p>
                     </article>
                     <article class="card">
                         <h3>Je výpočet natálnej karty zadarmo?</h3>
-                        <p>Základný výpočet a náhľad sú zadarmo. Podrobný osobný rozbor s interpretáciou je súčasťou prémiového členstva.</p>
+                        <p>Základné polohy si tu zobrazíš zadarmo. Stránka ponúka prehľad polôh, nie podrobný osobný rozbor. Účet, cenník a platené služby webu sú zatiaľ v češtine.</p>
                     </article>
                     <article class="card">
-                        <h3>Ako často sa mám k natálnej karte vracať?</h3>
-                        <p>Karta sa nemení — mení sa tvoja životná situácia. Oplatí sa vrátiť pri veľkých rozhodnutiach alebo raz za rok pri narodeninách.</p>
+                        <h3>Čo nájdem vo výsledku?</h3>
+                        <p>Znamenie a stupne Slnka, Mesiaca a ďalších planét. Ascendent sa zobrazí, ak ho možno z dodaných údajov určiť. Výsledok nie je predpoveďou budúcnosti.</p>
                     </article>
                 </div>
 

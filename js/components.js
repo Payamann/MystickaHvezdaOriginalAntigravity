@@ -160,7 +160,100 @@ const LOCALIZED_SHELL = {
             marketing: 'Marketingowe', reject: 'Odrzuć wszystkie', save: 'Zapisz ustawienia', accept: 'Akceptuj wszystkie',
             czechOnly: 'Link prowadzi do strony dostępnej tylko po czesku.'
         }
-    }
+    },
+    en: {
+        "suffix": " (CZ)",
+        "routes": {
+                "/index.html": "/en/",
+                "/horoskopy.html": "/en/horoscopes.html",
+                "/andelske-karty.html": "/en/angel-cards.html",
+                "/kristalova-koule.html": "/en/crystal-ball.html",
+                "/natalni-karta.html": "/en/birth-chart.html",
+                "/tarot.html": "/en/tarot.html"
+        },
+        "labels": {
+                "Domů": "Home",
+                "Astrologie": "Astrology",
+                "Věštění & Tarot": "Tarot",
+                "Čísla & Energie": "Numbers",
+                "Poznání": "Explore",
+                "Členství": "Membership",
+                "Horoskopy": "Horoscopes",
+                "Znamení zvěrokruhu": "Zodiac signs",
+                "Natální Karta": "Birth chart",
+                "Lunární Fáze": "Moon phases",
+                "Lunární Rituál": "Moon rituals",
+                "Astro Mapa": "Astrology map",
+                "Partnerská Shoda": "Relationship compatibility",
+                "Čínský Horoskop": "Chinese horoscope",
+                "Minulý Život": "Past life",
+                "Tarot": "Tarot",
+                "Tarot karta dne": "Daily tarot card",
+                "Tarot 3 karty": "Three-card tarot",
+                "Keltský kříž": "Celtic cross",
+                "Tarot na lásku": "Love tarot",
+                "Tarot ANO nebo NE": "Yes or no tarot",
+                "Významy karet": "Tarot card meanings",
+                "Andělské Karty": "Angel cards",
+                "Andělská Pošta": "Angel messages",
+                "Věštění z Run": "Rune readings",
+                "Křišťálová Koule": "Crystal ball",
+                "Lexikon Snů (Snář)": "Dream dictionary",
+                "Šamanské Kolo": "Medicine wheel",
+                "Numerologie": "Numerology",
+                "Kalkulačka čísla osudu": "Life path calculator",
+                "Aura Kalkulačka": "Aura calculator",
+                "Denní Afirmace": "Daily affirmations",
+                "Databáze Jmen": "Name meanings",
+                "Biorytmy": "Biorhythms",
+                "Ezoterický Slovník": "Symbolism glossary",
+                "Mystické Testy": "Quizzes",
+                "Mystický Blog": "Blog",
+                "Časté otázky": "Frequently asked questions",
+                "O nás": "About us",
+                "Osobní mapa na 12 měsíců": "Personal 12-month map",
+                "Průvodce": "Guide",
+                "Ceník členství": "Membership pricing",
+                "Profil": "Profile",
+                "Registrace": "Sign up",
+                "Přihlásit se": "Sign in",
+                "Tarot & Výklady": "Tarot and readings",
+                "Významy tarotových karet": "Tarot card meanings",
+                "Ceník": "Pricing",
+                "Napsat podpoře": "Contact support",
+                "Kontakt": "Contact",
+                "Hvězdný Průvodce": "Star Guide",
+                "Aura kalkulačka": "Aura calculator",
+                "FAQ (Časté dotazy)": "FAQ",
+                "Jak to funguje": "How it works",
+                "Obchodní podmínky": "Terms of service",
+                "Ochrana soukromí": "Privacy",
+                "Čeština": "Czech",
+                "Slovenčina": "Slovak",
+                "Polski": "Polish",
+                "English": "English"
+        },
+        "text": {
+                "menu": "Open main menu",
+                "nav": "Main navigation",
+                "footerDesc": "Tarot and astrology when you want a fresh perspective.",
+                "trust": "Operator of the Mystická Hvězda service.",
+                "feedback": "Was this page helpful?",
+                "yes": "Yes",
+                "no": "No",
+                "copyright": "© 2026 Mystická Hvězda. All rights reserved.",
+                "support": "Support:",
+                "languages": "Language versions",
+                "cookieText": "We use cookies to make the website work and for optional analytics.",
+                "necessary": "Necessary",
+                "analytics": "Analytics",
+                "marketing": "Marketing",
+                "reject": "Reject all",
+                "save": "Save settings",
+                "accept": "Accept all",
+                "czechOnly": "This link opens a page currently available only in Czech."
+        }
+}
 };
 
 function setLocalizedText(element, value) {
@@ -214,7 +307,8 @@ function localizeSharedShell(placeholder, elementId, locale) {
         placeholder.querySelectorAll('.footer__title').forEach((title, index) => {
             const translated = locale === 'sk'
                 ? ['Astrológia', 'Veštenie a energia', 'Poznanie', 'Podpora'][index]
-                : ['Astrologia', 'Wróżby i energia', 'Wiedza', 'Pomoc'][index];
+                : locale === 'pl' ? ['Astrologia', 'Wróżby i energia', 'Wiedza', 'Pomoc'][index]
+                : ['Astrology', 'Readings and symbolism', 'Explore', 'Support'][index];
             if (translated) setLocalizedText(title, translated);
         });
         const copyright = placeholder.querySelector('.footer__bottom > p');
@@ -230,7 +324,7 @@ function localizeSharedShell(placeholder, elementId, locale) {
         if (languages) {
             languages.setAttribute('aria-label', config.text.languages);
             const labelNode = Array.from(languages.childNodes).find((child) => child.nodeType === Node.TEXT_NODE && child.textContent.includes('Jazyk:'));
-            if (labelNode) labelNode.textContent = locale === 'sk' ? ' Jazyk: ' : ' Język: ';
+            if (labelNode) labelNode.textContent = locale === 'sk' ? ' Jazyk: ' : locale === 'pl' ? ' Język: ' : ' Language: ';
             languages.querySelectorAll('a').forEach((link) => {
                 const lang = link.getAttribute('lang');
                 if (lang === 'cs') setLocalizedText(link, config.labels['Čeština']);
@@ -283,8 +377,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Load header and footer in parallel for faster initial paint
     // Use high priority for header as it affects LCP/CLS
     await Promise.all([
-        loadComponent('header-placeholder', `${basePath}components/header.html?v=20261024-clear-navigation-1`, basePath, true),
-        loadComponent('footer-placeholder', `${basePath}components/footer.html?v=20261022-localized-shell-polish-1`, basePath, false)
+        loadComponent('header-placeholder', `${basePath}components/header.html?v=20261026-language-navigation`, basePath, true),
+        loadComponent('footer-placeholder', `${basePath}components/footer.html?v=20261026-language-navigation`, basePath, false)
     ]);
 
     // STANDALONE: Init hamburger menu + header scroll (no module dependency)
@@ -292,6 +386,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // before main.js's components:loaded listener calls initMobileNav().
     // This prevents the double-toggle bug caused by both handlers attaching a click listener.
     initStandaloneHeader();
+    initLanguageSwitcher();
 
     // Dispatch event to signal that UI shells are ready
     document.dispatchEvent(new Event('components:loaded'));
@@ -346,7 +441,7 @@ async function loadComponent(elementId, path, basePath = '', highPriority = fals
         element.innerHTML = html;
 
         const locale = document.documentElement.lang.slice(0, 2).toLowerCase();
-        if (locale === 'sk' || locale === 'pl') {
+        if (locale === 'sk' || locale === 'pl' || locale === 'en') {
             localizeSharedShell(element, elementId, locale);
         }
 
@@ -523,89 +618,60 @@ function initStandaloneHeader() {
 
     window.addEventListener('resize', syncNavA11y);
 
-    initLanguageSwitcher();
-
 }
 
 /**
  * Language switcher logic
  */
 function initLanguageSwitcher() {
-    const switcher = document.querySelector('.lang-switcher');
-    if (!switcher) return;
-
-    const btn = switcher.querySelector('.lang-switcher__btn');
-    const links = switcher.querySelectorAll('.lang-switcher__link');
-    const currentText = switcher.querySelector('.lang-switcher__current');
-
-    // Detect current language from URL
-    const path = window.location.pathname;
-    let currentLang = 'cs';
-    if (path.includes('/sk/')) currentLang = 'sk';
-    else if (path.includes('/pl/')) currentLang = 'pl';
-
-    // Update UI initial state
-    const langMap = { 'cs': 'CZ', 'sk': 'SK', 'pl': 'PL' };
-    if (currentText) currentText.textContent = langMap[currentLang];
-
-    links.forEach(link => {
-        const linkLang = link.dataset.lang;
-        if (linkLang === currentLang) {
-            link.classList.add('active');
-            // Also update the button text to match the active language just in case
-            if (currentText) currentText.textContent = langMap[linkLang];
-        } else {
-            link.classList.remove('active');
-        }
+    const currentLang = document.documentElement.lang.slice(0, 2).toLowerCase() || 'cs';
+    const homes = { cs: '/', sk: '/sk/', pl: '/pl/', en: '/en/' };
+    const names = { cs: 'Čeština', sk: 'Slovenčina', pl: 'Polski', en: 'English' };
+    const copy = {
+        cs: { label: 'Jazyk stránky', home: 'úvod', fallback: 'Tato stránka v tomto jazyce zatím není dostupná. Odkaz vede na jazykový úvod.' },
+        sk: { label: 'Jazyk stránky', home: 'úvod', fallback: 'Táto stránka v tomto jazyku zatiaľ nie je dostupná. Odkaz vedie na jazykový úvod.' },
+        en: { label: 'Page language', home: 'home', fallback: 'This page is not yet available in this language. This link opens the language home page.' },
+        pl: { label: 'Język strony', home: 'strona główna', fallback: 'Ta strona nie jest jeszcze dostępna w tym języku. Link prowadzi do strony głównej wybranej wersji.' }
+    }[currentLang] || { label: 'Jazyk stránky', home: 'úvod', fallback: 'Odkaz vede na jazykový úvod.' };
+    const equivalents = {};
+    // Use the same canonical language set as search engines, rather than a
+    // second route table which can invent missing translations or become stale.
+    const canonical = document.querySelector('link[rel="canonical"]');
+    const canonicalOrigin = canonical ? new URL(canonical.href, window.location.href).origin : window.location.origin;
+    document.querySelectorAll('link[rel="alternate"][hreflang]').forEach((link) => {
+        const lang = link.hreflang;
+        if (!homes[lang]) return;
+        const url = new URL(link.href, window.location.href);
+        if (url.origin === canonicalOrigin && /^https?:$/.test(url.protocol)) equivalents[lang] = url.pathname;
     });
+    // Untranslated pages keep their own current-language URL. Only languages
+    // without an equivalent fall back to their home, labelled explicitly.
+    equivalents[currentLang] ||= window.location.pathname;
+    const destination = (lang) => equivalents[lang] || homes[lang];
+    const label = (lang) => names[lang] + (equivalents[lang] ? '' : ` — ${copy.home}`);
 
-    // Toggle dropdown
-    btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        switcher.classList.toggle('open');
+    document.querySelectorAll('.footer__languages a[lang]').forEach((link) => {
+        const lang = link.lang;
+        if (!homes[lang]) return;
+        link.href = destination(lang);
+        link.textContent = label(lang);
+        if (lang === currentLang) link.setAttribute('aria-current', 'page');
+        else link.removeAttribute('aria-current');
+        if (!equivalents[lang]) link.title = copy.fallback;
+        else link.removeAttribute('title');
     });
-
-    // Close on click outside
-    document.addEventListener('click', () => switcher.classList.remove('open'));
-
-    // Handle language change
-    links.forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            const targetLang = link.dataset.lang;
-            if (targetLang === currentLang) return;
-
-            localStorage.setItem('mh_lang_pref', targetLang);
-            
-            // Keep language switching on an equivalent page when that locale
-            // has one. The localized inventory is intentionally smaller than
-            // the Czech site; unsupported paths go to that locale's home page
-            // instead of constructing a URL that returns 404.
-            const localizedRoutes = {
-                'index.html': { cs: '/index.html', sk: '/sk/', pl: '/pl/' },
-                'horoskopy.html': { cs: '/horoskopy.html', sk: '/sk/horoskopy.html', pl: '/pl/horoskopy.html' },
-                'andelske-karty.html': { cs: '/andelske-karty.html', sk: '/sk/andelske-karty.html', pl: '/pl/andelske-karty.html' },
-                'kristalova-koule.html': { cs: '/kristalova-koule.html', sk: '/sk/kristalova-koule.html', pl: '/pl/kristalova-koule.html' },
-                'natalni-karta.html': { cs: '/natalni-karta.html', sk: '/sk/natalni-karta.html', pl: '/pl/natalni-karta.html' },
-                'tarot.html': { cs: '/tarot.html', sk: '/sk/tarot.html', pl: '/pl/tarot.html' },
-                'tarot-ano-ne.html': { cs: '/tarot-ano-ne.html', sk: '/sk/tarot-ano-nie.html', pl: '/pl/' },
-                'tarot-ano-nie.html': { cs: '/tarot-ano-ne.html', sk: '/sk/tarot-ano-nie.html', pl: '/pl/' }
-            };
-            const currentPath = window.location.pathname;
-            const fileName = currentPath.split('/').filter(Boolean).pop() || 'index.html';
-            const targetPath = localizedRoutes[fileName]?.[targetLang]
-                || (targetLang === 'cs'
-                    ? currentPath.replace(/\/(sk|pl)\//, '/')
-                    : `/${targetLang}/`);
-
-            if (window.location.protocol === 'file:') {
-                const baseMatch = currentPath.match(/(.*\/MystickaHvezda\/)/i);
-                window.location.href = baseMatch
-                    ? baseMatch[1] + targetPath.replace(/^\/+/, '')
-                    : './' + targetPath.replace(/^\/+/, '');
-            } else {
-                window.location.href = targetPath;
-            }
+    document.querySelectorAll('[data-language-select]').forEach((select) => {
+        select.setAttribute('aria-label', copy.label);
+        Array.from(select.options).forEach((option) => {
+            option.textContent = label(option.value);
+            option.title = equivalents[option.value] ? names[option.value] : copy.fallback;
+        });
+        select.value = currentLang;
+        if (select.dataset.languageInitialized === 'true') return;
+        select.dataset.languageInitialized = 'true';
+        select.addEventListener('change', () => {
+            const target = destination(select.value);
+            if (target && select.value !== currentLang) window.location.assign(target);
         });
     });
 }

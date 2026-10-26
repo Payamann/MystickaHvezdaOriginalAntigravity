@@ -48,6 +48,20 @@ const CRYSTAL_UI_COPY = {
         memberLimit: 'W ramach członkostwa możesz korzystać z usługi zgodnie z limitami operacyjnymi.',
         silent: 'Kula nie odpowiada w tej chwili. Spróbuj ponownie za moment.',
         disconnected: 'Połączenie zostało przerwane.'
+    },
+    en: {
+        cooldown: seconds => `The crystal ball is gathering energy (${seconds}s)`,
+        ask: 'Ask the crystal ball',
+        limitTitle: 'Daily limit reached',
+        anonymousLimit: 'You have used today’s free answers. More answers are available with membership and are subject to service limits. Account setup, plans, payment, and membership messages are currently in Czech; prices are shown in Czech koruna.',
+        questionTooLongTitle: 'Question is too long',
+        questionTooLong: 'Your question is too long. Please shorten it.',
+        favorite: 'Add to favorites',
+        registrationTitle: 'Your first free question has been used',
+        registrationMessage: 'Create a free account to continue. A free account includes 3 questions per day. Account setup and related messages are currently in Czech.',
+        memberLimit: 'Membership use is subject to service limits. Account setup, plans, payment, and membership messages are currently in Czech; prices are shown in Czech koruna.',
+        silent: 'The stars are quiet…',
+        disconnected: 'The connection was interrupted. Please try again.'
     }
 };
 
@@ -57,7 +71,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function initCrystalBall() {
     const pageLanguage = document.documentElement.lang.toLowerCase();
-    const locale = pageLanguage.startsWith('pl') ? 'pl' : (pageLanguage.startsWith('sk') ? 'sk' : 'cs');
+    const locale = window.location.pathname.startsWith('/en/') || pageLanguage.startsWith('en')
+        ? 'en'
+        : (pageLanguage.startsWith('pl') ? 'pl' : (pageLanguage.startsWith('sk') ? 'sk' : 'cs'));
     const copy = CRYSTAL_UI_COPY[locale];
     const ballContainer = document.getElementById('crystal-ball');
     // Note: 'answer' ID is now below the ball in the HTML update
