@@ -1760,6 +1760,8 @@ export async function handleStripeWebhook(rawBody, sig) {
             case 'checkout.session.async_payment_succeeded':
                 if (event.data.object.metadata?.productType === 'relationship_tarot') {
                     await handleRelationshipTarotPurchase(event.data.object, event.id);
+                } else if (event.data.object.metadata?.productType === 'personal_map') {
+                    await handlePersonalMapPurchase(event.data.object, event.id);
                 }
                 break;
             case 'checkout.session.expired':
@@ -2135,25 +2137,23 @@ async function handleRocniHoroskopPurchase(session, stripeEventId = null) {
 
 /**
  * Handle one-time purchase of Osobní mapa.
- * Generates PDF via Claude + Playwright, sends via Resend.
+ * Uses durable order fulfillment for PDF generation and email delivery.
  */
 async function handlePersonalMapPurchase(session, stripeEventId = null) {
+    // Checkout completion alone does not prove payment for delayed methods.
+    if (session.mode !== 'payment' || session.payment_status !== 'paid') return;
     const orderInput = await getOneTimeOrderInput(session.metadata?.orderId);
     const payload = orderInput?.payload || {};
     const productId = session.metadata?.productId || orderInput?.product_id || 'osobni_mapa_2026';
-    const productYear = session.metadata?.productYear;
+    if (!orderInput || orderInput.product_type !== 'personal_map'
+        || orderInput.product_id !== productId || orderInput.stripe_session_id !== session.id) {
+        throw new Error('Invalid paid personal map order');
+    }
     const customerName = orderInput?.customer_name || session.metadata?.customerName;
     const birthDate = payload.birthDate || session.metadata?.birthDate;
-    const birthTime = payload.birthTime || session.metadata?.birthTime || '';
-    const birthPlace = payload.birthPlace || session.metadata?.birthPlace || '';
     const sign = payload.sign || session.metadata?.sign;
-    const grammaticalGender = payload.grammaticalGender || session.metadata?.grammaticalGender || 'neutral';
-    const focusArea = payload.focusArea || session.metadata?.focusArea || 'other';
     const focus = payload.focus || session.metadata?.focus || '';
-    const productPeriodStart = payload.productPeriodStart || session.metadata?.productPeriodStart || '';
-    const productPeriodEnd = payload.productPeriodEnd || session.metadata?.productPeriodEnd || '';
     const customerEmail = orderInput?.customer_email || session.metadata?.email || session.customer_email || session.customer_details?.email;
-    const year = Number(productYear) || new Date().getFullYear();
     const source = session.metadata?.source || 'personal_map_checkout';
 
     if (orderInput?.status === 'fulfilled') {
@@ -2199,23 +2199,10 @@ async function handlePersonalMapPurchase(session, stripeEventId = null) {
     setImmediate(async () => {
         try {
             const { fulfillPersonalMapOrder } = await import('./services/one-time-fulfillment.js');
-            await fulfillPersonalMapOrder({
-                customerName,
-                customerEmail,
-                payload: {
-                    birthDate,
-                    birthTime,
-                    birthPlace,
-                    sign,
-                    grammaticalGender,
-                    focusArea,
-                    focus,
-                    productYear: year,
-                    productPeriodStart,
-                    productPeriodEnd
-                }
-            });
-            await markOneTimeOrderInputFulfilled(orderInput?.id);
+            await fulfillPersonalMapOrder({ orderId: orderInput.id });
+            if (!await markOneTimeOrderInputFulfilled(orderInput.id)) {
+                throw new Error('Could not confirm personal map fulfillment');
+            }
             await recordFunnelEvent('one_time_pdf_delivered', {
                 source,
                 feature: productId,
