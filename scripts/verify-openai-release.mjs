@@ -42,7 +42,8 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
         clearTimeout(timer);
         process.exit(0);
     } catch (error) {
-        console.error(`[openai-release] Deployment blocked (${error.code || 'verification_failed'}). Check model access, key and AI budget; no fallback provider used.`);
+        const status = Number.isInteger(error.status) ? error.status : 'n/a';
+        console.error(`[openai-release] Deployment blocked (${error.code || 'verification_failed'}, HTTP ${status}). Check model access, key and AI budget; no fallback provider used.`);
         clearTimeout(timer);
         process.exit(1);
     }
