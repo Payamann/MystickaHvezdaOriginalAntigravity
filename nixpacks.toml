@@ -5,7 +5,8 @@ providers = ["node"]
   # server/services/chromium-launch.js resolves it on PATH, so we don't depend
   # on Playwright's bundled-browser download, which failed on Railway
   # ("Executable doesn't exist at /root/.cache/...").
-  nixPkgs = ["nodePackages.npm", "chromium"]
+  # Localization is rendered offline by build:js and requires Python 3.
+  nixPkgs = ["nodePackages.npm", "chromium", "python3"]
 
 [phases.install]
   cmds = ["npm install"]
@@ -14,6 +15,7 @@ providers = ["node"]
   # We launch the nix-provided chromium above, so skip Playwright's own
   # (unreliable) browser download during install.
   PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD = "1"
+  PYTHON_EXECUTABLE = "python3"
 
 [phases.build]
   cmds = ["npm run build:js", "npm run build:css"]

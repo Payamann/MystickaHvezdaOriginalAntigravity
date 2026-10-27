@@ -122,7 +122,7 @@ jobs:
           CSRF_SECRET: test-csrf-secret-for-ci-only
           SUPABASE_URL: https://placeholder.supabase.co
           SUPABASE_SERVICE_ROLE_KEY: placeholder-key-for-ci
-          ANTHROPIC_API_KEY: placeholder-key-for-ci
+          OPENAI_API_KEY: placeholder-key-for-ci
           STRIPE_SECRET_KEY: sk_test_placeholder
           STRIPE_WEBHOOK_SECRET: whsec_placeholder
 
@@ -241,6 +241,11 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Setup Python for localization build
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
 
       - name: Build CSS
         run: npm run build:css
