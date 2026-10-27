@@ -3,9 +3,9 @@
 Daily Reel — Voiceover Generator pro Mystickou Hvězdu
 ======================================================
 1. Načte denní horoskopy z Supabase cache
-2. Chybějící vygeneruje přes Claude API (stejný prompt jako web)
+2. Chybějící vygeneruje přes OpenAI API (stejný prompt jako web)
 3. Náhodně vybere 3 znamení (nebo dle --signs)
-4. Přes Claude API zformátuje do voiceover scriptu s [] stylovými tagy
+4. Přes OpenAI API zformátuje do voiceover scriptu s [] stylovými tagy
 
 Usage:
     python daily_reel.py                                  # dry-run guard, no live API/write
@@ -22,6 +22,7 @@ import hashlib
 import unicodedata
 import argparse
 import requests
+from openai_text import call_openai_text
 from datetime import date, timedelta
 from pathlib import Path
 
@@ -65,15 +66,15 @@ _load_env()
 
 SUPABASE_URL  = os.environ.get("SUPABASE_URL", "")
 SUPABASE_KEY  = os.environ.get("SUPABASE_SERVICE_ROLE_KEY", "")
-ANTHROPIC_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
+OPENAI_KEY = os.environ.get("OPENAI_API_KEY", "")
 WEBSITE_URL   = "https://www.mystickahvezda.cz"
-CREATIVE_MODEL = os.environ.get("DAILY_REEL_CREATIVE_MODEL", "claude-sonnet-4-5")
+CREATIVE_MODEL = os.environ.get("DAILY_REEL_CREATIVE_MODEL") or os.environ.get("OPENAI_MODEL", "gpt-6-luna")
 UTILITY_MODEL  = os.environ.get("DAILY_REEL_UTILITY_MODEL", CREATIVE_MODEL)
 API_STATS = ApiUsageStats()
 
 def require_live_environment():
-    if not SUPABASE_URL or not SUPABASE_KEY or not ANTHROPIC_KEY:
-        print("[CHYBA] Chybi promenne prostredi: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, ANTHROPIC_API_KEY")
+    if not SUPABASE_URL or not SUPABASE_KEY or not OPENAI_KEY:
+        print("[CHYBA] Chybi promenne prostredi: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, OPENAI_API_KEY")
         print("  Nastav je v server/.env nebo v systemovem prostredi.")
         sys.exit(1)
 
@@ -81,8 +82,8 @@ def require_live_environment():
 def explicit_write_enabled(args) -> bool:
     return bool(args.write) or os.environ.get("DAILY_REEL_ALLOW_WRITE") == "true"
 
-if False and (not SUPABASE_URL or not SUPABASE_KEY or not ANTHROPIC_KEY):
-    print("[CHYBA] Chybí proměnné prostředí: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, ANTHROPIC_API_KEY")
+if False and (not SUPABASE_URL or not SUPABASE_KEY or not OPENAI_KEY):
+    print("[CHYBA] Chybí proměnné prostředí: SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, OPENAI_API_KEY")
     print("  Nastav je v server/.env nebo v systémovém prostředí.")
     sys.exit(1)
 
@@ -184,7 +185,7 @@ def normalize_sign(sign: str) -> str:
     return ''.join(c for c in nfd if unicodedata.category(c) != 'Mn')
 
 def cache_key(sign: str, target_date: str) -> str:
-    # v3-cs-nocontext = produkční cache (horoskopy.html + Claude), stejná jako na webu
+    # v3-cs-nocontext = produkční cache (horoskopy.html + OpenAI), stejná jako na webu
     return f"{normalize_sign(sign)}_daily_{target_date}_v3-cs-nocontext"
 
 def supabase_headers() -> dict:
@@ -233,11 +234,10 @@ def save_to_cache(sign: str, target_date: str, response_json: dict):
     if resp.status_code not in (200, 201):
         print(f"  [!] Cache save warning pro {sign}: {resp.status_code}")
 
-# ─── Claude API ───────────────────────────────────────────────────────────────
+# ─── OpenAI API ───────────────────────────────────────────────────────────────
 
 def claude_call(system: str, user: str, max_tokens: int = 1000,
                 purpose: str | None = None, model: str | None = None) -> str:
-    import anthropic
     purpose = purpose or infer_claude_purpose()
     selected_model = model or model_for_purpose(purpose, CREATIVE_MODEL, UTILITY_MODEL)
     API_STATS.record(
@@ -247,17 +247,10 @@ def claude_call(system: str, user: str, max_tokens: int = 1000,
         user=user,
         max_tokens=max_tokens,
     )
-    client = anthropic.Anthropic(api_key=ANTHROPIC_KEY)
-    msg = client.messages.create(
-        model=selected_model,
-        max_tokens=max_tokens,
-        system=system,
-        messages=[{"role": "user", "content": user}]
-    )
-    return msg.content[0].text.strip()
+    return call_openai_text(OPENAI_KEY, system, user, max_tokens=max_tokens, model=selected_model)
 
 def generate_horoscope(sign: str, target_date: str) -> str:
-    """Vygeneruje horoskop přes Claude (stejný prompt jako web) a uloží do cache."""
+    """Vygeneruje horoskop přes OpenAI (stejný prompt jako web) a uloží do cache."""
     print(f"  [*] Generuji horoskop pro {sign}...")
     d = date.fromisoformat(target_date)
     date_cs = f"{d.day}. {MONTHS_CS[d.month - 1]} {d.year}"
@@ -458,7 +451,7 @@ Napiš Facebook description ve formátu:
 
 
 def build_voiceover(signs_data: dict, target_date: str) -> str:
-    """Sestaví voiceover script — texty znamení jsou doslovně z produkce, Claude generuje jen hook a outro."""
+    """Sestaví voiceover script — texty znamení jsou doslovně z produkce, OpenAI generuje jen hook a outro."""
     date_obj = date.fromisoformat(target_date)
     date_cs = f"{date_obj.day}. {MONTHS_CS[date_obj.month - 1]}"
 
@@ -546,7 +539,7 @@ def build_voiceover(signs_data: dict, target_date: str) -> str:
             "allowed_tags": allowed_tags,
         })
 
-    # Claude generuje celý script — hook, sekce znamení s bohatými tagy, outro
+    # OpenAI generuje celý script — hook, sekce znamení s bohatými tagy, outro
     weekday_names = ["Pondělí", "Úterý", "Středa", "Čtvrtek", "Pátek", "Sobota", "Neděle"]
     weekday_name = weekday_names[date_obj.weekday()]
 

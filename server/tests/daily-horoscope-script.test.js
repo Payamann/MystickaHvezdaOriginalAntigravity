@@ -1,8 +1,10 @@
+import { jest } from '@jest/globals';
 import {
     buildFallbackDailyHoroscope,
     filterDueSubscriptions,
     formatHoroscopeForEmail,
     getDailyHoroscopeDateKey,
+    getOrGenerateHoroscope,
     normalizeSignKey,
     resolveSupabaseUrl
 } from '../scripts/send-daily-horoscope.js';
@@ -79,5 +81,41 @@ describe('daily horoscope email script', () => {
         expect(ryby).toContain('Ryby');
         expect(beran).not.toBe(ryby);
         expect(beran.length).toBeGreaterThan(120);
+    });
+});
+
+
+describe('daily horoscope OpenAI generation', () => {
+    const now = new Date('2026-05-09T07:05:00Z');
+    function dependencies() {
+        return {
+            callAI: jest.fn().mockResolvedValue('Čerstvý horoskop.'),
+            callGemini: jest.fn(),
+            SYSTEM_PROMPTS: { horoscope: 'System prompt' },
+            getHoroscopeCacheKey: jest.fn().mockReturnValue('daily-key'),
+            getCachedHoroscope: jest.fn().mockResolvedValue(null),
+            saveCachedHoroscope: jest.fn().mockResolvedValue(undefined)
+        };
+    }
+    test('cached content avoids generation', async () => {
+        const deps = dependencies();
+        deps.getCachedHoroscope.mockResolvedValue({ response: 'Uložený horoskop.' });
+        await expect(getOrGenerateHoroscope('Beran', now, deps)).resolves.toBe('Uložený horoskop.');
+        expect(deps.callAI).not.toHaveBeenCalled();
+        expect(deps.callGemini).not.toHaveBeenCalled();
+    });
+    test('new generation uses shared OpenAI budget profile', async () => {
+        const deps = dependencies();
+        await expect(getOrGenerateHoroscope('Beran', now, deps)).resolves.toBe('Čerstvý horoskop.');
+        expect(deps.callAI).toHaveBeenCalledWith('System prompt', expect.any(String), null, { feature: 'horoscope_daily' });
+        expect(deps.callGemini).not.toHaveBeenCalled();
+        expect(deps.saveCachedHoroscope).toHaveBeenCalledWith('daily-key-cs-nocontext', 'Beran', 'daily', 'Čerstvý horoskop.', expect.any(String));
+    });
+    test('OpenAI failure uses existing local fallback without another provider', async () => {
+        const deps = dependencies();
+        deps.callAI.mockRejectedValue(new Error('unavailable'));
+        await expect(getOrGenerateHoroscope('Beran', now, deps)).resolves.toBe(buildFallbackDailyHoroscope('Beran', now));
+        expect(deps.callGemini).not.toHaveBeenCalled();
+        expect(deps.callAI).toHaveBeenCalledTimes(1);
     });
 });

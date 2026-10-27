@@ -622,8 +622,7 @@ function getRuntimeHealth() {
         (hasEnvValue('SUPABASE_URL') && hasEnvValue('SUPABASE_SERVICE_ROLE_KEY')) ||
         hasEnvValue('DATABASE_URL');
     const aiOk = process.env.MOCK_AI === 'true' ||
-        hasEnvValue('ANTHROPIC_API_KEY') ||
-        hasEnvValue('GEMINI_API_KEY');
+        hasEnvValue('OPENAI_API_KEY');
     const scheduledJobs = getBackgroundJobStatus();
     const emailQueueHealth = getEmailQueueHealth(scheduledJobs.emailQueue);
     const status = dbOk && aiOk && emailQueueHealth !== 'degraded' ? 'ok' : 'degraded';

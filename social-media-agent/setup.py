@@ -26,8 +26,7 @@ def main():
 
     missing_values = {}
     for key, prompt in (
-        ("OPENAI_API_KEY", "OpenAI API klíč pro generování textů"),
-        ("GEMINI_API_KEY", "Gemini API klíč pro generování obrázků"),
+        ("OPENAI_API_KEY", "OpenAI API klíč pro texty a obrázky"),
     ):
         if not env_values.get(key):
             value = getpass(f"{prompt} (vstup je skrytý, Enter přeskočí): ").strip()
@@ -50,53 +49,26 @@ def main():
     os.system(f"{sys.executable} -m pip install -r requirements.txt -q")
     print("✓ Závislosti nainstalovány")
 
-    # Test aktuálního textového providera.
-    print("\n🧪 Testuju OpenAI API pro generování textů...")
-    try:
-        from dotenv import load_dotenv
-        load_dotenv(env_path)
+    # Presence-only default; no paid text or image generation during setup.
+    from dotenv import load_dotenv
+    load_dotenv(env_path)
+    if not os.getenv("OPENAI_API_KEY"):
+        print("❌ OPENAI_API_KEY není nastaven. Bez něj generátory nefungují.")
+        sys.exit(1)
+    print("✓ OPENAI_API_KEY je nastaven; přístup k modelům zatím nebyl ověřen.")
 
-        openai_key = os.getenv("OPENAI_API_KEY")
-        if not openai_key:
-            print("❌ OPENAI_API_KEY není nastaven. Bez něj generátor textů nefunguje.")
-            sys.exit(1)
-
+    if "--check-models" in sys.argv:
         from openai import OpenAI
-        from config import TEXT_MODEL_FAST, TEXT_REASONING_EFFORT
-
-        client = OpenAI(api_key=openai_key)
-        response = client.responses.create(
-            model=TEXT_MODEL_FAST,
-            reasoning={"effort": TEXT_REASONING_EFFORT},
-            max_output_tokens=2048,
-            input="Odpověz jedním českým slovem: funguje.",
-        )
-        print(f"✓ OpenAI API funguje ({TEXT_MODEL_FAST}, reasoning={TEXT_REASONING_EFFORT}): {response.output_text.strip()}")
-
-    except Exception as e:
-        print(f"❌ Chyba OpenAI API: {e}")
-        print("   Zkontroluj OPENAI_API_KEY v .env souboru a přístup k modelu GPT-6 Luna")
-        sys.exit(1)
-
-    # Test Gemini API pro obrázky.
-    print("\n🧪 Testuju Gemini API pro generování obrázků...")
-    try:
-        from google import genai
-        from config import GEMINI_API_KEY
-
-        if not GEMINI_API_KEY:
-            print("⚠️  GEMINI_API_KEY není nastaven; generování obrázků nebude dostupné.")
-        else:
-            client = genai.Client(api_key=GEMINI_API_KEY)
-            client.models.generate_content(
-                model="gemini-2.0-flash",
-                contents="Odpověz jedním slovem: OK.",
-            )
-            print("✓ Gemini API funguje")
-    except Exception as e:
-        print(f"❌ Chyba Gemini API: {e}")
-        print("   Zkontroluj GEMINI_API_KEY v .env souboru")
-        sys.exit(1)
+        from config import TEXT_MODEL_FAST, IMAGE_MODEL
+        try:
+            client = OpenAI(base_url="https://api.openai.com/v1", max_retries=0, timeout=30)
+            for model in (TEXT_MODEL_FAST, IMAGE_MODEL):
+                client.models.retrieve(model)
+                print(f"✓ Model je dostupný v katalogu: {model}")
+            print("Kontrola katalogu nezaručuje oprávnění ke generování.")
+        except Exception:
+            print("❌ Nepodařilo se ověřit modely v OpenAI. Zkontroluj přístup účtu.")
+            sys.exit(1)
 
     print("\n" + "=" * 50)
     print("✅ Setup dokončen!")

@@ -3,7 +3,8 @@ import {
     listAIProfiles
 } from '../config/ai-profiles.js';
 import {
-    estimateClaudeCostMicroUsd
+    estimateClaudeCostMicroUsd,
+    estimateOpenAICostMicroUsd
 } from '../services/ai-budget.js';
 import {
     createAIResponseCacheKey,
@@ -19,24 +20,31 @@ describe('AI cost control', () => {
         resetAIResponseMemoryCache();
     });
 
-    test('routes short features to Haiku and deep paid work to Sonnet', () => {
+    test('uses OpenAI Luna for all work while retaining per-feature output caps', () => {
         expect(getAIProfile('briefing')).toMatchObject({
-            modelTier: 'haiku',
+            provider: 'openai', model: 'gpt-6-luna', modelTier: 'luna', reasoningEffort: 'none',
             maxTokens: 700
         });
-        expect(getAIProfile('daily_wisdom').modelTier).toBe('haiku');
+        expect(getAIProfile('daily_wisdom').modelTier).toBe('luna');
         expect(getAIProfile('annual_horoscope_pdf')).toMatchObject({
-            modelTier: 'sonnet',
+            modelTier: 'luna',
             maxTokens: 4096
         });
         expect(getAIProfile('personal_map_pdf')).toMatchObject({
-            modelTier: 'sonnet',
+            modelTier: 'luna',
             maxTokens: 12288
         });
         expect(listAIProfiles().mentor.maxTokens).toBeLessThan(2048);
+        for (const feature of Object.keys(listAIProfiles())) expect(getAIProfile(feature).model).toBe('gpt-6-luna');
+        expect(() => getAIProfile('default', { model: 'claude-sonnet-4-5' })).toThrow(/OpenAI/);
+        expect(() => getAIProfile('default', { modelTier: 'sonnet' })).toThrow(/OpenAI/);
     });
 
     test('estimates model cost from aggregate usage without prompt data', () => {
+        expect(estimateOpenAICostMicroUsd({ inputTokens: 1000, outputTokens: 100 })).toBe(150);
+        expect(estimateOpenAICostMicroUsd({ inputTokens: 1000, outputTokens: 100, cacheReadInputTokens: 400 })).toBe(114);
+        expect(estimateOpenAICostMicroUsd({ inputTokens: 1000, outputTokens: 100, cacheReadInputTokens: 2000 })).toBe(60);
+        // Historical estimators retain their old meaning for stored reports.
         expect(estimateClaudeCostMicroUsd({
             modelTier: 'haiku',
             inputTokens: 1000,

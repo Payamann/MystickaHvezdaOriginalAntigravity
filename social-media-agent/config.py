@@ -10,8 +10,7 @@ env_path = Path(__file__).parent / ".env"
 load_dotenv(env_path, override=True, encoding='utf-8')
 
 # === API KLÍČE ===
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")         # GPT-6 Luna — texty a komentáře
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")          # Gemini — generování obrázků (Imagen 3)
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")         # OpenAI — texty, komentáře a obrázky
 META_ACCESS_TOKEN = os.getenv("META_ACCESS_TOKEN", "")
 META_PAGE_ID = os.getenv("META_PAGE_ID", "")
 INSTAGRAM_ACCOUNT_ID = os.getenv("INSTAGRAM_ACCOUNT_ID", "")
@@ -24,9 +23,6 @@ BUFFER_PROFILE_ID = os.getenv("BUFFER_PROFILE_ID", "")  # Instagram profil ID v 
 # Zdarma na https://imgbb.com — nutné pro posty s obrázkem přes Buffer
 IMGBB_API_KEY = os.getenv("IMGBB_API_KEY", "")
 
-# === HUGGING FACE (generování obrázků — FLUX.1-schnell) ===
-# Zdarma na https://huggingface.co/settings/tokens (Read token)
-HF_API_TOKEN = os.getenv("HF_API_TOKEN", "")
 
 # === BRAND NASTAVENÍ ===
 BRAND_NAME = os.getenv("BRAND_NAME", "Mystická Hvězda")
@@ -44,7 +40,7 @@ if TEXT_REASONING_EFFORT not in {"none", "low", "medium", "high", "xhigh", "max"
     raise ValueError("TEXT_REASONING_EFFORT musí být none, low, medium, high, xhigh nebo max")
 # Responses API započítává reasoning tokeny do max_output_tokens.
 TEXT_MAX_OUTPUT_TOKENS = max(1024, int(os.getenv("TEXT_MAX_OUTPUT_TOKENS", "8192")))
-IMAGE_MODEL = "imagen-3.0-generate-002"       # Imagen 3 pro obrázky (Gemini zůstává jen pro obrázky)
+IMAGE_MODEL = "gpt-image-2.5-flare"  # OpenAI obrázky; textové cesty zůstávají GPT-6 Luna
 
 # === META GRAPH API ===
 GRAPH_API_VERSION = "v22.0"

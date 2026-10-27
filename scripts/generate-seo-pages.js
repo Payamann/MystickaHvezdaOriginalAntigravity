@@ -2,6 +2,8 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { config } from 'dotenv';
+import { callAI } from '../server/services/openai.js';
 
 // Validations and Setup
 const __filename = fileURLToPath(import.meta.url);
@@ -14,22 +16,7 @@ const OUTPUT_DIR = path.join(ROOT_DIR, 'kompatibilita');
 const ENV_FILE = path.join(ROOT_DIR, 'server', '.env');
 const SHOULD_WRITE = process.argv.includes('--write') || process.env.GENERATE_SEO_PAGES_ALLOW_WRITE === 'true';
 
-// Parse .env manually
-let GEMINI_API_KEY = '';
-try {
-    const envContent = fs.readFileSync(ENV_FILE, 'utf8');
-    const match = envContent.match(/GEMINI_API_KEY=(.*)/);
-    if (match) {
-        GEMINI_API_KEY = match[1].trim();
-    }
-} catch (e) {
-    if (SHOULD_WRITE) {
-        console.error('Error reading .env file:', e);
-        process.exit(1);
-    }
-}
-
-const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
+config({ path: ENV_FILE });
 
 // Load Data
 const zodiacSigns = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
@@ -83,32 +70,27 @@ Formát odpovědi musí být JSON objekt:
   "date_tip": "Vemte ho na..."
 }`;
 
-// Helper: Call Gemini
+// Helper: use the shared budgeted OpenAI text transport
 async function generateContent(sign1, sign2) {
     const prompt = `Znamení 1: ${sign1.name} (${sign1.element})
 Znamení 2: ${sign2.name} (${sign2.element})
 Vytvoř detailní rozbor kompatibility.`;
 
     try {
-        const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                contents: [{
-                    parts: [{
-                        text: `${SYSTEM_PROMPT}\n\n---\n\n${prompt}`
-                    }]
-                }],
-                generationConfig: {
-                    temperature: 0.7,
-                    response_mime_type: "application/json"
-                }
-            })
+        const text = await callAI(SYSTEM_PROMPT, prompt, null, {
+            feature: 'seo_compatibility',
+            maxTokens: 2048,
+            outputSchema: {
+                type: 'object',
+                properties: {
+                    score_number: { type: 'integer' },
+                    content: { type: 'string' },
+                    date_tip: { type: 'string' }
+                },
+                required: ['score_number', 'content', 'date_tip'],
+                additionalProperties: false
+            }
         });
-
-        const data = await response.json();
-        const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-        if (!text) throw new Error('No content generated');
         return JSON.parse(text);
 
     } catch (error) {
@@ -174,11 +156,11 @@ function extractSummary(html) {
 async function main() {
     if (!SHOULD_WRITE) {
         console.log('[DRY RUN] generate-seo-pages.js is guarded by default.');
-        console.log('Use --write or GENERATE_SEO_PAGES_ALLOW_WRITE=true to write pages and call Gemini.');
+        console.log('Use --write or GENERATE_SEO_PAGES_ALLOW_WRITE=true to write pages and call OpenAI.');
         return;
     }
-    if (!GEMINI_API_KEY) {
-        console.error('Missing GEMINI_API_KEY in server/.env.');
+    if (!process.env.OPENAI_API_KEY) {
+        console.error('Missing OPENAI_API_KEY in the environment or server/.env.');
         process.exit(1);
     }
     if (!fs.existsSync(OUTPUT_DIR)) {

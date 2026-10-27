@@ -117,7 +117,7 @@ export default defineConfig({
             SUPABASE_ANON_KEY: 'test-anon-key',
             STRIPE_SECRET_KEY: 'sk_test_placeholder',
             STRIPE_WEBHOOK_SECRET: 'whsec_placeholder',
-            ANTHROPIC_API_KEY: 'test-anthropic-key',
+            OPENAI_API_KEY: 'test-openai-key',
             RESEND_API_KEY: 'test-resend-key',
             SENTRY_DSN: '',
         },

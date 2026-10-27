@@ -215,7 +215,7 @@ describe('API Endpoint Tests', () => {
             });
         });
 
-        test('Health check recognizes Supabase and Anthropic production config', async () => {
+        test('Health check recognizes Supabase and OpenAI production config', async () => {
             await withTemporaryEnv({
                 MOCK_SUPABASE: undefined,
                 MOCK_AI: undefined,
@@ -223,7 +223,7 @@ describe('API Endpoint Tests', () => {
                 GEMINI_API_KEY: undefined,
                 SUPABASE_URL: 'https://project.supabase.co',
                 SUPABASE_SERVICE_ROLE_KEY: 'service-role-key',
-                ANTHROPIC_API_KEY: 'anthropic-key'
+                OPENAI_API_KEY: 'openai-key'
             }, async () => {
                 const res = await request(app).get('/api/health');
 
@@ -236,6 +236,19 @@ describe('API Endpoint Tests', () => {
             });
         });
 
+        test('Legacy provider keys do not make OpenAI readiness healthy', async () => {
+            await withTemporaryEnv({
+                MOCK_AI: undefined,
+                OPENAI_API_KEY: undefined,
+                ANTHROPIC_API_KEY: 'legacy-test-key',
+                GEMINI_API_KEY: 'legacy-test-key'
+            }, async () => {
+                const res = await request(app).get('/api/health');
+                expect(res.body.checks.ai).toBe('unavailable');
+                expect(res.body.status).toBe('degraded');
+            });
+        });
+
         test('Health check reports degraded when required runtime dependencies are missing', async () => {
             await withTemporaryEnv({
                 MOCK_SUPABASE: undefined,
@@ -244,7 +257,7 @@ describe('API Endpoint Tests', () => {
                 GEMINI_API_KEY: undefined,
                 SUPABASE_URL: undefined,
                 SUPABASE_SERVICE_ROLE_KEY: undefined,
-                ANTHROPIC_API_KEY: undefined
+                OPENAI_API_KEY: undefined
             }, async () => {
                 const res = await request(app).get('/api/health');
 

@@ -1,0 +1,33 @@
+{
+  "sk": {
+    "/index.html": "/sk/",
+    "/": "/sk/",
+    "/horoskopy.html": "/sk/horoskopy.html",
+    "/natalni-karta.html": "/sk/natalni-karta.html",
+    "/kristalova-koule.html": "/sk/kristalova-koule.html",
+    "/tarot.html": "/sk/tarot.html",
+    "/andelske-karty.html": "/sk/andelske-karty.html",
+    "/tarot-ano-ne.html": "/sk/tarot-ano-nie.html",
+    "/jak-to-funguje.html": "/sk/ako-to-funguje.html"
+  },
+  "pl": {
+    "/index.html": "/pl/",
+    "/": "/pl/",
+    "/horoskopy.html": "/pl/horoskopy.html",
+    "/natalni-karta.html": "/pl/natalni-karta.html",
+    "/kristalova-koule.html": "/pl/kristalova-koule.html",
+    "/tarot.html": "/pl/tarot.html",
+    "/andelske-karty.html": "/pl/andelske-karty.html",
+    "/jak-to-funguje.html": "/pl/jak-to-dziala.html"
+  },
+  "en": {
+    "/index.html": "/en/",
+    "/": "/en/",
+    "/horoskopy.html": "/en/horoscopes.html",
+    "/natalni-karta.html": "/en/birth-chart.html",
+    "/kristalova-koule.html": "/en/crystal-ball.html",
+    "/tarot.html": "/en/tarot.html",
+    "/andelske-karty.html": "/en/angel-cards.html",
+    "/jak-to-funguje.html": "/en/how-it-works.html"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "sourceLanguage": "cs",
+  "origin": "https://www.mystickahvezda.cz",
+  "policyVersion": "2026-10-26-v1",
+  "locales": {"sk": "Slovak", "pl": "Polish", "en": "English"},
+  "pages": [
+    {
+      "id": "how-it-works",
+      "source": "jak-to-funguje.html",
+      "kind": "editorial",
+      "reviewRequired": true,
+      "targets": {"sk": "sk/ako-to-funguje.html", "pl": "pl/jak-to-dziala.html", "en": "en/how-it-works.html"}
+    }
+  ],
+  "existingRoutes": {
+    "/index.html": {"sk": "/sk/", "pl": "/pl/", "en": "/en/"},
+    "/horoskopy.html": {"sk": "/sk/horoskopy.html", "pl": "/pl/horoskopy.html", "en": "/en/horoscopes.html"},
+    "/natalni-karta.html": {"sk": "/sk/natalni-karta.html", "pl": "/pl/natalni-karta.html", "en": "/en/birth-chart.html"},
+    "/kristalova-koule.html": {"sk": "/sk/kristalova-koule.html", "pl": "/pl/kristalova-koule.html", "en": "/en/crystal-ball.html"},
+    "/tarot.html": {"sk": "/sk/tarot.html", "pl": "/pl/tarot.html", "en": "/en/tarot.html"},
+    "/andelske-karty.html": {"sk": "/sk/andelske-karty.html", "pl": "/pl/andelske-karty.html", "en": "/en/angel-cards.html"},
+    "/tarot-ano-ne.html": {"sk": "/sk/tarot-ano-nie.html"}
+  }
+}

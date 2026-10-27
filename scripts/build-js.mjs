@@ -1,6 +1,7 @@
 import { copyFile, mkdir, readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { execFileSync } from 'node:child_process';
 import * as esbuild from 'esbuild';
 import { buildSharedToolData } from './build-shared-tool-data.mjs';
 
@@ -10,8 +11,29 @@ const rootDir = path.resolve(__dirname, '..');
 const jsDir = path.join(rootDir, 'js');
 const outDir = path.join(jsDir, 'dist');
 
+// Compile registered translations before public assets. This reads reviewed
+// cache only, never calls AI; stale/missing translations stop the build.
+try {
+    execFileSync(process.env.PYTHON_EXECUTABLE || 'python', ['scripts/localize_site.py', 'render', '--publish'], {
+        cwd: rootDir, encoding: 'utf8', stdio: 'pipe'
+    });
+    console.log('[locales] Generated reviewed pages from the Czech source and translation cache');
+} catch (error) {
+    throw new Error(`Localization build stopped. Run locales:plan, sync, preview and review first. ${error.stderr?.toString().trim() || ''}`);
+}
+
 const passthroughFiles = new Set(['three.min.js']);
 const skippedDirs = new Set(['dist', 'vendor']);
+const localizedRoutes = JSON.parse(await readFile(path.join(rootDir, 'data/localization/routes.json'), 'utf8'));
+for (const [locale, routes] of Object.entries(localizedRoutes)) {
+    if (!['sk', 'pl', 'en'].includes(locale)) throw new Error('Unsupported generated route locale');
+    for (const [source, target] of Object.entries(routes)) {
+        if (typeof target !== 'string' || !/^\/(?:[a-zA-Z0-9_-]+\/)*[a-zA-Z0-9_-]*\.?[a-zA-Z0-9_-]*$/.test(source)
+            || !target.startsWith(`/${locale}/`) || /[?#]|\.\.|\\/.test(target)) {
+            throw new Error('Invalid generated localization route');
+        }
+    }
+}
 await buildSharedToolData();
 
 async function collectEntries(dir = jsDir) {
@@ -73,6 +95,7 @@ if (classicEntries.length > 0) {
         bundle: false,
         format: 'iife',
         platform: 'browser',
+        define: { MH_BUILD_LOCALIZED_ROUTES: JSON.stringify(localizedRoutes) },
         logLevel: 'info'
     });
 }

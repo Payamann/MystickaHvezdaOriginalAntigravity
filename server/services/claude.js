@@ -19,16 +19,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.join(__dirname, '.env') });
 
-const CLAUDE_API_URL = 'https://api.anthropic.com/v1/messages';
+const OPENAI_API_URL = 'https://api.openai.com/v1/responses';
 const USE_MOCK_AI = process.env.MOCK_AI === 'true' || process.env.NODE_ENV === 'test';
-
-const API_KEY = (() => {
-    const key = process.env.ANTHROPIC_API_KEY;
-    if (!key) {
-        console.error('WARNING: ANTHROPIC_API_KEY is not defined in environment variables.');
-    }
-    return key;
-})();
 
 export {
     normalizeDailyAICallLimit,
@@ -74,7 +66,7 @@ function normalizeMessages(messageOrHistory) {
     }
 
     return messageOrHistory.map((message) => ({
-        role: message.role === 'mentor' || message.role === 'model' ? 'assistant' : 'user',
+        role: ['assistant', 'mentor', 'model'].includes(message.role) ? 'assistant' : 'user',
         content: String(message.content || '')
     }));
 }
@@ -86,152 +78,149 @@ function validateResponse(text, options) {
     return text;
 }
 
-/**
- * Calls Claude through the shared budget, model routing and telemetry layer.
- * Existing three-argument calls remain supported; feature options are the fourth argument.
- */
-export async function callClaude(systemPrompt, messageOrHistory, contextData = null, options = {}) {
-    if (USE_MOCK_AI) {
-        if (process.env.MOCK_AI_FORCE_ERROR === 'true') {
-            throw new Error('Forced mock AI error.');
+function transportError(code, message, status = null, retryable = false) {
+    return Object.assign(new Error(message), { code, status, retryable });
+}
+
+function completedText(data) {
+    if (data?.status !== 'completed' || data.error) {
+        throw transportError('AI_RESPONSE_INCOMPLETE', 'OpenAI response did not complete.');
+    }
+    const parts = [];
+    for (const item of data.output || []) {
+        if (item.type === 'reasoning') continue;
+        if (item.type !== 'message' || item.role !== 'assistant' || item.status !== 'completed') {
+            throw transportError('AI_RESPONSE_UNEXPECTED_OUTPUT', 'OpenAI returned unsupported output.');
         }
+        for (const content of item.content || []) {
+            if (content.type === 'refusal') {
+                throw transportError('AI_RESPONSE_REFUSED', 'OpenAI declined the request.');
+            }
+            if (content.type !== 'output_text' || typeof content.text !== 'string') {
+                throw transportError('AI_RESPONSE_UNEXPECTED_OUTPUT', 'OpenAI returned unsupported content.');
+            }
+            parts.push(content.text);
+        }
+    }
+    const text = parts.join('');
+    if (!text.trim()) throw transportError('AI_RESPONSE_EMPTY', 'OpenAI returned no text.');
+    return text;
+}
+
+// A single deadline covers both response headers and body consumption.
+async function requestResponse(requestBody, apiKey, timeoutMs) {
+    const controller = new AbortController();
+    let timer;
+    const timeout = new Promise((_, reject) => {
+        timer = setTimeout(() => {
+            controller.abort();
+            reject(transportError('AI_REQUEST_TIMEOUT', 'OpenAI API request timed out', null, true));
+        }, timeoutMs);
+    });
+    try {
+        return await Promise.race([timeout, (async () => {
+            const response = await fetch(OPENAI_API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
+                body: JSON.stringify(requestBody),
+                signal: controller.signal
+            });
+            if (!response.ok) {
+                // Never surface provider bodies: they can echo prompts or credentials.
+                const error = transportError('AI_HTTP_ERROR', `OpenAI API HTTP ${response.status}`, response.status,
+                    response.status === 429 || response.status >= 500);
+                const retryAfter = response.headers?.get?.('retry-after');
+                const seconds = Number(retryAfter);
+                error.retryAfterMs = retryAfter && Number.isFinite(seconds)
+                    ? Math.min(10000, Math.max(0, seconds * 1000)) : 0;
+                await response.body?.cancel?.();
+                throw error;
+            }
+            let data;
+            try { data = await response.json(); }
+            catch (error) {
+                if (error.name === 'AbortError') throw error;
+                throw transportError('AI_RESPONSE_INVALID_JSON', 'OpenAI returned invalid JSON.');
+            }
+            return { data, statusCode: response.status };
+        })()]);
+    } finally {
+        clearTimeout(timer);
+    }
+}
+
+/** Shared OpenAI transport. The legacy callClaude export is a compatibility alias only. */
+export async function callOpenAI(systemPrompt, messageOrHistory, contextData = null, options = {}) {
+    if (USE_MOCK_AI) {
+        if (process.env.MOCK_AI_FORCE_ERROR === 'true') throw new Error('Forced mock AI error.');
         return validateResponse(buildMockClaudeResponse(systemPrompt), options);
     }
-
     const profile = getAIProfile(options.feature || 'default', options);
-    const cacheInput = options.cacheTtlSeconds
-        ? (options.cacheInput || {
-            systemPrompt,
-            messageOrHistory,
-            contextData,
-            model: profile.model,
-            outputSchema: options.outputSchema || null
-        })
-        : null;
+    const reasoningEffort = profile.reasoningEffort || 'none';
+    const cacheInput = options.cacheTtlSeconds ? {
+        provider: 'openai', model: profile.model, reasoningEffort,
+        outputSchema: options.outputSchema || null,
+        input: options.cacheInput ?? { systemPrompt, messageOrHistory, contextData }
+    } : null;
     const cacheNamespace = options.cacheNamespace || profile.feature;
-
     if (cacheInput) {
         const cached = await getCachedAIResponse(cacheNamespace, cacheInput);
         if (cached) return validateResponse(cached.value, options);
     }
-
-    if (!API_KEY) {
-        throw new Error('ANTHROPIC_API_KEY is not defined in environment variables.');
-    }
-
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (!apiKey) throw transportError('AI_API_KEY_MISSING', 'OPENAI_API_KEY is not defined in environment variables.');
     const requestBody = {
         model: profile.model,
-        max_tokens: profile.maxTokens,
-        system: systemPrompt,
-        messages: appendContextToMessages(messageOrHistory, contextData)
+        store: false,
+        max_output_tokens: profile.maxTokens,
+        reasoning: { effort: reasoningEffort },
+        instructions: systemPrompt,
+        input: appendContextToMessages(messageOrHistory, contextData)
     };
     if (options.outputSchema) {
-        requestBody.output_config = { format: { type: 'json_schema', schema: options.outputSchema } };
+        requestBody.text = { format: {
+            type: 'json_schema', name: 'structured_response', strict: true, schema: options.outputSchema
+        } };
     }
-
-    let lastError;
     for (let attempt = 0; attempt <= profile.maxRetries; attempt += 1) {
+        // Reserve every network attempt, including retries, before sending anything.
+        const reservation = await reserveAIRequest({ feature: profile.feature, model: profile.model });
         const startedAt = Date.now();
         let statusCode = null;
-        let reservationDate = new Date().toISOString().slice(0, 10);
-
+        let usage = {};
+        let receivedResponse = false;
         try {
-            const reservation = await reserveAIRequest({
-                feature: profile.feature,
-                model: profile.model
-            });
-            reservationDate = reservation.date;
-
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), profile.timeoutMs);
-            let response;
-            try {
-                response = await fetch(CLAUDE_API_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-api-key': API_KEY,
-                        'anthropic-version': '2023-06-01'
-                    },
-                    body: JSON.stringify(requestBody),
-                    signal: controller.signal
-                });
-            } finally {
-                clearTimeout(timeoutId);
-            }
-
-            statusCode = response.status;
-            if (!response.ok) {
-                const apiError = new Error(
-                    `Claude API Error (${response.status}): ${await response.text()}`
-                );
-                apiError.retryable = response.status === 429
-                    || response.status === 529
-                    || response.status >= 500;
-                throw apiError;
-            }
-
-            const data = await response.json();
-            const text = data.content?.[0]?.text;
-            if (!text) throw new Error('No content returned from Claude.');
-            validateResponse(text, options);
-
-            recordAIRequestOutcome({
-                dateKey: reservationDate,
-                feature: profile.feature,
-                model: profile.model,
-                modelTier: profile.modelTier,
-                success: true,
-                usage: data.usage || {},
-                durationMs: Date.now() - startedAt,
-                statusCode
-            }).catch(() => {});
-
+            const result = await requestResponse(requestBody, apiKey, profile.timeoutMs);
+            receivedResponse = true;
+            statusCode = result.statusCode;
+            usage = result.data.usage || {};
+            const text = validateResponse(completedText(result.data), options);
+            recordAIRequestOutcome({ dateKey: reservation.date, feature: profile.feature, model: profile.model,
+                modelTier: profile.modelTier, success: true, usage, durationMs: Date.now() - startedAt, statusCode }).catch(() => {});
             if (cacheInput) {
-                setCachedAIResponse(
-                    cacheNamespace,
-                    cacheInput,
-                    text,
-                    options.cacheTtlSeconds
-                ).catch(() => {});
+                setCachedAIResponse(cacheNamespace, cacheInput, text, options.cacheTtlSeconds).catch(() => {});
             }
-
             return text;
         } catch (error) {
-            lastError = error;
-            if (error.code === 'AI_DAILY_BUDGET_EXHAUSTED') {
-                console.error('[Claude Service] Daily request budget exhausted');
+            const timedOut = error.name === 'AbortError' || error.code === 'AI_REQUEST_TIMEOUT';
+            const retryable = !receivedResponse && (timedOut || error.retryable === true || error instanceof TypeError);
+            recordAIRequestOutcome({ dateKey: reservation.date, feature: profile.feature, model: profile.model,
+                modelTier: profile.modelTier, success: false, usage, durationMs: Date.now() - startedAt,
+                statusCode: statusCode || error.status || null }).catch(() => {});
+            if (!retryable || attempt >= profile.maxRetries) {
+                // Validation errors retain their typed domain codes; never log their payloads.
+                if (timedOut) throw transportError('AI_REQUEST_TIMEOUT', 'OpenAI API request timed out');
+                if (!receivedResponse && error instanceof TypeError) throw transportError('AI_NETWORK_ERROR', 'OpenAI API network request failed');
                 throw error;
             }
-
-            const timedOut = error.name === 'AbortError';
-            const retryable = timedOut || error.retryable === true || error instanceof TypeError;
-            recordAIRequestOutcome({
-                dateKey: reservationDate,
-                feature: profile.feature,
-                model: profile.model,
-                modelTier: profile.modelTier,
-                success: false,
-                durationMs: Date.now() - startedAt,
-                statusCode
-            }).catch(() => {});
-
-            if (!retryable || attempt >= profile.maxRetries) {
-                console.error('[Claude Service] Error:', error.message);
-                throw timedOut ? new Error('Claude API request timed out') : error;
-            }
-
-            const delay = Math.pow(2, attempt + 1) * 1000;
-            console.warn(
-                `[Claude Service] Retry in ${delay}ms `
-                + `(attempt ${attempt + 1}/${profile.maxRetries}, feature ${profile.feature})`
-            );
+            const delay = Math.max(error.retryAfterMs || 0, Math.min(10000, 2 ** (attempt + 1) * 1000));
             await new Promise(resolve => setTimeout(resolve, delay));
         }
     }
-
-    throw lastError;
 }
+
+export const callAI = callOpenAI;
+export const callClaude = callOpenAI;
 
 function buildMockClaudeResponse(systemPrompt = '') {
     if (process.env.MOCK_AI_FORCE_INVALID_JSON === 'true') {

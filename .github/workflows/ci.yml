@@ -73,6 +73,9 @@ jobs:
       - name: Run site audit
         run: npm run audit:site
 
+      - name: Check generated localization freshness (offline)
+        run: npm run locales:check && npm run locales:test
+
       - name: Run sitemap canonical check
         run: npm run sitemap:check
 

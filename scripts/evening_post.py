@@ -28,6 +28,7 @@ import os
 import json
 import random
 import argparse
+from openai_text import call_openai_text
 import math
 from datetime import date, timedelta
 from pathlib import Path
@@ -55,18 +56,18 @@ def _load_env():
 
 _load_env()
 
-ANTHROPIC_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
+OPENAI_KEY = os.environ.get("OPENAI_API_KEY", "")
 def require_live_environment():
-    if not ANTHROPIC_KEY:
-        print("[CHYBA] Chybi ANTHROPIC_API_KEY v server/.env")
+    if not OPENAI_KEY:
+        print("[CHYBA] Chybi OPENAI_API_KEY v server/.env")
         sys.exit(1)
 
 
 def explicit_generation_enabled(args) -> bool:
     return bool(args.write) or os.environ.get("EVENING_POST_ALLOW_WRITE") == "true"
 
-if False and not ANTHROPIC_KEY:
-    print("[CHYBA] Chybí ANTHROPIC_API_KEY v server/.env")
+if False and not OPENAI_KEY:
+    print("[CHYBA] Chybí OPENAI_API_KEY v server/.env")
     sys.exit(1)
 
 if hasattr(sys.stdout, "reconfigure"):
@@ -624,18 +625,10 @@ def pick_topic(mem: dict, post_type: str, force_topic: str = None,
     chosen = random.choice(top)
     return chosen[0], chosen[1], None
 
-# ─── Claude API ───────────────────────────────────────────────────────────────
+# ─── OpenAI API ───────────────────────────────────────────────────────────────
 
 def claude_call(system: str, user: str, max_tokens: int = 800) -> str:
-    import anthropic
-    client = anthropic.Anthropic(api_key=ANTHROPIC_KEY)
-    msg = client.messages.create(
-        model="claude-sonnet-4-5",
-        max_tokens=max_tokens,
-        system=system,
-        messages=[{"role": "user", "content": user}]
-    )
-    return msg.content[0].text.strip()
+    return call_openai_text(OPENAI_KEY, system, user, max_tokens=max_tokens, model=os.environ.get("OPENAI_MODEL", "gpt-6-luna"))
 
 # ─── Generování postu ─────────────────────────────────────────────────────────
 

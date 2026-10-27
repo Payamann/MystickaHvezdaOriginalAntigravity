@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "pages": {
+    "how-it-works/sk": {
+      "sourceHash": "7987897d42f7d94dd0256e8dab0e9daec7e48e26967af48fa0171e0575e3ca81",
+      "translationHash": "56119adc82124b21722332b769a651dab9f6b91bc83cc5f4ce7558e023a824f6"
+    },
+    "how-it-works/pl": {
+      "sourceHash": "7987897d42f7d94dd0256e8dab0e9daec7e48e26967af48fa0171e0575e3ca81",
+      "translationHash": "9df46bf60d0bff391ee44c23432c2c3f220c036ff34d8736eae1e25c32e036c7"
+    },
+    "how-it-works/en": {
+      "sourceHash": "7987897d42f7d94dd0256e8dab0e9daec7e48e26967af48fa0171e0575e3ca81",
+      "translationHash": "9417f490b830b2c84bc027cb0e1bd3f03dc0d6e184431a1e1992971b6715f8fc"
+    }
+  }
+}

@@ -66,15 +66,18 @@ for (const filePath of walk(serverDir)) {
     const source = fs.readFileSync(filePath, 'utf8');
     const relativePath = path.relative(rootDir, filePath).replaceAll('\\', '/');
 
-    if (filePath !== allowedProviderFile
-        && (source.includes('api.anthropic.com') || source.includes("'anthropic-version'"))) {
-        violations.push(`${relativePath}: direct Anthropic API access`);
+    if (source.includes('api.anthropic.com') || source.includes("'anthropic-version'") || source.includes('generativelanguage.googleapis.com')) {
+        violations.push(`${relativePath}: forbidden legacy provider access`);
+    }
+    if (filePath !== allowedProviderFile && source.includes('api.openai.com')) {
+        violations.push(`${relativePath}: OpenAI access outside shared budgeted transport`);
     }
 
-    if (filePath !== allowedProviderFile && source.includes('callClaude(')) {
-        for (const call of extractCalls(source, 'callClaude')) {
+    for (const functionName of ['callClaude', 'callAI', 'callOpenAI']) {
+        if (filePath === allowedProviderFile || !source.includes(`${functionName}(`)) continue;
+        for (const call of extractCalls(source, functionName)) {
             if (!call.includes('feature:')) {
-                violations.push(`${relativePath}: callClaude without an explicit feature profile`);
+                violations.push(`${relativePath}: ${functionName} without an explicit feature profile`);
             }
         }
     }

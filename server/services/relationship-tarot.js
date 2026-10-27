@@ -122,7 +122,7 @@ Vrať pouze JSON podle dodaného schématu.`;
     const input = JSON.stringify({ question, cards: cards.map(({ name, position, meaning }) => ({ name, position, meaning })) });
     const generate = async prompt => {
         const raw = await callClaude(prompt, input, null, {
-            feature: 'relationship_tarot', model: process.env.ANTHROPIC_RELATIONSHIP_MODEL || 'claude-sonnet-4-6',
+            feature: 'relationship_tarot', model: process.env.OPENAI_RELATIONSHIP_MODEL || process.env.OPENAI_MODEL || 'gpt-6-luna',
             outputSchema: RELATIONSHIP_READING_SCHEMA, validateResponse: parseRelationshipReading
         });
         return parseRelationshipReading(raw);

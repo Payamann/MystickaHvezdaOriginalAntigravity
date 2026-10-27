@@ -108,15 +108,13 @@ async function getRuntimeDeps() {
 
     const [
         { createClient },
-        { callClaude },
-        { callGemini },
+        { callAI },
         { SYSTEM_PROMPTS },
         { sendEmail },
         astrology
     ] = await Promise.all([
         import('@supabase/supabase-js'),
-        import('../services/claude.js'),
-        import('../services/gemini.js'),
+        import('../services/openai.js'),
         import('../config/prompts.js'),
         import('../email-service.js'),
         import('../services/astrology.js')
@@ -127,8 +125,7 @@ async function getRuntimeDeps() {
             resolveSupabaseUrl(process.env.SUPABASE_URL),
             process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY
         ),
-        callClaude,
-        callGemini,
+        callAI,
         SYSTEM_PROMPTS,
         sendEmail,
         getHoroscopeCacheKey: astrology.getHoroscopeCacheKey,
@@ -140,15 +137,14 @@ async function getRuntimeDeps() {
 }
 
 // Get or generate horoscope — uses the SAME cache table as the website
-async function getOrGenerateHoroscope(sign, now = new Date()) {
+export async function getOrGenerateHoroscope(sign, now = new Date(), dependencies = null) {
     const {
-        callClaude,
-        callGemini,
+        callAI,
         SYSTEM_PROMPTS,
         getHoroscopeCacheKey,
         getCachedHoroscope,
         saveCachedHoroscope
-    } = await getRuntimeDeps();
+    } = dependencies || await getRuntimeDeps();
     // Musí to být PŘESNĚ stejný klíč jako na webu (server/routes/horoscope.js),
     // jinak job cache mine a generuje přes placené AI znovu. Web skládá klíč jako
     // `${getHoroscopeCacheKey(...)}-${lang}-${contextHash}`; e-mail je česky a bez
@@ -159,23 +155,18 @@ async function getOrGenerateHoroscope(sign, now = new Date()) {
     const cached = await getCachedHoroscope(cacheKey, now);
     if (cached?.response) return formatHoroscopeForEmail(cached.response);
 
-    // Generate fresh via Claude and save to cache (website will reuse it)
+    // Generate fresh via OpenAI and save to cache (website will reuse it)
     const systemPrompt = SYSTEM_PROMPTS?.horoscope || 'Jsi astrologický asistent.';
     const userMsg = `Napiš denní horoskop pro znamení ${sign}. Buď inspirativní, konkrétní a osobní. Délka: 3-4 věty.`;
     let text;
 
     try {
-        text = await callClaude(systemPrompt, userMsg, null, {
+        text = await callAI(systemPrompt, userMsg, null, {
             feature: 'horoscope_daily'
         });
-    } catch (claudeError) {
-        console.warn(`[DailyHoroscope] Claude unavailable for ${sign}: ${claudeError.message}`);
-        try {
-            text = await callGemini(systemPrompt, userMsg);
-        } catch (geminiError) {
-            console.warn(`[DailyHoroscope] Gemini unavailable for ${sign}: ${geminiError.message}`);
-            text = buildFallbackDailyHoroscope(sign, now);
-        }
+    } catch (error) {
+        console.warn(`[DailyHoroscope] OpenAI unavailable for ${sign}: ${error.message}`);
+        text = buildFallbackDailyHoroscope(sign, now);
     }
 
     const today = now.toLocaleDateString('cs-CZ', {

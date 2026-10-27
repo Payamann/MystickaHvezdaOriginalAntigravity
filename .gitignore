@@ -73,3 +73,7 @@ tmp_email_previews/
 
 # Local generated deliverables and visual QA artifacts
 output/
+
+# Offline localization previews and isolated temporary test projects
+/.tmp/localization-preview/
+/.tmp/localization-tests/

@@ -14,6 +14,14 @@
     "ip-address": "10.4.0"
   },
   "scripts": {
+    "locales:plan": "python scripts/localize_site.py plan",
+    "locales:catalog": "python scripts/localize_site.py catalog",
+    "locales:sync": "python scripts/localize_site.py sync",
+    "locales:preview": "python scripts/localize_site.py render",
+    "locales:approve": "python scripts/localize_site.py approve",
+    "locales:publish": "python scripts/localize_site.py render --publish",
+    "locales:check": "python scripts/localize_site.py check --publish",
+    "locales:test": "python -m unittest discover -s tests/localization -p test_*.py",
     "start": "node server/index.js",
     "dev": "node --watch server/index.js",
     "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --runInBand",

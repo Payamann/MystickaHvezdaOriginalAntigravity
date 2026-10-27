@@ -54,7 +54,6 @@ export function buildContentSecurityPolicy({ inlineScriptHashes = [] } = {}) {
             "'self'",
             process.env.SUPABASE_URL ? `https://${process.env.SUPABASE_URL.replace(/^https?:\/\//, '')}` : '',
             'https://api.stripe.com',
-            'https://generativelanguage.googleapis.com',
             'https://cdnjs.cloudflare.com',
             'https://fonts.googleapis.com',
             'https://fonts.gstatic.com',

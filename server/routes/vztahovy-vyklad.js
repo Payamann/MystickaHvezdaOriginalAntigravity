@@ -10,7 +10,7 @@ import { supabase } from '../db-supabase.js';
 import { recordFunnelEvent } from '../payment.js';
 
 export const relationshipTarotEnabled = () => process.env.RELATIONSHIP_TAROT_ENABLED === 'true'
-    && Boolean(process.env.STRIPE_SECRET_KEY && process.env.ANTHROPIC_API_KEY && process.env.RESEND_API_KEY);
+    && Boolean(process.env.STRIPE_SECRET_KEY && process.env.OPENAI_API_KEY && process.env.RESEND_API_KEY);
 const cleanSource = value => typeof value === 'string' && /^[a-z0-9_:-]{1,80}$/i.test(value) ? value : 'relationship_tarot_page';
 const cleanFlowId = value => typeof value === 'string' && /^[a-z0-9_-]{16,80}$/i.test(value) ? value : null;
 const cleanOrderRef = value => typeof value === 'string' && /^[a-z0-9_-]{1,80}$/i.test(value) ? value : null;

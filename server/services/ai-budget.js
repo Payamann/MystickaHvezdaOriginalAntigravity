@@ -13,6 +13,16 @@ const MODEL_COST_MICRO_USD_PER_TOKEN = Object.freeze({
     sonnet: { input: 3, output: 15, cacheWrite: 3.75, cacheRead: 0.3 }
 });
 
+// Standard short-context GPT-6 Luna rates, verified 2026-10-27 against:
+// https://developers.openai.com/api/docs/models/gpt-6-luna
+// Historical Claude estimator below is retained only for old-report compatibility.
+export function estimateOpenAICostMicroUsd({ inputTokens = 0, outputTokens = 0, cacheReadInputTokens = 0 }) {
+    const input = Math.max(0, Number(inputTokens) || 0);
+    const cached = Math.min(input, Math.max(0, Number(cacheReadInputTokens) || 0));
+    const output = Math.max(0, Number(outputTokens) || 0);
+    return Math.round((input - cached) * 0.1 + cached * 0.01 + output * 0.5);
+}
+
 export function normalizeDailyAICallLimit(value) {
     const parsed = Number.parseInt(value, 10);
     if (!Number.isFinite(parsed)) return DEFAULT_DAILY_AI_CALL_LIMIT;
@@ -129,10 +139,11 @@ export async function recordAIRequestOutcome({
 }) {
     const inputTokens = Number(usage.input_tokens || 0);
     const outputTokens = Number(usage.output_tokens || 0);
-    const cacheCreationInputTokens = Number(usage.cache_creation_input_tokens || 0);
-    const cacheReadInputTokens = Number(usage.cache_read_input_tokens || 0);
-    const estimatedCostMicroUsd = estimateClaudeCostMicroUsd({
-        modelTier,
+    const cacheCreationInputTokens = 0;
+    // Responses input_tokens already includes cached tokens: subtract them only
+    // for cost estimation, never double-count them in usage totals.
+    const cacheReadInputTokens = Math.min(inputTokens, Math.max(0, Number(usage.input_tokens_details?.cached_tokens || 0)));
+    const estimatedCostMicroUsd = estimateOpenAICostMicroUsd({
         inputTokens,
         outputTokens,
         cacheCreationInputTokens,
@@ -162,6 +173,7 @@ export async function recordAIRequestOutcome({
         feature,
         metadata: {
             model,
+            provider: 'openai',
             model_tier: modelTier,
             success: Boolean(success),
             input_tokens: inputTokens,

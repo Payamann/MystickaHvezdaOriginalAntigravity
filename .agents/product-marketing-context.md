@@ -46,3 +46,9 @@ Existující měření a jeho omezení jsou v [dokumentaci pilotu](../docs/relat
 - Původní vztahový pilot byl v této konverzaci nasazen a aktivován 12. 9. 2026; provozovatel potvrdil zkušební doručení. To není důkaz placené zákaznické poptávky ani čerstvá kontrola provozu.
 - Pavel 13. 9. 2026 výslovně schválil nasazení navazujícího redesignu tarotu ano/ne a cesty k osobnímu výkladu pokynem „pojďme nasadit na produkci“. Dřívější zákaz je tím pro toto vydání odvolán. Dokončení se ověřuje pro konkrétní commit podle `railway-deploy-guard`; samotný souhlas ani push nejsou potvrzením běžící verze.
 - Stav produkce, aktuální port náhledu a ceny při práci znovu zjistit podle potřeby; datum tohoto zápisu není živý monitoring. Neprovádět produkční kontrolu při nesouvisející úpravě dokumentace.
+
+## AI poskytovatel — rozhodnutí Pavla 27. 10. 2026
+
+Pavel výslovně požaduje OpenAI pro celý projekt. Pro textové úlohy (výklady, horoskopy, překlady a obsah) zvolil úspornou řadu Luna; připravovaná konfigurace používá `gpt-6-luna`. Nevracet Anthropic, Claude, Gemini ani další poskytovatele jako fallback. Luna negeneruje obrázky; případná grafika má samostatný obrazový model OpenAI. Zachovat limity a poctivé chybové stavy, žádná automatická změna cen či plateb.
+
+Technický checkpoint je v `docs/openai-migration-2026-10-27.md`, překladový systém v `docs/automatic-localization-2026-10-27.md`. Jde o lokální přípravu, nikoli potvrzení nového produkčního nasazení nebo aktivovaných placených automatizací.

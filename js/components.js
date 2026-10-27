@@ -72,6 +72,7 @@
     }
 })();
 
+/* global MH_BUILD_LOCALIZED_ROUTES */
 const LOCALIZED_SHELL = {
     sk: {
         suffix: ' (CZ)',
@@ -255,6 +256,13 @@ const LOCALIZED_SHELL = {
         }
 }
 };
+
+// Injected from the publication manifest by build-js. Raw development scripts
+// retain the existing route table; public builds include generated pages too.
+const generatedLocaleRoutes = typeof MH_BUILD_LOCALIZED_ROUTES === 'undefined' ? {} : MH_BUILD_LOCALIZED_ROUTES;
+Object.entries(generatedLocaleRoutes).forEach(([locale, routes]) => {
+    if (LOCALIZED_SHELL[locale]) Object.assign(LOCALIZED_SHELL[locale].routes, routes);
+});
 
 function setLocalizedText(element, value) {
     if (!element || !value) return;
