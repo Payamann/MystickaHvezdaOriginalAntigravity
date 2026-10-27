@@ -4,9 +4,7 @@
 Default use case:
   python reel_factory.py --music-dir "C:/Users/pavel/Downloads"
 
-Required for ElevenLabs generation:
-  ELEVENLABS_API_KEY=...
-  ELEVENLABS_VOICE_ID=...  or  --voice-name "Mysticka Hvezda 2"
+OpenAI generation requires OPENAI_API_KEY. Dry-run and supplied audio need no TTS key.
 """
 
 from __future__ import annotations
@@ -23,7 +21,6 @@ from datetime import datetime
 from pathlib import Path
 from typing import Iterable
 
-import requests
 from dotenv import load_dotenv
 
 
@@ -35,7 +32,9 @@ DEFAULT_MUSIC_DIRS = [
     Path("C:/Users/pavel/Music"),
 ]
 OUTPUT_ROOT = AGENT_ROOT / "output" / "reels"
-ELEVEN_API = "https://api.elevenlabs.io/v1"
+sys.path.insert(0, str(PROJECT_ROOT / "scripts"))
+from openai_reel_audio import (DEFAULT_MODEL, DEFAULT_VOICE, DISCLOSURE,
+    prepare_narration, synthesize_narration)
 ZODIAC_WORDS = {
     "beran",
     "byk",
@@ -227,76 +226,6 @@ def find_music(music_dir: Path | None, music_file: Path | None) -> Path | None:
     return max(candidates, key=lambda p: p.stat().st_mtime)
 
 
-def resolve_voice_id(api_key: str, voice_id: str | None, voice_name: str | None) -> str:
-    if voice_id:
-        return voice_id
-    env_voice_id = os.getenv("ELEVENLABS_VOICE_ID")
-    if env_voice_id:
-        return env_voice_id
-    if not voice_name:
-        raise RuntimeError(
-            "Missing ElevenLabs voice. Set ELEVENLABS_VOICE_ID or pass --voice-name."
-        )
-
-    response = requests.get(
-        f"{ELEVEN_API}/voices",
-        headers={"xi-api-key": api_key},
-        timeout=30,
-    )
-    response.raise_for_status()
-    voices = response.json().get("voices", [])
-    wanted = voice_name.strip().casefold()
-    for voice in voices:
-        if voice.get("name", "").strip().casefold() == wanted:
-            return voice["voice_id"]
-    names = ", ".join(sorted(v.get("name", "") for v in voices if v.get("name")))
-    raise RuntimeError(f"Voice named {voice_name!r} was not found. Available voices: {names}")
-
-
-def synthesize_elevenlabs(
-    text: str,
-    out_path: Path,
-    voice_id: str | None,
-    voice_name: str | None,
-    dry_run: bool,
-) -> None:
-    load_env()
-    api_key = os.getenv("ELEVENLABS_API_KEY") or os.getenv("XI_API_KEY")
-    if not api_key:
-        raise RuntimeError(
-            "Missing ELEVENLABS_API_KEY. Add it to social-media-agent/.env or set it in PowerShell."
-        )
-
-    resolved_voice_id = resolve_voice_id(api_key, voice_id, voice_name)
-    if dry_run:
-        print(f"[dry-run] Would synthesize ElevenLabs voice_id={resolved_voice_id}")
-        return
-
-    payload = {
-        "text": text,
-        "model_id": os.getenv("ELEVENLABS_MODEL_ID", "eleven_multilingual_v2"),
-        "voice_settings": {
-            "stability": float(os.getenv("ELEVENLABS_STABILITY", "0.50")),
-            "similarity_boost": float(os.getenv("ELEVENLABS_SIMILARITY", "0.75")),
-            "style": float(os.getenv("ELEVENLABS_STYLE", "0.0")),
-            "use_speaker_boost": os.getenv("ELEVENLABS_SPEAKER_BOOST", "true").lower()
-            not in {"0", "false", "no"},
-        },
-    }
-    response = requests.post(
-        f"{ELEVEN_API}/text-to-speech/{resolved_voice_id}",
-        headers={
-            "xi-api-key": api_key,
-            "Accept": "audio/mpeg",
-            "Content-Type": "application/json",
-        },
-        data=json.dumps(payload, ensure_ascii=False).encode("utf-8"),
-        timeout=120,
-    )
-    response.raise_for_status()
-    out_path.write_bytes(response.content)
-
-
 def sentence_chunks(text: str) -> list[str]:
     clean = re.sub(r"\s+", " ", text).strip()
     raw = re.split(r"(?<=[.!?])\s+", clean)
@@ -452,14 +381,15 @@ def compose_video(
 
 
 def main() -> int:
+    load_env()
     parser = argparse.ArgumentParser(description="Generate and assemble a Mysticka Hvezda Reel.")
     parser.add_argument("--video-dir", type=Path, default=DEFAULT_VIDEO_DIR)
     parser.add_argument("--base-video", type=Path)
     parser.add_argument("--music-dir", type=Path)
     parser.add_argument("--music-file", type=Path)
-    parser.add_argument("--voice-id")
-    parser.add_argument("--voice-name", default=os.getenv("ELEVENLABS_VOICE_NAME"))
-    parser.add_argument("--voiceover-file", type=Path, help="Use an existing MP3/WAV instead of calling ElevenLabs.")
+    parser.add_argument("--voice", default=os.getenv("OPENAI_AUDIO_VOICE", DEFAULT_VOICE))
+    parser.add_argument("--audio-model", default=os.getenv("OPENAI_AUDIO_MODEL", DEFAULT_MODEL))
+    parser.add_argument("--voiceover-file", type=Path, help="Use an existing MP3/WAV instead of OpenAI.")
     parser.add_argument("--dry-run", action="store_true", help="Write copy and show selected assets without rendering.")
     args = parser.parse_args()
 
@@ -471,17 +401,25 @@ def main() -> int:
     script_path = out_dir / "voiceover.txt"
     caption_path = out_dir / "facebook_caption.txt"
     metadata_path = out_dir / "reel_metadata.json"
-    voiceover_path = out_dir / "voiceover_elevenlabs.mp3"
+    voiceover_path = out_dir / "voiceover_openai.wav"
+    if args.voiceover_file:
+        voiceover_path = out_dir / ("voiceover_supplied" + args.voiceover_file.suffix)
     captions_path = out_dir / "captions.ass"
     final_path = out_dir / "final_reel.mp4"
 
-    script_path.write_text(copy.voiceover, encoding="utf-8")
-    caption_path.write_text(copy.caption, encoding="utf-8")
+    spoken_text, delivery_instructions = prepare_narration(copy.voiceover)
+    script_path.write_text(spoken_text, encoding="utf-8")
+    caption_path.write_text(copy.caption + ("\n\n" + DISCLOSURE if not args.voiceover_file else ""), encoding="utf-8")
 
     base_video = args.base_video or find_video(args.video_dir)
     music = find_music(args.music_dir, args.music_file)
 
     metadata = {
+        "audio_provider": "supplied_file" if args.voiceover_file else "openai",
+        "audio_model": args.audio_model,
+        "voice": args.voice,
+        "ai_voice_disclosure": DISCLOSURE if not args.voiceover_file else None,
+        "caption_timing": "approximate",
         "title": copy.title,
         "topic": copy.topic,
         "hook": copy.hook,
@@ -503,16 +441,12 @@ def main() -> int:
             raise FileNotFoundError(f"Voiceover file does not exist: {args.voiceover_file}")
         voiceover_path.write_bytes(args.voiceover_file.read_bytes())
     else:
-        synthesize_elevenlabs(
-            text=copy.voiceover,
-            out_path=voiceover_path,
-            voice_id=args.voice_id,
-            voice_name=args.voice_name,
-            dry_run=False,
-        )
+        synthesize_narration(text=spoken_text, out_path=voiceover_path,
+                             voice=args.voice, model=args.audio_model,
+                             instructions=delivery_instructions)
 
     duration = ffprobe_duration(voiceover_path)
-    write_captions(copy.voiceover, duration=duration, out_path=captions_path)
+    write_captions(spoken_text, duration=duration, out_path=captions_path)
     compose_video(
         base_video=base_video,
         voiceover=voiceover_path,

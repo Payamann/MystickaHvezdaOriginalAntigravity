@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
-"""Assemble a Daily Reel 2 video from script JSON, ElevenLabs voiceover, and FFmpeg.
+"""Assemble a Daily Reel 2 with OpenAI Realtime narration and FFmpeg.
 
-The script keeps the bracketed delivery tags for ElevenLabs, creates a separate
-clean transcript for captions, and can run in dry-run mode without paid API calls.
+Delivery tags become instructions; previews never call paid APIs.
 """
 
 from __future__ import annotations
 
 import argparse
-import base64
 import json
 import math
 import os
@@ -21,7 +19,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Iterable
 
-import requests
+from openai_reel_audio import (DEFAULT_MODEL, DEFAULT_VOICE, DISCLOSURE,
+    prepare_narration, synthesize_narration, transcribe_word_timing)
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -36,7 +35,6 @@ DEFAULT_TEMPLATE_DIRS = [
     Path("C:/TikTok"),
     Path("C:/Users/pavel/Downloads"),
 ]
-ELEVEN_API = "https://api.elevenlabs.io/v1"
 
 TAG_RE = re.compile(r"\[([^\[\]\n]{1,40})\]")
 BREAK_RE = re.compile(r"<break\s+time=[\"']([\d.]+)s[\"']\s*/>", re.IGNORECASE)
@@ -50,21 +48,6 @@ EMOJI_RE = re.compile(
     "]+",
     re.UNICODE,
 )
-
-TAG_MAP = {
-    "clearly": "clear",
-    "soft": "softly",
-    "gentle": "gentle",
-    "warm": "warm",
-    "confident": "confident",
-    "intense": "intense",
-    "commanding": "commanding",
-    "mysterious": "mysterious",
-    "serious": "serious",
-    "upbeat": "upbeat",
-    "inviting": "inviting",
-}
-
 
 @dataclass(frozen=True)
 class ReelScript:
@@ -224,30 +207,8 @@ def strip_date_header(text: str) -> str:
     return "\n".join(lines).strip()
 
 
-def normalize_for_tts(raw: str, *, pause_mode: str) -> str:
-    text = strip_date_header(raw)
-
-    def tag_repl(match: re.Match[str]) -> str:
-        tag = match.group(1).strip().lower().replace("_", " ")
-        tag = TAG_MAP.get(tag, tag)
-        return f"[{tag}]"
-
-    text = TAG_RE.sub(tag_repl, text)
-
-    def break_repl(match: re.Match[str]) -> str:
-        seconds = float(match.group(1))
-        if pause_mode == "ssml":
-            return f' <break time="{seconds:g}s" /> '
-        if seconds >= 0.9:
-            return " [long pause]\n\n"
-        if seconds >= 0.45:
-            return " [short pause]\n"
-        return " ... "
-
-    text = BREAK_RE.sub(break_repl, text)
-    text = re.sub(r"[ \t]+", " ", text)
-    text = re.sub(r"\n{3,}", "\n\n", text)
-    return text.strip()
+def normalize_for_tts(raw: str) -> str:
+    return clean_for_captions(raw)
 
 
 def clean_for_captions(raw: str) -> str:
@@ -414,103 +375,6 @@ def find_music(music_file: Path | None, music_dir: Path | None) -> Path | None:
     if not candidates:
         return None
     return max(candidates, key=lambda path: path.stat().st_mtime)
-
-
-def resolve_voice_id(api_key: str, voice_id: str | None, voice_name: str | None) -> str:
-    if voice_id:
-        return voice_id
-    if os.getenv("ELEVENLABS_VOICE_ID"):
-        return os.environ["ELEVENLABS_VOICE_ID"]
-    if not voice_name:
-        raise RuntimeError("Missing voice. Set ELEVENLABS_VOICE_ID or pass --voice-name.")
-
-    response = requests.get(
-        f"{ELEVEN_API}/voices",
-        headers={"xi-api-key": api_key},
-        timeout=30,
-    )
-    response.raise_for_status()
-    wanted = voice_name.strip().casefold()
-    voices = response.json().get("voices", [])
-    for voice in voices:
-        if voice.get("name", "").strip().casefold() == wanted:
-            return str(voice["voice_id"])
-    names = ", ".join(sorted(v.get("name", "") for v in voices if v.get("name")))
-    raise RuntimeError(f"Voice named {voice_name!r} was not found. Available voices: {names}")
-
-
-def elevenlabs_tts(
-    *,
-    text: str,
-    out_path: Path,
-    voice_id: str | None,
-    voice_name: str | None,
-    model_id: str,
-    dry_run: bool,
-) -> str | None:
-    load_env()
-    api_key = os.getenv("ELEVENLABS_API_KEY") or os.getenv("XI_API_KEY")
-    if not api_key:
-        raise RuntimeError("Missing ELEVENLABS_API_KEY.")
-    resolved_voice_id = resolve_voice_id(api_key, voice_id, voice_name)
-    if dry_run:
-        return resolved_voice_id
-
-    payload: dict[str, Any] = {
-        "text": text,
-        "model_id": model_id,
-    }
-    voice_settings: dict[str, Any] = {}
-    if os.getenv("ELEVENLABS_STABILITY"):
-        voice_settings["stability"] = float(os.environ["ELEVENLABS_STABILITY"])
-    if os.getenv("ELEVENLABS_SIMILARITY"):
-        voice_settings["similarity_boost"] = float(os.environ["ELEVENLABS_SIMILARITY"])
-    if os.getenv("ELEVENLABS_STYLE"):
-        voice_settings["style"] = float(os.environ["ELEVENLABS_STYLE"])
-    if os.getenv("ELEVENLABS_SPEED"):
-        voice_settings["speed"] = float(os.environ["ELEVENLABS_SPEED"])
-    if os.getenv("ELEVENLABS_SPEAKER_BOOST"):
-        voice_settings["use_speaker_boost"] = os.environ["ELEVENLABS_SPEAKER_BOOST"].lower() not in {
-            "0",
-            "false",
-            "no",
-        }
-    if voice_settings:
-        payload["voice_settings"] = voice_settings
-
-    response = requests.post(
-        f"{ELEVEN_API}/text-to-speech/{resolved_voice_id}",
-        params={"output_format": os.getenv("ELEVENLABS_OUTPUT_FORMAT", "mp3_44100_128")},
-        headers={
-            "xi-api-key": api_key,
-            "Accept": "audio/mpeg",
-            "Content-Type": "application/json",
-        },
-        data=json.dumps(payload, ensure_ascii=False).encode("utf-8"),
-        timeout=180,
-    )
-    response.raise_for_status()
-    out_path.write_bytes(response.content)
-    return resolved_voice_id
-
-
-def elevenlabs_force_align(audio_path: Path, text: str, out_path: Path) -> dict[str, Any]:
-    load_env()
-    api_key = os.getenv("ELEVENLABS_API_KEY") or os.getenv("XI_API_KEY")
-    if not api_key:
-        raise RuntimeError("Missing ELEVENLABS_API_KEY.")
-    with audio_path.open("rb") as audio:
-        response = requests.post(
-            f"{ELEVEN_API}/forced-alignment",
-            headers={"xi-api-key": api_key},
-            files={"file": (audio_path.name, audio, "audio/mpeg")},
-            data={"text": text},
-            timeout=180,
-        )
-    response.raise_for_status()
-    payload = response.json()
-    out_path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
-    return payload
 
 
 def words_from_alignment(payload: dict[str, Any]) -> list[dict[str, Any]]:
@@ -694,22 +558,22 @@ def extract_review_frames(video_path: Path, out_dir: Path, duration: float) -> l
     return frames
 
 
-def write_text_outputs(script: ReelScript, out_dir: Path, tts_prompt: str, clean_captions: str) -> dict[str, Path]:
+def write_text_outputs(script: ReelScript, out_dir: Path, tts_prompt: str, clean_captions: str, *, generated_voice: bool = True) -> dict[str, Path]:
     paths = {
         "voiceover_raw": out_dir / "voiceover_raw.txt",
-        "elevenlabs_prompt": out_dir / "elevenlabs_prompt.txt",
+        "openai_narration": out_dir / "openai_narration.txt",
         "captions_clean": out_dir / "captions_clean.txt",
     }
     paths["voiceover_raw"].write_text(script.voiceover_raw, encoding="utf-8")
-    paths["elevenlabs_prompt"].write_text(tts_prompt, encoding="utf-8")
+    paths["openai_narration"].write_text(tts_prompt, encoding="utf-8")
     paths["captions_clean"].write_text(clean_captions, encoding="utf-8")
     if script.tiktok_description:
         path = out_dir / "tiktok_description.txt"
-        path.write_text(script.tiktok_description, encoding="utf-8")
+        path.write_text(script.tiktok_description + ("\n\n" + DISCLOSURE if generated_voice else ""), encoding="utf-8")
         paths["tiktok_description"] = path
     if script.facebook_description:
         path = out_dir / "facebook_description.txt"
-        path.write_text(script.facebook_description, encoding="utf-8")
+        path.write_text(script.facebook_description + ("\n\n" + DISCLOSURE if generated_voice else ""), encoding="utf-8")
         paths["facebook_description"] = path
     if script.suno:
         path = out_dir / "suno_prompt.txt"
@@ -753,12 +617,10 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--template-dir", type=Path, help="Folder with template MP4/MOV files.")
     parser.add_argument("--music-file", type=Path, help="Optional music bed.")
     parser.add_argument("--music-dir", type=Path, help="Optional folder to auto-pick music from.")
-    parser.add_argument("--voiceover-file", type=Path, help="Use an existing voiceover MP3/WAV instead of ElevenLabs.")
-    parser.add_argument("--voice-id", help="ElevenLabs voice ID.")
-    parser.add_argument("--voice-name", default=os.getenv("ELEVENLABS_VOICE_NAME"), help="ElevenLabs voice name lookup.")
-    parser.add_argument("--model-id", default=os.getenv("ELEVENLABS_MODEL_ID", "eleven_v3"))
-    parser.add_argument("--pause-mode", choices=["v3", "ssml"], default="v3")
-    parser.add_argument("--skip-alignment", action="store_true", help="Use approximate captions without ElevenLabs Forced Alignment.")
+    parser.add_argument("--voiceover-file", type=Path, help="Use an existing voiceover MP3/WAV instead of OpenAI.")
+    parser.add_argument("--voice", default=os.getenv("OPENAI_AUDIO_VOICE", DEFAULT_VOICE))
+    parser.add_argument("--audio-model", default=os.getenv("OPENAI_AUDIO_MODEL", DEFAULT_MODEL))
+    parser.add_argument("--skip-alignment", action="store_true", help="Explicitly use approximate captions without transcription validation.")
     parser.add_argument("--dry-run", action="store_true", help="Prepare files and metadata without API calls/rendering.")
     parser.add_argument("--out-root", type=Path, default=DEFAULT_OUTPUT_ROOT)
     parser.add_argument("--caption-font-size", type=int, default=76)
@@ -773,9 +635,13 @@ def parse_args() -> argparse.Namespace:
 
 
 def main() -> int:
+    load_env()
     args = parse_args()
     if not args.date and not args.script_json and not args.voiceover_text_file:
         raise SystemExit("--date, --script-json, or --voiceover-text-file is required.")
+
+    if args.run_generator and args.dry_run:
+        raise SystemExit("--run-generator cannot be combined with --dry-run (would make a paid call).")
 
     if args.run_generator:
         if not args.date:
@@ -795,15 +661,22 @@ def main() -> int:
     out_dir = args.out_root / f"{date_value}_{sign_slug}_{stamp}"
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    tts_prompt = normalize_for_tts(script.voiceover_raw, pause_mode=args.pause_mode)
+    tts_prompt = normalize_for_tts(script.voiceover_raw)
+    _, delivery_instructions = prepare_narration(strip_date_header(script.voiceover_raw))
     clean_captions = clean_for_captions(script.voiceover_raw)
-    text_paths = write_text_outputs(script, out_dir, tts_prompt, clean_captions)
+    text_paths = write_text_outputs(script, out_dir, tts_prompt, clean_captions, generated_voice=not args.voiceover_file)
 
+    (out_dir / "openai_instructions.txt").write_text(delivery_instructions, encoding="utf-8")
+    if not args.voiceover_file:
+        social_caption = script.facebook_description or script.tiktok_description or ""
+        (out_dir / "social_caption.txt").write_text((social_caption + "\n\n" + DISCLOSURE).strip(), encoding="utf-8")
     base_video = find_template_video(args.base_video, args.template_dir)
     music = find_music(args.music_file, args.music_dir)
-    voiceover_path = out_dir / "voiceover_elevenlabs.mp3"
+    voiceover_path = out_dir / "voiceover_openai.wav"
+    if args.voiceover_file:
+        voiceover_path = out_dir / ("voiceover_supplied" + args.voiceover_file.suffix)
     captions_path = out_dir / "captions.ass"
-    alignment_path = out_dir / "alignment_elevenlabs.json"
+    alignment_path = out_dir / "transcription_openai.json"
     final_path = out_dir / "final_daily_reel2.mp4"
 
     metadata: dict[str, Any] = {
@@ -813,12 +686,15 @@ def main() -> int:
         "source_script": str(script.source_path),
         "out_dir": str(out_dir),
         "base_video": str(base_video),
-        "base_video_has_audio": ffprobe_has_audio(base_video),
+        "base_video_has_audio": None if args.dry_run else ffprobe_has_audio(base_video),
         "music": str(music) if music else None,
-        "model_id": args.model_id,
-        "pause_mode": args.pause_mode,
+        "audio_model": args.audio_model,
+        "voice": args.voice,
+        "audio_provider": "supplied_file" if args.voiceover_file else "openai",
+        "ai_voice_disclosure": DISCLOSURE if not args.voiceover_file else None,
+        "delivery_instructions": delivery_instructions,
         "text_outputs": {name: str(path) for name, path in text_paths.items()},
-        "elevenlabs_uses_bracket_tags": bool(TAG_RE.search(tts_prompt)),
+        "spoken_text_has_tags": bool(TAG_RE.search(tts_prompt)),
         "caption_text_has_tags": bool(TAG_RE.search(clean_captions)),
     }
 
@@ -837,15 +713,10 @@ def main() -> int:
         shutil.copy2(args.voiceover_file, voiceover_path)
         metadata["voiceover_source"] = str(args.voiceover_file)
     else:
-        resolved_voice = elevenlabs_tts(
-            text=tts_prompt,
-            out_path=voiceover_path,
-            voice_id=args.voice_id,
-            voice_name=args.voice_name,
-            model_id=args.model_id,
-            dry_run=False,
+        synthesize_narration(
+            text=tts_prompt, out_path=voiceover_path, voice=args.voice,
+            model=args.audio_model, instructions=delivery_instructions,
         )
-        metadata["voice_id"] = resolved_voice
 
     duration = ffprobe_duration(voiceover_path)
     metadata["duration"] = duration
@@ -860,7 +731,7 @@ def main() -> int:
         )
         metadata["caption_timing"] = "approximate"
     else:
-        alignment = elevenlabs_force_align(voiceover_path, clean_captions, alignment_path)
+        alignment = transcribe_word_timing(voiceover_path, clean_captions, alignment_path, duration=duration)
         words = words_from_alignment(alignment)
         events = caption_events_from_words(
             words,
@@ -868,10 +739,9 @@ def main() -> int:
             max_words=args.caption_max_words,
             max_duration=args.caption_max_duration,
         )
-        metadata["caption_timing"] = "elevenlabs_forced_alignment"
+        metadata["caption_timing"] = "openai_validated_transcription_word_timestamps"
         metadata["alignment"] = str(alignment_path)
         metadata["alignment_word_count"] = len(words)
-        metadata["alignment_loss"] = alignment.get("loss")
 
     write_ass_from_events(
         events,

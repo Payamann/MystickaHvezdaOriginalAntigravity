@@ -52,3 +52,5 @@ Existující měření a jeho omezení jsou v [dokumentaci pilotu](../docs/relat
 Pavel výslovně požaduje OpenAI pro celý projekt. Pro textové úlohy (výklady, horoskopy, překlady a obsah) zvolil úspornou řadu Luna; připravovaná konfigurace používá `gpt-6-luna`. Nevracet Anthropic, Claude, Gemini ani další poskytovatele jako fallback. Luna negeneruje obrázky; případná grafika má samostatný obrazový model OpenAI. Zachovat limity a poctivé chybové stavy, žádná automatická změna cen či plateb.
 
 Technický checkpoint je v `docs/openai-migration-2026-10-27.md`, překladový systém v `docs/automatic-localization-2026-10-27.md`. Jde o lokální přípravu, nikoli potvrzení nového produkčního nasazení nebo aktivovaných placených automatizací.
+
+Pavel následně výslovně schválil převést na OpenAI i hlas Reels, včetně změny dosavadního vlastního hlasu ElevenLabs. Neponechávat ElevenLabs jako runtime fallback. Technický checkpoint a hranice ověření jsou v `docs/openai-reels-audio-2026-10-27.md`; rozhodnutí samo neopravňuje publikovat video nebo aktivovat plán.

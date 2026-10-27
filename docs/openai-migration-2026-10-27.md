@@ -41,7 +41,7 @@ Luna vytváří text, nikoli obrázky. Samostatný starší social image generat
 
 [Oficiální Image API](https://developers.openai.com/api/reference/resources/images/methods/generate) a [rozměry/quality](https://developers.openai.com/api/docs/guides/image-generation) byly ověřeny samostatně; textový Luna model není podstrčený do obrazového endpointu.
 
-Samostatné starší CLI pro vlastní hlas Reels stále obsahují ElevenLabs syntézu a časování titulků. Nejsou součástí webových výkladů/překladů. Záměna by změnila zavedený hlas, proto zůstávají beze změny do odpovědi Pavla na tuto konkrétní otázku; jejich provoz ani plánování se nespouštěly. Nelze zatím tvrdit, že veškerá historická audiovizuální automatizace používá pouze OpenAI.
+V původním checkpointu zůstal vlastní hlas Reels na ElevenLabs do odpovědi Pavla. Pavel následně výslovně schválil i tuto změnu. Navazující migrace hlasu a titulků má samostatný [checkpoint](openai-reels-audio-2026-10-27.md); neaktivuje plánování ani publikování a nepřenáší původní vlastní hlas. Původních 946 serverových testů níže není vydáváno za ověření nové audio integrace.
 
 ## Ověření a hranice
 

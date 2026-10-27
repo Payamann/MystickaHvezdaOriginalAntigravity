@@ -849,7 +849,7 @@ def _strip_gendered_predicate(sentence: str) -> str:
 
 
 def _strip_voice_markup(text: str) -> str:
-    """Odstraní ElevenLabs značky pro jazykové kontroly."""
+    """Odstraní režijní značky pro jazykové kontroly."""
     text = re.sub(r'\[[\w]+\]', '', text)
     text = re.sub(r'<break[^/]*/>', '', text)
     return re.sub(r'\s+', ' ', text).strip()
@@ -1699,7 +1699,7 @@ Horoskopový podklad (zahrň jeho esenci do mikropříběhu, nepřepisuj doslova
     user = f"""Datum: {date_cs} ({weekday_name})
 Znamení: {sign} (vokativ: {sign_vocative})
 Energie znamení: {sign_energy}
-Dovolené ElevenLabs tagy pro toto znamení: {', '.join(sign_tags)}{hook_hint_line}{theme_line}{astro_line}{format_line}
+Dovolené režijní tagy pro toto znamení: {', '.join(sign_tags)}{hook_hint_line}{theme_line}{astro_line}{format_line}
 
 Napiš voiceover script PŘESNĚ ve 3 slidech. Struktura je pevná — NEměň ji.
 CÍLOVÁ DÉLKA: 35–45 slov celkem (= 15–20 sekund). Piš STRUČNĚ — krátké punchy věty.
@@ -1718,7 +1718,7 @@ Pravidla hooku:
 - PRVNÍ věta: MAX 7 slov. Silná, přímá identifikace persony nebo nepohodlná pravda.
 - DRUHÁ věta: Musí zrcadlit KONKRÉTNÍ frázi nebo situaci, kterou tato persona reálně zažívá — ne obecné "a většina to nechápe" ani vágní "a dnes se to mění".
 - DATUM: NEzačínej hook datem. Datum "{date_cs}" vlož nejdříve do slide 2.
-- Každá věta má svůj ElevenLabs tag: "[tag] věta."
+- Každá věta má svůj režijní tag: "[tag] věta."
 - Za každou větou přidej pauzu: <break time="0.5s" /> po první větě, <break time="1.0s" /> po druhé větě (přechod na slide 2).
 - BLACKLIST — NIKDY: "Hvězdy mluví/říkají/šeptají", "Stačí poslouchat", poetické popisy bez osoby, věta delší než 7 slov jako první věta.
 - ZAKÁZÁNO: vágní subjekty jako "všichni čekají", "každý to ví", "lidé říkají".
@@ -1734,7 +1734,8 @@ Pravidla CTA:
 - Tagy: věta 1 = [inviting], věta 2 = [clearly]
 - Mezi větami: <break time="0.3s" />
 
-=== ELEVENLABS FORMÁTOVÁNÍ (POVINNÉ) ===
+=== REŽIJNÍ FORMÁTOVÁNÍ (POVINNÉ) ===
+- Značky jsou interní pokyny pro přednes. OpenAI audio adaptér je odstraní z mluveného textu; nejde o syntaxi hlasového API.
 - Každá věta MUSÍ mít emoční tag: [mysterious], [intense], [warm], [gentle], [confident], [upbeat], [commanding], [soft], [inviting], [clearly]
 - Pauzy MUSÍ být přítomné:
   - <break time="0.3s" /> — krátká pauza (uvnitř slidu, mezi větami)
