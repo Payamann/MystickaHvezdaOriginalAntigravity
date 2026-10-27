@@ -64,6 +64,9 @@ jobs:
       - name: Run encoding check
         run: npm run check:encoding
 
+      - name: Test deployment CI selection
+        run: node --test tests/deploy-guard.test.mjs
+
       - name: Run tests
         run: npm test -- --coverage --passWithNoTests
         env:

@@ -1,4 +1,5 @@
 import { execFileSync } from 'node:child_process';
+import { pathToFileURL } from 'node:url';
 
 const DEFAULT_REPO = 'Payamann/MystickaHvezdaOriginalAntigravity';
 const DEFAULT_BASE_URL = 'https://www.mystickahvezda.cz';
@@ -63,7 +64,8 @@ async function fetchJson(url) {
     }
 
     const response = await fetch(url, {
-        headers
+        headers,
+        signal: AbortSignal.timeout(30000)
     });
 
     if (!response.ok) {
@@ -83,10 +85,6 @@ function checkRunSummary(checkRuns) {
         .join(' | ');
 }
 
-function isCheckRunTerminal(checkRuns) {
-    return checkRuns.length > 0 && checkRuns.every((run) => run.status === 'completed');
-}
-
 function isAllowedSkippedCheckRun(run) {
     return [
         /^E2E \(/,
@@ -101,26 +99,69 @@ function hasFailingCheckRun(checkRuns) {
     });
 }
 
-async function waitForChecks({ repo, sha, timeoutMs, pollMs }) {
+const CI_WORKFLOW = '.github/workflows/ci.yml';
+const REQUIRED_JOBS = ['Lint Code', 'Run Tests', 'Build Assets'];
+
+export function selectPushRun(runs, sha, branch) {
+    return runs.filter((run) => run.head_sha === sha && run.head_branch === branch &&
+        run.event === 'push' && run.path === CI_WORKFLOW)
+        .sort((a, b) => b.run_number - a.run_number || b.run_attempt - a.run_attempt)[0] || null;
+}
+
+export function evaluatePushRun(run, jobs) {
+    if (!run || run.status !== 'completed') return 'pending';
+    if (run.conclusion !== 'success') throw new Error(`Push CI run ${run.id} concluded ${run.conclusion}`);
+    for (const name of REQUIRED_JOBS) {
+        const matches = jobs.filter((job) => job.name === name);
+        if (matches.length !== 1 || matches[0].status !== 'completed' || matches[0].conclusion !== 'success') {
+            throw new Error(`Required push CI job ${name} is missing, duplicated, incomplete, or unsuccessful`);
+        }
+    }
+    if (jobs.some((job) => job.status !== 'completed') || hasFailingCheckRun(jobs)) {
+        throw new Error(`Push CI jobs are incomplete or failed: ${checkRunSummary(jobs)}`);
+    }
+    return 'success';
+}
+
+export async function fetchAllPages(url, key, getJson = fetchJson) {
+    const items = [];
+    for (let page = 1; page <= 100; page++) {
+        const data = await getJson(`${url}${url.includes('?') ? '&' : '?'}per_page=100&page=${page}`);
+        if (!Array.isArray(data[key])) throw new Error(`Missing GitHub ${key} response`);
+        items.push(...data[key]);
+        if (data[key].length < 100) return items;
+    }
+    throw new Error(`GitHub ${key} pagination exceeded safe limit`);
+}
+
+async function waitForChecks({ repo, sha, branch, timeoutMs, pollMs }) {
     const deadline = Date.now() + timeoutMs;
-    let lastRuns = [];
+    let lastSummary = 'no matching push CI run';
+    const reported = new Set();
 
     while (Date.now() < deadline) {
-        const data = await fetchJson(`https://api.github.com/repos/${repo}/commits/${sha}/check-runs`);
-        lastRuns = data.check_runs || [];
-        console.log(`[checks] ${checkRunSummary(lastRuns) || 'waiting for check suite'}`);
-
-        if (isCheckRunTerminal(lastRuns)) {
-            if (hasFailingCheckRun(lastRuns)) {
-                throw new Error(`GitHub checks failed: ${checkRunSummary(lastRuns)}`);
+        const runs = await fetchAllPages(`https://api.github.com/repos/${repo}/actions/workflows/ci.yml/runs?head_sha=${encodeURIComponent(sha)}`, 'workflow_runs');
+        for (const diagnostic of runs.filter((run) => run.head_sha === sha && run.event !== 'push')) {
+            const summary = `${diagnostic.event} run ${diagnostic.id} attempt ${diagnostic.run_attempt}: ${diagnostic.status}/${diagnostic.conclusion || 'pending'} ${diagnostic.html_url}`;
+            if (!reported.has(summary)) {
+                console.log(`[checks:separate-diagnostic] ${summary}`);
+                reported.add(summary);
             }
-            return lastRuns;
         }
-
+        const run = selectPushRun(runs, sha, branch);
+        lastSummary = run ? `push run ${run.id} attempt ${run.run_attempt}: ${run.status}/${run.conclusion || 'pending'}` : 'no matching push CI run';
+        console.log(`[checks] ${lastSummary}`);
+        if (run?.status === 'completed') {
+            // Pin jobs to this attempt; never mix scheduled runs or earlier reruns.
+            const jobs = await fetchAllPages(`https://api.github.com/repos/${repo}/actions/runs/${run.id}/attempts/${run.run_attempt}/jobs`, 'jobs');
+            evaluatePushRun(run, jobs);
+            console.log(`[checks] ${checkRunSummary(jobs)}`);
+            return jobs;
+        }
         await sleep(pollMs);
     }
 
-    throw new Error(`Timed out waiting for GitHub checks: ${checkRunSummary(lastRuns)}`);
+    throw new Error(`Timed out waiting for GitHub checks: ${lastSummary}`);
 }
 
 async function waitForRailwayStatus({ repo, sha, timeoutMs, pollMs }) {
@@ -250,7 +291,7 @@ async function main() {
     console.log('[deploy-guard] DEPLOY OK');
 }
 
-main().catch((error) => {
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) main().catch((error) => {
     console.error(`[deploy-guard] ${error.message}`);
     process.exit(1);
 });
