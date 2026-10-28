@@ -435,7 +435,14 @@ function dispatchAnalyticsProviders(event) {
     const payload = providerPayloadFromEvent(event);
 
     if (window.gtag) {
-        window.gtag('event', event.name, payload);
+        // Our source identifies an internal interaction, not a campaign source.
+        // Let GA collect traffic attribution from the landing URL/referrer.
+        // Clone so first-party events and other providers retain their contract.
+        const { source, ...gaPayload } = payload;
+        if (source != null && source !== '' && gaPayload.interaction_source === undefined) {
+            gaPayload.interaction_source = source;
+        }
+        window.gtag('event', event.name, gaPayload);
     }
 
     if (window.mixpanel) {

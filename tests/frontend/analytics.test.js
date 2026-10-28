@@ -102,6 +102,55 @@ function grantAnalyticsConsent(harness) {
 }
 
 describe('consent-gated analytics queue', () => {
+    test('separates internal interaction source from GA attribution without changing backend or other providers', async () => {
+        const harness = loadAnalytics({ analyticsConsent: true });
+        await harness.window.MH_ANALYTICS.flushQueuedEvents();
+        harness.fetch.mockClear();
+        harness.gtag.mockClear();
+        harness.mixpanelTrack.mockClear();
+        harness.segmentTrack.mockClear();
+
+        harness.window.MH_ANALYTICS.trackEvent('reading_complete', {
+            source: 'tarot_yes_no_result', feature: 'tarot'
+        });
+        await harness.window.MH_ANALYTICS.flushQueuedEvents();
+
+        const gaPayload = harness.gtag.mock.calls[0][2];
+        expect(gaPayload).not.toHaveProperty('source');
+        expect(gaPayload).toMatchObject({
+            interaction_source: 'tarot_yes_no_result',
+            first_source: 'google', first_medium: 'organic'
+        });
+        expect(harness.mixpanelTrack).toHaveBeenCalledWith('reading_complete', expect.objectContaining({ source: 'tarot_yes_no_result' }));
+        expect(harness.segmentTrack).toHaveBeenCalledWith('reading_complete', expect.objectContaining({ source: 'tarot_yes_no_result' }));
+        const batch = JSON.parse(harness.fetch.mock.calls[0][1].body);
+        expect(batch.events[0].metadata).toMatchObject({ source: 'tarot_yes_no_result', first_source: 'google' });
+        expect(batch.events[0].metadata).not.toHaveProperty('interaction_source');
+    });
+
+    test('replayed pre-consent internal sources are safe for GA and do not override an explicit interaction source', async () => {
+        const harness = loadAnalytics({ search: '?source=homepage_quick_decision' });
+        harness.window.MH_ANALYTICS.trackEvent('cta_clicked', {
+            source: 'tarot_yes_no_card_pick', interaction_source: 'explicit_context'
+        });
+        expect(harness.gtag).not.toHaveBeenCalled();
+        harness.fetch.mockResolvedValueOnce({ ok: true, json: async () => ({ success: true, accepted: 2 }) });
+        grantAnalyticsConsent(harness);
+        await harness.window.MH_ANALYTICS.flushQueuedEvents();
+        const [, , payload] = harness.gtag.mock.calls.find(call => call[1] === 'cta_clicked');
+        expect(payload).not.toHaveProperty('source');
+        expect(payload.interaction_source).toBe('explicit_context');
+        expect(harness.window.MH_ANALYTICS_QUEUE).toHaveLength(0);
+    });
+
+    test('GA does not invent interaction source for events without one', async () => {
+        const harness = loadAnalytics({ analyticsConsent: true });
+        await harness.window.MH_ANALYTICS.flushQueuedEvents();
+        const payload = harness.gtag.mock.calls[0][2];
+        expect(payload).not.toHaveProperty('source');
+        expect(payload).not.toHaveProperty('interaction_source');
+    });
+
     test('does not contact providers before consent and replays queued events after consent', async () => {
         const harness = loadAnalytics();
 

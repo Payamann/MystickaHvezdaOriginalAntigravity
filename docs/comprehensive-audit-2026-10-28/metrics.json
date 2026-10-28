@@ -1,0 +1,58 @@
+{
+  "audit_date": "2026-10-28",
+  "production_sha": "8b4ba212526c45735a0ea7b23dcf4b0d49cf00d3",
+  "period": {"from": "2026-09-29", "through": "2026-10-26", "timezone_for_database_and_stripe": "Europe/Prague", "previous_from": "2026-09-01", "previous_through": "2026-09-28", "note": "GSC/GA date ranges verified in UI; property/report timezone differences can affect edge-day comparisons. No cross-system conversion rate calculated."},
+  "gsc": {
+    "property": "sc-domain:mystickahvezda.cz", "search_type": "Web", "country_filter": null, "device_filter": null,
+    "current": {"clicks":1356,"impressions":45301,"ctr_percent":2.9933,"average_position_displayed":7.5},
+    "previous": {"clicks":1256,"impressions":45958,"ctr_percent":2.7329,"average_position_displayed":8.2},
+    "exact_totals_source": "Sum of complete, disjoint mobile/desktop/tablet table; summary cards are rounded. Comparison dialog verified dates; invalid graph date ignored.",
+    "devices": [{"name":"mobile","clicks":1143,"previous_clicks":1074,"impressions":38428,"previous_impressions":37934},{"name":"desktop","clicks":197,"previous_clicks":172,"impressions":6450,"previous_impressions":7545},{"name":"tablet","clicks":16,"previous_clicks":10,"impressions":423,"previous_impressions":479}],
+    "top_pages_first_10": [
+      {"path":"/tarot-laska.html","clicks":210,"previous_clicks":266,"impressions":3673,"previous_impressions":6505},
+      {"path":"/tarot-karta-dne.html","clicks":157,"previous_clicks":141},
+      {"path":"/tarot-ano-ne.html","clicks":122,"previous_clicks":158},
+      {"path":"/partnerska-numerologie.html","clicks":67,"previous_clicks":30},
+      {"path":"/tarot.html","clicks":64,"previous_clicks":51},
+      {"path":"/sk/tarot-ano-nie.html","clicks":60,"previous_clicks":82},
+      {"path":"/kristalova-koule.html","clicks":53,"previous_clicks":85},
+      {"path":"/sk/kristalova-koule.html","clicks":41,"previous_clicks":54},
+      {"path":"/","clicks":40,"previous_clicks":10},
+      {"path":"/andelske-karty.html","clicks":33,"previous_clicks":12}
+    ],
+    "countries_selected_from_first_10": [{"country":"CZ","clicks":1178,"previous_clicks":1018},{"country":"SK","clicks":126,"previous_clicks":173},{"country":"PL","clicks":7,"previous_clicks":11}],
+    "index_report_updated":"2026-10-23", "indexed":1215,"not_indexed":1636,
+    "exclusion_reasons":{"noindex":607,"alternate_canonical":281,"robots":32,"redirect":27,"not_found":2,"crawled_not_indexed":196,"google_different_canonical":1,"server_error":2,"forbidden":1,"redirect_error":0,"discovered_not_indexed":487},
+    "indexed_despite_robots":1,
+    "inspection_sample":{"path":"/tarot-vyznam/soud.html","indexed":false,"reason":"crawled_not_indexed","last_crawl":"2026-10-16","fetch":"successful","crawl_allowed":true,"indexing_allowed":true,"canonical":"self"}
+  },
+  "ga4": {
+    "property":"529124414", "sessions":779,"active_users":531,"new_users":502,"engaged_sessions":467,"engagement_rate_percent":59.95,"average_engagement_seconds":78,"events":9107,"key_events":5,"reported_revenue_czk":0,
+    "channels":{"Organic Search":494,"Direct":100,"Unassigned":100,"Organic Social":72,"AI Assistant":7,"Email":3,"Organic Shopping":2},
+    "source_medium_first_10":{"google / organic":489,"(direct) / (none)":100,"pinterest / organic":72,"tarot_yes_no_result / (not set)":30,"tarot_yes_no_card_pick / (not set)":16,"seo_tarot_yes_no / (not set)":13,"crystal_ball_question / (not set)":8,"chatgpt.com / ai-assistant":7,"relationship_tarot_page / (not set)":6,"homepage_relationship_spotlight / (not set)":5},
+    "pinterest":{"sessions":72,"engaged_sessions":0,"average_engagement_seconds":0,"events_per_session":3,"interpretation":"Traffic quality or collection issue candidate; not proof of bots."},
+    "event_counts":{"page_view":2069,"reading_start":755,"reading_complete":740,"first_value_completed":331,"purchase_search_matches":0},
+    "checkout_default_funnel":{"begin_checkout_users":4,"shipping_users":0,"payment_info_users":0,"purchase_users":0,"note":"Closed physical-goods funnel is inappropriate for this digital service and incomplete purchase measurement; not proof that every actual checkout failed."},
+    "landing_sessions_first_10":{"/tarot-ano-ne.html":267,"/":123,"/andelske-karty.html":73,"/tarot-laska.html":61,"/kristalova-koule.html":48,"/tarot-karta-dne.html":41,"/tarot.html":29,"/sk/tarot-ano-nie.html":14,"/partnerska-shoda.html":12,"/runy.html":12},
+    "limitation":"Consent, blockers, automation, attribution contamination and small sample; key events are not verified orders. UI indicated almost all data in source/medium detail. Top lists are not full exports. Displayed channel rows sum to 778 while GA total is 779; preserve both observed values, cause not independently established."
+  },
+  "stripe": {
+    "mode":"live","account":"mystickahvezda.cz","charges_pagination_complete":true,"subscriptions_pagination_complete":true,
+    "current":{"successful_charges":3,"gross_czk":547,"membership_successful_charges":2,"membership_gross_czk":398,"relationship_tarot_successful_charges":1,"relationship_tarot_gross_czk":149,"failed_attempts":17,"unique_failed_payment_intents":2},
+    "previous":{"successful_charges":2,"gross_czk":398,"note":"Refund timing was not separately reconciled; do not treat charge-cohort refunds as period net revenue."},
+    "current_active_subscriptions":2,"monthly_price_each_czk":199,"nominal_monthly_recurring_czk":398,"latest_active_invoices_paid":2,"new_subscription_objects_in_period":3,"subscription_endings_in_period":3,"all_subscription_objects":13,"all_canceled_subscription_objects":11,
+    "limitation":"No verified cost allocation, profit, customer feedback or identification of owner/test purchases; recurring amount is not guaranteed future cash. Repeat attempts are not repeat customers."
+  },
+  "database": {
+    "registrations_current":18,"registrations_previous":19,"total_users":116,
+    "one_time_paid_orders":{"relationship_tarot":1,"personal_map":0},"relationship_tarot_fulfilled_records":1,"relationship_tarot_receipt_confirmed_email_sent_at":0,
+    "delivery_note":"Backend marks fulfilled and emits delivery event; historical row lacks email_sent_at. Not independent proof of receipt and not proof of failed delivery.",
+    "stale_subscription_statuses":{"past_due_but_stripe_canceled":1,"cancel_pending_but_stripe_canceled":1},
+    "relationship_tarot_funnel":[{"event":"one_time_offer_viewed","events":478,"flow_ids":359},{"event":"one_time_product_cta_clicked","events":10,"flow_ids":8},{"event":"one_time_product_viewed","events":28,"flow_ids":22},{"event":"one_time_form_started","events":3,"flow_ids":2},{"event":"one_time_form_submitted","events":2,"flow_ids":1},{"event":"checkout_session_created","events":2,"flow_ids":1,"stripe_sessions":2},{"event":"one_time_purchase_completed","events":1,"flow_ids":1,"stripe_sessions":1},{"event":"one_time_reading_delivered","events":1,"flow_ids":1,"stripe_sessions":1}],
+    "personal_map_events":{"one_time_product_viewed":132,"one_time_product_cta_clicked":1},
+    "funnel_limitations":"Counts are independent event totals, not a joined cohort. flow_id is a short-lived browser flow, not a unique person. No statistical conversion claim."
+  },
+  "technical_live":{"health":"ok","main_sitemap_urls":916,"dated_horoscope_sitemap_urls":84,"representative_html_gets":21,"representative_html_200":21,"source_jsonld_blocks":1922,"source_jsonld_syntax_errors":0},
+  "mobile_review":{"configured_viewport":"390x844","pages":["/","/cenik.html","/tarot-ano-ne.html","/vztahovy-vyklad.html"],"horizontal_overflow_observed":false,"reading_form_inputs_labeled":true,"no_real_payment_or_generation":true},
+  "performance_limits":{"gsc_cwv":"no data","pagespeed_api_status":429,"pagespeed_api_reason":"quota exceeded","new_lighthouse_result":false}
+}

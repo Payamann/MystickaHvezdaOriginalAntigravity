@@ -1,0 +1,245 @@
+{
+  "checked_at_utc": "2026-10-28T20:03:57.714Z",
+  "scope": "Public HTML GET only; concurrency3; network-enabled shell",
+  "results": [
+    {
+      "url": "https://www.mystickahvezda.cz/",
+      "status": 200,
+      "final_url": "https://www.mystickahvezda.cz/",
+      "canonical": [
+        "https://www.mystickahvezda.cz/"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "x_robots_tag": null,
+      "lang": "cs"
+    },
+    {
+      "url": "https://www.mystickahvezda.cz/tarot.html",
+      "status": 200,
+      "final_url": "https://www.mystickahvezda.cz/tarot.html",
+      "canonical": [
+        "https://www.mystickahvezda.cz/tarot.html"
+      ],
+      "robots": [],
+      "x_robots_tag": null,
+      "lang": "cs"
+    },
+    {
+      "url": "https://www.mystickahvezda.cz/tarot-ano-ne.html",
+      "status": 200,
+      "final_url": "https://www.mystickahvezda.cz/tarot-ano-ne.html",
+      "canonical": [
+        "https://www.mystickahvezda.cz/tarot-ano-ne.html"
+      ],
+      "robots": [],
+      "x_robots_tag": null,
+      "lang": "cs"
+    },
+    {
+      "url": "https://www.mystickahvezda.cz/numerologie.html",
+      "status": 200,
+      "final_url": "https://www.mystickahvezda.cz/numerologie.html",
+      "canonical": [
+        "https://www.mystickahvezda.cz/numerologie.html"
+      ],
+      "robots": [],
+      "x_robots_tag": null,
+      "lang": "cs"
+    },
+    {
+      "url": "https://www.mystickahvezda.cz/natalni-karta.html",
+      "status": 200,
+      "final_url": "https://www.mystickahvezda.cz/natalni-karta.html",
+      "canonical": [
+        "https://www.mystickahvezda.cz/natalni-karta.html"
+      ],
+      "robots": [],
+      "x_robots_tag": null,
+      "lang": "cs"
+    },
+    {
+      "url": "https://www.mystickahvezda.cz/partnerska-shoda.html",
+      "status": 200,
+      "final_url": "https://www.mystickahvezda.cz/partnerska-shoda.html",
+      "canonical": [
+        "https://www.mystickahvezda.cz/partnerska-shoda.html"
+      ],
+      "robots": [],
+      "x_robots_tag": null,
+      "lang": "cs"
+    },
+    {
+      "url": "https://www.mystickahvezda.cz/mentor.html",
+      "status": 200,
+      "final_url": "https://www.mystickahvezda.cz/mentor.html",
+      "canonical": [
+        "https://www.mystickahvezda.cz/mentor.html"
+      ],
+      "robots": [],
+      "x_robots_tag": null,
+      "lang": "cs"
+    },
+    {
+      "url": "https://www.mystickahvezda.cz/horoskopy.html",
+      "status": 200,
+      "final_url": "https://www.mystickahvezda.cz/horoskopy.html",
+      "canonical": [
+        "https://www.mystickahvezda.cz/horoskopy.html"
+      ],
+      "robots": [],
+      "x_robots_tag": null,
+      "lang": "cs"
+    },
+    {
+      "url": "https://www.mystickahvezda.cz/kristalova-koule.html",
+      "status": 200,
+      "final_url": "https://www.mystickahvezda.cz/kristalova-koule.html",
+      "canonical": [
+        "https://www.mystickahvezda.cz/kristalova-koule.html"
+      ],
+      "robots": [],
+      "x_robots_tag": null,
+      "lang": "cs"
+    },
+    {
+      "url": "https://www.mystickahvezda.cz/andelske-karty.html",
+      "status": 200,
+      "final_url": "https://www.mystickahvezda.cz/andelske-karty.html",
+      "canonical": [
+        "https://www.mystickahvezda.cz/andelske-karty.html"
+      ],
+      "robots": [],
+      "x_robots_tag": null,
+      "lang": "cs"
+    },
+    {
+      "url": "https://www.mystickahvezda.cz/osobni-mapa.html",
+      "status": 200,
+      "final_url": "https://www.mystickahvezda.cz/osobni-mapa.html",
+      "canonical": [
+        "https://www.mystickahvezda.cz/osobni-mapa.html"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "x_robots_tag": null,
+      "lang": "cs"
+    },
+    {
+      "url": "https://www.mystickahvezda.cz/cenik.html",
+      "status": 200,
+      "final_url": "https://www.mystickahvezda.cz/cenik.html",
+      "canonical": [
+        "https://www.mystickahvezda.cz/cenik.html"
+      ],
+      "robots": [],
+      "x_robots_tag": null,
+      "lang": "cs"
+    },
+    {
+      "url": "https://www.mystickahvezda.cz/vztahovy-vyklad.html",
+      "status": 200,
+      "final_url": "https://www.mystickahvezda.cz/vztahovy-vyklad.html",
+      "canonical": [
+        "https://www.mystickahvezda.cz/vztahovy-vyklad.html"
+      ],
+      "robots": [
+        "index,follow"
+      ],
+      "x_robots_tag": null,
+      "lang": "cs"
+    },
+    {
+      "url": "https://www.mystickahvezda.cz/sk/tarot-ano-nie.html",
+      "status": 200,
+      "final_url": "https://www.mystickahvezda.cz/sk/tarot-ano-nie.html",
+      "canonical": [
+        "https://www.mystickahvezda.cz/sk/tarot-ano-nie.html"
+      ],
+      "robots": [],
+      "x_robots_tag": null,
+      "lang": "sk"
+    },
+    {
+      "url": "https://www.mystickahvezda.cz/sk/natalni-karta.html",
+      "status": 200,
+      "final_url": "https://www.mystickahvezda.cz/sk/natalni-karta.html",
+      "canonical": [
+        "https://www.mystickahvezda.cz/sk/natalni-karta.html"
+      ],
+      "robots": [],
+      "x_robots_tag": null,
+      "lang": "sk"
+    },
+    {
+      "url": "https://www.mystickahvezda.cz/en/crystal-ball.html",
+      "status": 200,
+      "final_url": "https://www.mystickahvezda.cz/en/crystal-ball.html",
+      "canonical": [
+        "https://www.mystickahvezda.cz/en/crystal-ball.html"
+      ],
+      "robots": [],
+      "x_robots_tag": null,
+      "lang": "en"
+    },
+    {
+      "url": "https://www.mystickahvezda.cz/pl/horoskopy.html",
+      "status": 200,
+      "final_url": "https://www.mystickahvezda.cz/pl/horoskopy.html",
+      "canonical": [
+        "https://www.mystickahvezda.cz/pl/horoskopy.html"
+      ],
+      "robots": [],
+      "x_robots_tag": null,
+      "lang": "pl"
+    },
+    {
+      "url": "https://www.mystickahvezda.cz/en/birth-chart.html",
+      "status": 200,
+      "final_url": "https://www.mystickahvezda.cz/en/birth-chart.html",
+      "canonical": [
+        "https://www.mystickahvezda.cz/en/birth-chart.html"
+      ],
+      "robots": [],
+      "x_robots_tag": null,
+      "lang": "en"
+    },
+    {
+      "url": "https://www.mystickahvezda.cz/snar/voda.html",
+      "status": 200,
+      "final_url": "https://www.mystickahvezda.cz/snar/voda.html",
+      "canonical": [
+        "https://www.mystickahvezda.cz/snar/voda.html"
+      ],
+      "robots": [],
+      "x_robots_tag": null,
+      "lang": "cs"
+    },
+    {
+      "url": "https://www.mystickahvezda.cz/jmena/antonin.html",
+      "status": 200,
+      "final_url": "https://www.mystickahvezda.cz/jmena/antonin.html",
+      "canonical": [
+        "https://www.mystickahvezda.cz/jmena/antonin.html"
+      ],
+      "robots": [],
+      "x_robots_tag": null,
+      "lang": "cs"
+    },
+    {
+      "url": "https://www.mystickahvezda.cz/partnerska-shoda/aries-taurus.html",
+      "status": 200,
+      "final_url": "https://www.mystickahvezda.cz/partnerska-shoda/aries-taurus.html",
+      "canonical": [
+        "https://www.mystickahvezda.cz/partnerska-shoda/aries-taurus.html"
+      ],
+      "robots": [
+        "index, follow"
+      ],
+      "x_robots_tag": null,
+      "lang": "cs"
+    }
+  ]
+}
