@@ -186,6 +186,54 @@ test.describe('Natální karta', () => {
 
 test.describe('Partnerská shoda', () => {
 
+    const calculatedFixture = {
+        success: true,
+        synastry: {
+            scores: { total: 83, emotion: 79, communication: 81, passion: 88, stability: 84 },
+            engine: { version: 'e2e-calculated', precision: 'date_noon_utc' }
+        }
+    };
+
+    async function prepareCalculationTest(page, { loggedIn = false } = {}) {
+        await page.route('**/api/csrf-token', route => route.fulfill({ json: { csrfToken: 'e2e-calculation-token' } }));
+        await page.route('**/api/payment/funnel-event', route => route.fulfill({ json: { success: true } }));
+        await page.evaluate(({ loggedIn }) => {
+            window.Auth = {
+                isLoggedIn: () => loggedIn,
+                isPremium: () => false,
+                getProfile: async () => loggedIn ? { id: 'e2e-synastry' } : null,
+                fetchProtected: async () => { throw new Error('Interpretation unavailable'); }
+            };
+            // Spy at the drawing boundary, before a stale result can be exported.
+            window.__synastryShareDraws = 0;
+            window.MH_SHARE_IMAGE = {
+                shareOrDownload: async () => {},
+                createCanvas: () => {
+                    window.__synastryShareDraws += 1;
+                    return document.createElement('canvas');
+                }
+            };
+        }, { loggedIn });
+        const inputs = {
+            'p1-name': 'Anna', 'p1-date': '1990-01-01', 'p1-time': '12:00', 'p1-place': 'Praha',
+            'p2-name': 'Pavel', 'p2-date': '1992-07-15', 'p2-time': '08:30', 'p2-place': 'Brno'
+        };
+        for (const [id, value] of Object.entries(inputs)) await page.fill(`#${id}`, value);
+        return inputs;
+    }
+
+    async function expectCalculationError(page, inputs) {
+        const status = page.locator('#synastry-calculation-status');
+        await expect(status).toBeVisible();
+        await expect(status).toHaveAttribute('role', 'alert');
+        await expect(status).toContainText(/výpočet|vypočítat/i);
+        await expect(page.locator('#synastry-form button[type="submit"]')).toBeEnabled();
+        await expect(page.locator('#synastry-results')).toBeHidden();
+        await expect(page.locator('#synastry-next-step')).toBeHidden();
+        await expect(page.locator('#synastry-share-image-btn')).toBeHidden();
+        for (const [id, value] of Object.entries(inputs)) await expect(page.locator(`#${id}`)).toHaveValue(value);
+    }
+
     test.beforeEach(async ({ page }) => {
         await page.goto('/partnerska-shoda.html');
         await waitForPageReady(page);
@@ -260,6 +308,80 @@ test.describe('Partnerská shoda', () => {
         await expect(page.locator('#synastry-engine-summary')).toContainText('ASC');
         await expect(page.locator('#synastry-engine-summary')).toContainText('čas + rozpoznané místo');
         await expect(page.locator('#total-score')).toContainText('%');
+    });
+
+    test('chyba výpočtu nevytvoří skóre a opakování použije skutečný výsledek', async ({ page }) => {
+        const inputs = await prepareCalculationTest(page);
+        const requests = [];
+        await page.route('**/api/synastry/calculate', route => {
+            requests.push(route.request().postDataJSON());
+            return requests.length === 1
+                ? route.fulfill({ status: 503, json: { success: false } })
+                : route.fulfill({ json: calculatedFixture });
+        });
+        const submit = page.locator('#synastry-form button[type="submit"]');
+        await submit.click();
+        await expectCalculationError(page, inputs);
+        await submit.click();
+        await expect(page.locator('#synastry-results')).toBeVisible();
+        await expect(page.locator('#total-score')).toHaveText('83%');
+        await expect(page.locator('#synastry-next-score')).toHaveText('83%');
+        await expect(page.locator('#synastry-share-image-btn')).toBeVisible();
+        await expect(page.locator('#synastry-calculation-status')).toBeHidden();
+        await expect(submit).toBeEnabled();
+        expect(requests).toHaveLength(2);
+        expect(requests[1]).toEqual(requests[0]);
+    });
+
+    test('chybějící a neplatná skóre výpočtu nikdy nenahradí místní odhad', async ({ page }) => {
+        const inputs = await prepareCalculationTest(page);
+        const malformedResults = [
+            { success: true },
+            { success: true, synastry: { scores: { total: 83 } } },
+            { success: true, synastry: { scores: { ...calculatedFixture.synastry.scores, emotion: null } } },
+            { success: true, synastry: { scores: { ...calculatedFixture.synastry.scores, total: 'not-a-score' } } },
+            { success: true, synastry: { scores: { ...calculatedFixture.synastry.scores, total: 101 } } }
+        ];
+        let attempts = 0;
+        await page.route('**/api/synastry/calculate', route => route.fulfill({ json: malformedResults[attempts++] }));
+        for (let index = 0; index < malformedResults.length; index += 1) {
+            await page.locator('#synastry-form button[type="submit"]').click();
+            await expect.poll(() => attempts).toBe(index + 1);
+            await expectCalculationError(page, inputs);
+        }
+        expect(attempts).toBe(malformedResults.length);
+    });
+
+    test('neúspěšný nový výpočet odstraní předchozí výsledek i sdílení', async ({ page }) => {
+        const inputs = await prepareCalculationTest(page);
+        let attempts = 0;
+        await page.route('**/api/synastry/calculate', route => ++attempts === 1
+            ? route.fulfill({ json: calculatedFixture })
+            : route.abort('failed'));
+        const submit = page.locator('#synastry-form button[type="submit"]');
+        await submit.click();
+        await expect(page.locator('#total-score')).toHaveText('83%');
+        await expect(page.locator('#synastry-share-image-btn')).toBeVisible();
+        // Retain the actual event target to verify its closure no longer exports stale data.
+        await page.evaluate(() => { window.__oldSynastryShareButton = document.getElementById('synastry-share-image-btn'); });
+        await page.fill('#p2-name', 'Petra');
+        await submit.click();
+        await expectCalculationError(page, { ...inputs, 'p2-name': 'Petra' });
+        await page.evaluate(() => window.__oldSynastryShareButton.click());
+        expect(await page.evaluate(() => window.__synastryShareDraws)).toBe(0);
+    });
+
+    test('chyba AI výkladu zachová vypočtené skóre bez náhradního verdiktu', async ({ page }) => {
+        await prepareCalculationTest(page, { loggedIn: true });
+        await page.route('**/api/synastry/calculate', route => route.fulfill({ json: calculatedFixture }));
+        await page.locator('#synastry-form button[type="submit"]').click();
+        await expect(page.locator('#synastry-results')).toBeVisible();
+        await expect(page.locator('#total-score')).toHaveText('83%');
+        await expect(page.locator('#ai-synastry')).toContainText(/analýza.*není dostupná|výklad.*není dostupný/i);
+        await expect(page.locator('#verdict-text')).not.toContainText(/silný pár|harmonickými aspekty|vzájemnou podporou|vyžaduje práci/i);
+        await expect(page.locator('#synastry-next-step')).toBeVisible();
+        await expect(page.locator('#synastry-calculation-status')).toBeHidden();
+        await expect(page.locator('#synastry-form button[type="submit"]')).toBeEnabled();
     });
 
     test('po výpočtu nabízí jednorázový výklad a měří bezpečný přechod', async ({ page }) => {

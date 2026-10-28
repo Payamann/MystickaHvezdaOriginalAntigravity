@@ -1,5 +1,3 @@
-import { calculateSynastryScores } from './utils/synastry-logic.js';
-
 /**
  * Mystická Hvězda - Synastry Calculator (AI-Powered)
  * Uses the server AI API for detailed relationship analysis.
@@ -19,6 +17,37 @@ let personalMapOfferViewed = false;
 let latestSynastryResultScores = null;
 let relationshipTarotOfferViewed = false;
 let relationshipTarotOfferObserver = null;
+const scoreAnimationTimers = new Map();
+
+function resetSynastryResult() {
+    for (const timer of scoreAnimationTimers.values()) clearInterval(timer);
+    scoreAnimationTimers.clear();
+    relationshipTarotOfferObserver?.disconnect();
+    lastSynastryShareData = null;
+    latestSynastryResultScores = null;
+    for (const id of ['synastry-results', 'synastry-next-step', 'ai-synastry']) {
+        setBlockVisible(document.getElementById(id), false);
+    }
+    document.getElementById('synastry-share-image-btn')?.remove();
+    document.getElementById('synastry-engine-summary')?.remove();
+    document.getElementById('ai-synastry')?.remove();
+    for (const id of ['total-score', 'score-emotion', 'score-comm', 'score-passion', 'score-stability', 'synastry-next-score', 'verdict-text']) {
+        const element = document.getElementById(id);
+        if (element) element.textContent = '';
+    }
+}
+
+function setSynastryCalculationError(message = '') {
+    let status = document.getElementById('synastry-calculation-status');
+    if (!status) {
+        status = document.createElement('p');
+        status.id = 'synastry-calculation-status';
+        status.setAttribute('role', 'alert');
+        document.getElementById('synastry-form')?.append(status);
+    }
+    status.textContent = message;
+    status.hidden = !message;
+}
 
 function getRelationshipTarotFlowId() {
     const key = 'mh_relationship_flow_id';
@@ -269,6 +298,8 @@ function animateScale(element, axis, value, duration = 1000) {
 
 function normalizeServerSynastryScores(scores) {
     if (!scores || typeof scores !== 'object') return null;
+    const values = ['total', 'emotion', 'communication', 'passion', 'stability'].map(key => scores[key]);
+    if (!values.every(value => typeof value === 'number' && Number.isFinite(value) && value >= 0 && value <= 100)) return null;
 
     const normalized = {
         totalScore: Number(scores.total),
@@ -723,6 +754,8 @@ async function calculateCompatibility() {
 
     btn.textContent = 'Analyzuji hvězdy...';
     btn.disabled = true;
+    resetSynastryResult();
+    setSynastryCalculationError();
 
     // Get form data
     const person1 = {
@@ -738,22 +771,21 @@ async function calculateCompatibility() {
         birthPlace: optionalInputValue('p2-place')
     };
 
-    // Calculate scores using imported logic
-    const scores = calculateSynastryScores(person1, person2);
-    const { emotion: emotionScore, communication: commScore, passion: passionScore, stability: stabilityScore, total: totalScore } = scores;
-    let displayedScores = { totalScore, emotionScore, commScore, passionScore, stabilityScore };
+    let displayedScores;
     let calculatedSynastry = null;
 
     try {
         calculatedSynastry = await fetchCalculatedSynastry(person1, person2);
-        const serverScores = normalizeServerSynastryScores(calculatedSynastry?.scores);
-        if (serverScores) {
-            displayedScores = serverScores;
-            trackSynastryCalculation(displayedScores, calculatedSynastry);
-        }
+        displayedScores = normalizeServerSynastryScores(calculatedSynastry?.scores);
+        if (!displayedScores) throw new Error('Missing or invalid synastry scores');
     } catch (calculationError) {
-        console.warn('Synastry engine calculation fallback:', calculationError.message);
+        console.warn('Synastry calculation unavailable:', calculationError.message);
+        setSynastryCalculationError('Partnerskou shodu se teď nepodařilo vypočítat. Zadané údaje zůstaly vyplněné; zkus výpočet znovu.');
+        btn.textContent = originalText;
+        btn.disabled = false;
+        return;
     }
+    try { trackSynastryCalculation(displayedScores, calculatedSynastry); } catch { /* Analytics must not prevent a valid result. */ }
 
     const viewerProfile = window.Auth?.isLoggedIn?.() ? await window.Auth.getProfile() : null;
     const hasActiveSession = !!viewerProfile;
@@ -918,16 +950,11 @@ async function calculateCompatibility() {
     } catch (error) {
         console.error('Synastry Error:', error);
 
-        // Fallback to static verdict
-        let verdict = "";
-        if (displayedScores.totalScore > 85) verdict = "Velmi silná shoda s výraznou vzájemnou podporou.";
-        else if (displayedScores.totalScore > 70) verdict = "Velmi silný pár s harmonickými aspekty.";
-        else verdict = "Vztah s potenciálem, který vyžaduje práci.";
-        document.getElementById('verdict-text').textContent = verdict;
+        document.getElementById('verdict-text').textContent = `Celková kompatibilita ${displayedScores.totalScore}%`;
 
         setBlockVisible(aiResultsDiv, true);
         aiResultsDiv.querySelector('.ai-content').textContent =
-            'Hlubší analýza momentálně není dostupná. Zkuste to prosím později.';
+            'Výpočet shody je hotový, ale slovní výklad teď není dostupný. Zkus to prosím později.';
     }
 
     btn.textContent = originalText;
@@ -979,6 +1006,7 @@ function renderTeaser(container, totalScore = null) {
 function animateValue(id, start, end, duration) {
     const obj = document.getElementById(id);
     if (!obj) return;
+    clearInterval(scoreAnimationTimers.get(id));
 
     const range = end - start;
     if (range === 0) {
@@ -991,10 +1019,12 @@ function animateValue(id, start, end, duration) {
     const stepTime = Math.max(1, Math.abs(Math.floor(duration / range)));
 
     const timer = setInterval(function () {
-        current += increment;
+        current = increment > 0 ? Math.min(end, current + increment) : Math.max(end, current + increment);
         obj.textContent = current + "%";
         if (current === end) {
             clearInterval(timer);
+            scoreAnimationTimers.delete(id);
         }
     }, stepTime);
+    scoreAnimationTimers.set(id, timer);
 }
