@@ -7,6 +7,7 @@ import request from 'supertest';
 import app from '../index.js';
 import crypto from 'crypto';
 import {
+    attachStripeSessionToOrderInput,
     createOneTimeOrderInput,
     markOneTimeOrderInputFulfilled
 } from '../services/one-time-orders.js';
@@ -378,9 +379,10 @@ describe('💳 Stripe Webhook Tests', () => {
                     focus: 'prace'
                 }
             });
+            const sessionId = `cs_test_map_retry_${Date.now()}`;
+            await attachStripeSessionToOrderInput(order.id, sessionId);
             await markOneTimeOrderInputFulfilled(order.id);
 
-            const sessionId = `cs_test_map_retry_${Date.now()}`;
             const payload = JSON.stringify({
                 id: `evt_map_retry_${Date.now()}`,
                 type: 'checkout.session.completed',
