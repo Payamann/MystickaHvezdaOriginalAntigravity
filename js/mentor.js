@@ -4,29 +4,50 @@
 
 // DOM elementy — inicializujeme v DOMContentLoaded (bezpečná inicializace)
 let chatInput, sendBtn, messagesContainer, typingIndicator;
-const MENTOR_DAILY_LIMIT = 3;
 const MENTOR_PENDING_PROMPT_KEY = 'mentor_pending_prompt_v1';
 const MENTOR_PENDING_PROMPT_MAX_AGE_MS = 30 * 60 * 1000;
 const MENTOR_PAYMENT_REASSURANCE = '7 dní za 0 Kč, potom automaticky 199 Kč/měsíc, pokud nezrušíš. K aktivaci je potřeba karta. Zrušení v profilu.';
 
-function getMentorUsageStorageKey(date = new Date()) {
-    return `mh_daily_mentor_${date.toDateString()}`;
+let mentorOwner;
+let mentorRevision = 0;
+let mentorHistoryLoading = false;
+let mentorSending = false;
+let mentorHistoryStatus;
+
+function currentMentorOwner() {
+    return window.Auth?.isLoggedIn?.() ? window.Auth.user?.id || null : null;
 }
 
-function readMentorUsageCount(date = new Date()) {
-    try {
-        return Math.max(0, Number.parseInt(localStorage.getItem(getMentorUsageStorageKey(date)) || '0', 10) || 0);
-    } catch {
-        return 0;
-    }
+function isCurrentMentorRequest(owner, revision) {
+    return owner === currentMentorOwner() && owner === mentorOwner && revision === mentorRevision;
 }
 
-function writeMentorUsageCount(count, date = new Date()) {
-    try {
-        localStorage.setItem(getMentorUsageStorageKey(date), String(Math.max(0, count)));
-    } catch {
-        // Storage can fail in strict privacy modes; server-side quota still protects the limit.
+function updateMentorSendButton() {
+    if (sendBtn) sendBtn.disabled = mentorHistoryLoading || mentorSending || !chatInput?.value.trim();
+}
+
+function syncMentorAccount() {
+    const owner = currentMentorOwner();
+    if (owner === mentorOwner) return;
+    const previousOwner = mentorOwner;
+    mentorOwner = owner;
+    mentorRevision += 1;
+    mentorSending = false;
+    mentorHistoryLoading = false;
+    showTyping(false);
+    if (previousOwner !== undefined) {
+        messagesContainer?.querySelectorAll('.message').forEach(message => message.remove());
+        resetChatInput();
+        try { sessionStorage.removeItem(MENTOR_PENDING_PROMPT_KEY); } catch {}
     }
+    mentorHistoryStatus.hidden = true;
+    if (chatInput) chatInput.disabled = false;
+    window.isPremium = Boolean(owner && window.Auth?.isPremium?.());
+    if (owner) {
+        loadHistory(owner, mentorRevision);
+        if (previousOwner === undefined) restorePendingMentorPrompt();
+    }
+    updateMentorSendButton();
 }
 
 function resizeChatInput() {
@@ -46,7 +67,7 @@ function fillMentorPrompt(prompt, promptType = 'unknown') {
 
     chatInput.value = prompt;
     resizeChatInput();
-    sendBtn?.removeAttribute('disabled');
+    updateMentorSendButton();
     chatInput.focus();
     chatInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
     window.MH_ANALYTICS?.trackCTA?.('mentor_prompt_starter', {
@@ -116,7 +137,7 @@ function restorePendingMentorPrompt() {
 
     chatInput.value = pending.prompt;
     resizeChatInput();
-    sendBtn?.removeAttribute('disabled');
+    updateMentorSendButton();
     chatInput.focus();
     chatInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
@@ -194,12 +215,17 @@ function keepMentorFree(source, overlay = null) {
     if (sendBtn) sendBtn.disabled = true;
 }
 
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', () => {
     // Inicializuj DOM elementy — musí být uvnitř DOMContentLoaded
     chatInput = document.getElementById('chat-input');
     sendBtn = document.getElementById('send-btn');
     messagesContainer = document.getElementById('chat-messages');
     typingIndicator = document.getElementById('typing-indicator');
+    mentorHistoryStatus = document.createElement('p');
+    mentorHistoryStatus.id = 'mentor-history-status';
+    mentorHistoryStatus.setAttribute('role', 'status');
+    mentorHistoryStatus.hidden = true;
+    messagesContainer?.before(mentorHistoryStatus);
     setupMentorPromptStarters();
 
     // Připoj event listenery až po inicializaci DOM
@@ -207,11 +233,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         chatInput.addEventListener('input', function () {
             resizeChatInput();
 
-            if (this.value.trim().length > 0) {
-                sendBtn?.removeAttribute('disabled');
-            } else {
-                sendBtn?.setAttribute('disabled', 'true');
-            }
+            updateMentorSendButton();
         });
 
         chatInput.addEventListener('keydown', function (e) {
@@ -222,128 +244,64 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
     if (sendBtn) sendBtn.addEventListener('click', sendMessage);
-    // Wait for auth-client to initialize (if needed) but we can check token directly.
-    // Odhlášený návštěvník má nejdřív vidět hodnotu: starter otázky a chat input.
-    // Registrace se spouští až při odeslání otázky, kdy prompt uložíme pro návrat.
-    if (!window.Auth?.isLoggedIn()) {
-        document.addEventListener('auth:changed', () => {
-            if (window.Auth?.isLoggedIn()) window.location.reload();
-        }, { once: true });
-        window.isPremium = false;
-        return;
-    }
-
-    // Check Premium Status
-    try {
-        const userProfile = await window.Auth.getProfile();
-        // Allow everyone to enter, but use the shared Auth helper for plan status.
-        window.isPremium = Boolean(userProfile && window.Auth?.isPremium?.());
-
-        // Initialize usage tracking for free users
-        if (!window.isPremium) {
-            initUsageTracking();
-        }
-
-        // Load History for everyone (if any)
-        loadHistory();
-        restorePendingMentorPrompt();
-
-    } catch (error) {
-        console.error('Failed to verify subscription:', error);
-    }
-
-    // Auto-focus input
+    document.addEventListener('auth:changed', syncMentorAccount);
+    syncMentorAccount();
     chatInput?.focus();
 });
 
-function initUsageTracking() {
-    writeMentorUsageCount(readMentorUsageCount());
-}
-
-async function loadHistory() {
+async function loadHistory(owner, revision) {
+    mentorHistoryLoading = true;
+    mentorHistoryStatus.textContent = 'Načítám předchozí konverzaci…';
+    mentorHistoryStatus.hidden = false;
+    updateMentorSendButton();
     try {
-        const response = await fetch(`${API_CONFIG.BASE_URL}/mentor/history`, {
+        const response = await fetch(`${API_CONFIG.BASE_URL}/mentor/history?expectedUserId=${encodeURIComponent(owner)}`, {
             credentials: 'include'
         });
-
+        if (!isCurrentMentorRequest(owner, revision)) return;
+        if (!response.ok) throw new Error('History unavailable');
         const data = await response.json();
-        if (data.success && data.history) {
-            // Remove the default welcome message if we have history?
-            // Or keep it as a header? Let's keep it for now or maybe clear container.
-            // Actually, if we have history, it might feel weird to have the default greeting at top.
-            // Let's remove default greeting if we have history.
-            if (data.history.length > 0) {
-                const welcomeMsg = messagesContainer.querySelector('.message--mentor');
-                if (welcomeMsg && welcomeMsg.innerText.includes('Vítej, poutníku')) {
-                    welcomeMsg.remove();
-                }
-
-                data.history.forEach(msg => {
-                    addMessage(msg.content, msg.role, false); // false = do not scroll yet
-                });
-                scrollToBottom();
-            }
-
-            // Always check if we should greet (e.g. if >12h since last msg, backend decides)
-            // We call this regardless of history length to catch "return" visitors
-            checkGreeting();
-
+        if (!isCurrentMentorRequest(owner, revision)) return;
+        if (!data.success || !Array.isArray(data.history)) throw new Error('Invalid history');
+        if (data.history.length) {
+            messagesContainer?.querySelectorAll('.message').forEach(message => message.remove());
+            data.history.forEach(msg => addMessage(msg.content, msg.role, false));
+            scrollToBottom();
         }
-    } catch (e) {
-        console.warn('Failed to load history', e);
-    }
-}
-
-async function checkGreeting() {
-    // Basic frontend check to avoid spamming the API on every reload if we KNOW we just chatted?
-    // Actually, backend comparison is better. API call is cheap.
-
-    try {
-        const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
-        const response = await fetch(`${API_CONFIG.BASE_URL}/mentor/greeting`, {
-            method: 'POST',
-            credentials: 'include',
-            headers: {
-                ...(csrfToken && { 'X-CSRF-Token': csrfToken })
-            }
-        });
-
-        const data = await response.json();
-        if (data.success && data.greeting) {
-            // Add the greeting!
-            addMessage(data.greeting, 'mentor', true);
+        mentorHistoryStatus.hidden = true;
+    } catch (error) {
+        if (!isCurrentMentorRequest(owner, revision)) return;
+        mentorHistoryStatus.textContent = 'Předchozí konverzaci se nepodařilo načíst. Novou otázku můžeš poslat i tak.';
+        mentorHistoryStatus.hidden = false;
+    } finally {
+        if (isCurrentMentorRequest(owner, revision)) {
+            mentorHistoryLoading = false;
+            updateMentorSendButton();
         }
-    } catch (e) {
-        // Silent fail
-        if (window.MH_DEBUG) console.debug('No greeting today.');
     }
 }
 
 async function sendMessage() {
     if (!chatInput || !sendBtn || !messagesContainer || !typingIndicator) return;
+    syncMentorAccount();
     const text = chatInput.value.trim();
-    if (!text) return;
+    if (!text || mentorHistoryLoading || mentorSending) return;
 
-    // 0. Auth Check (token je HttpOnly cookie, kontrolujeme přes Auth objekt)
     if (!window.Auth?.isLoggedIn()) {
         window.Auth?.showToast?.('Účet zdarma uloží otázku', 'Vytvořte si účet a Průvodce se vrátí přesně k této otázce.', 'info');
         startMentorSignupFlow(text, 'mentor_entry_auth_gate');
-        document.addEventListener('auth:changed', () => {
-            if (window.Auth?.isLoggedIn()) window.location.reload();
-        }, { once: true });
         return;
     }
-
-    // The server is the source of truth for access limits. Keep the question
-    // available until a reply is confirmed so a denied request loses no text.
-    sendBtn.setAttribute('disabled', 'true');
-
-    // 2. Show Typing Indicator
+    const owner = currentMentorOwner();
+    if (!owner) return; // Never dispatch private content with an unknown account.
+    const revision = mentorRevision;
+    mentorSending = true;
+    updateMentorSendButton();
     showTyping(true);
 
-    // 3. Call API
     try {
         const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
+        if (!isCurrentMentorRequest(owner, revision)) return;
         const response = await fetch(`${API_CONFIG.BASE_URL}/mentor/chat`, {
             method: 'POST',
             credentials: 'include',
@@ -351,34 +309,39 @@ async function sendMessage() {
                 'Content-Type': 'application/json',
                 ...(csrfToken && { 'X-CSRF-Token': csrfToken })
             },
-            body: JSON.stringify({ message: text })
+            body: JSON.stringify({ message: text, expectedUserId: owner })
         });
-
+        if (!isCurrentMentorRequest(owner, revision)) return;
+        const data = await response.json();
+        if (!isCurrentMentorRequest(owner, revision)) return;
         if (!response.ok) {
-            const errorData = await response.json();
-            console.error('Chat API Error:', response.status, errorData);
             if (response.status === 402) {
                 showPaywall();
                 return;
             }
-            throw new Error(errorData.error || 'Chyba komunikace');
+            addMessage(data.error || 'Požadavek se nepodařilo dokončit. Zkus to prosím za chvíli.', 'mentor');
+            return;
         }
-
-        const data = await response.json();
-
-        // Hide typing
-        showTyping(false);
-
-        if (data.reply) {
-            addMessage(data.reply, 'mentor');
-        } else if (data.error) {
-            addMessage(`⚠️ Chyba: ${data.error}`, 'mentor');
+        if (typeof data.reply !== 'string' || !data.reply.trim()) {
+            throw new Error('Empty reply');
         }
-
+        addMessage(text, 'user');
+        addMessage(data.reply, 'mentor');
+        if (chatInput.value.trim() === text) resetChatInput();
+        if (data.historySaved === false) {
+            mentorHistoryStatus.textContent = 'Odpověď je hotová, ale nepodařilo se ji uložit do historie. Před zavřením stránky si ji zkopíruj.';
+            mentorHistoryStatus.hidden = false;
+        }
     } catch (error) {
-        showTyping(false);
+        if (!isCurrentMentorRequest(owner, revision)) return;
         console.error('Chat error:', error);
-        addMessage("Omlouvám se, hvězdné spojení bylo přerušeno. Zkus to prosím za chvíli.", 'mentor');
+        addMessage('Omlouvám se, hvězdné spojení bylo přerušeno. Zkus to prosím za chvíli.', 'mentor');
+    } finally {
+        if (isCurrentMentorRequest(owner, revision)) {
+            mentorSending = false;
+            showTyping(false);
+            updateMentorSendButton();
+        }
     }
 }
 

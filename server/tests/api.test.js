@@ -942,7 +942,7 @@ describe('API Endpoint Tests', () => {
                 .post('/api/mentor/chat')
                 .set('x-csrf-token', csrfToken)
                 .set('Cookie', `auth_token=${token}`)
-                .send({ message: 'Muzu jeste jednu radu?' })
+                .send({ expectedUserId: userId, message: 'Muzu jeste jednu radu?' })
                 .expect(402);
 
             expect(res.body.code).toBe('PREMIUM_REQUIRED');

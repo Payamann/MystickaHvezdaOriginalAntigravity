@@ -564,7 +564,7 @@ test.describe('Inline paywall checkout handoff', () => {
         await page.goto('/mentor.html?source=e2e_mentor_teaser');
         await waitForPageReady(page);
         await expect.poll(() => page.evaluate(() => typeof window.Auth?.startPlanCheckout)).toBe('function');
-        await page.route('**/api/mentor/history', route => route.fulfill({
+        await page.route('**/api/mentor/history?*', route => route.fulfill({
             status: 200,
             contentType: 'application/json',
             body: JSON.stringify({ success: true, history: [] })

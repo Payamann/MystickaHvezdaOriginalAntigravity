@@ -4,8 +4,7 @@
  * Testuje: načtení, formulář (jméno + datum + čas), HTML5 validace,
  * loading state element, premium gate, mobilní responsivitu.
  *
- * Poznámka: skutečný výpočet není testován (vyžaduje Claude API).
- * Testujeme UI vrstvu a klientskou validaci.
+ * Výklady jsou v testech izolované; testujeme UI a klientskou validaci.
  */
 
 import { test, expect } from '@playwright/test';
@@ -274,12 +273,12 @@ test.describe('Numerologie', () => {
 
         await page.evaluate(() => {
             window.Auth.user = { id: 'numerology-owner-after' };
-            document.dispatchEvent(new Event('auth:changed'));
             const cycles = document.getElementById('daily-cycles');
             cycles.hidden = false;
             for (const [id, value] of [['val-py', '2026'], ['val-pm', '10'], ['val-pd', '18']]) {
                 document.getElementById(id).textContent = value;
             }
+            document.dispatchEvent(new Event('auth:changed'));
         });
         await expect(page.locator('#num-name')).toHaveValue('');
         await expect(page.locator('#num-date')).toHaveValue('');

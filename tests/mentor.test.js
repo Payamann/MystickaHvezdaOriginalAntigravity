@@ -64,7 +64,7 @@ describe('Mentor API (POST /api/mentor/chat)', () => {
 
         const res = await request(app)
             .post('/api/mentor/chat')
-            .send({ message: "Ahoj" });
+            .send({ expectedUserId: 'test-user-id', message: "Ahoj" });
 
         expect(res.status).toBe(200);
         expect(res.body.success).toBe(true);
@@ -96,7 +96,7 @@ describe('Mentor API (POST /api/mentor/chat)', () => {
 
         const res = await request(app)
             .post('/api/mentor/chat')
-            .send({ message: "Test crash" });
+            .send({ expectedUserId: 'test-user-id', message: "Test crash" });
 
         // Should still succeed because we added try/catch blocks!
         expect(res.status).toBe(200);

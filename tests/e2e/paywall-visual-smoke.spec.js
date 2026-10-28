@@ -151,7 +151,7 @@ async function showNatalPaywall(page) {
 async function showMentorPaywall(page) {
     await page.goto('/mentor.html?source=paywall_smoke&utm_source=e2e');
     await waitForPageReady(page);
-    await page.route('**/api/mentor/history', route => route.fulfill({
+    await page.route('**/api/mentor/history?*', route => route.fulfill({
         status: 200,
         contentType: 'application/json',
         body: JSON.stringify({ success: true, history: [] })

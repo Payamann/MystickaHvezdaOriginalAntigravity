@@ -19,6 +19,9 @@ router.post('/chat', authenticateToken, requirePremiumSoft, async (req, res) => 
         const { message } = req.body;
         const includeReadingContext = req.body?.includeReadingContext === true;
         const userId = req.user.id;
+        if (req.body?.expectedUserId !== userId) {
+            return res.status(409).json({ error: 'Účet se změnil. Obnov stránku a zkus to znovu.', code: 'ACCOUNT_CHANGED' });
+        }
 
         if (!message || typeof message !== 'string') {
             return res.status(400).json({ error: 'Zpráva chybí.' });
@@ -194,6 +197,9 @@ router.post('/chat', authenticateToken, requirePremiumSoft, async (req, res) => 
 router.get('/history', authenticateToken, requirePremiumSoft, async (req, res) => {
     try {
         const userId = req.user.id;
+        if (req.query.expectedUserId !== userId) {
+            return res.status(409).json({ error: 'Účet se změnil. Obnov stránku.', code: 'ACCOUNT_CHANGED' });
+        }
         const { data: messages, error } = await supabase
             .from('mentor_messages')
             .select('role, content, created_at')

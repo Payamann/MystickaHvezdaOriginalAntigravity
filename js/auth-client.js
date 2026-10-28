@@ -1867,27 +1867,33 @@
         },
 
 
-        async saveReading(type, data) {
-            if (!this.isLoggedIn()) return null;
+        async saveReading(type, data, expectedUserId = this.user?.id) {
+            const revision = syncAccountOwner();
+            const isCurrent = () => this.isLoggedIn() && this.user?.id === expectedUserId
+                && syncAccountOwner() === revision;
+            if (!expectedUserId || !isCurrent()) return null;
 
             try {
                 const headers = { 'Content-Type': 'application/json' };
                 const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
+                if (!isCurrent()) return null;
                 if (csrfToken) headers['X-CSRF-Token'] = csrfToken;
 
                 const res = await fetch(`${API_URL}/user/readings`, {
                     method: 'POST',
                     credentials: 'include', // Send auth_token cookie
                     headers,
-                    body: JSON.stringify({ type, data })
+                    body: JSON.stringify({ type, data, expectedUserId })
                 });
 
+                if (!isCurrent()) return null;
                 if (!res.ok) {
                     const err = await res.json();
                     console.warn('Failed to save reading:', err);
                     return null;
                 } else {
                     const savedData = await res.json();
+                    if (!isCurrent()) return null;
                     const savedReading = savedData.reading || savedData;
                     this.trackEventSafely('feature_reading_saved', {
                         feature: type,
@@ -1966,18 +1972,21 @@
         async getProfile() {
             if (!this.isLoggedIn()) return null;
             const ownerId = this.user?.id;
+            const revision = syncAccountOwner();
+            const isCurrent = () => this.isLoggedIn() && this.user?.id === ownerId && syncAccountOwner() === revision;
             try {
                 const res = await fetch(`${API_URL}/auth/profile`, {
                     credentials: 'include', // Send auth_token cookie
                     headers: { 'Content-Type': 'application/json' }
                 });
-                if (this.user?.id !== ownerId || !this.isLoggedIn()) return null;
+                if (!isCurrent()) return null;
                 if (res.status === 401 || res.status === 403) {
                     this.clearStaleSession();
                     return null;
                 }
                 const data = await res.json();
-                if (data.success) return data.user;
+                if (!isCurrent()) return null;
+                if (data.success && data.user?.id === ownerId) return data.user;
                 return null;
             } catch (e) {
                 console.error('getProfile failed', e);
@@ -2077,6 +2086,17 @@
     };
 
     // Expose to window
+    let accountOwner = Auth.user?.id || null;
+    let accountRevision = 0;
+    function syncAccountOwner() {
+        const owner = Auth.isLoggedIn() ? Auth.user?.id || null : null;
+        if (owner !== accountOwner) {
+            accountOwner = owner;
+            accountRevision += 1;
+        }
+        return accountRevision;
+    }
+    document.addEventListener('auth:changed', syncAccountOwner);
     window.Auth = Auth;
 
     // Initialize when DOM is ready

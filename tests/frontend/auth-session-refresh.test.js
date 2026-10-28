@@ -76,3 +76,69 @@ test('the recovery page owns its token without a competing login modal', () => {
     expect(context.setTimeout).not.toHaveBeenCalled();
     expect(auth.openModal).not.toHaveBeenCalled();
 });
+
+
+function readingSession() {
+    const fixture = session();
+    fixture.auth.trackEventSafely = jest.fn();
+    fixture.context.window.dispatchEvent = jest.fn();
+    fixture.context.CustomEvent = class { constructor(type, options) { this.type = type; this.detail = options.detail; } };
+    fixture.changeOwner = id => {
+        fixture.auth.user = { id };
+        for (const [event, callback] of fixture.context.document.addEventListener.mock.calls) {
+            if (event === 'auth:changed') callback();
+        }
+    };
+    return fixture;
+}
+
+test('saveReading sends the captured owner required by the readings endpoint', async () => {
+    const { auth, context } = readingSession();
+    context.fetch.mockResolvedValue({ ok: true, json: async () => ({ reading: { id: 'saved' } }) });
+    await expect(auth.saveReading('numerology', { response: 'Private' })).resolves.toEqual({ id: 'saved' });
+    expect(JSON.parse(context.fetch.mock.calls[0][1].body).expectedUserId).toBe('owner-a');
+    expect(context.window.dispatchEvent).toHaveBeenCalledTimes(1);
+});
+
+test('saveReading rejects a supplied owner different from the active account', async () => {
+    const { auth, context } = readingSession();
+    await expect(auth.saveReading('numerology', {}, 'owner-b')).resolves.toBeNull();
+    expect(context.fetch).not.toHaveBeenCalled();
+});
+
+test.each(['csrf', 'response', 'json'])('saveReading drops A → B → A completion during %s', async stage => {
+    const { auth, context, changeOwner } = readingSession();
+    let resolve;
+    const pending = new Promise(done => { resolve = done; });
+    const result = { reading: { id: 'private-old' } };
+    context.window.getCSRFToken = () => stage === 'csrf' ? pending : Promise.resolve('token');
+    context.fetch.mockImplementation(() => stage === 'response' ? pending : Promise.resolve({ ok: true, json: () => stage === 'json' ? pending : Promise.resolve(result) }));
+    const saving = auth.saveReading('numerology', {}, 'owner-a');
+    await new Promise(done => setImmediate(done));
+    changeOwner('owner-b');
+    changeOwner('owner-a');
+    resolve(stage === 'csrf' ? 'token' : stage === 'response' ? { ok: true, json: async () => result } : result);
+    await expect(saving).resolves.toBeNull();
+    if (stage === 'csrf') expect(context.fetch).not.toHaveBeenCalled();
+    expect(auth.trackEventSafely).not.toHaveBeenCalled();
+    expect(context.window.dispatchEvent).not.toHaveBeenCalled();
+});
+
+
+test('profile cookie mismatch cannot expose another account profile', async () => {
+    const { auth, context } = readingSession();
+    context.fetch.mockResolvedValue({ ok: true, json: async () => ({ success: true, user: { id: 'owner-b', birth_date: '1980-01-01' } }) });
+    await expect(auth.getProfile()).resolves.toBeNull();
+});
+
+test('profile JSON completing after A → B → A is ignored', async () => {
+    const { auth, context, changeOwner } = readingSession();
+    let resolve;
+    context.fetch.mockResolvedValue({ ok: true, json: () => new Promise(done => { resolve = done; }) });
+    const profile = auth.getProfile();
+    await new Promise(done => setImmediate(done));
+    changeOwner('owner-b');
+    changeOwner('owner-a');
+    resolve({ success: true, user: { id: 'owner-a' } });
+    await expect(profile).resolves.toBeNull();
+});

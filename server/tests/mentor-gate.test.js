@@ -58,7 +58,7 @@ describe('Mentor free limit and premium gate behavior', () => {
             .post('/api/mentor/chat')
             .set('x-csrf-token', csrfToken)
             .set('Cookie', `auth_token=${token}`)
-            .send({ message: '<img src=x onerror=alert(1)> Prosim o radu dnes.' })
+            .send({ expectedUserId: userId, message: '<img src=x onerror=alert(1)> Prosim o radu dnes.' })
             .expect(200);
 
         expect(res.body.success).toBe(true);
@@ -91,7 +91,7 @@ describe('Mentor free limit and premium gate behavior', () => {
             .post('/api/mentor/chat')
             .set('x-csrf-token', csrfToken)
             .set('Cookie', `auth_token=${token}`)
-            .send({ message: 'Muzu jeste jednu radu?' })
+            .send({ expectedUserId: userId, message: 'Muzu jeste jednu radu?' })
             .expect(402);
 
         expect(res.body).toMatchObject({
@@ -120,7 +120,7 @@ describe('Mentor free limit and premium gate behavior', () => {
             .post('/api/mentor/chat')
             .set('x-csrf-token', csrfToken)
             .set('Cookie', `auth_token=${token}`)
-            .send({ message: `Souběžná otázka ${index + 1}` })));
+            .send({ expectedUserId: userId, message: `Souběžná otázka ${index + 1}` })));
 
         expect(responses.filter(response => response.status === 200)).toHaveLength(3);
         expect(responses.filter(response => response.status === 402)).toHaveLength(1);
@@ -136,11 +136,11 @@ describe('Mentor free limit and premium gate behavior', () => {
             .post('/api/mentor/chat')
             .set('x-csrf-token', csrfToken)
             .set('Cookie', `auth_token=${token}`)
-            .send({ message: 'Zachovej pořadí i při stejném čase.' })
+            .send({ expectedUserId: userId, message: 'Zachovej pořadí i při stejném čase.' })
             .expect(200);
 
         const history = await request(app)
-            .get('/api/mentor/history')
+            .get('/api/mentor/history').query({ expectedUserId: userId })
             .set('Cookie', `auth_token=${token}`)
             .expect(200);
 
@@ -159,7 +159,7 @@ describe('Mentor free limit and premium gate behavior', () => {
                 .post('/api/mentor/chat')
                 .set('x-csrf-token', csrfToken)
                 .set('Cookie', `auth_token=${token}`)
-                .send({ message: 'První pokus se nepovede.' })
+                .send({ expectedUserId: userId, message: 'První pokus se nepovede.' })
                 .expect(500);
         } finally {
             if (previousForceError === undefined) delete process.env.MOCK_AI_FORCE_ERROR;
@@ -170,7 +170,7 @@ describe('Mentor free limit and premium gate behavior', () => {
             .post('/api/mentor/chat')
             .set('x-csrf-token', csrfToken)
             .set('Cookie', `auth_token=${token}`)
-            .send({ message: 'Zkusím to znovu.' });
+            .send({ expectedUserId: userId, message: 'Zkusím to znovu.' });
 
         expect(retry.status).toBe(200);
     });
@@ -198,7 +198,7 @@ describe('Mentor free limit and premium gate behavior', () => {
             .post('/api/mentor/chat')
             .set('x-csrf-token', csrfToken)
             .set('Cookie', `auth_token=${token}`)
-            .send({ message: 'Pokracujeme v rozhovoru.' })
+            .send({ expectedUserId: userId, message: 'Pokracujeme v rozhovoru.' })
             .expect(200);
 
         expect(res.body.success).toBe(true);
@@ -206,4 +206,19 @@ describe('Mentor free limit and premium gate behavior', () => {
         const messages = await getMentorMessages(userId);
         expect(messages.filter(message => message.role === 'user')).toHaveLength(5);
     });
+});
+
+
+test.each([undefined, 'other-account'])('mentor rejects missing or stale owner %s before storing messages', async expectedUserId => {
+    const csrfToken = await getCsrfToken();
+    const userId = `mentor-owner-${Date.now()}`;
+    const token = makeToken({ userId });
+    await request(app).post('/api/mentor/chat')
+        .set('x-csrf-token', csrfToken).set('Cookie', `auth_token=${token}`)
+        .send({ message: 'Private question', expectedUserId }).expect(409);
+    const history = await request(app).get('/api/mentor/history')
+        .query(expectedUserId ? { expectedUserId } : {})
+        .set('Cookie', `auth_token=${token}`).expect(409);
+    expect(history.body.history).toBeUndefined();
+    expect(await getMentorMessages(userId)).toEqual([]);
 });
