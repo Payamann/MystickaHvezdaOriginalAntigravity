@@ -117,9 +117,9 @@ describe('CTR sprint static SEO pages', () => {
     expect(html).toContain('Tarot ano ne, karty ano ne i věštba ano ne označují stejný rychlý výklad.');
     expect(html).toContain('Nejlepší otázka je konkrétní a dnešní');
     expect(html).toContain('Věštba ano ne funguje nejlépe');
-    expect(html).toContain('Co znamená ano, ne a ještě ne');
+    expect(html).toContain('Co znamená ano, ne a nejasné');
     expect(html).toContain('Kam pokračovat');
-    expect(html).toContain('Co znamená odpověď ještě ne?');
+    expect(html).toContain('Co znamená odpověď nejasné?');
     expect(html).toContain('Je to stejné jako karty ano ne?');
     ['reading_start', 'reading_complete', 'save_click', 'reading_save_clicked', 'reading_saved', 'login_click', 'mh_pending_reading'].forEach((needle) => {
       expect(js).toContain(needle);

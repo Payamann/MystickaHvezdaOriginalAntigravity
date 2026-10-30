@@ -1135,7 +1135,7 @@ test.describe('Tarot Ano/Ne', () => {
         await expect(page.locator('main .section__text').first()).toContainText('rychlý výklad z jedné karty');
         await expect(page.locator('.tarot-yes-no-trust-item')).toHaveCount(3);
         await expect(page.locator('.tarot-yes-no-answer-card')).toHaveCount(3);
-        await expect(page.locator('.tarot-yes-no-answer-guide')).toContainText('Co znamená ano, ne a ještě ne');
+        await expect(page.locator('.tarot-yes-no-answer-guide')).toContainText('Co znamená ano, ne a nejasné');
         await expect(page.locator('.tarot-yes-no-answer-guide__note')).toContainText('nenahrazuje odbornou zdravotní, právní ani finanční radu');
         await expect(page.locator('.tarot-yes-no-faq-item')).toHaveCount(5);
         await expect(page.locator('.tarot-yes-no-intent-guide')).toContainText('Nejlepší otázka je konkrétní');
