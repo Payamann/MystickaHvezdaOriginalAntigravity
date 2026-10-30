@@ -1,5 +1,6 @@
 import request from 'supertest';
 import jwt from 'jsonwebtoken';
+import { jest } from '@jest/globals';
 import app from '../index.js';
 import { supabase } from '../db-supabase.js';
 
@@ -105,6 +106,59 @@ describe('Oracle AI fallbacks', () => {
         expect(res.body.success).toBe(true);
         expect(res.body.fallback).toBe(true);
         expect(res.body.response).toEqual(expect.stringContaining('Should I change direction?'));
+    });
+
+    test('crystal fallback does not consume the anonymous personal-answer allowance', async () => {
+        const agent = request.agent(app);
+        const csrfToken = (await agent.get('/api/csrf-token').expect(200)).body.csrfToken;
+        const failed = await agent.post('/api/crystal-ball').set('x-csrf-token', csrfToken)
+            .send({ question: 'Fallback allowance anonymous?', lang: 'en' }).expect(200);
+        expect(failed.body.fallback).toBe(true);
+        expect((failed.headers['set-cookie'] || []).join(';')).not.toContain('mh_cb_free_uses=');
+        delete process.env.MOCK_AI_FORCE_ERROR;
+        const success = await agent.post('/api/crystal-ball').set('x-csrf-token', csrfToken)
+            .send({ question: 'Personal allowance after fallback?', lang: 'en' }).expect(200);
+        expect(success.body.fallback).toBe(false);
+        expect((success.headers['set-cookie'] || []).join(';')).toContain('mh_cb_free_uses=');
+        await agent.post('/api/crystal-ball').set('x-csrf-token', csrfToken)
+            .send({ question: 'Used personal allowance?', lang: 'en' }).expect(402);
+    });
+
+    test('crystal fallback releases the free-account reservation while personal answers still use the limit', async () => {
+        const token = createPremiumToken({ isPremium: false, subscription_status: 'free' });
+        const csrfToken = await getCsrfToken();
+        const ask = question => request(app).post('/api/crystal-ball')
+            .set('x-csrf-token', csrfToken).set('Cookie', `auth_token=${token}`)
+            .send({ question, lang: 'en' });
+        for (let i = 0; i < 4; i++) {
+            expect((await ask(`Fallback allowance account ${i}?`).expect(200)).body.fallback).toBe(true);
+        }
+        delete process.env.MOCK_AI_FORCE_ERROR;
+        for (let i = 0; i < 3; i++) {
+            expect((await ask(`Personal allowance account ${i}?`).expect(200)).body.fallback).toBe(false);
+        }
+        expect((await ask('Used account allowance?').expect(402)).body.code).toBe('LIMIT_REACHED');
+    });
+
+    test('unconfirmed fallback release retries once and keeps the allowance fail-closed', async () => {
+        const userId = 'oracle-fallback-release-failure';
+        await supabase.from('subscriptions').insert({ user_id: userId, plan_type: 'free', status: 'active', current_period_end: null });
+        const token = createPremiumToken({ id: userId, isPremium: false, subscription_status: 'free' });
+        const csrfToken = await getCsrfToken();
+        const originalRpc = supabase.rpc.bind(supabase);
+        const rpc = jest.spyOn(supabase, 'rpc').mockImplementation((name, args) => name === 'release_user_daily_quota'
+            ? Promise.resolve({ data: null, error: { message: 'temporary release outage' } }) : originalRpc(name, args));
+        const ask = question => request(app).post('/api/crystal-ball')
+            .set('x-csrf-token', csrfToken).set('Cookie', `auth_token=${token}`).send({ question, lang: 'en' });
+        try {
+            expect((await ask('Fallback during release outage?').expect(200)).body.fallback).toBe(true);
+            expect(rpc.mock.calls.filter(([name]) => name === 'release_user_daily_quota')).toHaveLength(2);
+            delete process.env.MOCK_AI_FORCE_ERROR;
+            for (let i = 0; i < 2; i++) {
+                expect((await ask(`Remaining allowance ${i}?`).expect(200)).body.fallback).toBe(false);
+            }
+            expect((await ask('Fail-closed remaining limit?').expect(402)).body.code).toBe('LIMIT_REACHED');
+        } finally { rpc.mockRestore(); }
     });
 
     test('POST /api/dream returns fallback when AI fails', async () => {

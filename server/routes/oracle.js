@@ -247,17 +247,22 @@ router.post('/crystal-ball', optionalPremiumCheck, aiLimiter, async (req, res) =
 
         if (quotaReservationId) {
             const reservationId = quotaReservationId;
-            quotaReservationId = null;
-            try {
-                await finishUserDailyQuotaReservation(reservationId, 'commit');
-            } catch (settleError) {
-                // The counter already includes this successful answer; preserve the fail-closed limit.
-                console.error('Crystal Ball quota commit failed:', settleError);
+            const outcome = fallback ? 'release' : 'commit';
+            for (let attempt = 1; attempt <= (fallback ? 2 : 1); attempt += 1) {
+                try {
+                    await finishUserDailyQuotaReservation(reservationId, outcome);
+                    quotaReservationId = null;
+                    break;
+                } catch (settleError) {
+                    // Keep the reservation counted if settlement cannot be confirmed.
+                    // AI/rate/cost controls still apply to retries of fallback answers.
+                    console.error(`Crystal Ball quota ${outcome} attempt ${attempt} failed:`, settleError);
+                }
             }
         }
 
-        // Count this anonymous free question so the next one hits the register gate.
-        if (isAnonymousFreeCall) {
+        // Only a generated personal answer consumes the anonymous allowance.
+        if (isAnonymousFreeCall && !fallback) {
             const priorUses = Number.parseInt(req.cookies?.[ANON_CRYSTAL_BALL_COOKIE], 10) || 0;
             res.cookie(ANON_CRYSTAL_BALL_COOKIE, String(priorUses + 1), {
                 httpOnly: true,
