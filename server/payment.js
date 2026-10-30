@@ -2567,7 +2567,7 @@ async function handleInvoicePaid(invoice, stripeEventId = null) {
             stripeEventId,
             eventName: 'subscription_invoice_paid',
             metadata: {
-                amountPaid: invoice.amount_paid || null,
+                amountPaid: invoice.amount_paid ?? null,
                 currency: invoice.currency || null,
                 invoiceId: invoice.id || null,
                 billingReason: invoice.billing_reason || null
@@ -2589,7 +2589,7 @@ async function handleInvoicePaid(invoice, stripeEventId = null) {
                     invoiceId: invoice.id || null,
                     previousStatus: result.previousStatus,
                     status: result.status,
-                    amountPaid: invoice.amount_paid || null,
+                    amountPaid: invoice.amount_paid ?? null,
                     currency: invoice.currency || null
                 }
             });

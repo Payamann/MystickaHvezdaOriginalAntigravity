@@ -1,6 +1,18 @@
 import crypto from 'crypto';
 import { readFileSync } from 'node:fs';
 import { jest } from '@jest/globals';
+import Stripe from 'stripe';
+import { summarizeRevenue } from '../services/revenue-summary.js';
+
+const retrieveSubscriptionMock = jest.fn();
+jest.unstable_mockModule('stripe', () => ({
+    default: class extends Stripe {
+        constructor(...args) {
+            super(...args);
+            this.subscriptions.retrieve = retrieveSubscriptionMock;
+        }
+    },
+}));
 
 const TEST_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET || 'test-webhook-secret';
 
@@ -190,6 +202,34 @@ describe('Stripe webhook entitlement write failures', () => {
     beforeEach(() => {
         resetRuntime();
         supabaseMock.from.mockClear();
+        retrieveSubscriptionMock.mockReset();
+    });
+
+    test.each([0, 19900, undefined])('invoice.paid preserves amount %s through the webhook and revenue summary', async (amount) => {
+        entitlementRuntime.scenario.existingSubscription = {
+            user_id: 'user_invoice', stripe_subscription_id: 'sub_invoice', status: 'past_due',
+        };
+        retrieveSubscriptionMock.mockResolvedValue({
+            id: 'sub_invoice', status: 'active',
+            current_period_end: Math.floor(Date.now() / 1000) + 86400,
+            metadata: { userId: 'user_invoice', planType: 'premium_monthly' },
+        });
+        const payload = JSON.stringify({
+            id: `evt_invoice_amount_${String(amount)}`, type: 'invoice.paid', livemode: false,
+            data: { object: { id: 'in_amount', subscription: 'sub_invoice',
+                amount_paid: amount, currency: 'czk', billing_reason: 'subscription_cycle' } },
+        });
+        await handleStripeWebhook(payload, computeStripeSignature(payload));
+        const events = entitlementRuntime.calls.funnelEvents;
+        const paid = events.find(event => event.event_name === 'subscription_invoice_paid');
+        expect(paid.metadata.amountPaid).toBe(amount ?? null);
+        const recovered = events.find(event => event.event_name === 'subscription_payment_recovered');
+        expect(recovered.metadata.amountPaid).toBe(amount ?? null);
+        const summary = summarizeRevenue(events);
+        expect(summary.excludedEvents).toBe(amount === undefined ? 1 : 0);
+        if (amount === 0) expect(summary.breakdown.zeroInvoice).toEqual({ count: 1, byCurrency: { CZK: 0 } });
+        if (amount === 19900) expect(summary.byCurrency).toEqual({ CZK: 19900 });
+        expect(entitlementRuntime.calls.paymentEventMarkSuccess).toBe(1);
     });
 
     test('checkout.session.completed fails when user mapping is missing', async () => {
