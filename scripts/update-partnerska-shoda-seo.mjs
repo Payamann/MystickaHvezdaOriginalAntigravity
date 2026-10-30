@@ -139,7 +139,10 @@ async function updateHubIndexLinks() {
 }
 
 async function updateLegacyCompatibilityPages() {
-  const entries = await fs.readdir(legacyPagesDir, { withFileTypes: true });
+  const entries = await fs.readdir(legacyPagesDir, { withFileTypes: true }).catch(error => {
+    if (error.code === 'ENOENT') return []; // Legacy directory was retired.
+    throw error;
+  });
   const htmlFiles = entries
     .filter((entry) => entry.isFile() && entry.name.endsWith('.html'))
     .map((entry) => entry.name)
@@ -239,6 +242,18 @@ async function updatePartnerPages() {
     );
     html = html.replace(/href="\.\.\/partnerska-shoda\.html#form"/g, `href="${metadata.ctaHref}"`);
     html = updateScorpioIntentNote(html, metadata);
+    // These editorial sun-sign pages have no measured compatibility score.
+    // Keep the symbolic content without presenting an invented percentage.
+    html = html.replace(
+      /<div class="compatibility-score">\d+%<\/div>\s*<div class="compatibility-meter-container">\s*<div class="compatibility-meter-fill[^"]*"><\/div>\s*<\/div>/u,
+      '<p class="hero__subtitle">Obecný symbolický rozbor slunečních znamení pro společné zamyšlení a rozhovor.</p>'
+    );
+    html = html.replace(/Jejich shoda je \d+%\.\s*/gu, 'Jde o symbolický rozbor slunečních znamení. ');
+    html = html.replace('Chcete přesnější výpočet?', 'Co může doplnit srovnání dat narození?');
+    html = html.replace(
+      /Tohle je obecná shoda slunečních znamení\. Pro skutečnou analýzu vztahu potřebujeme vaše\s+přesná data narození\./u,
+      'Tento rozbor vychází pouze ze slunečních znamení. Srovnání dat narození přidá další astrologické souvislosti; vzájemné porozumění ale vzniká hlavně rozhovorem a společnou zkušeností.'
+    );
 
     await fs.writeFile(filePath, html, 'utf8');
     updated += 1;

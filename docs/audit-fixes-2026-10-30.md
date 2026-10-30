@@ -17,3 +17,13 @@ Delegace: pomocník `gpt-6-astra` implementoval izolaci horoskopu a koule; hlavn
 Veřejné soubory horoskopu, koule, lokalizovaného natálu a Osobní mapy sestaveny stejným esbuild nastavením jako klasické vstupy projektu. Cache `mysticka-hvezda-05c85eb2de1f`; asset history zachovává 2793 verzí. Offline render existující překladové cache prošel bez volání AI. M03 uložen v commitu `dfe06427`.
 
 Další krok: uložit ověřené klientské a doručovací změny; produkční stav ověřovat samostatně pro konkrétní vydání. Neuzavřené položky zůstávají v `web-todo.md`, zejména pokrytí nákupního měření, kvóta náhradních odpovědí a obsahové SEO příležitosti.
+
+## Navazující obsahový krok
+
+Klientské a doručovací změny uloženy v `ed6627c2`. Kompletní `scripts/build-js.mjs` prošel včetně offline sestavení překladové cache. Dva nesouvisející, nedeterministicky přepsané bundly (`astro-map`, `relationship-tarot-bridge`) byly vráceny; žádný jejich zdroj se neměnil.
+
+**S02:** andělské FAQ už neslibuje ochranu nebeskou silou a numerologické FAQ nepřisuzuje číslu léčivý dar. Změněny vždy obě podoby — viditelný text i JSON-LD; syntaktická a obsahová shoda potvrzena parserem. Ve statických párových stránkách odstraněna nepodložená procenta a ukazatel skóre, upraven slib „přesnějšího výpočtu“. Čtyři dříve redakčně upravené úvody zůstaly zachované. Všech 144 stránek má platné JSON-LD, zachovaný canonical a jediný H1; opakované spuštění aktualizačního skriptu nemění obsah. Skript zohledňuje již odstraněnou legacy složku `kompatibilita` a ostatní I/O chyby nezamlčuje. Není to plošná revize veškerého textu těchto stránek.
+
+**L02:** do jazykového řádku české homepage doplněn English → `/en/`. Cíl existuje a má odpovídající jazyk, canonical i hreflang.
+
+Omezení: pokus o lokální vizuální náhled `127.0.0.1:8188/partnerska-shoda/aries-taurus.html` v IAB skončil `ERR_CONNECTION_TIMED_OUT`. Kontrola nového rozložení v prohlížeči proto není hotová. Žádná změna firewallu, zabezpečení ani veřejné zpřístupnění lokálního serveru nebyly provedeny. Tyto obsahové změny zůstávají lokální a nejsou označeny jako produkční vydání.
