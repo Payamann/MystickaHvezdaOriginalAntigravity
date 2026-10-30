@@ -1,0 +1,67 @@
+{
+  "checked_at": "2026-10-30T08:22:45.662Z",
+  "results": [
+    {
+      "path": "/faq.html",
+      "status": 200,
+      "final_url": "https://www.mystickahvezda.cz/faq.html",
+      "canonical": "https://www.mystickahvezda.cz/faq.html",
+      "robots": null,
+      "x_robots": null,
+      "has_h1": true
+    },
+    {
+      "path": "/tarot-vyznam/soud.html",
+      "status": 200,
+      "final_url": "https://www.mystickahvezda.cz/tarot-vyznam/soud.html",
+      "canonical": "https://www.mystickahvezda.cz/tarot-vyznam/soud.html",
+      "robots": "index, follow",
+      "x_robots": null,
+      "has_h1": true
+    },
+    {
+      "path": "/partnerska-shoda/leo-aries.html",
+      "status": 200,
+      "final_url": "https://www.mystickahvezda.cz/partnerska-shoda/leo-aries.html",
+      "canonical": "https://www.mystickahvezda.cz/partnerska-shoda/leo-aries.html",
+      "robots": "index, follow",
+      "x_robots": null,
+      "has_h1": true
+    }
+  ],
+  "gsc_summary": {
+    "observed_on": "2026-10-30",
+    "report_updated": "2026-10-23",
+    "note": "Summary report remains older than URL-level evidence; no inference of overall improvement from two samples."
+  },
+  "gsc_inspections": [
+    {
+      "path": "/faq.html",
+      "indexed": true,
+      "last_crawl_displayed": "25. 10. 2026 15:14:11",
+      "crawler": "Googlebot smartphone",
+      "fetch": "successful",
+      "crawl_allowed": true,
+      "indexing_allowed": true,
+      "user_canonical": "https://www.mystickahvezda.cz/faq.html",
+      "google_canonical": "inspected URL",
+      "referring_page": "https://www.mystickahvezda.cz/",
+      "sitemap_display": "temporary processing error",
+      "indexing_request_submitted_this_turn": false
+    },
+    {
+      "path": "/tarot-vyznam/soud.html",
+      "indexed": true,
+      "last_crawl_displayed": "24. 10. 2026 14:39:59",
+      "crawler": "Googlebot smartphone",
+      "fetch": "successful",
+      "crawl_allowed": true,
+      "indexing_allowed": true,
+      "user_canonical": "https://www.mystickahvezda.cz/tarot-vyznam/soud.html",
+      "google_canonical": "inspected URL",
+      "sitemap": "https://www.mystickahvezda.cz/sitemap.xml",
+      "referring_page": "https://www.mystickahvezda.cz/tarot-vyznam-karet.html?source=tarot_card_detail&card=Páže mečů",
+      "indexing_request_submitted_this_turn": false
+    }
+  ]
+}

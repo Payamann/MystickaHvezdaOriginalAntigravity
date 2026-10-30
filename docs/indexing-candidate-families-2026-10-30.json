@@ -1,0 +1,4106 @@
+{
+  "observed_on": "2026-10-30",
+  "historical_export": "2026-10-25; original GSC report updated 2026-10-16",
+  "source_sha": "6b66f772",
+  "scope": "238 non-dated URL candidates from historical HTTP audit; not a current GSC exclusion export. Preferred URLs from historical canonical/final URL. Static HTML anchor graph across 916 inventory entries excludes runtime-injected links; zero count is a review candidate, not proof of orphaning.",
+  "counts": {
+    "historical_urls": 238,
+    "preferred_urls": 238,
+    "variants": 3,
+    "historical_http_200": 237,
+    "historical_http_unresolved": 1,
+    "families": {
+      "jmena": 61,
+      "snar": 37,
+      "tarot-vyznam": 13,
+      "partnerska-shoda": 47,
+      "andelske-karty": 8,
+      "pl": 1,
+      "blog": 39,
+      "testy": 5,
+      "numerologie": 1,
+      "slovnik": 7,
+      "horoskop": 10,
+      "standalone": 9
+    },
+    "zero_static_incoming": 0
+  },
+  "items": [
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/richard.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/richard.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/jmena/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/andrej.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/andrej.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 4,
+      "source_visible_incoming_sample": [
+        "/jmena/",
+        "/jmena/albina.html",
+        "/jmena/alexej.html",
+        "/jmena/alzbeta.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/snar/hrob.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/snar/hrob.html",
+      "family": "snar",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 7,
+      "source_visible_incoming_sample": [
+        "/snar.html",
+        "/snar/expartner.html",
+        "/snar/had.html",
+        "/snar/hadka.html",
+        "/snar/hmyz.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/tarot-vyznam/soud.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/tarot-vyznam/soud.html",
+      "family": "tarot-vyznam",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 5,
+      "source_visible_incoming_sample": [
+        "/blog/karta-soudce-tarot-vyznam.html",
+        "/blog/vyklad-tarotu-pro-zacatecniky.html",
+        "/tarot-vyznam-karet.html",
+        "/tarot-vyznam/slunce.html",
+        "/tarot-vyznam/svet.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/tarot-vyznam/kolo-stesti.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/tarot-vyznam/kolo-stesti.html",
+      "family": "tarot-vyznam",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 4,
+      "source_visible_incoming_sample": [
+        "/blog/vyklad-tarotu-pro-zacatecniky.html",
+        "/tarot-vyznam-karet.html",
+        "/tarot-vyznam/poustevnik.html",
+        "/tarot-vyznam/spravedlnost.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/snar/kristalova-koule.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/snar/kristalova-koule.html",
+      "family": "snar",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 7,
+      "source_visible_incoming_sample": [
+        "/snar.html",
+        "/snar/jin-jang.html",
+        "/snar/kvet-zivota.html",
+        "/snar/poutnik.html",
+        "/snar/runy.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/partnerska-shoda/aquarius-leo.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/partnerska-shoda/aquarius-leo.html",
+      "family": "partnerska-shoda",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 12,
+      "source_visible_incoming_sample": [
+        "/partnerska-shoda/",
+        "/partnerska-shoda/aquarius-aquarius.html",
+        "/partnerska-shoda/aquarius-aries.html",
+        "/partnerska-shoda/aquarius-cancer.html",
+        "/partnerska-shoda/aquarius-capricorn.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/andelske-karty/angel-of-gratitude.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/andelske-karty/angel-of-gratitude.html",
+      "family": "andelske-karty",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 3,
+      "source_visible_incoming_sample": [
+        "/andelske-karty.html",
+        "/andelske-karty/angel-of-abundance.html",
+        "/andelske-karty/angel-of-wealth.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/vratislav.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/vratislav.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/jmena/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/partnerska-shoda/gemini-aries.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/partnerska-shoda/gemini-aries.html",
+      "family": "partnerska-shoda",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 12,
+      "source_visible_incoming_sample": [
+        "/partnerska-shoda/",
+        "/partnerska-shoda/gemini-aquarius.html",
+        "/partnerska-shoda/gemini-cancer.html",
+        "/partnerska-shoda/gemini-capricorn.html",
+        "/partnerska-shoda/gemini-gemini.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/snar/vesmir.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/snar/vesmir.html",
+      "family": "snar",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 7,
+      "source_visible_incoming_sample": [
+        "/snar.html",
+        "/snar/skola.html",
+        "/snar/strom.html",
+        "/snar/tehotenstvi.html",
+        "/snar/telo.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/partnerska-shoda/cancer-pisces.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/partnerska-shoda/cancer-pisces.html",
+      "family": "partnerska-shoda",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 13,
+      "source_visible_incoming_sample": [
+        "/partnerska-shoda.html",
+        "/partnerska-shoda/",
+        "/partnerska-shoda/cancer-aquarius.html",
+        "/partnerska-shoda/cancer-aries.html",
+        "/partnerska-shoda/cancer-cancer.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/pl/andelske-karty.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/pl/andelske-karty.html",
+      "family": "pl",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 5,
+      "source_visible_incoming_sample": [
+        "/pl/",
+        "/pl/horoskopy.html",
+        "/pl/kristalova-koule.html",
+        "/pl/natalni-karta.html",
+        "/pl/tarot.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/snar/pavouk.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/snar/pavouk.html",
+      "family": "snar",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 7,
+      "source_visible_incoming_sample": [
+        "/snar.html",
+        "/snar/zapomenute-dite.html",
+        "/snar/zemetreseni.html",
+        "/snar/zivocich-ryba.html",
+        "/snar/zlobratri.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/andelske-karty/angel-of-new-beginnings.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/andelske-karty/angel-of-new-beginnings.html",
+      "family": "andelske-karty",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 7,
+      "source_visible_incoming_sample": [
+        "/andelske-karty.html",
+        "/andelske-karty/angel-of-creativity.html",
+        "/andelske-karty/angel-of-destiny.html",
+        "/andelske-karty/angel-of-focus.html",
+        "/andelske-karty/angel-of-learning.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/partnerska-shoda/virgo-cancer.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/partnerska-shoda/virgo-cancer.html",
+      "family": "partnerska-shoda",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 12,
+      "source_visible_incoming_sample": [
+        "/partnerska-shoda/",
+        "/partnerska-shoda/virgo-aquarius.html",
+        "/partnerska-shoda/virgo-aries.html",
+        "/partnerska-shoda/virgo-capricorn.html",
+        "/partnerska-shoda/virgo-gemini.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/blog/uplnek-v-panne-ritual-a-vyklad-pro-kazde-znameni.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/blog/uplnek-v-panne-ritual-a-vyklad-pro-kazde-znameni.html",
+      "family": "blog",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/blog.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/jarmil.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/jarmil.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/jmena/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/partnerska-shoda/libra-aquarius.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/partnerska-shoda/libra-aquarius.html",
+      "family": "partnerska-shoda",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 13,
+      "source_visible_incoming_sample": [
+        "/partnerska-shoda.html",
+        "/partnerska-shoda/",
+        "/partnerska-shoda/libra-aries.html",
+        "/partnerska-shoda/libra-cancer.html",
+        "/partnerska-shoda/libra-capricorn.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/tarot-vyznam/sedmicka-holi.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/tarot-vyznam/sedmicka-holi.html",
+      "family": "tarot-vyznam",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 4,
+      "source_visible_incoming_sample": [
+        "/blog/hulkove-karty-tarot-vyznam.html",
+        "/tarot-vyznam-karet.html",
+        "/tarot-vyznam/osmicka-holi.html",
+        "/tarot-vyznam/sestka-holi.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/mojmir.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/mojmir.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/jmena/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/svatoslav.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/svatoslav.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/jmena/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/andelske-karty/archangel-ariel.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/andelske-karty/archangel-ariel.html",
+      "family": "andelske-karty",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 2,
+      "source_visible_incoming_sample": [
+        "/andelske-karty.html",
+        "/andelske-karty/angel-of-nature.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/tarot-vyznam/ctyrka-pentaklu.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/tarot-vyznam/ctyrka-pentaklu.html",
+      "family": "tarot-vyznam",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 5,
+      "source_visible_incoming_sample": [
+        "/blog/pentagramy-tarot-penize-kariera.html",
+        "/tarot-vyznam-karet.html",
+        "/tarot-vyznam/dvojka-pentaklu.html",
+        "/tarot-vyznam/petka-pentaklu.html",
+        "/tarot-vyznam/trojka-pentaklu.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/snar/plavani.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/snar/plavani.html",
+      "family": "snar",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 7,
+      "source_visible_incoming_sample": [
+        "/snar.html",
+        "/snar/ostrov.html",
+        "/snar/polibek.html",
+        "/snar/poust.html",
+        "/snar/snih.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/tarot-vyznam/sedmicka-pentaklu.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/tarot-vyznam/sedmicka-pentaklu.html",
+      "family": "tarot-vyznam",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 4,
+      "source_visible_incoming_sample": [
+        "/blog/pentagramy-tarot-penize-kariera.html",
+        "/tarot-vyznam-karet.html",
+        "/tarot-vyznam/osmicka-pentaklu.html",
+        "/tarot-vyznam/sestka-pentaklu.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/snar/zachrana.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/snar/zachrana.html",
+      "family": "snar",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 7,
+      "source_visible_incoming_sample": [
+        "/snar.html",
+        "/snar/vesmir.html",
+        "/snar/vlak.html",
+        "/snar/vlasy.html",
+        "/snar/vlci.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/snar/krabice.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/snar/krabice.html",
+      "family": "snar",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 7,
+      "source_visible_incoming_sample": [
+        "/snar.html",
+        "/snar/kniha.html",
+        "/snar/plavani.html",
+        "/snar/prsten.html",
+        "/snar/svatba.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/partnerska-shoda/libra-virgo.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/partnerska-shoda/libra-virgo.html",
+      "family": "partnerska-shoda",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 12,
+      "source_visible_incoming_sample": [
+        "/partnerska-shoda/",
+        "/partnerska-shoda/libra-aquarius.html",
+        "/partnerska-shoda/libra-aries.html",
+        "/partnerska-shoda/libra-cancer.html",
+        "/partnerska-shoda/libra-capricorn.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/tarot-vyznam/eso-poharu.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/tarot-vyznam/eso-poharu.html",
+      "family": "tarot-vyznam",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 16,
+      "source_visible_incoming_sample": [
+        "/blog/co-znamenaji-pohary-v-tarotu.html",
+        "/tarot-vyznam-karet.html",
+        "/tarot-vyznam/ctyrka-poharu.html",
+        "/tarot-vyznam/desitka-poharu.html",
+        "/tarot-vyznam/devitka-poharu.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/samuel.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/samuel.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/jmena/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/tarot-vyznam/rytir-pentaklu.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/tarot-vyznam/rytir-pentaklu.html",
+      "family": "tarot-vyznam",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 4,
+      "source_visible_incoming_sample": [
+        "/blog/pentagramy-tarot-penize-kariera.html",
+        "/tarot-vyznam-karet.html",
+        "/tarot-vyznam/kralovna-pentaklu.html",
+        "/tarot-vyznam/paze-pentaklu.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/partnerska-shoda/aquarius-aries.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/partnerska-shoda/aquarius-aries.html",
+      "family": "partnerska-shoda",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 12,
+      "source_visible_incoming_sample": [
+        "/partnerska-shoda/",
+        "/partnerska-shoda/aquarius-aquarius.html",
+        "/partnerska-shoda/aquarius-cancer.html",
+        "/partnerska-shoda/aquarius-capricorn.html",
+        "/partnerska-shoda/aquarius-gemini.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/snar/nahota.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/snar/nahota.html",
+      "family": "snar",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 7,
+      "source_visible_incoming_sample": [
+        "/snar.html",
+        "/snar/lucidni.html",
+        "/snar/maska.html",
+        "/snar/medved.html",
+        "/snar/mesic.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/partnerska-shoda/gemini-leo.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/partnerska-shoda/gemini-leo.html",
+      "family": "partnerska-shoda",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 13,
+      "source_visible_incoming_sample": [
+        "/partnerska-shoda.html",
+        "/partnerska-shoda/",
+        "/partnerska-shoda/gemini-aquarius.html",
+        "/partnerska-shoda/gemini-aries.html",
+        "/partnerska-shoda/gemini-cancer.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/bohumila.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/bohumila.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 32,
+      "source_visible_incoming_sample": [
+        "/jmena/",
+        "/jmena/blazena.html",
+        "/jmena/cenek.html",
+        "/jmena/dana.html",
+        "/jmena/ema.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/martin.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/martin.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/jmena/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/svetlana.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/svetlana.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/jmena/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/frantisek.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/frantisek.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/jmena/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/partnerska-shoda/scorpio-sagittarius.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/partnerska-shoda/scorpio-sagittarius.html",
+      "family": "partnerska-shoda",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 13,
+      "source_visible_incoming_sample": [
+        "/partnerska-shoda.html",
+        "/partnerska-shoda/",
+        "/partnerska-shoda/scorpio-aquarius.html",
+        "/partnerska-shoda/scorpio-aries.html",
+        "/partnerska-shoda/scorpio-cancer.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/snar/cesta.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/snar/cesta.html",
+      "family": "snar",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 7,
+      "source_visible_incoming_sample": [
+        "/snar.html",
+        "/snar/barva-cervena.html",
+        "/snar/barva-modra.html",
+        "/snar/bezpecny-pristav.html",
+        "/snar/bludiste.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/otmar.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/otmar.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/jmena/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/hynek.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/hynek.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/jmena/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/snar/vyhra.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/snar/vyhra.html",
+      "family": "snar",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 7,
+      "source_visible_incoming_sample": [
+        "/snar.html",
+        "/snar/andel-strazny.html",
+        "/snar/drak.html",
+        "/snar/fenix.html",
+        "/snar/jednorozec.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/partnerska-shoda/capricorn-gemini.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/partnerska-shoda/capricorn-gemini.html",
+      "family": "partnerska-shoda",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 12,
+      "source_visible_incoming_sample": [
+        "/partnerska-shoda/",
+        "/partnerska-shoda/capricorn-aquarius.html",
+        "/partnerska-shoda/capricorn-aries.html",
+        "/partnerska-shoda/capricorn-cancer.html",
+        "/partnerska-shoda/capricorn-capricorn.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/robin.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/robin.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/jmena/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/tarot-vyznam/paze-mecu.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/tarot-vyznam/paze-mecu.html",
+      "family": "tarot-vyznam",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 4,
+      "source_visible_incoming_sample": [
+        "/blog/mecove-karty-tarot-vyznam.html",
+        "/tarot-vyznam-karet.html",
+        "/tarot-vyznam/desitka-mecu.html",
+        "/tarot-vyznam/rytir-mecu.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/partnerska-shoda/gemini-capricorn.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/partnerska-shoda/gemini-capricorn.html",
+      "family": "partnerska-shoda",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 13,
+      "source_visible_incoming_sample": [
+        "/partnerska-shoda.html",
+        "/partnerska-shoda/",
+        "/partnerska-shoda/gemini-aquarius.html",
+        "/partnerska-shoda/gemini-aries.html",
+        "/partnerska-shoda/gemini-cancer.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/kamila.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/kamila.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/jmena/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/snar/zrcadlo-cele.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/snar/zrcadlo-cele.html",
+      "family": "snar",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 7,
+      "source_visible_incoming_sample": [
+        "/snar.html",
+        "/snar/krizovatka.html",
+        "/snar/most.html",
+        "/snar/poklad.html",
+        "/snar/policie.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/partnerska-shoda/capricorn-aries.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/partnerska-shoda/capricorn-aries.html",
+      "family": "partnerska-shoda",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 12,
+      "source_visible_incoming_sample": [
+        "/partnerska-shoda/",
+        "/partnerska-shoda/capricorn-aquarius.html",
+        "/partnerska-shoda/capricorn-cancer.html",
+        "/partnerska-shoda/capricorn-capricorn.html",
+        "/partnerska-shoda/capricorn-gemini.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/pravoslav.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/pravoslav.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/jmena/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/snar/svicka.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/snar/svicka.html",
+      "family": "snar",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 7,
+      "source_visible_incoming_sample": [
+        "/snar.html",
+        "/snar/jin-jang.html",
+        "/snar/kadidlo.html",
+        "/snar/kristalova-koule.html",
+        "/snar/kyvadlo.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/vladan.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/vladan.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/jmena/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/ctibor.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/ctibor.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/jmena/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/jaroslav.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/jaroslav.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/jmena/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/tatana.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/tatana.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/jmena/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/renata.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/renata.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/jmena/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/emil.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/emil.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/jmena/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/testy/totem-pruvodce.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/testy/totem-pruvodce.html",
+      "family": "testy",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/testy/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/numerologie/zivotni-cislo-33.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/numerologie/zivotni-cislo-33.html",
+      "family": "numerologie",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 12,
+      "source_visible_incoming_sample": [
+        "/kalkulacka-cisla-osudu.html",
+        "/numerologie/zivotni-cislo-1.html",
+        "/numerologie/zivotni-cislo-11.html",
+        "/numerologie/zivotni-cislo-2.html",
+        "/numerologie/zivotni-cislo-22.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/partnerska-shoda/cancer-virgo.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/partnerska-shoda/cancer-virgo.html",
+      "family": "partnerska-shoda",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 13,
+      "source_visible_incoming_sample": [
+        "/partnerska-shoda.html",
+        "/partnerska-shoda/",
+        "/partnerska-shoda/cancer-aquarius.html",
+        "/partnerska-shoda/cancer-aries.html",
+        "/partnerska-shoda/cancer-cancer.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/kaspar.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/kaspar.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/jmena/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/tadeas.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/tadeas.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/jmena/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/cestmir.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/cestmir.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/jmena/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/hubert.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/hubert.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/jmena/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/tarot-vyznam/veleknez.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/tarot-vyznam/veleknez.html",
+      "family": "tarot-vyznam",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 4,
+      "source_visible_incoming_sample": [
+        "/blog/vyklad-tarotu-pro-zacatecniky.html",
+        "/tarot-vyznam-karet.html",
+        "/tarot-vyznam/cisar.html",
+        "/tarot-vyznam/milenci.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/iva.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/iva.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/jmena/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/snar/labyrint.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/snar/labyrint.html",
+      "family": "snar",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 7,
+      "source_visible_incoming_sample": [
+        "/snar.html",
+        "/snar/hvezdarna.html",
+        "/snar/klic-zlaty.html",
+        "/snar/majak.html",
+        "/snar/mec.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/snar/jednorozec.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/snar/jednorozec.html",
+      "family": "snar",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 7,
+      "source_visible_incoming_sample": [
+        "/snar.html",
+        "/snar/delphi.html",
+        "/snar/fenix.html",
+        "/snar/jelen.html",
+        "/snar/meduza.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/testy/karmicke-dedictvi.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/testy/karmicke-dedictvi.html",
+      "family": "testy",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/testy/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/jirina.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/jirina.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/jmena/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/snar/cisla.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/snar/cisla.html",
+      "family": "snar",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 7,
+      "source_visible_incoming_sample": [
+        "/snar.html",
+        "/snar/bezpecny-pristav.html",
+        "/snar/bludiste.html",
+        "/snar/boty.html",
+        "/snar/bouri.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/snar/porod.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/snar/porod.html",
+      "family": "snar",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 7,
+      "source_visible_incoming_sample": [
+        "/snar.html",
+        "/snar/buh.html",
+        "/snar/demon.html",
+        "/snar/duch.html",
+        "/snar/kletba.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/snar/strom.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/snar/strom.html",
+      "family": "snar",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 7,
+      "source_visible_incoming_sample": [
+        "/snar.html",
+        "/snar/plac.html",
+        "/snar/potopa.html",
+        "/snar/ptak.html",
+        "/snar/ruze.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/bruno.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/bruno.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/jmena/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/blog/letni-laska-astrologie-znameni.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/blog/letni-laska-astrologie-znameni.html",
+      "family": "blog",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/blog.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/magdalena.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/magdalena.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/jmena/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/amalie.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/amalie.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 31,
+      "source_visible_incoming_sample": [
+        "/jmena/",
+        "/jmena/aneta.html",
+        "/jmena/blahoslav.html",
+        "/jmena/bohdana.html",
+        "/jmena/bonifac.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/judita.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/judita.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/jmena/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/snar/demon.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/snar/demon.html",
+      "family": "snar",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 7,
+      "source_visible_incoming_sample": [
+        "/snar.html",
+        "/snar/duch.html",
+        "/snar/kniha.html",
+        "/snar/krabice.html",
+        "/snar/prsten.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/stepanka.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/stepanka.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/jmena/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/drahoslav.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/drahoslav.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/jmena/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/aneta.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/aneta.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 82,
+      "source_visible_incoming_sample": [
+        "/jmena/",
+        "/jmena/adriana.html",
+        "/jmena/albina.html",
+        "/jmena/amalie.html",
+        "/jmena/anna.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/partnerska-shoda/libra-aries.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/partnerska-shoda/libra-aries.html",
+      "family": "partnerska-shoda",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 12,
+      "source_visible_incoming_sample": [
+        "/partnerska-shoda/",
+        "/partnerska-shoda/libra-aquarius.html",
+        "/partnerska-shoda/libra-cancer.html",
+        "/partnerska-shoda/libra-capricorn.html",
+        "/partnerska-shoda/libra-gemini.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/vera.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/vera.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/jmena/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/jana.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/jana.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/jmena/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/brigita.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/brigita.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/jmena/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/snar/lod.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/snar/lod.html",
+      "family": "snar",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 7,
+      "source_visible_incoming_sample": [
+        "/snar.html",
+        "/snar/konev-voda.html",
+        "/snar/krev.html",
+        "/snar/kvetiny.html",
+        "/snar/les.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/snar/telefon.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/snar/telefon.html",
+      "family": "snar",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 7,
+      "source_visible_incoming_sample": [
+        "/snar.html",
+        "/snar/kniha.html",
+        "/snar/plavani.html",
+        "/snar/polibek.html",
+        "/snar/prsten.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/andelske-karty/angel-of-presence.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/andelske-karty/angel-of-presence.html",
+      "family": "andelske-karty",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/andelske-karty.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/blahoslav.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/blahoslav.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 31,
+      "source_visible_incoming_sample": [
+        "/jmena/",
+        "/jmena/amalie.html",
+        "/jmena/aneta.html",
+        "/jmena/bohdana.html",
+        "/jmena/bonifac.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/slovnik/descendent.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/slovnik/descendent.html",
+      "family": "slovnik",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/slovnik.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/stepan.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/stepan.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/jmena/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/ivana.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/ivana.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/jmena/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/blog/hulkove-karty-tarot-vyznam.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/blog/hulkove-karty-tarot-vyznam.html",
+      "family": "blog",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 16,
+      "source_visible_incoming_sample": [
+        "/blog.html",
+        "/blog/vyklad-tarotu-pro-zacatecniky.html",
+        "/tarot-vyznam/ctyrka-holi.html",
+        "/tarot-vyznam/desitka-holi.html",
+        "/tarot-vyznam/devitka-holi.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/andelske-karty/angel-of-grace.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/andelske-karty/angel-of-grace.html",
+      "family": "andelske-karty",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/andelske-karty.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/andelske-karty/angel-of-forgiveness.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/andelske-karty/angel-of-forgiveness.html",
+      "family": "andelske-karty",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 6,
+      "source_visible_incoming_sample": [
+        "/andelske-karty.html",
+        "/andelske-karty/angel-of-friendship.html",
+        "/andelske-karty/angel-of-harmony.html",
+        "/andelske-karty/angel-of-letting-go.html",
+        "/andelske-karty/angel-of-love.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/snar/slon.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/snar/slon.html",
+      "family": "snar",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 7,
+      "source_visible_incoming_sample": [
+        "/snar.html",
+        "/snar/jelen.html",
+        "/snar/labyrint.html",
+        "/snar/meduza.html",
+        "/snar/pyramida.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/cenek.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/cenek.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 32,
+      "source_visible_incoming_sample": [
+        "/jmena/",
+        "/jmena/blazena.html",
+        "/jmena/bohumila.html",
+        "/jmena/dana.html",
+        "/jmena/ema.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/radoslav.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/radoslav.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/jmena/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/snar/barva-modra.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/snar/barva-modra.html",
+      "family": "snar",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 7,
+      "source_visible_incoming_sample": [
+        "/snar.html",
+        "/snar/andele.html",
+        "/snar/auto.html",
+        "/snar/baby.html",
+        "/snar/barva-bila.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/tarot-vyznam/ctyrka-poharu.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/tarot-vyznam/ctyrka-poharu.html",
+      "family": "tarot-vyznam",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 5,
+      "source_visible_incoming_sample": [
+        "/blog/co-znamenaji-pohary-v-tarotu.html",
+        "/tarot-vyznam-karet.html",
+        "/tarot-vyznam/dvojka-poharu.html",
+        "/tarot-vyznam/petka-poharu.html",
+        "/tarot-vyznam/trojka-poharu.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/daniel.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/daniel.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 4,
+      "source_visible_incoming_sample": [
+        "/jmena/",
+        "/jmena/agata.html",
+        "/jmena/alexandra.html",
+        "/jmena/alice.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/snar/hodiny.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/snar/hodiny.html",
+      "family": "snar",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 7,
+      "source_visible_incoming_sample": [
+        "/snar.html",
+        "/snar/dum.html",
+        "/snar/dvere.html",
+        "/snar/expartner.html",
+        "/snar/had.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/zoe.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/zoe.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/jmena/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/ivona.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/ivona.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/jmena/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/blog/skryty-kod-biorytmu-energeticke-cykly.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/blog/skryty-kod-biorytmu-energeticke-cykly.html",
+      "family": "blog",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/blog.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/snar/kvetiny.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/snar/kvetiny.html",
+      "family": "snar",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 7,
+      "source_visible_incoming_sample": [
+        "/snar.html",
+        "/snar/jablko.html",
+        "/snar/jezero.html",
+        "/snar/klic.html",
+        "/snar/kocka.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/snar/hvezdy.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/snar/hvezdy.html",
+      "family": "snar",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 7,
+      "source_visible_incoming_sample": [
+        "/snar.html",
+        "/snar/had.html",
+        "/snar/hadka.html",
+        "/snar/hmyz.html",
+        "/snar/hodiny.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/alice.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/alice.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 90,
+      "source_visible_incoming_sample": [
+        "/jmena/",
+        "/jmena/adela.html",
+        "/jmena/agata.html",
+        "/jmena/alexandra.html",
+        "/jmena/alois.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/elena.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/elena.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/jmena/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/vanda.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/vanda.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/jmena/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/blog/jak-se-pripravit-na-uplnek.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/blog/jak-se-pripravit-na-uplnek.html",
+      "family": "blog",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/blog.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/blog/lilith-v-natalni-karte.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/blog/lilith-v-natalni-karte.html",
+      "family": "blog",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 2,
+      "source_visible_incoming_sample": [
+        "/blog.html",
+        "/natalni-karta.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/leos.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/leos.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/jmena/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/melichar.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/melichar.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/jmena/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/blog/panna-a-beran-partnerska-shoda.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/blog/panna-a-beran-partnerska-shoda.html",
+      "family": "blog",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/blog.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/andelske-karty/angel-of-destiny.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/andelske-karty/angel-of-destiny.html",
+      "family": "andelske-karty",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 7,
+      "source_visible_incoming_sample": [
+        "/andelske-karty.html",
+        "/andelske-karty/angel-of-creativity.html",
+        "/andelske-karty/angel-of-focus.html",
+        "/andelske-karty/angel-of-learning.html",
+        "/andelske-karty/angel-of-new-beginnings.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/andelske-karty/archangel-gabriel.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/andelske-karty/archangel-gabriel.html",
+      "family": "andelske-karty",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 21,
+      "source_visible_incoming_sample": [
+        "/andelske-karty.html",
+        "/andelske-karty/angel-of-abundance.html",
+        "/andelske-karty/angel-of-celebration.html",
+        "/andelske-karty/angel-of-courage.html",
+        "/andelske-karty/angel-of-dreams.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/partnerska-shoda/cancer-aries.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/partnerska-shoda/cancer-aries.html",
+      "family": "partnerska-shoda",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 12,
+      "source_visible_incoming_sample": [
+        "/partnerska-shoda/",
+        "/partnerska-shoda/cancer-aquarius.html",
+        "/partnerska-shoda/cancer-cancer.html",
+        "/partnerska-shoda/cancer-capricorn.html",
+        "/partnerska-shoda/cancer-gemini.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/partnerska-shoda/libra-gemini.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/partnerska-shoda/libra-gemini.html",
+      "family": "partnerska-shoda",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 12,
+      "source_visible_incoming_sample": [
+        "/partnerska-shoda/",
+        "/partnerska-shoda/libra-aquarius.html",
+        "/partnerska-shoda/libra-aries.html",
+        "/partnerska-shoda/libra-cancer.html",
+        "/partnerska-shoda/libra-capricorn.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/partnerska-shoda/gemini-virgo.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/partnerska-shoda/gemini-virgo.html",
+      "family": "partnerska-shoda",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 13,
+      "source_visible_incoming_sample": [
+        "/partnerska-shoda.html",
+        "/partnerska-shoda/",
+        "/partnerska-shoda/gemini-aquarius.html",
+        "/partnerska-shoda/gemini-aries.html",
+        "/partnerska-shoda/gemini-cancer.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/blog/zivotni-cislo-odhaleni-kodu-vasi-duse.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/blog/zivotni-cislo-odhaleni-kodu-vasi-duse.html",
+      "family": "blog",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 3,
+      "source_visible_incoming_sample": [
+        "/blog.html",
+        "/slovnik/mistrovska-cisla.html",
+        "/slovnik/zivotni-cislo.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/karel.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/karel.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/jmena/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/otylie.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/otylie.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/jmena/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/herman.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/herman.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/jmena/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/hanus.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/hanus.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/jmena/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/partnerska-shoda/capricorn-aquarius.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/partnerska-shoda/capricorn-aquarius.html",
+      "family": "partnerska-shoda",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 13,
+      "source_visible_incoming_sample": [
+        "/partnerska-shoda.html",
+        "/partnerska-shoda/",
+        "/partnerska-shoda/capricorn-aries.html",
+        "/partnerska-shoda/capricorn-cancer.html",
+        "/partnerska-shoda/capricorn-capricorn.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/partnerska-shoda/leo-cancer.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/partnerska-shoda/leo-cancer.html",
+      "family": "partnerska-shoda",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 12,
+      "source_visible_incoming_sample": [
+        "/partnerska-shoda/",
+        "/partnerska-shoda/leo-aquarius.html",
+        "/partnerska-shoda/leo-aries.html",
+        "/partnerska-shoda/leo-capricorn.html",
+        "/partnerska-shoda/leo-gemini.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/snar/vlci.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/snar/vlci.html",
+      "family": "snar",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 7,
+      "source_visible_incoming_sample": [
+        "/snar.html",
+        "/snar/tehotenstvi.html",
+        "/snar/tma.html",
+        "/snar/utikani.html",
+        "/snar/vesmir.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/klaudie.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/klaudie.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/jmena/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/zofie.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/zofie.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/jmena/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/linda.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/linda.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/jmena/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/partnerska-shoda/sagittarius-taurus.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/partnerska-shoda/sagittarius-taurus.html",
+      "family": "partnerska-shoda",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 12,
+      "source_visible_incoming_sample": [
+        "/partnerska-shoda/",
+        "/partnerska-shoda/sagittarius-aquarius.html",
+        "/partnerska-shoda/sagittarius-aries.html",
+        "/partnerska-shoda/sagittarius-cancer.html",
+        "/partnerska-shoda/sagittarius-capricorn.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/tarot-vyznam/kral-poharu.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/tarot-vyznam/kral-poharu.html",
+      "family": "tarot-vyznam",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 4,
+      "source_visible_incoming_sample": [
+        "/blog/co-znamenaji-pohary-v-tarotu.html",
+        "/tarot-vyznam-karet.html",
+        "/tarot-vyznam/eso-mecu.html",
+        "/tarot-vyznam/kralovna-poharu.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/blog/numerologie-jmena-krizni-jmeno.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/blog/numerologie-jmena-krizni-jmeno.html",
+      "family": "blog",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/blog.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/partnerska-shoda/aquarius-capricorn.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/partnerska-shoda/aquarius-capricorn.html",
+      "family": "partnerska-shoda",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 12,
+      "source_visible_incoming_sample": [
+        "/partnerska-shoda/",
+        "/partnerska-shoda/aquarius-aquarius.html",
+        "/partnerska-shoda/aquarius-aries.html",
+        "/partnerska-shoda/aquarius-cancer.html",
+        "/partnerska-shoda/aquarius-gemini.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/blog/retrograde-venus-2026-co-cekat-v-lasce.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/blog/retrograde-venus-2026-co-cekat-v-lasce.html",
+      "family": "blog",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 2,
+      "source_visible_incoming_sample": [
+        "/blog.html",
+        "/blog/letni-laska-astrologie-znameni.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/snar/chvatal.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/snar/chvatal.html",
+      "family": "snar",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 8,
+      "source_visible_incoming_sample": [
+        "/blog/opakujici-se-sny-co-znamenaji.html",
+        "/snar.html",
+        "/snar/barva-modra.html",
+        "/snar/bezpecny-pristav.html",
+        "/snar/bludiste.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/nikola.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/nikola.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/jmena/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/tarot-vyznam/mag.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/tarot-vyznam/mag.html",
+      "family": "tarot-vyznam",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 5,
+      "source_visible_incoming_sample": [
+        "/blog/karta-blazen-tarot-vyznam.html",
+        "/blog/vyklad-tarotu-pro-zacatecniky.html",
+        "/tarot-vyznam-karet.html",
+        "/tarot-vyznam/blazen.html",
+        "/tarot-vyznam/veleknezka.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/snar/skola.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/snar/skola.html",
+      "family": "snar",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 8,
+      "source_visible_incoming_sample": [
+        "/blog/opakujici-se-sny-co-znamenaji.html",
+        "/snar.html",
+        "/snar/potopa.html",
+        "/snar/ptak.html",
+        "/snar/ruze.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/blog/ctyri-zivly-astrologie-ohen-zeme-vzduch-voda.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/blog/ctyri-zivly-astrologie-ohen-zeme-vzduch-voda.html",
+      "family": "blog",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/blog.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/rudolf.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/rudolf.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/jmena/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/partnerska-shoda/leo-aries.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/partnerska-shoda/leo-aries.html",
+      "family": "partnerska-shoda",
+      "historical_http_status": null,
+      "historical_error": "ReadTimeout",
+      "variant": false,
+      "source_visible_incoming_count": 12,
+      "source_visible_incoming_sample": [
+        "/partnerska-shoda/",
+        "/partnerska-shoda/leo-aquarius.html",
+        "/partnerska-shoda/leo-cancer.html",
+        "/partnerska-shoda/leo-capricorn.html",
+        "/partnerska-shoda/leo-gemini.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/snar/jeskyne.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/snar/jeskyne.html",
+      "family": "snar",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 7,
+      "source_visible_incoming_sample": [
+        "/snar.html",
+        "/snar/blesk-karta.html",
+        "/snar/duha.html",
+        "/snar/hvezdny-prach.html",
+        "/snar/kometa.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/blog/saturuv-navrat-29-rok-zivota.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/blog/saturuv-navrat-29-rok-zivota.html",
+      "family": "blog",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/blog.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/tarot-vyznam/desitka-holi.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/tarot-vyznam/desitka-holi.html",
+      "family": "tarot-vyznam",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 4,
+      "source_visible_incoming_sample": [
+        "/blog/hulkove-karty-tarot-vyznam.html",
+        "/tarot-vyznam-karet.html",
+        "/tarot-vyznam/devitka-holi.html",
+        "/tarot-vyznam/paze-holi.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/partnerska-shoda/sagittarius-aquarius.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/partnerska-shoda/sagittarius-aquarius.html",
+      "family": "partnerska-shoda",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 13,
+      "source_visible_incoming_sample": [
+        "/partnerska-shoda.html",
+        "/partnerska-shoda/",
+        "/partnerska-shoda/sagittarius-aries.html",
+        "/partnerska-shoda/sagittarius-cancer.html",
+        "/partnerska-shoda/sagittarius-capricorn.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/partnerska-shoda/libra-pisces.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/partnerska-shoda/libra-pisces.html",
+      "family": "partnerska-shoda",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 13,
+      "source_visible_incoming_sample": [
+        "/partnerska-shoda.html",
+        "/partnerska-shoda/",
+        "/partnerska-shoda/libra-aquarius.html",
+        "/partnerska-shoda/libra-aries.html",
+        "/partnerska-shoda/libra-cancer.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/blog/feng-shui-doma-energie-penizy-laska.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/blog/feng-shui-doma-energie-penizy-laska.html",
+      "family": "blog",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/blog.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/partnerska-shoda/pisces-aries.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/partnerska-shoda/pisces-aries.html",
+      "family": "partnerska-shoda",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 12,
+      "source_visible_incoming_sample": [
+        "/partnerska-shoda/",
+        "/partnerska-shoda/pisces-aquarius.html",
+        "/partnerska-shoda/pisces-cancer.html",
+        "/partnerska-shoda/pisces-capricorn.html",
+        "/partnerska-shoda/pisces-gemini.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/partnerska-shoda/leo-capricorn.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/partnerska-shoda/leo-capricorn.html",
+      "family": "partnerska-shoda",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 13,
+      "source_visible_incoming_sample": [
+        "/partnerska-shoda.html",
+        "/partnerska-shoda/",
+        "/partnerska-shoda/leo-aquarius.html",
+        "/partnerska-shoda/leo-aries.html",
+        "/partnerska-shoda/leo-cancer.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/snar/labut.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/snar/labut.html",
+      "family": "snar",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 7,
+      "source_visible_incoming_sample": [
+        "/snar.html",
+        "/snar/buh.html",
+        "/snar/demon.html",
+        "/snar/kletba.html",
+        "/snar/osud.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/horoskop/blizenci.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/horoskop/blizenci.html",
+      "family": "horoskop",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/horoskop/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/partnerska-shoda/leo-libra.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/partnerska-shoda/leo-libra.html",
+      "family": "partnerska-shoda",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 13,
+      "source_visible_incoming_sample": [
+        "/partnerska-shoda.html",
+        "/partnerska-shoda/",
+        "/partnerska-shoda/leo-aquarius.html",
+        "/partnerska-shoda/leo-aries.html",
+        "/partnerska-shoda/leo-cancer.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/blog/runovy-vyklad-doma-pruvodce.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/blog/runovy-vyklad-doma-pruvodce.html",
+      "family": "blog",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 2,
+      "source_visible_incoming_sample": [
+        "/blog.html",
+        "/runy.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/testy/zivlova-rovnovaha.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/testy/zivlova-rovnovaha.html",
+      "family": "testy",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/testy/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/blog/iluze-spriznene-duse-karmicke-vztahy.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/blog/iluze-spriznene-duse-karmicke-vztahy.html",
+      "family": "blog",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 4,
+      "source_visible_incoming_sample": [
+        "/blog.html",
+        "/blog/minuly-zivot-znameni-vzpominky.html",
+        "/slovnik/draci-uzly.html",
+        "/slovnik/karma.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/blog/biorytmy-proc-se-vam-nedari.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/blog/biorytmy-proc-se-vam-nedari.html",
+      "family": "blog",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/blog.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/blog/jak-funguji-andelske-karty.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/blog/jak-funguji-andelske-karty.html",
+      "family": "blog",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 2,
+      "source_visible_incoming_sample": [
+        "/andelske-karty.html",
+        "/blog.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/blog/shamansko-kolo-totemove-zvire.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/blog/shamansko-kolo-totemove-zvire.html",
+      "family": "blog",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 2,
+      "source_visible_incoming_sample": [
+        "/blog.html",
+        "/shamansko-kolo.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/snar/svetlo-bile.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/snar/svetlo-bile.html",
+      "family": "snar",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 7,
+      "source_visible_incoming_sample": [
+        "/snar.html",
+        "/snar/andel-strazny.html",
+        "/snar/delphi.html",
+        "/snar/drak.html",
+        "/snar/fenix.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/blog/lekce-padajici-veze-tarot.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/blog/lekce-padajici-veze-tarot.html",
+      "family": "blog",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 7,
+      "source_visible_incoming_sample": [
+        "/blog.html",
+        "/blog/karta-hvezda-tarot-vyznam.html",
+        "/blog/karta-milenci-tarot-vyznam.html",
+        "/blog/karta-slunce-tarot-vyznam.html",
+        "/slovnik/tarot-blazen.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/testy/stin-znameni.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/testy/stin-znameni.html",
+      "family": "testy",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/testy/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/blog/karta-blazen-tarot-vyznam.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/blog/karta-blazen-tarot-vyznam.html",
+      "family": "blog",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 3,
+      "source_visible_incoming_sample": [
+        "/blog.html",
+        "/blog/karta-hvezda-tarot-vyznam.html",
+        "/tarot-vyznam/blazen.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/jmena/julie.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/jmena/julie.html",
+      "family": "jmena",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/jmena/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/snar/fenix.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/snar/fenix.html",
+      "family": "snar",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 7,
+      "source_visible_incoming_sample": [
+        "/snar.html",
+        "/snar/delphi.html",
+        "/snar/jelen.html",
+        "/snar/meduza.html",
+        "/snar/sfinga.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/snar/zricenina.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/snar/zricenina.html",
+      "family": "snar",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 7,
+      "source_visible_incoming_sample": [
+        "/snar.html",
+        "/snar/chram.html",
+        "/snar/kadidlo.html",
+        "/snar/kristalova-koule.html",
+        "/snar/kyvadlo.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/snar/penize.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/snar/penize.html",
+      "family": "snar",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 7,
+      "source_visible_incoming_sample": [
+        "/snar.html",
+        "/snar/nahota.html",
+        "/snar/nemoc.html",
+        "/snar/nuz.html",
+        "/snar/ohen.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/snar/kocka.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/snar/kocka.html",
+      "family": "snar",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 7,
+      "source_visible_incoming_sample": [
+        "/snar.html",
+        "/snar/hora.html",
+        "/snar/hrob.html",
+        "/snar/hvezdy.html",
+        "/snar/jablko.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/blog/zatmeni-slunce-a-mesice-2026.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/blog/zatmeni-slunce-a-mesice-2026.html",
+      "family": "blog",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 2,
+      "source_visible_incoming_sample": [
+        "/blog.html",
+        "/blog/zatmeni-slunce-srpen-2026-lev.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/partnerska-shoda/capricorn-libra.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/partnerska-shoda/capricorn-libra.html",
+      "family": "partnerska-shoda",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 12,
+      "source_visible_incoming_sample": [
+        "/partnerska-shoda/",
+        "/partnerska-shoda/capricorn-aquarius.html",
+        "/partnerska-shoda/capricorn-aries.html",
+        "/partnerska-shoda/capricorn-cancer.html",
+        "/partnerska-shoda/capricorn-capricorn.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/slovnik/tarot-blazen.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/slovnik/tarot-blazen.html",
+      "family": "slovnik",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 2,
+      "source_visible_incoming_sample": [
+        "/slovnik.html",
+        "/slovnik/velka-arkana.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/partnerska-shoda/sagittarius-virgo.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/partnerska-shoda/sagittarius-virgo.html",
+      "family": "partnerska-shoda",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 12,
+      "source_visible_incoming_sample": [
+        "/partnerska-shoda/",
+        "/partnerska-shoda/sagittarius-aquarius.html",
+        "/partnerska-shoda/sagittarius-aries.html",
+        "/partnerska-shoda/sagittarius-cancer.html",
+        "/partnerska-shoda/sagittarius-capricorn.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/blog/merkur-v-retrograde-co-to-znamena-pro-vase-znameni.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/blog/merkur-v-retrograde-co-to-znamena-pro-vase-znameni.html",
+      "family": "blog",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/blog.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/partnerska-shoda/aries-cancer.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/partnerska-shoda/aries-cancer.html",
+      "family": "partnerska-shoda",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 13,
+      "source_visible_incoming_sample": [
+        "/partnerska-shoda.html",
+        "/partnerska-shoda/",
+        "/partnerska-shoda/aries-aquarius.html",
+        "/partnerska-shoda/aries-aries.html",
+        "/partnerska-shoda/aries-capricorn.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/blog/karta-mesic-tarot-vyznam.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/blog/karta-mesic-tarot-vyznam.html",
+      "family": "blog",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 4,
+      "source_visible_incoming_sample": [
+        "/blog.html",
+        "/blog/karta-milenci-tarot-vyznam.html",
+        "/blog/karta-slunce-tarot-vyznam.html",
+        "/tarot-vyznam/luna.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/blog/andelska-cisla-333-444-555.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/blog/andelska-cisla-333-444-555.html",
+      "family": "blog",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 2,
+      "source_visible_incoming_sample": [
+        "/blog.html",
+        "/blog/andelske-cislo-222-vyznam.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/testy/archetyp-duse.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/testy/archetyp-duse.html",
+      "family": "testy",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/testy/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/partnerska-shoda/cancer-aquarius.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/partnerska-shoda/cancer-aquarius.html",
+      "family": "partnerska-shoda",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 13,
+      "source_visible_incoming_sample": [
+        "/partnerska-shoda.html",
+        "/partnerska-shoda/",
+        "/partnerska-shoda/cancer-aries.html",
+        "/partnerska-shoda/cancer-cancer.html",
+        "/partnerska-shoda/cancer-capricorn.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/blog/pluto-ve-vodnari-2024-2043.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/blog/pluto-ve-vodnari-2024-2043.html",
+      "family": "blog",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/blog.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/blog/tajemstvi-12-astrologickych-domu.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/blog/tajemstvi-12-astrologickych-domu.html",
+      "family": "blog",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 5,
+      "source_visible_incoming_sample": [
+        "/blog.html",
+        "/natalni-karta.html",
+        "/slovnik/ascendent.html",
+        "/slovnik/aspekty.html",
+        "/slovnik/nativni-karta.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/partnerska-shoda/sagittarius-libra.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/partnerska-shoda/sagittarius-libra.html",
+      "family": "partnerska-shoda",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 12,
+      "source_visible_incoming_sample": [
+        "/partnerska-shoda/",
+        "/partnerska-shoda/sagittarius-aquarius.html",
+        "/partnerska-shoda/sagittarius-aries.html",
+        "/partnerska-shoda/sagittarius-cancer.html",
+        "/partnerska-shoda/sagittarius-capricorn.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/slovnik/nativni-karta.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/slovnik/nativni-karta.html",
+      "family": "slovnik",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 7,
+      "source_visible_incoming_sample": [
+        "/slovnik.html",
+        "/slovnik/ascendent.html",
+        "/slovnik/aspekty.html",
+        "/slovnik/descendent.html",
+        "/slovnik/draci-uzly.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/blog/cinsky-horoskop-2026-rok-ohniveho-kone.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/blog/cinsky-horoskop-2026-rok-ohniveho-kone.html",
+      "family": "blog",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/blog.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/partnerska-shoda/sagittarius-sagittarius.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/partnerska-shoda/sagittarius-sagittarius.html",
+      "family": "partnerska-shoda",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 2,
+      "source_visible_incoming_sample": [
+        "/partnerska-shoda.html",
+        "/partnerska-shoda/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/blog/tajemstvi-kristalove-koule-scrying.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/blog/tajemstvi-kristalove-koule-scrying.html",
+      "family": "blog",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 3,
+      "source_visible_incoming_sample": [
+        "/blog.html",
+        "/kristalova-koule.html",
+        "/slovnik/akasicke-zaznamy.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/partnerska-shoda/aries-leo.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/partnerska-shoda/aries-leo.html",
+      "family": "partnerska-shoda",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 13,
+      "source_visible_incoming_sample": [
+        "/partnerska-shoda.html",
+        "/partnerska-shoda/",
+        "/partnerska-shoda/aries-aquarius.html",
+        "/partnerska-shoda/aries-aries.html",
+        "/partnerska-shoda/aries-cancer.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/blog/co-je-aura-jak-ji-videt-cist-cistit.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/blog/co-je-aura-jak-ji-videt-cist-cistit.html",
+      "family": "blog",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/blog.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/blog/zaklady-sedmi-caker-anatomie.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/blog/zaklady-sedmi-caker-anatomie.html",
+      "family": "blog",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 4,
+      "source_visible_incoming_sample": [
+        "/blog.html",
+        "/slovnik/anahata.html",
+        "/slovnik/muladhara.html",
+        "/slovnik/svadhisthana.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/snar/zrcadlo.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/snar/zrcadlo.html",
+      "family": "snar",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 7,
+      "source_visible_incoming_sample": [
+        "/snar.html",
+        "/snar/vzlety-padi.html",
+        "/snar/zachrana.html",
+        "/snar/zapomenute-dite.html",
+        "/snar/zemetreseni.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/partnerska-shoda/aquarius-pisces.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/partnerska-shoda/aquarius-pisces.html",
+      "family": "partnerska-shoda",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 13,
+      "source_visible_incoming_sample": [
+        "/partnerska-shoda.html",
+        "/partnerska-shoda/",
+        "/partnerska-shoda/aquarius-aquarius.html",
+        "/partnerska-shoda/aquarius-aries.html",
+        "/partnerska-shoda/aquarius-cancer.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/blog/jak-cist-natalni-kartu-pruvodce.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/blog/jak-cist-natalni-kartu-pruvodce.html",
+      "family": "blog",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 2,
+      "source_visible_incoming_sample": [
+        "/blog.html",
+        "/natalni-karta.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/blog/ascendent-vs-slunecni-znameni-jaky-je-rozdil.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/blog/ascendent-vs-slunecni-znameni-jaky-je-rozdil.html",
+      "family": "blog",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 2,
+      "source_visible_incoming_sample": [
+        "/blog.html",
+        "/natalni-karta.html"
+      ]
+    },
+    {
+      "historical_url": "https://mystickahvezda.cz/slovnik/lucidni-sen.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/slovnik/lucidni-sen.html",
+      "family": "slovnik",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": true,
+      "source_visible_incoming_count": 2,
+      "source_visible_incoming_sample": [
+        "/slovnik.html",
+        "/slovnik/spankova-paralyza.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/blog/co-je-synastrie-jak-funguje-partnerska-astrologie.html?source=synastry_intent_cluster&intent=learn_synastry",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/blog/co-je-synastrie-jak-funguje-partnerska-astrologie.html",
+      "family": "blog",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": true,
+      "source_visible_incoming_count": 3,
+      "source_visible_incoming_sample": [
+        "/blog.html",
+        "/blog/letni-laska-astrologie-znameni.html",
+        "/partnerska-shoda.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/ochrana-soukromi.html",
+      "historical_categories": [
+        "crawled-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/soukromi.html",
+      "family": "standalone",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": true,
+      "source_visible_incoming_count": 6,
+      "source_visible_incoming_sample": [
+        "/",
+        "/cenik.html",
+        "/faq.html",
+        "/o-nas.html",
+        "/osobni-mapa.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/andelska-posta.html",
+      "historical_categories": [
+        "discovered-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/andelska-posta.html",
+      "family": "standalone",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 2,
+      "source_visible_incoming_sample": [
+        "/",
+        "/blog/jak-funguji-andelske-karty.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/aura.html",
+      "historical_categories": [
+        "discovered-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/aura.html",
+      "family": "standalone",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 3,
+      "source_visible_incoming_sample": [
+        "/",
+        "/blog/co-je-aura-jak-ji-videt-cist-cistit.html",
+        "/jmena/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/blog/5-znaku-ze-potkavate-svou-spriznenou-dusi.html",
+      "historical_categories": [
+        "discovered-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/blog/5-znaku-ze-potkavate-svou-spriznenou-dusi.html",
+      "family": "blog",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/blog.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/blog/cakrove-leceni-navod.html",
+      "historical_categories": [
+        "discovered-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/blog/cakrove-leceni-navod.html",
+      "family": "blog",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/blog.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/blog/proc-vam-to-v-lasce-nevyhcazi.html",
+      "historical_categories": [
+        "discovered-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/blog/proc-vam-to-v-lasce-nevyhcazi.html",
+      "family": "blog",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 3,
+      "source_visible_incoming_sample": [
+        "/blog.html",
+        "/blog/letni-laska-astrologie-znameni.html",
+        "/partnerska-shoda.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/blog/psychologie-snu-stici-stromy.html",
+      "historical_categories": [
+        "discovered-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/blog/psychologie-snu-stici-stromy.html",
+      "family": "blog",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 3,
+      "source_visible_incoming_sample": [
+        "/blog.html",
+        "/blog/opakujici-se-sny-co-znamenaji.html",
+        "/slovnik/lucidni-sen.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/blog/uplnek-v-kozorohovi-ritual-a-vyznam.html",
+      "historical_categories": [
+        "discovered-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/blog/uplnek-v-kozorohovi-ritual-a-vyznam.html",
+      "family": "blog",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/blog.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/blog/znameni-zverokruhu-a-penize.html",
+      "historical_categories": [
+        "discovered-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/blog/znameni-zverokruhu-a-penize.html",
+      "family": "blog",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/blog.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/cinsky-horoskop.html",
+      "historical_categories": [
+        "discovered-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/cinsky-horoskop.html",
+      "family": "standalone",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 2,
+      "source_visible_incoming_sample": [
+        "/",
+        "/blog/cinsky-horoskop-2026-rok-ohniveho-kone.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/faq.html",
+      "historical_categories": [
+        "discovered-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/faq.html",
+      "family": "standalone",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 2,
+      "source_visible_incoming_sample": [
+        "/",
+        "/kontakt.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/horoskop/byk.html",
+      "historical_categories": [
+        "discovered-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/horoskop/byk.html",
+      "family": "horoskop",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/horoskop/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/horoskop/kozoroh.html",
+      "historical_categories": [
+        "discovered-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/horoskop/kozoroh.html",
+      "family": "horoskop",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/horoskop/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/horoskop/lev.html",
+      "historical_categories": [
+        "discovered-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/horoskop/lev.html",
+      "family": "horoskop",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 2,
+      "source_visible_incoming_sample": [
+        "/blog/lvi-sezona-2026.html",
+        "/horoskop/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/horoskop/panna.html",
+      "historical_categories": [
+        "discovered-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/horoskop/panna.html",
+      "family": "horoskop",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/horoskop/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/horoskop/rak.html",
+      "historical_categories": [
+        "discovered-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/horoskop/rak.html",
+      "family": "horoskop",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/horoskop/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/horoskop/ryby.html",
+      "historical_categories": [
+        "discovered-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/horoskop/ryby.html",
+      "family": "horoskop",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/horoskop/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/horoskop/stir.html",
+      "historical_categories": [
+        "discovered-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/horoskop/stir.html",
+      "family": "horoskop",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/horoskop/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/horoskop/vahy.html",
+      "historical_categories": [
+        "discovered-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/horoskop/vahy.html",
+      "family": "horoskop",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/horoskop/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/horoskop/vodnar.html",
+      "historical_categories": [
+        "discovered-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/horoskop/vodnar.html",
+      "family": "horoskop",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 1,
+      "source_visible_incoming_sample": [
+        "/horoskop/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/lunace.html",
+      "historical_categories": [
+        "discovered-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/lunace.html",
+      "family": "standalone",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 31,
+      "source_visible_incoming_sample": [
+        "/",
+        "/biorytmy.html",
+        "/blog/ascendent-vs-slunecni-znameni-jaky-je-rozdil.html",
+        "/blog/chiron-raneny-lecitel-natalni-karta.html",
+        "/blog/cinsky-horoskop-2026-rok-ohniveho-kone.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/partnerska-shoda/aries-aquarius.html",
+      "historical_categories": [
+        "discovered-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/partnerska-shoda/aries-aquarius.html",
+      "family": "partnerska-shoda",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 13,
+      "source_visible_incoming_sample": [
+        "/partnerska-shoda.html",
+        "/partnerska-shoda/",
+        "/partnerska-shoda/aries-aries.html",
+        "/partnerska-shoda/aries-cancer.html",
+        "/partnerska-shoda/aries-capricorn.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/partnerska-shoda/cancer-gemini.html",
+      "historical_categories": [
+        "discovered-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/partnerska-shoda/cancer-gemini.html",
+      "family": "partnerska-shoda",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 12,
+      "source_visible_incoming_sample": [
+        "/partnerska-shoda/",
+        "/partnerska-shoda/cancer-aquarius.html",
+        "/partnerska-shoda/cancer-aries.html",
+        "/partnerska-shoda/cancer-cancer.html",
+        "/partnerska-shoda/cancer-capricorn.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/partnerska-shoda/gemini-gemini.html",
+      "historical_categories": [
+        "discovered-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/partnerska-shoda/gemini-gemini.html",
+      "family": "partnerska-shoda",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 2,
+      "source_visible_incoming_sample": [
+        "/partnerska-shoda.html",
+        "/partnerska-shoda/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/partnerska-shoda/gemini-taurus.html",
+      "historical_categories": [
+        "discovered-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/partnerska-shoda/gemini-taurus.html",
+      "family": "partnerska-shoda",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 12,
+      "source_visible_incoming_sample": [
+        "/partnerska-shoda/",
+        "/partnerska-shoda/gemini-aquarius.html",
+        "/partnerska-shoda/gemini-aries.html",
+        "/partnerska-shoda/gemini-cancer.html",
+        "/partnerska-shoda/gemini-capricorn.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/partnerska-shoda/libra-sagittarius.html",
+      "historical_categories": [
+        "discovered-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/partnerska-shoda/libra-sagittarius.html",
+      "family": "partnerska-shoda",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 13,
+      "source_visible_incoming_sample": [
+        "/partnerska-shoda.html",
+        "/partnerska-shoda/",
+        "/partnerska-shoda/libra-aquarius.html",
+        "/partnerska-shoda/libra-aries.html",
+        "/partnerska-shoda/libra-cancer.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/partnerska-shoda/libra-taurus.html",
+      "historical_categories": [
+        "discovered-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/partnerska-shoda/libra-taurus.html",
+      "family": "partnerska-shoda",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 12,
+      "source_visible_incoming_sample": [
+        "/partnerska-shoda/",
+        "/partnerska-shoda/libra-aquarius.html",
+        "/partnerska-shoda/libra-aries.html",
+        "/partnerska-shoda/libra-cancer.html",
+        "/partnerska-shoda/libra-capricorn.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/partnerska-shoda/pisces-libra.html",
+      "historical_categories": [
+        "discovered-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/partnerska-shoda/pisces-libra.html",
+      "family": "partnerska-shoda",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 12,
+      "source_visible_incoming_sample": [
+        "/partnerska-shoda/",
+        "/partnerska-shoda/pisces-aquarius.html",
+        "/partnerska-shoda/pisces-aries.html",
+        "/partnerska-shoda/pisces-cancer.html",
+        "/partnerska-shoda/pisces-capricorn.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/partnerska-shoda/pisces-scorpio.html",
+      "historical_categories": [
+        "discovered-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/partnerska-shoda/pisces-scorpio.html",
+      "family": "partnerska-shoda",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 12,
+      "source_visible_incoming_sample": [
+        "/partnerska-shoda/",
+        "/partnerska-shoda/pisces-aquarius.html",
+        "/partnerska-shoda/pisces-aries.html",
+        "/partnerska-shoda/pisces-cancer.html",
+        "/partnerska-shoda/pisces-capricorn.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/partnerska-shoda/pisces-taurus.html",
+      "historical_categories": [
+        "discovered-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/partnerska-shoda/pisces-taurus.html",
+      "family": "partnerska-shoda",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 12,
+      "source_visible_incoming_sample": [
+        "/partnerska-shoda/",
+        "/partnerska-shoda/pisces-aquarius.html",
+        "/partnerska-shoda/pisces-aries.html",
+        "/partnerska-shoda/pisces-cancer.html",
+        "/partnerska-shoda/pisces-capricorn.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/partnerska-shoda/scorpio-capricorn.html",
+      "historical_categories": [
+        "discovered-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/partnerska-shoda/scorpio-capricorn.html",
+      "family": "partnerska-shoda",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 13,
+      "source_visible_incoming_sample": [
+        "/partnerska-shoda.html",
+        "/partnerska-shoda/",
+        "/partnerska-shoda/scorpio-aquarius.html",
+        "/partnerska-shoda/scorpio-aries.html",
+        "/partnerska-shoda/scorpio-cancer.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/partnerska-shoda/scorpio-scorpio.html",
+      "historical_categories": [
+        "discovered-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/partnerska-shoda/scorpio-scorpio.html",
+      "family": "partnerska-shoda",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 2,
+      "source_visible_incoming_sample": [
+        "/partnerska-shoda.html",
+        "/partnerska-shoda/"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/partnerska-shoda/taurus-virgo.html",
+      "historical_categories": [
+        "discovered-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/partnerska-shoda/taurus-virgo.html",
+      "family": "partnerska-shoda",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 13,
+      "source_visible_incoming_sample": [
+        "/partnerska-shoda.html",
+        "/partnerska-shoda/",
+        "/partnerska-shoda/taurus-aquarius.html",
+        "/partnerska-shoda/taurus-aries.html",
+        "/partnerska-shoda/taurus-cancer.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/podminky.html",
+      "historical_categories": [
+        "discovered-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/podminky.html",
+      "family": "standalone",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 4,
+      "source_visible_incoming_sample": [
+        "/",
+        "/cenik.html",
+        "/osobni-mapa.html",
+        "/vztahovy-vyklad.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/ritualy/",
+      "historical_categories": [
+        "discovered-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/ritualy/",
+      "family": "standalone",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 2,
+      "source_visible_incoming_sample": [
+        "/",
+        "/lunace.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/slovnik.html",
+      "historical_categories": [
+        "discovered-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/slovnik.html",
+      "family": "standalone",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 31,
+      "source_visible_incoming_sample": [
+        "/",
+        "/slovnik/akasicke-zaznamy.html",
+        "/slovnik/anahata.html",
+        "/slovnik/andelska-cisla.html",
+        "/slovnik/andelske-cislo-1111.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/slovnik/fehu.html",
+      "historical_categories": [
+        "discovered-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/slovnik/fehu.html",
+      "family": "slovnik",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 3,
+      "source_visible_incoming_sample": [
+        "/slovnik.html",
+        "/slovnik/hagalaz.html",
+        "/slovnik/tiwaz.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/slovnik/karma.html",
+      "historical_categories": [
+        "discovered-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/slovnik/karma.html",
+      "family": "slovnik",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 4,
+      "source_visible_incoming_sample": [
+        "/slovnik.html",
+        "/slovnik/chiron.html",
+        "/slovnik/draci-uzly.html",
+        "/slovnik/reinkarnace.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/slovnik/synchronicita.html",
+      "historical_categories": [
+        "discovered-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/slovnik/synchronicita.html",
+      "family": "slovnik",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 4,
+      "source_visible_incoming_sample": [
+        "/slovnik.html",
+        "/slovnik/akasicke-zaznamy.html",
+        "/slovnik/andelska-cisla.html",
+        "/slovnik/andelske-cislo-1111.html"
+      ]
+    },
+    {
+      "historical_url": "https://www.mystickahvezda.cz/snar/ruze.html",
+      "historical_categories": [
+        "discovered-not-indexed"
+      ],
+      "preferred_url": "https://www.mystickahvezda.cz/snar/ruze.html",
+      "family": "snar",
+      "historical_http_status": 200,
+      "historical_error": null,
+      "variant": false,
+      "source_visible_incoming_count": 7,
+      "source_visible_incoming_sample": [
+        "/snar.html",
+        "/snar/padani.html",
+        "/snar/penize.html",
+        "/snar/pes.html",
+        "/snar/plac.html"
+      ]
+    }
+  ]
+}

@@ -32,7 +32,7 @@ Aktualizace: 30. 10. 2026. Tento seznam řídí navazující práci podle [celko
 | C01 | P2 · Čeká | Vyhodnotit propojené toky nabídka → formulář → platba → doručení a skutečnou zpětnou vazbu. | Odlišené osoby/toky/eventy, deduplikované objednávky a doložená zpětná vazba. Oslovení zákazníků se neodesílá bez konkrétního zadání. |
 | S01 | P2 · Hotovo — analýza; oprava lokálně | Rozpad dotazů pro tarot láska, ano/ne, slovenské vstupy a rostoucí numerologii. | Přesné GSC porovnání čtyř URL a vybraných dotazů v gsc-query-review-2026-10-30.md/.json. Zachováno rostoucí zaměření numerologie a vztahové dotazy; opraven nesoulad ještě ne / NEJASNÉ v českém ano/ne. |
 | S02 | P2 · Připraveno lokálně | Redakčně opravit doložená ochranná/léčivá tvrzení a nevysvětlená procenta statických párových stránek. | Opraveny dva FAQ texty i JSON-LD; z párových stránek odstraněna nepodložená procenta, zachován obsah a URL. 144 stránek prošlo kontrolou JSON-LD/canonical/H1 a idempotence skriptu. Desktopový i mobilní náhled nyní ověřen; mobil 390 px bez přetékání. Odkaz vede do formuláře se zachovaným kontextem dvojice. |
-| S03 | P2 · Čeká | Rozdělit zbývající neindexované veřejné kandidáty podle hodnoty a rodin. | Oddělený záměrný archiv/parametry od užitečných stránek; zlepšený obsah a relevantní odkazy, ne odstranění všech noindex. |
+| S03 | P2 · Triáž hotová; obsahové revize zbývají | Rozdělit zbývající neindexované veřejné kandidáty podle hodnoty a rodin. | Exportováno 196 + 487 URL: 468 datovaných a 215 ostatních, rozdělení do rodin a variant. FAQ i Soud už podle inspekce indexované. Doložený blok/orphan se v kontrolovaném rozsahu nenašel; cílená obsahová revize zbývá. Viz indexing-triage-2026-10-30.md. |
 | L01 | P2 · Připraveno lokálně | Zobrazit skutečnou přesnost a rozpoznání místa v lokalizovaném natálu. | SK/PL/EN vysvětlují skutečný stupeň přesnosti a nepřítomný ascendent. 12 scénářů + anglická regrese; výpočty beze změny. |
 | L02 | P2 · Připraveno lokálně | Sjednotit objevitelnost EN odkazu na české homepage. | Česká homepage nově odkazuje i na /en/. Existující EN úvod má lang=en a odpovídající canonical/hreflang; bez přesměrování do českého nástroje. |
 | L03 | P2 · Čeká | Dokončit jednu slovenskou cestu včetně výsledků, chyb a případné nabídky. | Konzistentní jazyk od vstupu k výsledku/podpoře; CZ zůstává hlavní. PL/EN rozšiřovat postupně podle dat. |
@@ -40,7 +40,7 @@ Aktualizace: 30. 10. 2026. Tento seznam řídí navazující práci podle [celko
 
 ## Pravidla průběžné aktualizace
 
-**Právě dokončený krok:** 30. 10. S01 — analyzovány skutečné dotazy čtyř vstupů za shodná období; jedna doložená oprava názvu výsledku v metadatech, průvodci a FAQ. [Podklad a rozhodnutí](gsc-query-review-2026-10-30.md). Změna je lokální; produkce ani růst nejsou potvrzené.
+**Právě dokončený krok:** 30. 10. S03 — dokončena triáž obou aktuálně dostupných exportů a živé kontroly. FAQ i karta Soud jsou indexované. [Podklad a zbývající práce](indexing-triage-2026-10-30.md). Tento krok neměnil produkci.
 
 - Při dokončení kroku doplnit datum, soubory/commit, rozsah ověření a lokální/produkční stav. Zelený test není automaticky dokončený produktový nebo obchodní úkol.
 - Nenasazovat rozpracované úkoly společně jen proto, že jsou v tomto seznamu. Produkci ověřovat pro přesný commit podle deploy guardu.
