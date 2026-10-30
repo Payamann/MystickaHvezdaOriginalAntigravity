@@ -1,0 +1,49 @@
+{
+  "observed_on": "2026-10-30",
+  "source": "Google Search Console authenticated UI, sc-domain:mystickahvezda.cz",
+  "search_type": "Web",
+  "current": ["2026-09-29", "2026-10-26"],
+  "previous": ["2026-09-01", "2026-09-28"],
+  "filters": "exact page URL; no country or device filter",
+  "scope": "Selected rows transcribed from first 10 visible queries per page; Czech yes/no additionally sorted by previous-period clicks. Not a complete query export. Page totals include queries absent from visible query rows. Do not sum across page/property aggregation.",
+  "pages": [
+    {"path":"/tarot-laska.html","clicks":[210,266],"impressions":[3673,6505],"displayed_ctr_percent":[5.7,4.1],"displayed_position":[7.5,8.3],"queries":[
+      {"query":"výklad karet na lásku zdarma","clicks":[52,43],"impressions":[638,573]},
+      {"query":"výklad karet zdarma","clicks":[12,52],"impressions":[537,2390],"displayed_ctr_percent":[2.2,2.2],"displayed_position":[9.9,9.0]},
+      {"query":"partnerský výklad karet online zdarma","clicks":[9,10],"impressions":[127,86]},
+      {"query":"výklad karet na vztah zdarma","clicks":[6,1],"impressions":[27,15]}
+    ]},
+    {"path":"/tarot-ano-ne.html","clicks":[122,158],"impressions":[3185,3998],"displayed_ctr_percent":[3.8,4.0],"displayed_position":[6.2,6.4],"queries":[
+      {"query":"výklad karet ano ne","clicks":[16,4],"impressions":[271,276]},
+      {"query":"výklad karet ano ne online zdarma","clicks":[10,3],"impressions":[43,40]},
+      {"query":"tarot ano ne","clicks":[9,14],"impressions":[468,591]},
+      {"query":"věštba ano ne zdarma","clicks":[4,12],"impressions":[44,27]},
+      {"query":"ano ne","clicks":[2,11],"impressions":[169,240]},
+      {"query":"karty ano ne","clicks":[2,6],"impressions":[84,143]}
+    ]},
+    {"path":"/sk/tarot-ano-nie.html","clicks":[60,82],"impressions":[1042,1776],"displayed_ctr_percent":[5.8,4.6],"displayed_position":[6.9,6.5],"queries":[
+      {"query":"ano nie gula","clicks":[1,6],"impressions":[92,266]},
+      {"query":"vestenie ano nie","clicks":[1,4],"impressions":[60,139]},
+      {"query":"vestenie zdarma ano nie","clicks":[0,3],"impressions":[18,26]},
+      {"query":"ano nie","clicks":[1,2],"impressions":[15,37]}
+    ]},
+    {"path":"/partnerska-numerologie.html","clicks":[67,30],"impressions":[842,487],"displayed_ctr_percent":[8.0,6.2],"displayed_position":[7.5,8.3],"queries":[
+      {"query":"partnerská numerologie","clicks":[11,3],"impressions":[83,50]},
+      {"query":"partnerská numerologie podle data narození","clicks":[5,4],"impressions":[133,83]},
+      {"query":"kompatibilita podle data narození","clicks":[5,2],"impressions":[51,19]},
+      {"query":"partnerská shoda podle data narození","clicks":[4,1],"impressions":[19,8]},
+      {"query":"partnerská numerologie online zdarma","clicks":[3,0],"impressions":[17,7]},
+      {"query":"partnerská numerologie podle jména","clicks":[1,0],"impressions":[34,15]}
+    ]}
+  ],
+  "generic_query_page_split": {
+    "query":"výklad karet zdarma",
+    "rows":[
+      {"path":"/tarot-laska.html","clicks":[12,52],"impressions":[537,2390]},
+      {"path":"/tarot.html","clicks":[6,9],"impressions":[154,149]},
+      {"path":"/tarot-zdarma.html","clicks":[3,0],"impressions":[68,0]},
+      {"path":"/tarot-karta-dne.html","clicks":[0,0],"impressions":[7,0]},
+      {"path":"/tarot-ano-ne.html","clicks":[0,0],"impressions":[2,0]}
+    ]
+  }
+}

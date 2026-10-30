@@ -30,7 +30,7 @@ Aktualizace: 30. 10. 2026. Tento seznam řídí navazující práci podle [celko
 | F03 | P2 · Připraveno lokálně | Ukládat horoskop a jeho příznak historie až po potvrzení, vázané na účet. | Marker se zapisuje až po ID uložení a obsahuje účet. Selhání lze zopakovat; 19 cílených testů horoskopu + lint. |
 | F04 | P2 · Připraveno lokálně | Cíleně prověřit změnu účtu během odpovědi horoskopu/koule. | Horoskop i koule chrání vlastníka a revizi požadavku včetně A→B→A; regrese pokrývají generování, historii, psaní odpovědi i odložené akce. Bez tvrzení o doloženém incidentu v produkci. |
 | C01 | P2 · Čeká | Vyhodnotit propojené toky nabídka → formulář → platba → doručení a skutečnou zpětnou vazbu. | Odlišené osoby/toky/eventy, deduplikované objednávky a doložená zpětná vazba. Oslovení zákazníků se neodesílá bez konkrétního zadání. |
-| S01 | P2 · Čeká | Rozpad dotazů pro tarot láska, ano/ne, slovenské vstupy a rostoucí numerologii. | Vybrané konkrétní dotazy a užitečné úpravy existujících URL; žádná domnělá kanibalizace bez důkazů. |
+| S01 | P2 · Hotovo — analýza; oprava lokálně | Rozpad dotazů pro tarot láska, ano/ne, slovenské vstupy a rostoucí numerologii. | Přesné GSC porovnání čtyř URL a vybraných dotazů v gsc-query-review-2026-10-30.md/.json. Zachováno rostoucí zaměření numerologie a vztahové dotazy; opraven nesoulad ještě ne / NEJASNÉ v českém ano/ne. |
 | S02 | P2 · Připraveno lokálně | Redakčně opravit doložená ochranná/léčivá tvrzení a nevysvětlená procenta statických párových stránek. | Opraveny dva FAQ texty i JSON-LD; z párových stránek odstraněna nepodložená procenta, zachován obsah a URL. 144 stránek prošlo kontrolou JSON-LD/canonical/H1 a idempotence skriptu. Desktopový i mobilní náhled nyní ověřen; mobil 390 px bez přetékání. Odkaz vede do formuláře se zachovaným kontextem dvojice. |
 | S03 | P2 · Čeká | Rozdělit zbývající neindexované veřejné kandidáty podle hodnoty a rodin. | Oddělený záměrný archiv/parametry od užitečných stránek; zlepšený obsah a relevantní odkazy, ne odstranění všech noindex. |
 | L01 | P2 · Připraveno lokálně | Zobrazit skutečnou přesnost a rozpoznání místa v lokalizovaném natálu. | SK/PL/EN vysvětlují skutečný stupeň přesnosti a nepřítomný ascendent. 12 scénářů + anglická regrese; výpočty beze změny. |
@@ -40,7 +40,7 @@ Aktualizace: 30. 10. 2026. Tento seznam řídí navazující práci podle [celko
 
 ## Pravidla průběžné aktualizace
 
-**Právě dokončený krok:** 30. 10. Dokončena lokální vizuální kontrola S02 a oprava kvóty náhradních odpovědí F02. Analýza pokrytí M02 je zapsaná, živá data a nasazení zůstávají samostatným krokem. Podrobný [checkpoint](audit-fixes-2026-10-30.md).
+**Právě dokončený krok:** 30. 10. S01 — analyzovány skutečné dotazy čtyř vstupů za shodná období; jedna doložená oprava názvu výsledku v metadatech, průvodci a FAQ. [Podklad a rozhodnutí](gsc-query-review-2026-10-30.md). Změna je lokální; produkce ani růst nejsou potvrzené.
 
 - Při dokončení kroku doplnit datum, soubory/commit, rozsah ověření a lokální/produkční stav. Zelený test není automaticky dokončený produktový nebo obchodní úkol.
 - Nenasazovat rozpracované úkoly společně jen proto, že jsou v tomto seznamu. Produkci ověřovat pro přesný commit podle deploy guardu.
