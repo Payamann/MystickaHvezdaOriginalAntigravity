@@ -8,6 +8,12 @@
             ascendant: 'Ascendent',
             unavailable: 'Nedá sa určiť',
             more: 'Zobraziť ďalšie planéty',
+            precision: {
+                birth_time_location_timezone: 'Použitý je zadaný čas narodenia a časové pásmo rozpoznaného miesta.',
+                date_noon_location_timezone: 'Presný čas narodenia chýba alebo nie je platný. Výpočet používa poludnie v časovom pásme rozpoznaného miesta; ascendent a domy nie sú dostupné.',
+                birth_time_utc: 'Miesto alebo jeho časové pásmo sa nepodarilo spoľahlivo určiť. Zadaný čas sa interpretuje v UTC; ascendent a domy nie sú dostupné.',
+                date_noon_utc: 'Čas ani časové pásmo narodenia nie sú spoľahlivo určené. Výpočet používa poludnie UTC; ascendent a domy nie sú dostupné.'
+            },
             note: 'Výsledok je orientačná, symbolická mapa. Na výpočet ascendentu a domov je potrebný čo najpresnejší čas a rozpoznané miesto narodenia.',
             error: 'Kartu sa teraz nepodarilo vypočítať. Skontroluj údaje a skús to znova.',
             signs: {
@@ -28,6 +34,12 @@
             ascendant: 'Ascendent',
             unavailable: 'Nie można określić',
             more: 'Pokaż pozostałe planety',
+            precision: {
+                birth_time_location_timezone: 'Użyto podanej godziny urodzenia i strefy czasowej rozpoznanego miejsca.',
+                date_noon_location_timezone: 'Brakuje prawidłowej godziny urodzenia. Obliczenia wykorzystują południe w strefie czasowej rozpoznanego miejsca; ascendent i domy są niedostępne.',
+                birth_time_utc: 'Nie udało się wiarygodnie ustalić miejsca lub jego strefy czasowej. Podana godzina jest interpretowana jako UTC; ascendent i domy są niedostępne.',
+                date_noon_utc: 'Godzina i strefa czasowa urodzenia nie zostały wiarygodnie ustalone. Obliczenia wykorzystują południe UTC; ascendent i domy są niedostępne.'
+            },
             note: 'Wynik to orientacyjna, symboliczna mapa. Do obliczenia ascendentu i domów potrzebna jest możliwie dokładna godzina oraz rozpoznane miejsce urodzenia.',
             error: 'Nie udało się teraz obliczyć kosmogramu. Sprawdź dane i spróbuj ponownie.',
             signs: {
@@ -48,6 +60,12 @@
             ascendant: 'Ascendant',
             unavailable: 'Could not be determined',
             more: 'Show other planets',
+            precision: {
+                birth_time_location_timezone: 'The calculation uses your entered birth time and the time zone of the recognized location.',
+                date_noon_location_timezone: 'A valid birth time is missing. The calculation uses noon in the recognized location’s time zone; the ascendant and houses are unavailable.',
+                birth_time_utc: 'The location or its time zone could not be reliably determined. Your entered time is interpreted as UTC; the ascendant and houses are unavailable.',
+                date_noon_utc: 'The birth time and time zone could not be reliably determined. The calculation uses noon UTC; the ascendant and houses are unavailable.'
+            },
             note: 'This is an approximate, symbolic map. Calculating the ascendant and houses requires the most accurate birth time and a recognized birth location available.',
             error: 'Your chart could not be calculated right now. Check your details and try again.',
             signs: {
@@ -121,6 +139,14 @@
         heading.textContent = language.title;
         section.appendChild(heading);
 
+        const precisionText = language.precision[chart.engine?.precision];
+        if (precisionText) {
+            const precision = document.createElement('p');
+            precision.className = 'natal-local-result__note';
+            precision.textContent = precisionText;
+            section.appendChild(precision);
+        }
+
         const facts = document.createElement('dl');
         facts.className = 'natal-local-result__facts';
         const core = [
@@ -134,7 +160,9 @@
             const term = document.createElement('dt');
             term.textContent = label;
             const value = document.createElement('dd');
-            const planet = id === 'ascendant' ? chart.houses?.ascendant : chart.planets?.[id];
+            const planet = id === 'ascendant'
+                ? (chart.houses?.available ? chart.houses.ascendant : null)
+                : chart.planets?.[id];
             value.textContent = planet ? formatPlacement(planet, language) : language.unavailable;
             entry.append(term, value);
             facts.appendChild(entry);

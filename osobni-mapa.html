@@ -110,7 +110,9 @@
             <div class="pm-status__inner pm-status__inner--success">
                 <i data-lucide="sparkles" aria-hidden="true"></i>
                 <h2>Platba proběhla úspěšně</h2>
-                <p>Tvoje Osobní mapa se právě připravuje. PDF pošleme na e-mail během několika minut. Pokud nedorazí do 20 minut, zkontroluj složku hromadná pošta nebo spam.</p>
+                <p id="pdf-delivery-message">Platba je potvrzená. Stav doručení ověříme podle objednávky.</p>
+                <p>Pokud PDF nenajdeš ani ve spamu nebo hromadné poště, napiš na <a href="mailto:support@mystickahvezda.cz">support@mystickahvezda.cz</a>. Neplať znovu.</p>
+                <button id="pdf-delivery-retry" type="button" class="pm-button pm-button--ghost">Obnovit stav doručení</button>
                 <div class="pm-status__actions">
                     <a class="pm-button pm-button--primary" href="/cenik.html?source=personal_map_success&feature=premium_membership&plan=pruvodce" data-success-upsell>
                         <i data-lucide="sparkles" aria-hidden="true"></i>

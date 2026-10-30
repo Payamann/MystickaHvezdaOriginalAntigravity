@@ -53,7 +53,7 @@ test('birth chart renders English planet and sign names for an English page', as
             moon: { sign: { id: 'taurus' }, degreeText: '20°' },
             mercury: { sign: { id: 'gemini' }, degreeText: '3°' }
         },
-        houses: { ascendant: { sign: { id: 'cancer' }, degreeText: '5°' } }
+        houses: { available: true, ascendant: { sign: { id: 'cancer' }, degreeText: '5°' } }
     };
     const context = vm.createContext({
         document,

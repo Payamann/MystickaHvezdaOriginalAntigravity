@@ -4,7 +4,23 @@ import { createHash, timingSafeEqual } from 'node:crypto';
 export const pdfProofHash = value => createHash('sha256').update(value).digest('hex');
 export const pdfProofCookie = sessionId => `mh_pdf_${pdfProofHash(sessionId).slice(0, 16)}`;
 
-export function createPdfCheckoutResultRouter(getStripeClient) {
+function deliveryStatus(order, session, sessionId) {
+    if (!order || session.id !== sessionId || order.id !== session.metadata?.orderId
+        || order.stripe_session_id !== sessionId || order.product_type !== 'personal_map'
+        || order.product_id !== 'osobni_mapa_2026') return 'unknown';
+    // A provider receipt proves acceptance for sending, not arrival in the inbox.
+    if (order.email_id || order.status === 'fulfilled') return 'fulfilled';
+    // Only reconciliation's exhausted-retry state is terminal. A failed worker
+    // attempt leaves the order retryable and must not become a customer failure.
+    if (order.status === 'failed') return 'failed';
+    const fulfillment = order.payload?.personalMapFulfillment;
+    if (fulfillment?.version === 1 && ['pending', 'generating', 'generated', 'ready', 'sending'].includes(fulfillment.state)) {
+        return 'preparing';
+    }
+    return 'unknown';
+}
+
+export function createPdfCheckoutResultRouter(getStripeClient, { getOrder = async () => null } = {}) {
     const router = express.Router();
     router.get('/checkout-result', async (req, res) => {
         res.set('Cache-Control', 'no-store');
@@ -22,8 +38,14 @@ export function createPdfCheckoutResultRouter(getStripeClient) {
             const paid = session.status === 'complete' && session.payment_status === 'paid'
                 && payment?.status === 'succeeded' && payment.currency === 'czk'
                 && Number.isSafeInteger(payment.amount_received) && payment.amount_received > 0;
+            let delivery = 'unknown';
+            const orderId = session.metadata?.orderId;
+            if (paid && typeof orderId === 'string' && orderId.length > 0 && orderId.length <= 80) {
+                try { delivery = deliveryStatus(await getOrder(orderId), session, id); }
+                catch { /* Delivery lookup failure does not invalidate verified payment. */ }
+            }
             return res.json({ success: true, result: {
-                status: paid ? 'paid' : 'pending', product_id: 'osobni_mapa_2026',
+                status: paid ? 'paid' : 'pending', delivery_status: delivery, product_id: 'osobni_mapa_2026',
                 transaction_id: paid ? payment.id : null,
                 value: paid ? payment.amount_received / 100 : 0, currency: 'CZK'
             } });

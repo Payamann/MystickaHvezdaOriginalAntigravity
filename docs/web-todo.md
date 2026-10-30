@@ -1,6 +1,6 @@
 # Mystická Hvězda — aktuální seznam práce
 
-Aktualizace: 28. 10. 2026. Tento seznam řídí navazující práci podle [celkového auditu](comprehensive-audit-2026-10-28.md). Starší designové checklisty jsou historický podklad, nikoli automaticky znovu otevřené úkoly.
+Aktualizace: 30. 10. 2026. Tento seznam řídí navazující práci podle [celkového auditu](comprehensive-audit-2026-10-28.md). Starší designové checklisty jsou historický podklad, nikoli automaticky znovu otevřené úkoly.
 
 **Stavy:** Hotovo na produkci = ověřené vydání; Hotovo = dokončený výstup/analýza; Rozpracováno = ještě zbývá uvedená práce; Připraveno lokálně = implementace a cílené kontroly prošly, ale produkce není potvrzená; Čeká = nezačaté nebo závislé na předchozím kroku. Technická kontrola není doklad růstu nebo rentability.
 
@@ -22,25 +22,25 @@ Aktualizace: 28. 10. 2026. Tento seznam řídí navazující práci podle [celko
 |---|---|---|---|
 | M01 | P1 · Připraveno lokálně | Oddělit interní `source` od akvizice v adaptéru GA. | Zdroj a veřejný bundle opraveny, 8 cílených testů + lint prošly; souhlas, fronta a nákupní ochrany zachovány. Zbývá produkční vydání a ověření nových GA dat. [Checkpoint](analytics-source-fix-2026-10-28.md) |
 | M02 | P1 · Čeká | Dohledat pokrytí existujícího `purchase`: návrat z platby, souhlas, jednorázové produkty vs. obnovení členství. | Popsané limity a porovnání se Stripe/objednávkami; žádné falešné nákupy z URL, nulové zkoušky nebo samotného aktivního členství. Nový serverový přenos není automaticky nutný. |
-| M03 | P1 · Čeká | Opravit ztrátu nulové faktury v metadatech webhooku (`amount_paid || null`). | Číselná nula se zachová, souhrn ji odliší od neznámé částky; producentový test, bez skutečné platby a bez označení nuly za tržbu. |
+| M03 | P1 · Připraveno lokálně | Opravit ztrátu nulové faktury v metadatech webhooku (`amount_paid || null`). | Webhook zachovává nulu i v události obnovené platby. Podepsaný test prošel pro 0 / 19900 / chybějící částku; 16 testů plateb a souhrnu + lint. Bez skutečné platby; nula není tržba. |
 | B01 | P2 · Čeká | Prověřit dvě historické neshody stavů Stripe/DB a připravit cílenou opravu synchronizace. | Aktuální stav zdroje platby se správně promítá do reportu; žádné opětovné zapnutí zrušeného předplatného nebo platby. |
-| B02 | P2 · Čeká | Ukázat skutečný stav doručení Osobní mapy po návratu z platby. | Bezpečně rozlišené preparing/fulfilled/failed a cesta na podporu; ověřit modelovými objednávkami. |
-| F01 | P2 · Čeká | Sjednotit bezplatnou kvótu koule se serverem. | První i další pokus ukazují skutečný nárok; přihlášený/odhlášený stav a vyčerpaný limit mají cílené ověření. |
-| F02 | P2 · Čeká | Pravdivě označit náhradní obsah při výpadku AI u koule a horoskopu. | Návštěvník pozná univerzální náhradní podnět; prověřena spotřeba kvóty a zachování užitečného výsledku. |
-| F03 | P2 · Čeká | Ukládat horoskop a jeho příznak historie až po potvrzení, vázané na účet. | Neúspěšný save lze zopakovat; výsledek zůstane viditelný; starý účet neoznačí historii novému. |
-| F04 | P2 · Čeká na reprodukci | Cíleně prověřit změnu účtu během odpovědi horoskopu/koule. | Opožděný výsledek se nezobrazí ani neuloží jinému účtu; teprve podle výsledku určit změnu. Není to zatím potvrzená zranitelnost. |
+| B02 | P2 · Připraveno lokálně | Ukázat skutečný stav doručení Osobní mapy po návratu z platby. | Po ověření platby a browser proof se ověří vazba objednávky/session/produktu. Zobrazen preparing/fulfilled/failed/unknown, podpora a obnova bez další purchase události; 25 serverových + 8 klientských testů. |
+| F01 | P2 · Připraveno lokálně | Sjednotit bezplatnou kvótu koule se serverem. | Odstraněn neověřený zůstatek 3 a klientská blokace; dostupnost rozhoduje server. Regrese ověřuje registraci místo placeného checkoutu i při starém čítači. |
+| F02 | P2 · Částečně připraveno | Pravdivě označit náhradní obsah při výpadku AI u koule a horoskopu. | Náhradní odpověď je označena ve 4 jazycích a historii. Zbývá případná úprava kvóty: server nyní započítává i náhradní odpověď. |
+| F03 | P2 · Připraveno lokálně | Ukládat horoskop a jeho příznak historie až po potvrzení, vázané na účet. | Marker se zapisuje až po ID uložení a obsahuje účet. Selhání lze zopakovat; 19 cílených testů horoskopu + lint. |
+| F04 | P2 · Připraveno lokálně | Cíleně prověřit změnu účtu během odpovědi horoskopu/koule. | Horoskop i koule chrání vlastníka a revizi požadavku včetně A→B→A; regrese pokrývají generování, historii, psaní odpovědi i odložené akce. Bez tvrzení o doloženém incidentu v produkci. |
 | C01 | P2 · Čeká | Vyhodnotit propojené toky nabídka → formulář → platba → doručení a skutečnou zpětnou vazbu. | Odlišené osoby/toky/eventy, deduplikované objednávky a doložená zpětná vazba. Oslovení zákazníků se neodesílá bez konkrétního zadání. |
 | S01 | P2 · Čeká | Rozpad dotazů pro tarot láska, ano/ne, slovenské vstupy a rostoucí numerologii. | Vybrané konkrétní dotazy a užitečné úpravy existujících URL; žádná domnělá kanibalizace bez důkazů. |
 | S02 | P2 · Čeká | Redakčně opravit doložená ochranná/léčivá tvrzení a nevysvětlená procenta statických párových stránek. | Pravdivý viditelný text, schema a generátor souhlasí; bez plošného přepisu všeho. |
 | S03 | P2 · Čeká | Rozdělit zbývající neindexované veřejné kandidáty podle hodnoty a rodin. | Oddělený záměrný archiv/parametry od užitečných stránek; zlepšený obsah a relevantní odkazy, ne odstranění všech noindex. |
-| L01 | P2 · Čeká | Zobrazit skutečnou přesnost a rozpoznání místa v lokalizovaném natálu. | SK/PL/EN výsledek rozlišuje rozpoznané město a nouzový UTC; dva mock payloady. |
+| L01 | P2 · Připraveno lokálně | Zobrazit skutečnou přesnost a rozpoznání místa v lokalizovaném natálu. | SK/PL/EN vysvětlují skutečný stupeň přesnosti a nepřítomný ascendent. 12 scénářů + anglická regrese; výpočty beze změny. |
 | L02 | P2 · Čeká | Sjednotit objevitelnost EN odkazu na české homepage. | Jazykové odkazy vedou na dostupný protějšek nebo jasně označený úvod. |
 | L03 | P2 · Čeká | Dokončit jednu slovenskou cestu včetně výsledků, chyb a případné nabídky. | Konzistentní jazyk od vstupu k výsledku/podpoře; CZ zůstává hlavní. PL/EN rozšiřovat postupně podle dat. |
 | V01 | P2 · Čeká | Pořídit aktuální mobilní výkonnostní baseline hlavních vstupů. | Reprodukovatelný laboratorní report; field CWV uvést jen z dostupných dat. Předchozí PageSpeed API429 nebyl výsledek měření. |
 
 ## Pravidla průběžné aktualizace
 
-**Právě dokončený krok:** 28. 10. M01 — interní zdroj se přejmenuje pouze v GA kopii payloadu. Backend, Mixpanel a Segment dostávají původní `source`. Dva nové regresní testy před změnou skutečně selhaly na nechtěném GA `source`; po opravě prošla celá zasažená sada. Hotové nákupní ochrany se nepřepisovaly. Historické GA údaje se zpětně neopravují a aktuální změna ještě není v produkci.
+**Právě dokončený krok:** 30. 10. M03, F01, F03/F04 a L01 jsou ověřeny lokálně; F02 má označení náhradního obsahu, kvóta ještě zbývá. B02 nyní bezpečně rozlišuje stav doručení. Podrobný [checkpoint](audit-fixes-2026-10-30.md). Produkční nasazení těchto změn není potvrzené.
 
 - Při dokončení kroku doplnit datum, soubory/commit, rozsah ověření a lokální/produkční stav. Zelený test není automaticky dokončený produktový nebo obchodní úkol.
 - Nenasazovat rozpracované úkoly společně jen proto, že jsou v tomto seznamu. Produkci ověřovat pro přesný commit podle deploy guardu.

@@ -222,6 +222,17 @@
         }
     }
 
+    function renderDeliveryStatus(status) {
+        const messages = {
+            preparing: 'Tvoje Osobní mapa se připravuje k odeslání e-mailem. Stav můžeš za chvíli obnovit.',
+            fulfilled: 'PDF jsme předali e-mailové službě k odeslání. Zkontroluj doručenou poštu, spam i hromadnou poštu.',
+            failed: 'Doručení se nepodařilo dokončit. Napiš nám na podporu, abychom objednávku prověřili.',
+            unknown: 'Platba je potvrzená, ale stav doručení teď nemůžeme ověřit. Zkus stav obnovit nebo napiš na podporu.'
+        };
+        const message = document.getElementById('pdf-delivery-message');
+        if (message) message.textContent = messages[status] || messages.unknown;
+    }
+
     let verifyingPayment = false;
     let verifiedPayment = false;
     async function initStatusBanners() {
@@ -231,11 +242,13 @@
         const attribution = getAttribution();
 
         if (status === 'success') {
-            if (verifyingPayment || verifiedPayment) return;
+            if (verifyingPayment) return;
             verifyingPayment = true;
             const notice = document.getElementById('bannerVerification');
             const retry = document.getElementById('pdf-verification-retry');
-            notice?.classList.add('visible');
+            if (!verifiedPayment) notice?.classList.add('visible');
+            const deliveryRetry = document.getElementById('pdf-delivery-retry');
+            if (deliveryRetry) { deliveryRetry.disabled = true; deliveryRetry.onclick = initStatusBanners; }
             document.getElementById('order')?.setAttribute('hidden', 'true');
             if (retry) { retry.hidden = true; retry.onclick = initStatusBanners; }
             const controller = new AbortController();
@@ -250,14 +263,17 @@
                     if (body?.success) result = body.result;
                 }
             } catch { /* Never infer payment success from a failed lookup. */ }
-            finally { clearTimeout(timer); verifyingPayment = false; }
+            finally { clearTimeout(timer); verifyingPayment = false; if (deliveryRetry) deliveryRetry.disabled = false; }
             if (result?.status !== 'paid' || result.product_id !== PRODUCT.id || !result.transaction_id
                 || !Number.isFinite(result.value) || result.value <= 0 || result.currency !== 'CZK') {
+                if (verifiedPayment) { renderDeliveryStatus('unknown'); return; }
                 const message = document.getElementById('pdf-verification-message');
                 if (message) message.textContent = 'Platbu zatím nemůžeme potvrdit. Neplať znovu: ověř stav později nebo napiš na support@mystickahvezda.cz. PDF se po potvrzené platbě doručuje e-mailem i bez této stránky.';
                 if (retry) retry.hidden = false;
                 return;
             }
+            renderDeliveryStatus(result.delivery_status);
+            if (verifiedPayment) return;
             verifiedPayment = true;
             notice?.classList.remove('visible');
             clearOrderDraft();

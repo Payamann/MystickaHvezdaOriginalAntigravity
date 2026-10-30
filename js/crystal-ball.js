@@ -5,7 +5,6 @@
 
 let questionHistory = [];
 const COOLDOWN_SECONDS = 10;
-const CRYSTAL_DAILY_LIMIT = 3;
 const CRYSTAL_UI_COPY = {
     cs: {
         cooldown: seconds => `Koule čerpá energii (${seconds}s)`,
@@ -19,6 +18,7 @@ const CRYSTAL_UI_COPY = {
         registrationMessage: 'Zaregistruj se zdarma a ptej se dál — účet zdarma dává 3 otázky denně.',
         memberLimit: 'Ve členství můžeš pokračovat v rámci provozních limitů.',
         silent: 'Hvězdy mlčí...',
+        fallbackNotice: 'Osobní odpověď se teď nepodařilo vytvořit. Toto je náhradní obecný podnět k zamyšlení.',
         disconnected: 'Spojení přerušeno.'
     },
     sk: {
@@ -33,6 +33,7 @@ const CRYSTAL_UI_COPY = {
         registrationMessage: 'Zaregistruj sa zadarmo a pýtaj sa ďalej — bezplatný účet ponúka 3 otázky denne.',
         memberLimit: 'V členstve môžeš pokračovať v rámci prevádzkových limitov.',
         silent: 'Hviezdy mlčia...',
+        fallbackNotice: 'Osobnú odpoveď sa teraz nepodarilo vytvoriť. Toto je náhradný všeobecný podnet k zamysleniu.',
         disconnected: 'Spojenie bolo prerušené.'
     },
     pl: {
@@ -47,6 +48,7 @@ const CRYSTAL_UI_COPY = {
         registrationMessage: 'Utwórz bezpłatne konto i pytaj dalej — konto pozwala zadać 3 pytania dziennie.',
         memberLimit: 'W ramach członkostwa możesz korzystać z usługi zgodnie z limitami operacyjnymi.',
         silent: 'Kula nie odpowiada w tej chwili. Spróbuj ponownie za moment.',
+        fallbackNotice: 'Nie udało się teraz przygotować osobistej odpowiedzi. To zastępcza, ogólna wskazówka do refleksji.',
         disconnected: 'Połączenie zostało przerwane.'
     },
     en: {
@@ -61,6 +63,7 @@ const CRYSTAL_UI_COPY = {
         registrationMessage: 'Create a free account to continue. A free account includes 3 questions per day. Account setup and related messages are currently in Czech.',
         memberLimit: 'Membership use is subject to service limits. Account setup, plans, payment, and membership messages are currently in Czech; prices are shown in Czech koruna.',
         silent: 'The stars are quiet…',
+        fallbackNotice: 'Your personal answer could not be generated right now. This is a general fallback prompt for reflection.',
         disconnected: 'The connection was interrupted. Please try again.'
     }
 };
@@ -97,28 +100,6 @@ function initCrystalBall() {
         pricingUrl.searchParams.set('entry_source', source);
         pricingUrl.searchParams.set('entry_feature', 'kristalova_koule');
         return `${pricingUrl.pathname}${pricingUrl.search}`;
-    }
-
-    function getDailyUsageKey() {
-        return `mh_daily_crystal_${new Date().toDateString()}`;
-    }
-
-    function getLocalDailyUsage() {
-        const parsed = Number.parseInt(localStorage.getItem(getDailyUsageKey()) || '0', 10);
-        return Number.isFinite(parsed) ? Math.max(0, parsed) : 0;
-    }
-
-    function updateFreemiumCounter() {
-        const countEl = document.getElementById('freemium-count');
-        if (!countEl) return;
-
-        const remaining = Math.max(0, CRYSTAL_DAILY_LIMIT - getLocalDailyUsage());
-        countEl.textContent = `${remaining} / ${CRYSTAL_DAILY_LIMIT}`;
-    }
-
-    function incrementLocalDailyUsage() {
-        localStorage.setItem(getDailyUsageKey(), String(getLocalDailyUsage() + 1));
-        updateFreemiumCounter();
     }
 
     function startCrystalCheckout(source, authMode = 'register') {
@@ -191,17 +172,38 @@ function initCrystalBall() {
 
     // Initial check
     updateCooldownUI();
-    updateFreemiumCounter();
+
+    let requestRevision = 0;
+    const currentOwner = () => window.Auth?.isLoggedIn?.() ? window.Auth?.user?.id || null : null;
+    let observedOwner = currentOwner();
+    function clearReading() {
+        window.currentCrystalReadingId = null;
+        answerContainer?.classList.remove('visible');
+        answerContainer?.querySelectorAll('.favorite-reading-action').forEach(el => el.remove());
+        if (answerText) answerText.textContent = '';
+        setResetVisible(false);
+    }
+    function invalidateOwner() {
+        const owner = currentOwner();
+        if (owner === observedOwner) return;
+        observedOwner = owner;
+        requestRevision += 1;
+        questionHistory = [];
+        isThinking = false;
+        clearReading();
+        if (questionInput) questionInput.value = '';
+        ballContainer.classList.remove('shaking');
+        updateCooldownUI();
+    }
+    document.addEventListener('auth:changed', invalidateOwner);
+    window.addEventListener('storage', event => {
+        if (event.key === 'auth_user') invalidateOwner();
+    });
 
     // Function to ask the oracle
     async function askOracle(question) {
+        invalidateOwner();
         const isLoggedIn = Boolean(window.Auth?.isLoggedIn?.());
-
-        if (!isLoggedIn && getLocalDailyUsage() >= CRYSTAL_DAILY_LIMIT) {
-            window.Auth?.showToast?.(copy.limitTitle, copy.anonymousLimit, 'info');
-            startCrystalCheckout('crystal_ball_limit_gate', 'register');
-            return;
-        }
 
         const remaining = getRemainingCooldown();
         if (remaining > 0) return; // Prevent spam
@@ -213,7 +215,15 @@ function initCrystalBall() {
             return;
         }
 
+        const ownerId = currentOwner();
+        const revision = ++requestRevision;
+        const history = questionHistory.slice(-5);
+        const isCurrent = () => {
+            invalidateOwner();
+            return revision === requestRevision && ownerId === currentOwner();
+        };
         isThinking = true;
+        clearReading();
 
         // Reset state
         if (answerContainer) answerContainer.classList.remove('visible');
@@ -226,6 +236,7 @@ function initCrystalBall() {
 
         try {
             const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
+            if (!isCurrent()) return;
             const response = await fetch(`${window.API_CONFIG?.BASE_URL || '/api'}/crystal-ball`, {
                 method: 'POST',
                 credentials: 'include',
@@ -235,12 +246,13 @@ function initCrystalBall() {
                 },
                 body: JSON.stringify({
                     question: question.trim(),
-                    history: questionHistory.slice(-5),
+                    history,
                     lang: locale
                 })
             });
 
             const data = await response.json();
+            if (!isCurrent()) return;
 
             ballContainer.classList.remove('shaking');
 
@@ -250,13 +262,10 @@ function initCrystalBall() {
 
             if (data.success) {
                 questionHistory.push(question.trim());
-                if (!isLoggedIn) {
-                    incrementLocalDailyUsage();
-                } else {
-                    updateFreemiumCounter();
-                }
                 if (answerContainer) answerContainer.classList.add('visible');
-                if (answerText) await typewriterEffect(answerText, data.response);
+                const displayedAnswer = data.fallback === true ? `${copy.fallbackNotice}\n\n${data.response}` : data.response;
+                if (answerText) await typewriterEffect(answerText, displayedAnswer, isCurrent);
+                if (!isCurrent()) return;
                 window.MH_ANALYTICS?.trackAction?.('crystal_ball_answer_viewed', {
                     feature: 'kristalova_koule',
                     source: new URLSearchParams(window.location.search).get('source') || 'crystal_ball_question',
@@ -265,30 +274,37 @@ function initCrystalBall() {
                 });
 
                 // Save to history if logged in
-                if (isLoggedIn && window.Auth?.saveReading) {
-                    const saveResult = await window.Auth.saveReading('crystal-ball', {
-                        question: question.trim(),
-                        answer: data.response
-                    });
+                if (ownerId && window.Auth?.saveReading) {
+                    try {
+                        const saveResult = await window.Auth.saveReading('crystal-ball', {
+                            question: question.trim(),
+                            answer: data.response,
+                            ...(data.fallback === true ? { fallback: true } : {})
+                        }, ownerId);
+                        if (!isCurrent()) return;
 
-                    // Store reading ID and add favorite button
-                    if (saveResult && saveResult.id) {
-                        window.currentCrystalReadingId = saveResult.id;
+                        // Store reading ID and add favorite button
+                        if (saveResult && saveResult.id) {
+                            window.currentCrystalReadingId = saveResult.id;
 
-                        // Add favorite button after answer
-                        const favoriteBtn = document.createElement('div');
-                        favoriteBtn.className = 'text-center favorite-reading-action';
-                        favoriteBtn.innerHTML = `
-                            <button id="favorite-crystal-btn" class="btn btn--glass favorite-reading-action__button">
-                                <span class="favorite-icon">⭐</span> ${copy.favorite}
-                            </button>
-                        `;
-                        answerContainer.appendChild(favoriteBtn);
+                            // Add favorite button after answer
+                            const favoriteBtn = document.createElement('div');
+                            favoriteBtn.className = 'text-center favorite-reading-action';
+                            favoriteBtn.innerHTML = `
+                                <button id="favorite-crystal-btn" class="btn btn--glass favorite-reading-action__button">
+                                    <span class="favorite-icon">⭐</span> ${copy.favorite}
+                                </button>
+                            `;
+                            answerContainer.appendChild(favoriteBtn);
 
-                        // Attach listener
-                        document.getElementById('favorite-crystal-btn').addEventListener('click', async () => {
-                            await window.toggleFavorite(window.currentCrystalReadingId, 'favorite-crystal-btn');
-                        });
+                            // Attach listener
+                            document.getElementById('favorite-crystal-btn').addEventListener('click', async () => {
+                                if (!isCurrent()) return;
+                                await window.toggleFavorite(window.currentCrystalReadingId, 'favorite-crystal-btn');
+                            });
+                        }
+                    } catch (error) {
+                        console.warn('Crystal ball history save failed:', error);
                     }
                 }
             } else {
@@ -299,6 +315,7 @@ function initCrystalBall() {
                     window.MH_ANALYTICS?.trackCTA?.('crystal_ball_register_gate', { feature: 'kristalova_koule' });
                     const backTo = encodeURIComponent(window.location.pathname);
                     setTimeout(() => {
+                        if (!isCurrent()) return;
                         window.location.href = `/prihlaseni.html?mode=register&source=crystal_ball_register_gate&feature=kristalova_koule&redirect=${backTo}`;
                     }, 1600);
                 } else if (response.status === 402 || response.status === 403 || (data.error && data.error.toLowerCase().includes('limit'))) {
@@ -312,6 +329,7 @@ function initCrystalBall() {
             }
 
         } catch (error) {
+            if (!isCurrent()) return;
             console.error('Oracle Error:', error);
             ballContainer.classList.remove('shaking');
             if (answerContainer) answerContainer.classList.add('visible');
@@ -320,15 +338,17 @@ function initCrystalBall() {
 
         // Show reset btn
         setTimeout(() => {
+            if (!isCurrent()) return;
             setResetVisible(true);
             isThinking = false;
         }, 500);
     }
 
-    async function typewriterEffect(element, text) {
+    async function typewriterEffect(element, text, isCurrent) {
         element.textContent = '';
         const chars = text.split('');
         for (let i = 0; i < chars.length; i++) {
+            if (!isCurrent()) return;
             element.textContent += chars[i];
             await new Promise(resolve => setTimeout(resolve, 30));
         }
@@ -361,6 +381,10 @@ function initCrystalBall() {
 
     if (resetBtn) {
         resetBtn.addEventListener('click', () => {
+            requestRevision += 1;
+            isThinking = false;
+            clearReading();
+            ballContainer.classList.remove('shaking');
             if (answerContainer) {
                 answerContainer.classList.remove('visible');
                 // Remove accumulated favorite buttons

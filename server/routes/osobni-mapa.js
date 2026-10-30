@@ -5,7 +5,7 @@ import Stripe from 'stripe';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { createIdempotentPersonalMapOrderInput, attachStripeSessionToOrderInput, listRecentLegacyOneTimeOrderInputs, markOneTimeOrderInputExpired } from '../services/one-time-orders.js';
+import { getOneTimeOrderInput, createIdempotentPersonalMapOrderInput, attachStripeSessionToOrderInput, listRecentLegacyOneTimeOrderInputs, markOneTimeOrderInputExpired } from '../services/one-time-orders.js';
 import { recordFunnelEvent } from '../payment.js';
 import { createPersonalMapPeriod } from '../services/personal-map-period.js';
 import { getTodayIsoDate } from '../../js/utils/numerology-logic.js';
@@ -15,7 +15,7 @@ const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.join(__dirname, '../.env') });
 
 const router = express.Router();
-router.use(createPdfCheckoutResultRouter(getStripeClient));
+router.use(createPdfCheckoutResultRouter(getStripeClient, { getOrder: getOneTimeOrderInput }));
 const APP_URL = process.env.APP_URL || 'http://localhost:3001';
 const LIVE_PERSONAL_MAP_PRICE_ID = 'price_1TRAzfAo8bdbnsKa82dgiM61';
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY || '';
