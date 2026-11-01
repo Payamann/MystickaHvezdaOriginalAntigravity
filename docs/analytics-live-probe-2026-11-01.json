@@ -1,0 +1,71 @@
+{
+  "checkedAt": "2026-11-01T16:10:30.577Z",
+  "method": "Public GET, fetched bundle executed only in isolated VM with mock gtag/fetch; no production event sent",
+  "pages": [
+    {
+      "page": "/",
+      "status": 200,
+      "asset": "/js/dist/analytics.mh-da63d38323def5a9.js",
+      "assetStatus": 200,
+      "hash": "da63d38323def5a9",
+      "events": [
+        {
+          "name": "page_view",
+          "source": null,
+          "interaction_source": null
+        },
+        {
+          "name": "reading_complete",
+          "source": null,
+          "interaction_source": "tarot_yes_no_result"
+        }
+      ],
+      "safe": true
+    },
+    {
+      "page": "/tarot-ano-ne.html",
+      "status": 200,
+      "asset": "/js/dist/analytics.mh-da63d38323def5a9.js",
+      "assetStatus": 200,
+      "hash": "da63d38323def5a9",
+      "events": [
+        {
+          "name": "page_view",
+          "source": null,
+          "interaction_source": null
+        },
+        {
+          "name": "seo_landing_viewed",
+          "source": null,
+          "interaction_source": "seo_tarot_yes_no"
+        },
+        {
+          "name": "reading_complete",
+          "source": null,
+          "interaction_source": "tarot_yes_no_result"
+        }
+      ],
+      "safe": true
+    },
+    {
+      "page": "/sk/tarot-ano-nie.html",
+      "status": 200,
+      "asset": "/js/dist/analytics.mh-da63d38323def5a9.js",
+      "assetStatus": 200,
+      "hash": "da63d38323def5a9",
+      "events": [
+        {
+          "name": "page_view",
+          "source": null,
+          "interaction_source": null
+        },
+        {
+          "name": "reading_complete",
+          "source": null,
+          "interaction_source": "tarot_yes_no_result"
+        }
+      ],
+      "safe": true
+    }
+  ]
+}
