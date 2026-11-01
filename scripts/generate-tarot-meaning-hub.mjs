@@ -269,6 +269,14 @@ function buildDetailPage(name, card, relatedCards = []) {
     const meaning = getEditorialTheme(name, card);
     const seo = seoOverrides[name] || {};
     const interpretation = seo.summary || editorialSummaries[name] || card.interpretation || getFirstSentence(meaning);
+    const faqInterpretation = seo.faqInterpretation || `Tarotová karta ${name} není sama o sobě dobrá ani špatná. Ukazuje energii situace a praktický směr, se kterým můžeš vědomě pracovat.`;
+    const faqPractice = seo.faqPractice || 'Začni jasnou otázkou a nech kartu zasadit do kontextu. Online výklad ti pomůže propojit symbol s konkrétní situací.';
+    const faqInterpretationVisible = seo.faqInterpretation
+        ? `<p>${escapeHtml(faqInterpretation)}</p>`
+        : '<p>Karta není rozsudek. Ukazuje energii, se kterou můžeš vědomě pracovat, a pomáhá pojmenovat další krok.</p>';
+    const faqPracticeVisible = seo.faqPractice
+        ? `<p>${escapeHtml(seo.faqPractice)}</p>`
+        : '<p>Začni jasnou otázkou a nech kartu zasadit do kontextu. Online výklad ti pomůže propojit symbol s konkrétní situací.</p>';
     const sentences = getSentences(interpretation, 4);
     const defaultAngles = getReadingAngles(group, name, meaning);
     const angles = {
@@ -358,11 +366,21 @@ function buildDetailPage(name, card, relatedCards = []) {
                 name: `Je ${name} dobrá nebo špatná karta?`,
                 acceptedAnswer: {
                     '@type': 'Answer',
-                    text: `Tarotová karta ${name} není sama o sobě dobrá ani špatná. Ukazuje energii situace a praktický směr, se kterým můžeš vědomě pracovat.`
+                    text: faqInterpretation
                 }
             }
         ]
     };
+    if (seo.faqPractice) {
+        faqSchema.mainEntity.push({
+            '@type': 'Question',
+            name: `Jak kartu ${name} použít v online výkladu?`,
+            acceptedAnswer: {
+                '@type': 'Answer',
+                text: faqPractice
+            }
+        });
+    }
     if (seo.reversed) {
         faqSchema.mainEntity.push({
             '@type': 'Question',
@@ -504,11 +522,11 @@ ${jsonLd([articleSchema, breadcrumbSchema, faqSchema])}
                 </details>
                 <details class="faq-item">
                     <summary>Je ${escapeHtml(name)} dobré nebo špatné znamení?</summary>
-                    <p>Karta není rozsudek. Ukazuje energii, se kterou můžeš vědomě pracovat, a pomáhá pojmenovat další krok.</p>
+                    ${faqInterpretationVisible}
                 </details>
                 <details class="faq-item">
                     <summary>Jak kartu ${escapeHtml(name)} použít v online výkladu?</summary>
-                    <p>Začni jasnou otázkou a nech kartu zasadit do kontextu. Online výklad ti pomůže propojit symbol s konkrétní situací.</p>
+                    ${faqPracticeVisible}
                 </details>${reversedFaq}
                 <div class="tarot-meaning-hero__actions">
                     <a href="/tarot.html?source=tarot_card_detail_bottom&amp;card=${encodedName}" class="btn btn--primary">Vyložit tarot s touto kartou</a>
