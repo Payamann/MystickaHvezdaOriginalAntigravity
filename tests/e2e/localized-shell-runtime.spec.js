@@ -58,3 +58,19 @@ for (const [route, locale] of localizedPages) {
         expect(pageErrors).toEqual([]);
     });
 }
+
+const czechOnlyFooterLabels = [
+    ['/sk/index.html', 'Databáza mien (CZ)', 'Databáza mien. Odkaz vedie na stránku dostupnú iba v češtine.'],
+    ['/pl/index.html', 'Baza imion (CZ)', 'Baza imion. Link prowadzi do strony dostępnej tylko po czesku.'],
+    ['/en/', 'Name meanings (CZ)', 'Name meanings. This link opens a page currently available only in Czech.']
+];
+
+for (const [route, expectedText, expectedAccessibleLabel] of czechOnlyFooterLabels) {
+    test(`${route} translates the Czech-only name database footer link`, async ({ page }) => {
+        await page.goto(route, { waitUntil: 'domcontentloaded' });
+        const link = page.locator('.footer__links a[href="/jmena/"]');
+        await expect(link).toHaveText(expectedText);
+        await expect(link).toHaveAttribute('href', '/jmena/');
+        await expect(link).toHaveAttribute('aria-label', expectedAccessibleLabel);
+    });
+}
