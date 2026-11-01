@@ -4,6 +4,38 @@
 
     let csrfPromise = null;
 
+    const feedbackCopy = {
+        cs: {
+            saving: 'Ukládám odpověď...',
+            successYes: 'Díky, tohle nám pomáhá držet kvalitu.',
+            successNo: 'Díky, podíváme se, kde stránka ztrácí jasnost.',
+            error: 'Zpětnou vazbu se nepodařilo uložit.'
+        },
+        sk: {
+            saving: 'Ukladám odpoveď...',
+            successYes: 'Ďakujeme, pomáha nám to udržať kvalitu.',
+            successNo: 'Ďakujeme, pozrieme sa, kde stránka stráca zrozumiteľnosť.',
+            error: 'Spätnú väzbu sa nepodarilo uložiť.'
+        },
+        pl: {
+            saving: 'Zapisuję odpowiedź...',
+            successYes: 'Dziękujemy, to pomaga nam dbać o jakość.',
+            successNo: 'Dziękujemy, sprawdzimy, co na stronie jest niejasne.',
+            error: 'Nie udało się zapisać opinii.'
+        },
+        en: {
+            saving: 'Saving your feedback...',
+            successYes: 'Thank you. Your feedback helps us maintain quality.',
+            successNo: 'Thank you. We’ll look into what could be clearer on the page.',
+            error: 'Your feedback could not be saved.'
+        }
+    };
+
+    function getFeedbackCopy() {
+        const language = document.documentElement.lang.toLowerCase().slice(0, 2);
+        return feedbackCopy[language] || feedbackCopy.cs;
+    }
+
     function getCsrfToken() {
         if (window.getCSRFToken) return window.getCSRFToken();
         if (csrfPromise) return csrfPromise;
@@ -18,13 +50,14 @@
     }
 
     async function sendFeedback(value, widget) {
+        const copy = getFeedbackCopy();
         const status = widget.querySelector('[data-feedback-status]');
         const buttons = widget.querySelectorAll('[data-feedback-value]');
 
         buttons.forEach((button) => {
             button.disabled = true;
         });
-        if (status) status.textContent = 'Ukládám odpověď...';
+        if (status) status.textContent = copy.saving;
 
         try {
             const csrfToken = await getCsrfToken();
@@ -53,10 +86,10 @@
 
             widget.dataset.feedbackSubmitted = 'true';
             if (status) status.textContent = value === 'yes'
-                ? 'Díky, tohle nám pomáhá držet kvalitu.'
-                : 'Díky, podíváme se, kde stránka ztrácí jasnost.';
+                ? copy.successYes
+                : copy.successNo;
         } catch {
-            if (status) status.textContent = 'Zpětnou vazbu se nepodařilo uložit.';
+            if (status) status.textContent = copy.error;
             buttons.forEach((button) => {
                 button.disabled = false;
             });
