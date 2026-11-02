@@ -589,6 +589,8 @@
     "warning": "Zpozorni, pokud ve snu jablko nabízí někdo s úsměvem navíc — psychika varuje před lákavou nabídkou s jádrem: co je uvnitř té sladkosti? Zeptej se: která nabídka v mém životě je „příliš dobrá“? Přečti si jadřinec, ne slupku."
   },
   "bludiste": {
+    "meta_description": "Co může znamenat sen o bludišti? Prozkoumej slepé uličky, hledání cesty a rozdíl mezi bludištěm a labyrintem ve snové symbolice.",
+    "related_slugs": ["labyrint", "cesta", "les", "dvere"],
     "psychological": "Bludiště je problém bez přímé cesty — psychologie ho čte jako situaci, kde logika naráží: každá chodba slibuje a většina končí zdí. Zrcadlí období složitých rozhodnutí: úřady, vztahy, vlastní hlava. Rozdíl od labyrintu je podstatný: bludiště má slepé konce — a přesto i ono má východ.",
     "spiritual": "Labyrint katedrál se prochází modlitbou — jediná cesta vede středem: duchovně je bludiště zkouška důvěry: nevidíš plán, ale plán existuje. Ariadnina nit je vztah či hodnota, která tě vyvede: co drží tvůj druhý konec?",
     "variants": "Bloudit v bludišti zrcadlí frustraci ze slepých uliček — každá vylučovací metoda je taky postup. Najít střed značí pochopení: problém měl jádro, ne východ. Zeď, která se posune, mluví o pravidlech, která se mění za chodu — nehledej logiku, hledej princip. Vyjít ven věští vyřešení: nadechni se.",
@@ -811,6 +813,7 @@
     "warning": "Zpozorni, pokud ve snu žiješ u dalekohledu — psychika varuje před životem v budoucnosti: plány místo přítomnosti. Zeptej se: kolik času denně trávím „až jednou“? Hvězdy počkají — dnešek ne."
   },
   "labyrint": {
+    "related_slugs": ["bludiste", "cesta", "les", "dvere"],
     "psychological": "Labyrint s řešením — na rozdíl od bludiště má jedinou cestu: vede středem a ven. Psychologie ho čte jako proces, který se nedá zkrátit, jen projít: terapie, truchlení, zrání. Sen o labyrintu nese útěchu: nemůžeš se ztratit — jen to trvá déle, než chceš.",
     "spiritual": "Labyrint v katedrále se prochází po kolenou — poutní cesta v miniatuře: duchovně značí důvěru v proces. Cesta se klikatí zdánlivě pryč od středu právě ve chvíli, kdy jsi mu nejblíž — to je nejdůležitější lekce labyrintu. Střed existuje. Jdi.",
     "variants": "Jít labyrintem klidně značí důvěru: proces pracuje, i když to vypadá jako oklika. Střed labyrintu je setkání: s čím? Zapiš si to. Vracet se od středu ven je integrace: poznání se nese do života. Minotaurus uvnitř je strach ve středu procesu: krmí se odklady — a Ariadnina nit drží.",

@@ -93,7 +93,23 @@ function buildQuestions(dream) {
     ];
 }
 
-function pickRelated(index, dreams) {
+function pickRelated(index, dreams, seoEntry) {
+    if (seoEntry?.related_slugs) {
+        if (!Array.isArray(seoEntry.related_slugs) || seoEntry.related_slugs.length === 0) {
+            throw new Error(`Invalid related_slugs for ${dreams[index].id}`);
+        }
+        const selected = seoEntry.related_slugs.map((slug) => {
+            const match = dreams.find((dream) => slugify(dream.id) === slug);
+            if (!match || match.id === dreams[index].id) {
+                throw new Error(`Invalid related slug ${slug} for ${dreams[index].id}`);
+            }
+            return match;
+        });
+        if (new Set(selected.map((dream) => dream.id)).size !== selected.length) {
+            throw new Error(`Duplicate related slug for ${dreams[index].id}`);
+        }
+        return selected;
+    }
     const related = [];
     for (let offset = 1; related.length < 6 && offset <= dreams.length; offset += 1) {
         const next = dreams[(index + offset) % dreams.length];
@@ -107,7 +123,7 @@ function renderPage(dream, index, dreams, seoContent) {
     const pageUrl = `${CANONICAL_ORIGIN}/snar/${slug}.html`;
     const keyword = escapeHtml(dream.keyword);
     const description = escapeHtml(buildDescription(dream, seoContent[dream.id]));
-    const related = pickRelated(index, dreams);
+    const related = pickRelated(index, dreams, seoContent[dream.id]);
     const questions = buildQuestions(dream);
     const seoEntry = seoContent[dream.id];
     const longContent = seoEntry?.publish_longform === false ? null : (seoEntry || null);
