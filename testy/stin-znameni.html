@@ -49,12 +49,12 @@
             <div class="container">
                 <div class="quiz-container" id="quiz-box">
                     <div class="quiz-progress">
-                        <div class="quiz-progress__bar" id="progress-bar"></div>
+                        <div class="quiz-progress__bar" id="progress-bar" role="progressbar" aria-label="Průběh kvízu" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="0% dokončeno"></div>
                     </div>
 
                     <!-- STEP 1 -->
                     <div class="question-step active" data-step="1">
-                        <h3>Co vás na ostatních lidech nejvíce irituje?</h3>
+                        <h3 tabindex="-1">Co vás na ostatních lidech nejvíce irituje?</h3>
                         <div class="options-list">
                             <button class="option-btn" data-score="power">Neschopnost se prosadit a slabost.</button>
                             <button class="option-btn" data-score="control">Chaos, nespolehlivost a povrchnost.</button>
@@ -65,7 +65,7 @@
 
                     <!-- STEP 2 -->
                     <div class="question-step" data-step="2">
-                        <h3>Jak reagujete, když věci nejdou podle vašeho plánu?</h3>
+                        <h3 tabindex="-1">Jak reagujete, když věci nejdou podle vašeho plánu?</h3>
                         <div class="options-list">
                             <button class="option-btn" data-score="power">Začnu být agresivní nebo velmi netrpělivý/á.</button>
                             <button class="option-btn" data-score="control">Cítím úzkost a snažím se získat kontrolu nad každým detailem.</button>
@@ -76,7 +76,7 @@
 
                     <!-- STEP 3 -->
                     <div class="question-step" data-step="3">
-                        <h3>Čeho se v hloubi duše nejvíce bojíte?</h3>
+                        <h3 tabindex="-1">Čeho se v hloubi duše nejvíce bojíte?</h3>
                         <div class="options-list">
                             <button class="option-btn" data-score="power">Ztráty vlivu a toho, že budu ovládán/a ostatními.</button>
                             <button class="option-btn" data-score="control">Toho, že udělám chybu a budu vypadat trapně.</button>
@@ -87,7 +87,7 @@
 
                     <!-- STEP 4 -->
                     <div class="question-step" data-step="4">
-                        <h3>Kterou vlastnost u sebe nejčastěji popíráte?</h3>
+                        <h3 tabindex="-1">Kterou vlastnost u sebe nejčastěji popíráte?</h3>
                         <div class="options-list">
                             <button class="option-btn" data-score="power">Skrytou touhu po moci a uznání.</button>
                             <button class="option-btn" data-score="control">Svůj strach z neznáma a spontánnosti.</button>
@@ -98,7 +98,7 @@
 
                     <!-- STEP 5 -->
                     <div class="question-step" data-step="5">
-                        <h3>Jak se chováte, když se cítíte ohroženi?</h3>
+                        <h3 tabindex="-1">Jak se chováte, když se cítíte ohroženi?</h3>
                         <div class="options-list">
                             <button class="option-btn" data-score="power">Útočím jako první, abych předešel/předešla zranění.</button>
                             <button class="option-btn" data-score="control">Stanu se kritickým/kritickou a hledám chyby na druhých.</button>
@@ -109,7 +109,7 @@
 
                     <!-- STEP 6 -->
                     <div class="question-step" data-step="6">
-                        <h3>Co byste na sobě nejraději "vymazali"?</h3>
+                        <h3 tabindex="-1">Co byste na sobě nejraději "vymazali"?</h3>
                         <div class="options-list">
                             <button class="option-btn" data-score="power">Svou vnitřní pýchu a aroganci.</button>
                             <button class="option-btn" data-score="control">Svůj perfekcionismus, který mě ničí.</button>
@@ -120,7 +120,7 @@
 
                     <!-- STEP 7 -->
                     <div class="question-step" data-step="7">
-                        <h3>Jaký "příběh" o sobě nejčastěji vyprávíte světu?</h3>
+                        <h3 tabindex="-1">Jaký "příběh" o sobě nejčastěji vyprávíte světu?</h3>
                         <div class="options-list">
                             <button class="option-btn" data-score="power">Že jsem silný/á a nikoho nepotřebuji.</button>
                             <button class="option-btn" data-score="control">Že mám vše pod kontrolou a vím, co dělám.</button>
@@ -139,7 +139,7 @@
                     </div>
 
                     <!-- RESULTS -->
-                    <div class="question-step" id="result-step">
+                    <div class="question-step" id="result-step" tabindex="-1">
                         <div class="result-display" id="result-box">
                             <!-- Injected by JS -->
                         </div>

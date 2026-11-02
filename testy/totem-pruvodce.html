@@ -49,12 +49,12 @@
             <div class="container">
                 <div class="quiz-container" id="quiz-box">
                     <div class="quiz-progress">
-                        <div class="quiz-progress__bar" id="progress-bar"></div>
+                        <div class="quiz-progress__bar" id="progress-bar" role="progressbar" aria-label="Průběh kvízu" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="0% dokončeno"></div>
                     </div>
 
                     <!-- STEP 1 -->
                     <div class="question-step active" data-step="1">
-                        <h3>V jakém prostředí se cítíte nejvíce "doma"?</h3>
+                        <h3 tabindex="-1">V jakém prostředí se cítíte nejvíce "doma"?</h3>
                         <div class="options-list">
                             <button class="option-btn" data-score="wolf">V hlubokých, tajemných lesích.</button>
                             <button class="option-btn" data-score="eagle">Vysoko v horách, kde je rozhled a svoboda.</button>
@@ -65,7 +65,7 @@
 
                     <!-- STEP 2 -->
                     <div class="question-step" data-step="2">
-                        <h3>Jaká je vaše role v kolektivu přátel?</h3>
+                        <h3 tabindex="-1">Jaká je vaše role v kolektivu přátel?</h3>
                         <div class="options-list">
                             <button class="option-btn" data-score="wolf">Věrný společník, který chrání svou smečku.</button>
                             <button class="option-btn" data-score="eagle">Pozorovatel, který raději vše sleduje z nadhledu.</button>
@@ -76,7 +76,7 @@
 
                     <!-- STEP 3 -->
                     <div class="question-step" data-step="3">
-                        <h3>Jak reagujete na nečekané nebezpečí?</h3>
+                        <h3 tabindex="-1">Jak reagujete na nečekané nebezpečí?</h3>
                         <div class="options-list">
                             <button class="option-btn" data-score="wolf">Změřím si soupeře a v případě ohrožení smečky zaútočím.</button>
                             <button class="option-btn" data-score="eagle">Rychle se vyhnu a hledám strategickou výhodu.</button>
@@ -87,7 +87,7 @@
 
                     <!-- STEP 4 -->
                     <div class="question-step" data-step="4">
-                        <h3>Co je vaším největším darem?</h3>
+                        <h3 tabindex="-1">Co je vaším největším darem?</h3>
                         <div class="options-list">
                             <button class="option-btn" data-score="wolf">Intuice a schopnost přežít v jakýchkoliv podmínkách.</button>
                             <button class="option-btn" data-score="eagle">Jasný vhled a schopnost vidět pravdu pod povrchem.</button>
@@ -98,7 +98,7 @@
 
                     <!-- STEP 5 -->
                     <div class="question-step" data-step="5">
-                        <h3>Která denní doba vám nejlépe vyhovuje?</h3>
+                        <h3 tabindex="-1">Která denní doba vám nejlépe vyhovuje?</h3>
                         <div class="options-list">
                             <button class="option-btn" data-score="wolf">Magický soumrak nebo jasná noc při měsíci.</button>
                             <button class="option-btn" data-score="eagle">Jasné poledne s ostrým světlem.</button>
@@ -109,7 +109,7 @@
 
                     <!-- STEP 6 -->
                     <div class="question-step" data-step="6">
-                        <h3>Jak si představujete dokonalou svobodu?</h3>
+                        <h3 tabindex="-1">Jak si představujete dokonalou svobodu?</h3>
                         <div class="options-list">
                             <button class="option-btn" data-score="wolf">Být součástí něčeho většího, ale zachovat si divokost.</button>
                             <button class="option-btn" data-score="eagle">Mít křídla a moci letět kamkoliv mě vítr zanese.</button>
@@ -120,7 +120,7 @@
 
                     <!-- STEP 7 -->
                     <div class="question-step" data-step="7">
-                        <h3>Který zvuk je pro vás nejvíce uklidňující?</h3>
+                        <h3 tabindex="-1">Který zvuk je pro vás nejvíce uklidňující?</h3>
                         <div class="options-list">
                             <button class="option-btn" data-score="wolf">Vzdálené vytí v horách.</button>
                             <button class="option-btn" data-score="eagle">Pískot větru v korunách stromů.</button>
@@ -139,7 +139,7 @@
                     </div>
 
                     <!-- RESULTS -->
-                    <div class="question-step" id="result-step">
+                    <div class="question-step" id="result-step" tabindex="-1">
                         <div class="result-display" id="result-box">
                             <!-- Injected by JS -->
                         </div>

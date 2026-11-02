@@ -49,12 +49,12 @@
             <div class="container">
                 <div class="quiz-container" id="quiz-box">
                     <div class="quiz-progress">
-                        <div class="quiz-progress__bar" id="progress-bar"></div>
+                        <div class="quiz-progress__bar" id="progress-bar" role="progressbar" aria-label="Průběh kvízu" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="0% dokončeno"></div>
                     </div>
 
                     <!-- STEP 1 -->
                     <div class="question-step active" data-step="1">
-                        <h3>Zažíváte někdy pocit "déjà vu" v souvislosti s určitým místem?</h3>
+                        <h3 tabindex="-1">Zažíváte někdy pocit "déjà vu" v souvislosti s určitým místem?</h3>
                         <div class="options-list">
                             <button class="option-btn" data-score="sage">Často v knihovnách, klášteřích nebo na univerzitách.</button>
                             <button class="option-btn" data-score="wanderer">Na dalekých cestách, v pouštích nebo v cizích městech.</button>
@@ -65,7 +65,7 @@
 
                     <!-- STEP 2 -->
                     <div class="question-step" data-step="2">
-                        <h3>Která historická éra vás podvědomě nejvíce přitahuje?</h3>
+                        <h3 tabindex="-1">Která historická éra vás podvědomě nejvíce přitahuje?</h3>
                         <div class="options-list">
                             <button class="option-btn" data-score="sage">Antické Řecko a Egypt – čas filozofie a vědění.</button>
                             <button class="option-btn" data-score="wanderer">Éra velkých objevů a námořních cest.</button>
@@ -76,7 +76,7 @@
 
                     <!-- STEP 3 -->
                     <div class="question-step" data-step="3">
-                        <h3>Jaký talent se u vás projevuje zcela přirozeně, bez učení?</h3>
+                        <h3 tabindex="-1">Jaký talent se u vás projevuje zcela přirozeně, bez učení?</h3>
                         <div class="options-list">
                             <button class="option-btn" data-score="sage">Schopnost rychle pochopit složité souvislosti a učit ostatní.</button>
                             <button class="option-btn" data-score="wanderer">Pud sebezáchovy, orientace a schopnost domluvit se s kýmkoliv.</button>
@@ -87,7 +87,7 @@
 
                     <!-- STEP 4 -->
                     <div class="question-step" data-step="4">
-                        <h3>Máte nějaký nevysvětlitelný strach nebo fobii?</h3>
+                        <h3 tabindex="-1">Máte nějaký nevysvětlitelný strach nebo fobii?</h3>
                         <div class="options-list">
                             <button class="option-btn" data-score="sage">Strach ze ztráty paměti nebo zničení důležitých informací.</button>
                             <button class="option-btn" data-score="wanderer">Strach z uvěznění, omezení pohybu nebo stagnace.</button>
@@ -98,7 +98,7 @@
 
                     <!-- STEP 5 -->
                     <div class="question-step" data-step="5">
-                        <h3>Jak se stavíte k materiálnímu bohatství?</h3>
+                        <h3 tabindex="-1">Jak se stavíte k materiálnímu bohatství?</h3>
                         <div class="options-list">
                             <button class="option-btn" data-score="sage">Je pro mě prostředkem k dalšímu vzdělávání a růstu.</button>
                             <button class="option-btn" data-score="wanderer">Nepotřebuji ho mnoho, svoboda je pro mě mnohem cennější.</button>
@@ -109,7 +109,7 @@
 
                     <!-- STEP 6 -->
                     <div class="question-step" data-step="6">
-                        <h3>O čem nejčastěji sníte, když se ztratíte ve svých myšlenkách?</h3>
+                        <h3 tabindex="-1">O čem nejčastěji sníte, když se ztratíte ve svých myšlenkách?</h3>
                         <div class="options-list">
                             <button class="option-btn" data-score="sage">O odhalení velkého tajemství vesmíru.</button>
                             <button class="option-btn" data-score="wanderer">O nekončící cestě do neobjevených světů.</button>
@@ -120,7 +120,7 @@
 
                     <!-- STEP 7 -->
                     <div class="question-step" data-step="7">
-                        <h3>Kdybyste mohli změnit jednu věc na světě, co by to bylo?</h3>
+                        <h3 tabindex="-1">Kdybyste mohli změnit jednu věc na světě, co by to bylo?</h3>
                         <div class="options-list">
                             <button class="option-btn" data-score="sage">Vymýtit nevědomost a dezinformace.</button>
                             <button class="option-btn" data-score="wanderer">Zrušit hranice a dovolit lidem volně se pohybovat.</button>
@@ -139,7 +139,7 @@
                     </div>
 
                     <!-- RESULTS -->
-                    <div class="question-step" id="result-step">
+                    <div class="question-step" id="result-step" tabindex="-1">
                         <div class="result-display" id="result-box">
                             <!-- Injected by JS -->
                         </div>

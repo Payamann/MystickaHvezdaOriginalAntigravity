@@ -49,12 +49,12 @@
             <div class="container">
                 <div class="quiz-container" id="quiz-box">
                     <div class="quiz-progress">
-                        <div class="quiz-progress__bar" id="progress-bar"></div>
+                        <div class="quiz-progress__bar" id="progress-bar" role="progressbar" aria-label="Průběh kvízu" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-valuetext="0% dokončeno"></div>
                     </div>
 
                     <!-- STEP 1 -->
                     <div class="question-step active" data-step="1">
-                        <h3>Když čelíte neznámé situaci, co je vaší první reakcí?</h3>
+                        <h3 tabindex="-1">Když čelíte neznámé situaci, co je vaší první reakcí?</h3>
                         <div class="options-list">
                             <button class="option-btn" data-score="magician">Okamžitě hledám nástroje a řešení, jak situaci ovládnout.</button>
                             <button class="option-btn" data-score="priestess">Zastavím se a čekám, co mi napoví moje intuice.</button>
@@ -66,7 +66,7 @@
 
                     <!-- STEP 2 -->
                     <div class="question-step" data-step="2">
-                        <h3>Které prostředí vás nejvíce nabíjí energií?</h3>
+                        <h3 tabindex="-1">Které prostředí vás nejvíce nabíjí energií?</h3>
                         <div class="options-list">
                             <button class="option-btn" data-score="magician">Rušná dílna nebo místo plné inspirace a tvoření.</button>
                             <button class="option-btn" data-score="priestess">Tiché, posvátné místo u vody nebo v šeru knihovny.</button>
@@ -78,7 +78,7 @@
 
                     <!-- STEP 3 -->
                     <div class="question-step" data-step="3">
-                        <h3>Co považujete za svou největší přednost?</h3>
+                        <h3 tabindex="-1">Co považujete za svou největší přednost?</h3>
                         <div class="options-list">
                             <button class="option-btn" data-score="magician">Schopnost proměnit sny v realitu svou vůlí.</button>
                             <button class="option-btn" data-score="priestess">Schopnost vnímat věci mezi řádky a hlubokou empatii.</button>
@@ -90,7 +90,7 @@
 
                      <!-- STEP 4 -->
                      <div class="question-step" data-step="4">
-                        <h3>Jak vnímáte samotu?</h3>
+                        <h3 tabindex="-1">Jak vnímáte samotu?</h3>
                         <div class="options-list">
                             <button class="option-btn" data-score="magician">Jako čas na soustředěnou práci na mých projektech.</button>
                             <button class="option-btn" data-score="priestess">Jako bránu k mým vnitřním tajemstvím a snům.</button>
@@ -102,7 +102,7 @@
 
                     <!-- STEP 5 -->
                     <div class="question-step" data-step="5">
-                        <h3>Který z těchto symbolů k vám nejvíce promlouvá?</h3>
+                        <h3 tabindex="-1">Který z těchto symbolů k vám nejvíce promlouvá?</h3>
                         <div class="options-list">
                             <button class="option-btn" data-score="magician">Zářící hůl nebo pero pro psaní osudu.</button>
                             <button class="option-btn" data-score="priestess">Stříbrný půlměsíc a zamčená kniha.</button>
@@ -114,7 +114,7 @@
 
                     <!-- STEP 6 -->
                     <div class="question-step" data-step="6">
-                        <h3>Co je vaším hlavním životním cílem?</h3>
+                        <h3 tabindex="-1">Co je vaším hlavním životním cílem?</h3>
                         <div class="options-list">
                             <button class="option-btn" data-score="magician">Využít svůj plný potenciál a zanechat po sobě stopu.</button>
                             <button class="option-btn" data-score="priestess">Porozumět skrytým zákonům světa a své psychice.</button>
@@ -126,7 +126,7 @@
 
                     <!-- STEP 7 -->
                     <div class="question-step" data-step="7">
-                        <h3>Kdy se cítíte nejvíce "naživu"?</h3>
+                        <h3 tabindex="-1">Kdy se cítíte nejvíce "naživu"?</h3>
                         <div class="options-list">
                             <button class="option-btn" data-score="magician">Když něco tvořím a vidím, jak mi to pod rukama roste.</button>
                             <button class="option-btn" data-score="priestess">Když zažívám hluboké spirituální vhledy nebo silnou intuici.</button>
@@ -146,7 +146,7 @@
                     </div>
 
                     <!-- RESULTS -->
-                    <div class="question-step" id="result-step">
+                    <div class="question-step" id="result-step" tabindex="-1">
                         <div class="result-display" id="result-box">
                             <!-- Injected by JS -->
                         </div>
