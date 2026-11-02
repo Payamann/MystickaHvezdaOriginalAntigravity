@@ -591,10 +591,15 @@
   "bludiste": {
     "meta_description": "Co může znamenat sen o bludišti? Prozkoumej slepé uličky, hledání cesty a rozdíl mezi bludištěm a labyrintem ve snové symbolice.",
     "related_slugs": ["labyrint", "cesta", "les", "dvere"],
-    "psychological": "Bludiště je problém bez přímé cesty — psychologie ho čte jako situaci, kde logika naráží: každá chodba slibuje a většina končí zdí. Zrcadlí období složitých rozhodnutí: úřady, vztahy, vlastní hlava. Rozdíl od labyrintu je podstatný: bludiště má slepé konce — a přesto i ono má východ.",
-    "spiritual": "Labyrint katedrál se prochází modlitbou — jediná cesta vede středem: duchovně je bludiště zkouška důvěry: nevidíš plán, ale plán existuje. Ariadnina nit je vztah či hodnota, která tě vyvede: co drží tvůj druhý konec?",
-    "variants": "Bloudit v bludišti zrcadlí frustraci ze slepých uliček — každá vylučovací metoda je taky postup. Najít střed značí pochopení: problém měl jádro, ne východ. Zeď, která se posune, mluví o pravidlech, která se mění za chodu — nehledej logiku, hledej princip. Vyjít ven věští vyřešení: nadechni se.",
-    "warning": "Zbystři, pokud ve snu v bludišti běháš — psychika říká: rychlost v bludišti nepomáhá, jen vyčerpává. Zeptej se: kde v životě zkouším další a další chodby místo zastavení a mapy? Sedni si na zem. Nakresli, kudy jsi šel. Slepé uličky jsou data."
+    "faq_entries": [
+      {"question": "Co může znamenat sen o bludišti?", "answer": "Může připomínat hledání směru, složité rozhodování nebo nejistotu. Všímej si také pocitů a děje snu; neexistuje jediný význam pro každého."},
+      {"question": "Jaký je rozdíl mezi bludištěm a labyrintem?", "answer": "Bludiště má zpravidla více větvených cest a slepé uličky. Labyrint v užším významu mívá jedinou cestu ke středu a zpět."},
+      {"question": "Předpovídá sen o bludišti budoucnost?", "answer": "Sen není spolehlivou předpovědí. Může posloužit jako osobní podnět k zamyšlení nad tím, co právě řešíš."}
+    ],
+    "psychological": "Bludiště může ve snu připomínat problém bez přímé cesty: každá chodba nabízí jinou možnost a některé končí zdí. Může otevřít otázky kolem složitého rozhodování ve vztazích, práci nebo běžném životě. Na rozdíl od labyrintu mívá bludiště více cest a slepé konce.",
+    "spiritual": "V duchovním čtení může bludiště připomínat chvíli, kdy nevidíš celou cestu. Ariadnina nit může být obrazem vztahu nebo hodnoty, která ti pomáhá držet směr. Co je tvou nití?",
+    "variants": "Bloudění může připomínat frustraci ze slepých uliček. Nalezení středu může vyjadřovat snahu dobrat se jádra problému. Posouvající se zeď může připomenout pravidla, která se mění. Vyjít ven může vyjadřovat úlevu nebo pocit, že se řešení přibližuje; sen sám ale výsledek nepředpovídá.",
+    "warning": "Běhání v bludišti může být podnětem zamyslet se, kdy tě hledání řešení vyčerpává. Kde zkoušíš další a další možnosti, a kde by ti pomohlo se zastavit? Můžeš si nakreslit, kudy jsi ve snu šel, a všimnout si, jak ses přitom cítil."
   },
   "brana": {
     "psychological": "Brána je větší než dveře — psychologie ji čte jako přechod s vahou: nová životní fáze, instituce, závazek. Před branou se stojí jinak než před dveřmi: cítíš, že za ní se něco mění. Zavřená brána zrcadlí čekání na přijetí: kdo drží klíče — a existují vůbec?",
@@ -814,10 +819,15 @@
   },
   "labyrint": {
     "related_slugs": ["bludiste", "cesta", "les", "dvere"],
-    "psychological": "Labyrint s řešením — na rozdíl od bludiště má jedinou cestu: vede středem a ven. Psychologie ho čte jako proces, který se nedá zkrátit, jen projít: terapie, truchlení, zrání. Sen o labyrintu nese útěchu: nemůžeš se ztratit — jen to trvá déle, než chceš.",
-    "spiritual": "Labyrint v katedrále se prochází po kolenou — poutní cesta v miniatuře: duchovně značí důvěru v proces. Cesta se klikatí zdánlivě pryč od středu právě ve chvíli, kdy jsi mu nejblíž — to je nejdůležitější lekce labyrintu. Střed existuje. Jdi.",
-    "variants": "Jít labyrintem klidně značí důvěru: proces pracuje, i když to vypadá jako oklika. Střed labyrintu je setkání: s čím? Zapiš si to. Vracet se od středu ven je integrace: poznání se nese do života. Minotaurus uvnitř je strach ve středu procesu: krmí se odklady — a Ariadnina nit drží.",
-    "warning": "Zbystři, pokud v labyrintu ve snu hledáš zkratky přes zdi — psychika zrcadlí netrpělivost s procesem: truchlení, léčba a zrání nemají turbo. Zeptej se: kterému procesu nevěřím, že vede středem? Klikatá cesta není chyba systému. Je to systém."
+    "faq_entries": [
+      {"question": "Co může znamenat sen o labyrintu?", "answer": "Labyrint může připomínat osobní cestu nebo proces, který potřebuje čas. Záleží na ději snu a na tom, jaké pocity v tobě vyvolal."},
+      {"question": "Čím se labyrint liší od bludiště?", "answer": "Labyrint v užším významu obvykle vede jedinou cestou ke středu a zpět. Bludiště mívá větvení a slepé uličky."},
+      {"question": "Co když se v labyrintu ve snu ztratím?", "answer": "Sny se nemusí řídit přesnými definicemi. Zkus si vybavit, zda převládal strach, zvědavost nebo jiný pocit, a co se ve snu dělo dál."}
+    ],
+    "psychological": "Labyrint s jedinou cestou může připomínat proces, který nelze snadno zkrátit. Může ti otevřít otázky kolem dlouhého rozhodování, zpracování ztráty nebo osobního zrání. Sen nemusí slibovat výsledek; jeho význam záleží i na tom, jak ses v něm cítil.",
+    "spiritual": "V duchovním čtení může labyrint připomínat pouť. Cesta se klikatí a nemusíš z ní vidět celý směr. Můžeš se zeptat, jaké místo nebo hodnota pro tebe představuje střed a co ti pomáhá pokračovat.",
+    "variants": "Klidná chůze labyrintem může vyjadřovat důvěru, bloudění naopak nejistotu. Setkání ve středu může být podnětem k otázce, co je pro tebe důležité. Návrat od středu může připomínat přenesení poznání do běžného života; Ariadnina nit zase oporu na cestě.",
+    "warning": "Hledání zkratky přes zdi může připomínat netrpělivost. Některé osobní procesy nelze snadno urychlit, jiné zase potřebují změnu. Zeptej se, co právě potřebuješ a jaké možnosti máš."
   },
   "pyramida": {
     "psychological": "Pyramida je dílo přesahující život — psychologie ji čte jako velké dílo: projekt, rodinu, odkaz, který stavíš po kamenech. Základna nese vrchol: sen se ptá na tvoje základy — šíře dole rozhoduje o výšce nahoře. Stavíš, nebo jen obdivuješ cizí?",
