@@ -121,11 +121,13 @@ function pickRelated(index, dreams, seoEntry) {
 function renderPage(dream, index, dreams, seoContent) {
     const slug = slugify(dream.id);
     const pageUrl = `${CANONICAL_ORIGIN}/snar/${slug}.html`;
-    const keyword = escapeHtml(dream.keyword);
     const description = escapeHtml(buildDescription(dream, seoContent[dream.id]));
     const related = pickRelated(index, dreams, seoContent[dream.id]);
     const questions = buildQuestions(dream);
     const seoEntry = seoContent[dream.id];
+    const pageTitle = seoEntry?.title_subject ? `Sen o ${seoEntry.title_subject}` : `Sen o: ${dream.keyword}`;
+    const headingPrefix = seoEntry?.title_subject ? 'Sen o ' : 'Sen o: ';
+    const headingSubject = escapeHtml(seoEntry?.title_subject || dream.keyword);
     const longContent = seoEntry?.publish_longform === false ? null : (seoEntry || null);
 
     const defaultFaqEntries = [
@@ -187,7 +189,7 @@ function renderPage(dream, index, dreams, seoContent) {
     const jsonLd = JSON.stringify({
         '@context': 'https://schema.org',
         '@type': 'Article',
-        headline: `Sen o: ${dream.keyword} — výklad snu`,
+        headline: `${pageTitle} — výklad snu`,
         description: buildDescription(dream, seoContent[dream.id]),
         url: pageUrl,
         dateModified: longContent?.date_modified || LASTMOD,
@@ -201,7 +203,7 @@ function renderPage(dream, index, dreams, seoContent) {
         itemListElement: [
             { '@type': 'ListItem', position: 1, name: 'Domů', item: CANONICAL_ORIGIN },
             { '@type': 'ListItem', position: 2, name: 'Snář', item: `${CANONICAL_ORIGIN}/snar.html` },
-            { '@type': 'ListItem', position: 3, name: `Sen o: ${dream.keyword}`, item: pageUrl }
+            { '@type': 'ListItem', position: 3, name: pageTitle, item: pageUrl }
         ]
     }, null, 2);
 
@@ -212,12 +214,12 @@ function renderPage(dream, index, dreams, seoContent) {
   <link rel="icon" type="image/svg+xml" href="/img/icons/mh-favicon.svg">
   <link rel="apple-touch-icon" href="../img/icon-192.webp">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Sen o: ${keyword} — výklad snu | Snář Mystická Hvězda</title>
+    <title>${escapeHtml(pageTitle)} — výklad snu | Snář Mystická Hvězda</title>
     <meta name="description" content="${description}">
     <link rel="canonical" href="${pageUrl}">
 
     <meta property="og:type" content="article">
-    <meta property="og:title" content="Sen o: ${keyword} — výklad snu | Mystická Hvězda">
+    <meta property="og:title" content="${escapeHtml(pageTitle)} — výklad snu | Mystická Hvězda">
     <meta property="og:description" content="${description}">
     <meta property="og:image" content="${CANONICAL_ORIGIN}/img/search-preview/dreams.webp">
     <meta property="og:url" content="${pageUrl}">
@@ -241,7 +243,7 @@ function renderPage(dream, index, dreams, seoContent) {
         <section class="section">
             <div class="container">
                 <span class="section__badge">Snář</span>
-                <h1 class="section__title">${dream.emoji ? `${dream.emoji} ` : ''}Sen o: <span class="text-gradient">${keyword}</span></h1>
+                <h1 class="section__title">${dream.emoji ? `${dream.emoji} ` : ''}${headingPrefix}<span class="text-gradient">${headingSubject}</span></h1>
 
                 <div class="card">
                     <h2>Výklad snu</h2>

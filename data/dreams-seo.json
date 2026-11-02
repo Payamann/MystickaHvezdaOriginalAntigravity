@@ -589,6 +589,8 @@
     "warning": "Zpozorni, pokud ve snu jablko nabízí někdo s úsměvem navíc — psychika varuje před lákavou nabídkou s jádrem: co je uvnitř té sladkosti? Zeptej se: která nabídka v mém životě je „příliš dobrá“? Přečti si jadřinec, ne slupku."
   },
   "bludiste": {
+    "title_subject": "bludišti",
+    "date_modified": "2026-11-02",
     "meta_description": "Co může znamenat sen o bludišti? Prozkoumej slepé uličky, hledání cesty a rozdíl mezi bludištěm a labyrintem ve snové symbolice.",
     "related_slugs": ["labyrint", "cesta", "les", "dvere"],
     "faq_entries": [
@@ -818,6 +820,9 @@
     "warning": "Zpozorni, pokud ve snu žiješ u dalekohledu — psychika varuje před životem v budoucnosti: plány místo přítomnosti. Zeptej se: kolik času denně trávím „až jednou“? Hvězdy počkají — dnešek ne."
   },
   "labyrint": {
+    "title_subject": "labyrintu",
+    "date_modified": "2026-11-02",
+    "meta_description": "Co může znamenat sen o labyrintu? Prozkoumej cestu ke středu, rozdíl mezi labyrintem a bludištěm a význam pocitů, které sen vyvolal.",
     "related_slugs": ["bludiste", "cesta", "les", "dvere"],
     "faq_entries": [
       {"question": "Co může znamenat sen o labyrintu?", "answer": "Labyrint může připomínat osobní cestu nebo proces, který potřebuje čas. Záleží na ději snu a na tom, jaké pocity v tobě vyvolal."},
