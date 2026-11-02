@@ -764,112 +764,40 @@ test.describe('Tarot Ano/Ne', () => {
         }));
     });
 
-    test('pokračování přežije výpadek analytiky i úložiště otázky', async ({ page }) => {
+    test('vztahové pokračování přežije výpadek analytiky i úložiště otázky', async ({ page }) => {
         const events = [];
+        await page.route('**/api/vztahovy-vyklad/product', route => route.fulfill({
+            json: { enabled: true, amount: 14900, currency: 'czk' }
+        }));
         await page.route('**/api/payment/funnel-event', async route => {
             events.push(JSON.parse(route.request().postData() || '{}'));
             await route.fulfill({ json: { success: true } });
         });
-        await page.goto('/tarot-ano-ne.html');
+        await page.goto('/tarot-ano-ne.html?intent=relationship_yes_no');
         await waitForPageReady(page);
-        await page.fill('#question-input', 'Mám dnes udělat první krok?');
+        await page.fill('#question-input', 'Jak mám otevřít rozhovor s partnerem?');
         await page.locator('.tarot-card').first().click();
         await expect(page.locator('#result-panel')).toHaveClass(/show/);
+        const offer = page.locator('[data-relationship-offer="tarot_yes_no_result"]');
+        await expect(offer).toBeVisible();
         await page.evaluate(() => {
-            window.getCSRFToken = async () => 'test-token';
-            window.MH_ANALYTICS.trackCTA = () => { throw new Error('analytics offline'); };
+            window.MH_ANALYTICS.trackEvent = () => { throw new Error('analytics offline'); };
             const original = Storage.prototype.setItem;
             Storage.prototype.setItem = function (key, value) {
-                if (key === 'mh_tarot_yes_no_upgrade_context') throw new Error('storage unavailable');
+                if (key === 'mh_relationship_question') throw new Error('storage unavailable');
                 return original.call(this, key, value);
             };
-            window.Auth.isLoggedIn = () => false;
-            window.Auth.isPremium = () => false;
-            window.Auth.startPlanCheckout = plan => { window.__continuedPlan = plan; };
         });
-        await page.locator('.tarot-result-upgrade-bridge [data-tarot-yes-no-upgrade]').click();
-        await expect.poll(() => page.evaluate(() => window.__continuedPlan)).toBe('pruvodce');
-        await expect.poll(() => events.find(event => event.eventName === 'paywall_cta_clicked')?.metadata?.has_preserved_question).toBe(false);
-        expect(JSON.stringify(events)).not.toContain('Mám dnes udělat první krok?');
+        await offer.locator('a').click();
+        await expect(page).toHaveURL(/vztahovy-vyklad\.html\?source=tarot_yes_no_result$/);
+        await expect(page.locator('#question')).toHaveValue('');
+        await expect(page.locator('#checkout-button')).toBeEnabled();
+        await expect.poll(() => events.some(event => event.eventName === 'one_time_product_cta_clicked')).toBe(true);
+        expect(JSON.stringify(events)).not.toContain('Jak mám otevřít rozhovor s partnerem?');
     });
 
-    test('po výsledku nabízí neblokující hlubší výklad a měří placený záměr', async ({ page }) => {
-        const funnelEvents = [];
-        await page.route('**/api/payment/funnel-event', async (route) => {
-            funnelEvents.push(JSON.parse(route.request().postData() || '{}'));
-            await route.fulfill({
-                status: 200,
-                contentType: 'application/json',
-                body: JSON.stringify({ success: true })
-            });
-        });
-        await page.goto('/tarot-ano-ne.html');
-        await waitForPageReady(page);
-        await page.evaluate(() => {
-            window.getCSRFToken = async () => 'e2e-tarot-upgrade-token';
-            window.__tarotUpgradeFlow = null;
-            window.Auth = window.Auth || {};
-            window.Auth.isLoggedIn = () => false;
-            window.Auth.isPremium = () => false;
-            window.Auth.startPlanCheckout = (planId, options) => {
-                window.__tarotUpgradeFlow = { planId, options };
-            };
-        });
-
-        await page.fill('#question-input', 'Proč se v této situaci pořád vracím?');
-        await page.locator('.tarot-card').first().click();
-        await expect(page.locator('#result-panel')).toHaveClass(/show/, { timeout: 2500 });
-
-        const bridge = page.locator('.tarot-result-upgrade-bridge');
-        await expect(bridge).toBeVisible();
-        await expect(bridge).toContainText('V členství najdeš také výklady se třemi kartami');
-        await expect(bridge).toContainText('7 dní za 0 Kč, potom 199 Kč/měsíc');
-        await expect(bridge).toContainText('K aktivaci je potřeba karta');
-        await expect(bridge).toContainText('Zrušíš kdykoli v profilu');
-        await expect(bridge).toContainText('Jde o samostatnou cestu vedle bezplatné odpovědi ano/ne');
-        await expect(page.locator('#result-text')).not.toBeEmpty();
-        await expect(page.locator('#tarot-yes-no-next-step')).toBeVisible();
-
-        const upgrade = bridge.locator('[data-tarot-yes-no-upgrade]');
-        await expect(upgrade).toHaveAttribute('href', /plan=pruvodce/);
-        await upgrade.click();
-
-        await expect.poll(() => page.evaluate(() => window.__tarotUpgradeFlow)).toEqual(expect.objectContaining({
-            planId: 'pruvodce',
-            options: expect.objectContaining({
-                source: 'tarot_yes_no_result',
-                feature: 'tarot_multi_card',
-                redirect: '/cenik.html',
-                metadata: expect.objectContaining({
-                    entry_source: 'tarot_yes_no_result',
-                    entry_feature: 'tarot_multi_card',
-                    requested_card: expect.any(String)
-                })
-            })
-        }));
-        const preserved = await page.evaluate(() => ({
-            context: JSON.parse(localStorage.getItem('mh_tarot_yes_no_upgrade_context') || 'null'),
-            pending: JSON.parse(localStorage.getItem('mh_pending_reading') || 'null')
-        }));
-        expect(preserved.context).toEqual(expect.objectContaining({
-            question: 'Proč se v této situaci pořád vracím?',
-            answerLabel: expect.any(String),
-            cardName: expect.any(String),
-            locale: 'cs',
-            source: 'tarot_yes_no_result'
-        }));
-        expect(preserved.pending).toEqual(expect.objectContaining({
-            type: 'tarot',
-            source: 'tarot_yes_no_result',
-            feature: 'tarot_multi_card'
-        }));
-        await expect.poll(() => funnelEvents.some((event) =>
-            event.eventName === 'paywall_cta_clicked'
-            && event.source === 'tarot_yes_no_result'
-            && event.feature === 'tarot_multi_card'
-            && event.planId === 'pruvodce'
-        )).toBe(true);
-    });
+    // Současnou jednorázovou nabídku včetně ceny, předání otázky a měření
+    // ověřuje relationship-tarot.spec.js (yes/no free result leads...).
 
     test('slovenský výsledek má jednu jasnou placenou cestu a nehlásí falešný paywall', async ({ page }) => {
         const funnelEvents = [];
@@ -986,36 +914,19 @@ test.describe('Tarot Ano/Ne', () => {
         await expect(flippedCard.locator('.card-front-name')).not.toBeEmpty();
     });
 
-    // Výsledek ano/ne je hotový zážitek. Jediné hlavní CTA proto nabízí logické
-    // pokračování stejné otázky; pomocné akce zůstávají vizuálně podřízené.
-    test('po výsledku je v panelu jediné primární CTA a navazuje třemi kartami', async ({ page }) => {
-        await page.goto('/tarot-ano-ne.html');
+    test('obecný výsledek nabízí uložení a novou otázku bez vztahové nabídky', async ({ page }) => {
+        await page.goto('/tarot-ano-ne.html?intent=yes_no');
         await waitForPageReady(page);
-
         await page.fill('#question-input', 'Mám dnes udělat první krok?');
         await page.locator('.tarot-card').first().click();
-
         await expect(page.locator('#result-panel')).toHaveClass(/show/, { timeout: 2500 });
-
-        // Pomocné akce nepřebíjejí hlavní návaznost.
-        const actionButtons = page.locator('#result-panel .mh-inline-d3ee132133 .btn');
-        await expect(actionButtons.nth(0)).toHaveAttribute('id', 'btn-save-reading');
-        await expect(actionButtons.nth(0)).toHaveClass(/btn--secondary/);
-        await expect(actionButtons.nth(1)).toHaveAttribute('id', 'btn-reset');
-        await expect(actionButtons.nth(1)).toHaveClass(/btn--secondary/);
-        await expect(actionButtons.nth(2)).toHaveAttribute('id', 'btn-save-result-image');
-        await expect(actionButtons.nth(2)).toHaveClass(/btn--ghost/);
-
-        // Jádro pravidla: v celém panelu smí být právě jedno primární tlačítko
-        const primaryButtons = page.locator('#result-panel .btn--primary');
-        await expect(primaryButtons).toHaveCount(1);
-        await expect(primaryButtons.first()).toHaveAttribute('data-tarot-yes-no-upgrade', 'tarot_yes_no_result');
-        await expect(primaryButtons.first()).toContainText('Prohlédnout členství a tříkartový tarot');
-
-        // Duplicitní registrace ani e-mailový formulář ve výsledku nejsou.
-        await expect(page.locator('#tarot-yes-no-profile-cta')).toHaveCount(0);
+        await expect(page.locator('#result-text')).not.toBeEmpty();
+        await expect(page.locator('#btn-save-reading')).toBeVisible();
+        await expect(page.locator('#btn-reset')).toBeVisible();
+        await expect(page.locator('#btn-save-result-image')).toBeVisible();
+        await expect(page.locator('[data-relationship-offer="tarot_yes_no_result"]')).toBeHidden();
+        await expect(page.locator('[data-tarot-member-continuation]')).toBeHidden();
         await expect(page.locator('.mh-email-bridge')).toHaveCount(0);
-        await expect(page.locator('#horoscope-subscribe-btn')).toHaveCount(0);
     });
 
     test('stránka výsledku už nenačítá konkurenční e-mailový most', async ({ page }) => {
@@ -1082,9 +993,9 @@ test.describe('Tarot Ano/Ne', () => {
         expect(funnelEvents).toContainEqual(expect.objectContaining({
             eventName: 'first_value_completed',
             source: 'tarot_yes_no_result',
-            feature: 'tarot_multi_card',
-            planId: 'pruvodce'
+            feature: 'tarot_multi_card'
         }));
+        expect(JSON.stringify(funnelEvents)).not.toContain('Mam dnes udelat prvni krok?');
 
         await page.locator('#btn-save-reading').click();
         await expect(page).toHaveURL(/prihlaseni\.html\?mode=register/);
