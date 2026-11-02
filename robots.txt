@@ -3,7 +3,7 @@ Allow: /
 Disallow: /admin.html
 Disallow: /api/
 Disallow: /profil.html
-Disallow: /prihlaseni.html
+# Přihlašovací stránka je veřejná a používá noindex; musí být průchodná pro jeho přečtení.
 Disallow: /profil/
 Disallow: /onboarding.html
 Disallow: /offline.html
