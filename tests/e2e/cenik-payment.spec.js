@@ -594,11 +594,13 @@ test.describe('Ceník — platební tlačítka', () => {
         await expect(page.locator('#upgrade-cta')).toHaveCount(0);
         await expect(page.locator('#mobile-upgrade-cta')).toHaveCount(0);
 
-        const pricingLinks = page.locator('.nav__dropdown-link', { hasText: /Ceník/i });
+        const menuButton = page.getByRole('button', { name: 'Otevřít hlavní menu' });
+        if (await menuButton.isVisible()) await menuButton.click();
+        const pricingLinks = page.getByRole('navigation', { name: 'Hlavní navigace' })
+            .getByRole('link', { name: 'Členství', exact: true });
         await expect(pricingLinks).toHaveCount(1);
-
-        const href = await pricingLinks.first().getAttribute('href');
-        expect(href).toBe('cenik.html');
+        await expect(pricingLinks).toBeVisible();
+        await expect(pricingLinks).toHaveAttribute('href', '/cenik.html');
     });
 
     test('trial paywall bez manifestu neslibuje neovereny trial', async ({ page }) => {

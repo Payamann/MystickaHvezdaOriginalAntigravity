@@ -274,6 +274,9 @@ test.describe('Horoskopy', () => {
 
     test('po změně účtu se smaže už zobrazený horoskop a jeho akce', async ({ page }) => {
         await page.evaluate(() => {
+            window.Auth.user = { id: 'e2e-user-a', email: 'user-a@example.com', role: 'user', subscription_status: 'free' };
+            window.Auth.isLoggedIn = () => true;
+            document.dispatchEvent(new Event('auth:changed'));
             window.callAPI = async () => ({
                 success: true,
                 response: { prediction: 'Soukromý podnět účtu A.', affirmation: 'Vrátím se k sobě.', luckyNumbers: [2, 8] }
@@ -291,15 +294,17 @@ test.describe('Horoskopy', () => {
             document.dispatchEvent(new Event('auth:changed'));
         });
 
-        await expect(page.locator('.zodiac-card.active')).toHaveCount(0);
-        await expect(page.locator('#detail-name')).toHaveText('Zvěrokruh');
-        await expect(page.locator('#detail-text')).toHaveText('Vyber své znamení a přečti si dnešní podnět k zamyšlení.');
+        await expect(page.locator('.horoscope-content')).toBeHidden();
+        await expect(page.locator('#detail-text')).toBeEmpty();
         await expect(page.locator('.favorite-reading-action, .horoscope-feedback')).toHaveCount(0);
         await expect.poll(() => page.evaluate(() => window.currentHoroscopeReadingId)).toBeNull();
     });
 
     test('pozdní horoskop původního účtu se po přepnutí nevykreslí', async ({ page }) => {
         await page.evaluate(() => {
+            window.Auth.user = { id: 'e2e-user-a', email: 'user-a@example.com', role: 'user', subscription_status: 'free' };
+            window.Auth.isLoggedIn = () => true;
+            document.dispatchEvent(new Event('auth:changed'));
             window.__resolvePendingHoroscope = null;
             window.callAPI = () => new Promise(resolve => { window.__resolvePendingHoroscope = resolve; });
             window.Auth.saveReading = async () => ({ id: 'horoscope-reading-stale' });
@@ -312,7 +317,8 @@ test.describe('Horoskopy', () => {
             localStorage.setItem('auth_user', JSON.stringify(window.Auth.user));
             document.dispatchEvent(new Event('auth:changed'));
         });
-        await expect(page.locator('#detail-text')).toHaveText('Vyber své znamení a přečti si dnešní podnět k zamyšlení.');
+        await expect(page.locator('.horoscope-content')).toBeHidden();
+        await expect(page.locator('#detail-text')).toBeEmpty();
 
         await page.evaluate(() => window.__resolvePendingHoroscope({
             success: true,
@@ -368,6 +374,7 @@ test.describe('Horoskopy', () => {
                 }
             });
             window.Auth = {
+                user: { id: 'e2e-feedback-owner' },
                 isLoggedIn: () => true,
                 isPremium: () => false,
                 saveReading: async (type, data) => ({ id: 'reading-e2e-horoscope', type, data }),
@@ -441,6 +448,7 @@ test.describe('Horoskopy', () => {
                 }
             });
             window.Auth = {
+                user: { id: 'e2e-feedback-owner' },
                 isLoggedIn: () => true,
                 isPremium: () => false,
                 saveReading: async (type, data) => ({ id: 'reading-e2e-journal-link', type, data }),

@@ -111,13 +111,15 @@ test.describe('SEO horoskop stránky — struktura', () => {
             expect(pageBackground).toBe('rgb(11, 25, 41)');
             expect(heroBackground).toContain('01-astrolab.webp');
 
-            const signPicker = page.locator('.horoscope-day-sign-picker');
-            await expect(signPicker.locator('summary')).toHaveText('Změnit znamení');
+            const signPicker = page.locator('.horoscope-day-sign-switcher');
+            await expect(signPicker.locator('summary')).toContainText('Změnit znamení');
             await expect(signPicker).not.toHaveAttribute('open', '');
-            await expect(signPicker.locator('.zodiac-card')).toHaveCount(11);
+            await expect(signPicker.locator('.zodiac-card')).toHaveCount(12);
+            await expect(signPicker.locator('.zodiac-card[aria-current="page"]')).toHaveCount(1);
+            await expect(signPicker.locator('.zodiac-card[aria-current="page"]')).toHaveAttribute('href', `/horoskop/beran/${getTodayStr()}`);
             await expect(signPicker.locator('.zodiac-card').first()).toBeHidden();
             await signPicker.locator('summary').click();
-            await expect(signPicker.locator('.zodiac-card')).toHaveCount(11);
+            await expect(signPicker.locator('.zodiac-card')).toHaveCount(12);
             await expect(signPicker.locator('.zodiac-card').first()).toBeVisible();
         }
     });
