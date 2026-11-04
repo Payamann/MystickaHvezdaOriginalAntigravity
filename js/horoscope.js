@@ -112,6 +112,7 @@ const HOROSCOPE_UI_COPY = {
         loadDateError: 'Výklad se nepodařilo načíst.',
         limitError: 'Dnešní limit výkladů je vyčerpaný. Další výklad bude dostupný zítra.',
         loadError: 'Výklad se teď nepodařilo načíst. Zkus to prosím později.',
+        historySaveError: 'Horoskop zůstává zobrazený, ale nepodařilo se ho uložit do profilu.',
         feedback: {
             eyebrow: 'Další krok',
             prompt: 'Co s tebou tenhle vhled udělal?',
@@ -150,6 +151,7 @@ const HOROSCOPE_UI_COPY = {
         loadDateError: 'Horoskop sa nepodarilo načítať.',
         limitError: 'Dnešný limit horoskopov je vyčerpaný. Ďalší výklad bude dostupný zajtra.',
         loadError: 'Horoskop sa teraz nepodarilo načítať. Skús to prosím neskôr.',
+        historySaveError: 'Horoskop zostáva zobrazený, ale nepodarilo sa ho uložiť do profilu.',
         feedback: {
             eyebrow: 'Ďalší krok',
             prompt: 'Čo v tebe tento výklad zanechal?',
@@ -189,6 +191,7 @@ const HOROSCOPE_UI_COPY = {
         loadDateError: 'Nie udało się wczytać horoskopu.',
         limitError: 'Wykorzystano dzisiejszy limit horoskopów. Kolejny będzie dostępny jutro.',
         loadError: 'Nie udało się teraz wczytać horoskopu. Spróbuj ponownie później.',
+        historySaveError: 'Horoskop pozostaje widoczny, ale nie udało się go zapisać w profilu.',
         feedback: {
             eyebrow: 'Co dalej?',
             prompt: 'Co zostało z Tobą po tym odczycie?',
@@ -233,6 +236,7 @@ const HOROSCOPE_UI_COPY = {
         loadDateError: 'The horoscope could not be loaded.',
         limitError: 'You have reached today’s horoscope limit. Your next reading will be available tomorrow.',
         loadError: 'The horoscope could not be loaded right now. Please try again later.',
+        historySaveError: 'Your horoscope is still visible, but it could not be saved to your profile.',
         feedback: {
             eyebrow: 'Next step',
             prompt: 'What did this reading bring up for you?',
@@ -665,6 +669,15 @@ function initHoroscope() {
         window.currentHoroscopeReadingId = null;
         contentContainer?.querySelector('.favorite-reading-action')?.remove();
         contentContainer?.querySelector('.horoscope-feedback')?.remove();
+        contentContainer?.querySelector('[data-horoscope-save-error]')?.remove();
+    };
+    const showHistorySaveError = () => {
+        if (!contentContainer) return;
+        const notice = document.createElement('p');
+        notice.dataset.horoscopeSaveError = '';
+        notice.setAttribute('role', 'status');
+        notice.textContent = uiCopy.historySaveError;
+        contentContainer.appendChild(notice);
     };
     const invalidateOwner = () => {
         const owner = currentOwner();
@@ -856,6 +869,7 @@ function initHoroscope() {
             let alreadySaved = false;
             try { alreadySaved = Boolean(sessionStorage.getItem(saveKey)); } catch { /* Optional storage. */ }
             if (ownerId && isCurrent() && window.Auth?.saveReading && !alreadySaved) {
+                let historySaved = false;
                 try {
                     const saveResult = await window.Auth.saveReading('horoscope', {
                         sign: signName,
@@ -868,6 +882,7 @@ function initHoroscope() {
                     if (!isCurrent()) return;
 
                     if (saveResult && saveResult.id) {
+                        historySaved = true;
                         try { sessionStorage.setItem(saveKey, saveResult.id); } catch { /* Optional storage. */ }
                         window.currentHoroscopeReadingId = saveResult.id;
 
@@ -889,9 +904,13 @@ function initHoroscope() {
                         }
 
                         renderHoroscopeFeedbackAction(contentContainer, saveResult.id, period);
+                    } else {
+                        showHistorySaveError();
                     }
                 } catch (error) {
-                    console.warn('Horoscope history save failed:', error);
+                    if (!isCurrent()) return;
+                    console.warn(historySaved ? 'Horoscope history actions failed:' : 'Horoscope history save failed:', error);
+                    if (!historySaved) showHistorySaveError();
                 }
             }
         } catch (error) {

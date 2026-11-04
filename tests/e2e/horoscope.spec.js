@@ -525,7 +525,7 @@ test.describe('Horoskopy', () => {
         const activation = page.locator('#horoscope-activation-welcome');
         await expect(activation).toBeVisible();
         await expect(activation).toHaveAttribute('data-state', 'loading');
-        await expect(page.locator('#horoscope-activation-title')).toHaveText('Načítám horoskop pro znamení: Lev');
+        await expect(page.locator('#horoscope-activation-title')).toHaveText('Připravuji první osobní horoskop — Lev');
         await expect.poll(() => page.evaluate(() => typeof window.__releaseHoroscopeActivation)).toBe('function');
         await page.evaluate(() => window.__releaseHoroscopeActivation());
         await expect(activation).toHaveAttribute('data-state', 'complete');

@@ -4,7 +4,7 @@ import { jest } from '@jest/globals';
 
 const source = fs.readFileSync(new URL('../../js/horoscope.js', import.meta.url), 'utf8');
 const flush = () => new Promise(resolve => setImmediate(resolve));
-const deferred = () => { let resolve; const promise = new Promise(done => { resolve = done; }); return { promise, resolve }; };
+const deferred = () => { let resolve, reject; const promise = new Promise((done, fail) => { resolve = done; reject = fail; }); return { promise, resolve, reject }; };
 
 test('fallback is labeled and preserved in history metadata', async () => {
     const app = fixture();
@@ -14,22 +14,29 @@ test('fallback is labeled and preserved in history metadata', async () => {
     expect(app.nodes['detail-text'].innerText).toContain('General horoscope');
     expect(app.window.Auth.saveReading).toHaveBeenCalledWith('horoscope', expect.objectContaining({ fallback: true, prediction: 'General horoscope' }), 'account-a');
 });
-function fixture(owner = 'account-a') {
+function fixture(owner = 'account-a', lang = 'cs') {
     const listeners = new Map();
     const node = () => ({
         textContent: '', innerText: '', innerHTML: '', dataset: {}, parentElement: {},
         classList: { add() {}, remove() {}, toggle() {} },
         querySelector: () => null, querySelectorAll: () => [],
         addEventListener(event, fn) { this[event] = fn; }, scrollIntoView() {}, remove() {},
-        appendChild() {}, parentNode: { insertBefore() {} }
+        appendChild() {}, setAttribute() {}, parentNode: { insertBefore() {} }
     });
     const nodes = Object.fromEntries(['horoscope-detail-section', 'detail-text', 'detail-date', 'detail-work', 'detail-numbers', 'favorite-horoscope-btn'].map(id => [id, node()]));
     const card = node();
     card.querySelector = selector => ({ innerText: selector.includes('name') ? 'Beran' : '♈' });
     card.getAttribute = () => '#beran';
     const content = node();
+    const notices = [];
+    content.appendChild = child => {
+        if (!Object.hasOwn(child.dataset, 'horoscopeSaveError')) return;
+        notices.push(child);
+        child.remove = () => notices.splice(notices.indexOf(child), 1);
+    };
+    content.querySelector = selector => selector === '[data-horoscope-save-error]' ? notices[0] || null : null;
     const document = {
-        documentElement: { lang: 'cs' },
+        documentElement: { lang },
         getElementById: id => nodes[id],
         querySelector: selector => selector === '.horoscope-content' ? content : null,
         querySelectorAll: selector => selector === '.zodiac-card' ? [card] : [],
@@ -50,7 +57,7 @@ function fixture(owner = 'account-a') {
     });
     vm.runInContext(source, context);
     vm.runInContext('initHoroscope()', context);
-    return { nodes, window, storage, fetch,
+    return { nodes, window, storage, fetch, notices, content,
         select: async () => { await card.click({ preventDefault() {} }); await flush(); },
         changeOwner: id => { window.Auth.user = id ? { id } : null; for (const fn of listeners.get('auth:changed') || []) fn(); }
     };
@@ -64,11 +71,73 @@ test.each([null, 'throw'])('failed save (%s) retains result and allows retry', a
     expect(app.nodes['detail-text'].innerText).toBe('Private reading');
     expect(app.nodes['horoscope-detail-section'].dataset.loaded).toBe('true');
     expect(app.storage.size).toBe(0);
+    expect(app.notices).toHaveLength(1);
+    expect(app.notices[0].textContent).toContain('nepodařilo se ho uložit do profilu');
     await app.select();
+    expect(app.notices).toHaveLength(0);
     expect(app.window.Auth.saveReading).toHaveBeenCalledTimes(2);
     expect(app.window.Auth.saveReading).toHaveBeenLastCalledWith('horoscope', expect.any(Object), 'account-a');
     expect([...app.storage.keys()][0]).toContain('account-a');
     expect([...app.storage.values()]).toEqual(['saved-id']);
+});
+
+test.each([
+    ['cs', 'Horoskop zůstává zobrazený, ale nepodařilo se ho uložit do profilu.'],
+    ['sk', 'Horoskop zostáva zobrazený, ale nepodarilo sa ho uložiť do profilu.'],
+    ['pl', 'Horoskop pozostaje widoczny, ale nie udało się go zapisać w profilu.'],
+    ['en', 'Your horoscope is still visible, but it could not be saved to your profile.']
+])('failed-save notice uses the page language (%s)', async (lang, message) => {
+    const app = fixture('account-a', lang);
+    app.window.Auth.saveReading.mockResolvedValueOnce(null);
+    await app.select();
+    expect(app.notices[0]?.textContent).toBe(message);
+});
+
+test('failed action rendering after a successful save does not claim persistence failed', async () => {
+    const app = fixture();
+    const append = app.content.appendChild;
+    app.content.appendChild = child => {
+        if (child.className === 'horoscope-feedback') throw new Error('render failed');
+        append(child);
+    };
+    await app.select();
+    expect(app.nodes['detail-text'].innerText).toBe('Private reading');
+    expect(app.nodes['horoscope-detail-section'].dataset.loaded).toBe('true');
+    expect(app.window.currentHoroscopeReadingId).toBe('saved-id');
+    expect([...app.storage.values()]).toEqual(['saved-id']);
+    expect(app.notices).toHaveLength(0);
+});
+
+test.each(['request', 'account'])('failed-save notice clears immediately on a new %s', async action => {
+    const app = fixture();
+    app.window.Auth.saveReading.mockResolvedValueOnce(null);
+    await app.select();
+    expect(app.notices).toHaveLength(1);
+    if (action === 'account') app.changeOwner('account-b');
+    else {
+        app.window.callAPI.mockReturnValueOnce(deferred().promise);
+        await app.select();
+    }
+    expect(app.notices).toHaveLength(0);
+    expect(app.nodes['horoscope-detail-section'].dataset.loaded).toBe('false');
+    expect(app.window.currentHoroscopeReadingId).toBeNull();
+});
+
+test.each([null, 'throw'])('late save failure (%s) cannot affect the new account result', async failure => {
+    const app = fixture();
+    const pending = deferred();
+    app.window.Auth.saveReading.mockReturnValueOnce(pending.promise);
+    await app.select();
+    app.changeOwner('account-b');
+    await app.select();
+    if (failure === 'throw') pending.reject(new Error('old save failed'));
+    else pending.resolve(null);
+    await flush();
+    expect(app.notices).toHaveLength(0);
+    expect(app.nodes['detail-text'].innerText).toBe('Private reading');
+    expect(app.nodes['horoscope-detail-section'].dataset.loaded).toBe('true');
+    expect(app.window.currentHoroscopeReadingId).toBe('saved-id');
+    expect([...app.storage.keys()]).toEqual([expect.stringContaining('account-b')]);
 });
 
 test('saved marker is independent for each account; anonymous results are not saved', async () => {
