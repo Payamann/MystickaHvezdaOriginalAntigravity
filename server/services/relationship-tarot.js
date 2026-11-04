@@ -90,6 +90,18 @@ export function parseRelationshipReading(raw, { strictLanguage = true } = {}) {
     return { introduction: value.introduction, cards: value.cards, connection: value.connection, nextStep: value.nextStep, questions: value.questions };
 }
 
+function requireDistinctRelationshipReading(reading) {
+    const normalize = value => value.trim().replace(/\s+/gu, ' ').toLocaleLowerCase('cs');
+    const paragraphs = [reading.introduction, ...reading.cards, reading.connection, reading.nextStep].map(normalize);
+    const questions = reading.questions.map(normalize);
+    if (new Set(paragraphs).size !== paragraphs.length || new Set(questions).size !== questions.length) {
+        const error = new Error('Repetitive relationship reading');
+        error.code = 'RELATIONSHIP_READING_REPETITIVE';
+        throw error;
+    }
+    return reading;
+}
+
 export async function generateRelationshipReading({ question, cards }) {
     const { callClaude } = await import('./claude.js');
     const system = `Napiš přirozenou, dobře redigovanou češtinou osobní tarotový výklad pro sebereflexi jedné vztahové otázky.
@@ -125,13 +137,18 @@ Vrať pouze JSON podle dodaného schématu.`;
             feature: 'relationship_tarot', model: process.env.OPENAI_RELATIONSHIP_MODEL || process.env.OPENAI_MODEL || 'gpt-6-luna',
             outputSchema: RELATIONSHIP_READING_SCHEMA, validateResponse: parseRelationshipReading
         });
-        return parseRelationshipReading(raw);
+        return requireDistinctRelationshipReading(parseRelationshipReading(raw));
     };
     try {
         return await generate(system);
     } catch (error) {
-        if (error.code !== 'RELATIONSHIP_READING_NEUTER_ADDRESS') throw error;
-        return generate(`${system}\nOprav jazyk přímého oslovení: nepoužívej koncovku středního rodu u zákazníka. Přeformuluj větu přítomným časem bez rodové koncovky, například „co chceš“ nebo „pokud na to máš chuť“.`);
+        if (error.code === 'RELATIONSHIP_READING_NEUTER_ADDRESS') {
+            return generate(`${system}\nOprav jazyk přímého oslovení: nepoužívej koncovku středního rodu u zákazníka. Přeformuluj větu přítomným časem bez rodové koncovky, například „co chceš“ nebo „pokud na to máš chuť“.`);
+        }
+        if (error.code === 'RELATIONSHIP_READING_REPETITIVE') {
+            return generate(`${system}\nOprav opakování: úvod, výklad každé karty, propojení a další krok musí být odlišné odstavce. Každá ze tří otázek k zamyšlení musí otevírat jiný úhel. Zachovej původní zadání a dodané karty.`);
+        }
+        throw error;
     }
 }
 

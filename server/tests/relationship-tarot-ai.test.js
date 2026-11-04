@@ -2,8 +2,19 @@ import { jest } from '@jest/globals';
 import { generateRelationshipReading, drawRelationshipCards } from '../services/relationship-tarot.js';
 
 const paragraph = 'Vrať se ke konkrétní otázce, kterou popisuješ. Karta nabízí jiný úhel pohledu a jeden podnět k vlastnímu zamyšlení, nikoli důkaz o druhém člověku.';
-const reading = { introduction: paragraph, cards: [paragraph, paragraph, paragraph], connection: paragraph, nextStep: paragraph, questions: ['Co chceš v rozhovoru pojmenovat?', 'Jakou změnu můžeš navrhnout?', 'Podle čeho poznáš posun?'] };
-const providerReading = { introduction: paragraph, card1: paragraph, card2: paragraph, card3: paragraph, connection: paragraph, nextStep: paragraph, question1: reading.questions[0], question2: reading.questions[1], question3: reading.questions[2] };
+const section = detail => `${paragraph} ${detail}`;
+const reading = {
+    introduction: section('Začni tím, co o své situaci skutečně víš.'),
+    cards: [
+        section('První karta může otevřít téma tvé vlastní potřeby.'),
+        section('Druhá karta vybízí k rozlišení slov a konkrétních činů.'),
+        section('Třetí karta nabízí malý krok, který máš ve své moci.')
+    ],
+    connection: section('Tyto tři pohledy společně tvoří prostor pro klidnější rozhodnutí.'),
+    nextStep: section('Zkus si napsat jednu větu, kterou chceš v rozhovoru vyslovit.'),
+    questions: ['Co chceš v rozhovoru pojmenovat?', 'Jakou změnu můžeš navrhnout?', 'Podle čeho poznáš posun?']
+};
+const providerReading = { introduction: reading.introduction, card1: reading.cards[0], card2: reading.cards[1], card3: reading.cards[2], connection: reading.connection, nextStep: reading.nextStep, question1: reading.questions[0], question2: reading.questions[1], question3: reading.questions[2] };
 const previous = { NODE_ENV: process.env.NODE_ENV, MOCK_AI: process.env.MOCK_AI, OPENAI_API_KEY: process.env.OPENAI_API_KEY };
 const originalFetch = global.fetch;
 let upstream;
@@ -59,6 +70,26 @@ test('second neuter output fails after one correction', async () => {
     upstream.mockResolvedValueOnce(providerResponse(neuterProviderReading)).mockResolvedValueOnce(providerResponse(neuterProviderReading));
     const before = upstream.mock.calls.length;
     await expect(generateRelationshipReading({ question: 'Co se dá otevřít v rozhovoru?', cards: drawRelationshipCards() })).rejects.toMatchObject({ code: 'RELATIONSHIP_READING_NEUTER_ADDRESS' });
+    expect(upstream.mock.calls.length - before).toBe(2);
+});
+
+test('repeated paid sections get one corrective generation with the same private input', async () => {
+    const repeated = { ...providerReading, card2: providerReading.card1 };
+    upstream.mockResolvedValueOnce(providerResponse(repeated)).mockResolvedValueOnce(providerResponse(providerReading));
+    const before = upstream.mock.calls.length;
+    await expect(generateRelationshipReading({ question: 'Co mohu změnit ve svém přístupu?', cards: drawRelationshipCards() })).resolves.toEqual(reading);
+    const [first, second] = upstream.mock.calls.slice(before).map(([, options]) => JSON.parse(options.body));
+    expect(upstream.mock.calls.length - before).toBe(2);
+    expect(second.input).toEqual(first.input);
+    expect(second.instructions).toContain('Oprav opakování');
+});
+
+test('repeated paid sections are not accepted after the corrective attempt', async () => {
+    const repeated = { ...providerReading, card2: providerReading.card1 };
+    upstream.mockResolvedValueOnce(providerResponse(repeated)).mockResolvedValueOnce(providerResponse(repeated));
+    const before = upstream.mock.calls.length;
+    await expect(generateRelationshipReading({ question: 'Co mohu změnit ve svém přístupu?', cards: drawRelationshipCards() }))
+        .rejects.toMatchObject({ code: 'RELATIONSHIP_READING_REPETITIVE' });
     expect(upstream.mock.calls.length - before).toBe(2);
 });
 
