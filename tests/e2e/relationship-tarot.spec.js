@@ -244,6 +244,7 @@ test('yes/no remains free without the optional offer, including keyboard use and
     await expect(page.locator('#result-next-step-text')).not.toBeEmpty();
     await expect(page.locator('#result-panel')).toBeVisible();
     await expect(page.locator('[data-relationship-offer="tarot_yes_no_result"]')).toBeHidden();
+    await expect(page.locator('[data-relationship-intent-followup]')).toBeHidden();
     await expect(page.locator('[data-tarot-member-continuation]')).toBeHidden();
     await expect(page.locator('[data-relationship-legacy]')).toHaveCount(0);
     await expect(page.locator('#result-panel')).not.toContainText('199 Kč/měsíc');
@@ -255,15 +256,32 @@ test('yes/no remains free without the optional offer, including keyboard use and
     await expect(card).not.toHaveAttribute('aria-disabled');
 });
 
-test('generic yes/no intent does not show a relationship offer', async ({ page }) => {
-    await prepare(page, true);
+test('generic yes/no keeps the free answer and lets a visitor opt into a relevant relationship offer', async ({ page }) => {
+    const funnelEvents = [];
+    await prepare(page, true, funnelEvents);
     await page.goto('/tarot-ano-ne.html?intent=yes_no');
-    await page.locator('#question-input').fill('Mám si na tento krok vyhradit čas?');
+    const question = 'Jak mám s partnerem otevřít rozhovor o tom, co mi chybí?';
+    await page.locator('#question-input').fill(question);
     await page.locator('.tarot-card').first().click();
 
     await expect(page.locator('#result-panel')).toBeVisible();
     await expect(page.locator('[data-relationship-offer="tarot_yes_no_result"]')).toBeHidden();
     await expect(page.locator('[data-tarot-member-continuation]')).toBeHidden();
+    const followup = page.locator('[data-relationship-intent-followup]');
+    await expect(followup).toBeVisible();
+    await followup.locator('button').click();
+    await expect(followup).toBeHidden();
+    const offer = page.locator('[data-relationship-offer="tarot_yes_no_result"]');
+    await expect(offer).toBeVisible();
+    await expect(offer.locator('[data-relationship-question]')).toContainText(question);
+    await offer.scrollIntoViewIfNeeded();
+    await expect.poll(() => funnelEvents.some(event => event.eventName === 'one_time_offer_viewed'
+        && event.metadata?.discovery_path === 'post_result_opt_in')).toBe(true);
+    await offer.locator('a').click();
+    await expect(page).toHaveURL(/vztahovy-vyklad.html\?source=tarot_yes_no_result$/);
+    await expect(page.locator('#question')).toHaveValue(question);
+    await expect.poll(() => funnelEvents.some(event => event.eventName === 'one_time_product_cta_clicked'
+        && event.metadata?.discovery_path === 'post_result_opt_in')).toBe(true);
 });
 
 for (const invalidProduct of [

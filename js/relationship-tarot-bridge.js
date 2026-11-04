@@ -11,6 +11,7 @@
     ]);
     let memoryFlowId = '';
     let productAvailable = false;
+    let postResultOptIn = false;
     let csrfPromise;
     function hasRelationshipIntent() {
         const intent = new URLSearchParams(window.location.search).get('intent');
@@ -79,6 +80,7 @@
             placement: source,
             funnel_step: funnelStep,
             flow_id: flowId(),
+            ...(postResultOptIn && source === 'tarot_yes_no_result' ? { discovery_path: 'post_result_opt_in' } : {}),
             ...consentedAcquisition()
         };
         try {
@@ -133,6 +135,8 @@
         if (!productAvailable) return;
         const yesNoRelationshipOffer = document.querySelector('[data-relationship-offer="tarot_yes_no_result"]');
         const showYesNoRelationshipOffer = Boolean(yesNoRelationshipOffer && hasRelationshipIntent());
+        const followup = document.querySelector('[data-relationship-intent-followup]');
+        if (followup) followup.hidden = !yesNoRelationshipOffer || showYesNoRelationshipOffer || !window.__lastTarotYesNoShareResult;
         if (showYesNoRelationshipOffer) {
             document.querySelectorAll('[data-relationship-legacy]').forEach(el => { el.hidden = true; });
         }
@@ -164,10 +168,22 @@
     const intentChoice = document.getElementById('relationship-intent');
     if (intentChoice) {
         intentChoice.checked = relationshipIntents.has(String(new URLSearchParams(window.location.search).get('intent') || '').trim().toLowerCase());
-        intentChoice.addEventListener('change', revealOffers);
+        intentChoice.addEventListener('change', () => {
+            if (!intentChoice.checked) postResultOptIn = false;
+            revealOffers();
+        });
+        document.querySelector('[data-relationship-intent-followup-button]')?.addEventListener('click', () => {
+            postResultOptIn = true;
+            intentChoice.checked = true;
+            revealOffers();
+            document.querySelector('[data-relationship-offer="tarot_yes_no_result"]')?.scrollIntoView({ block: 'nearest' });
+        });
     }
     document.addEventListener('mh:relationship-offers-ready', revealOffers);
-    document.addEventListener('mh:tarot-yes-no-context-changed', revealOffers);
+    document.addEventListener('mh:tarot-yes-no-context-changed', () => {
+        if (!window.__lastTarotYesNoShareResult) postResultOptIn = false;
+        revealOffers();
+    });
     fetch('/api/vztahovy-vyklad/product', { cache: 'no-store' }).then(async response => {
         if (!response.ok) return;
         const product = await response.json();
