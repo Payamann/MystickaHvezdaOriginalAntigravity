@@ -386,6 +386,7 @@ test.describe('Partnerská shoda', () => {
 
     test('po výpočtu nabízí jednorázový výklad a měří bezpečný přechod', async ({ page }) => {
         const funnelEvents = [];
+        await page.route('**/api/synastry/calculate', route => route.fulfill({ json: calculatedFixture }));
         await page.route('**/api/vztahovy-vyklad/product', route => route.fulfill({
             json: { enabled: true, amount: 14900, currency: 'czk' }
         }));
@@ -484,6 +485,7 @@ test.describe('Partnerská shoda', () => {
 
     test('vysledek zmeri vztahovou mapu az po otevreni dalsich moznosti', async ({ page }) => {
         const funnelEvents = [];
+        await page.route('**/api/synastry/calculate', route => route.fulfill({ json: calculatedFixture }));
         await page.route('**/api/csrf-token', route => route.fulfill({
             status: 200,
             contentType: 'application/json',

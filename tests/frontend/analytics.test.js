@@ -6,6 +6,7 @@ import { jest } from '@jest/globals';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const analyticsSource = fs.readFileSync(path.resolve(__dirname, '../../js/analytics.js'), 'utf8');
+const analyticsInitSource = fs.readFileSync(path.resolve(__dirname, '../../js/analytics-init.js'), 'utf8');
 
 function createStorage(initial = {}) {
     const values = new Map(Object.entries(initial));
@@ -16,7 +17,7 @@ function createStorage(initial = {}) {
     };
 }
 
-function loadAnalytics({ analyticsConsent = null, search = '?utm_source=google&utm_medium=organic' } = {}) {
+function loadAnalytics({ analyticsConsent = null, search = '?utm_source=google&utm_medium=organic', googleInit = false } = {}) {
     const localStorage = createStorage(analyticsConsent === null
         ? {}
         : { mh_cookie_prefs: JSON.stringify({ analytics: analyticsConsent, marketing: false }) });
@@ -26,6 +27,8 @@ function loadAnalytics({ analyticsConsent = null, search = '?utm_source=google&u
     const gtag = jest.fn();
     const mixpanelTrack = jest.fn();
     const segmentTrack = jest.fn();
+    const idleCallbacks = [];
+    const appendScript = jest.fn();
     const fetch = jest.fn(async () => ({
         ok: true,
         json: async () => ({ success: true, accepted: 1 })
@@ -44,6 +47,9 @@ function loadAnalytics({ analyticsConsent = null, search = '?utm_source=google&u
         readyState: 'complete',
         title: 'Test page',
         referrer: '',
+        querySelector: () => null,
+        createElement: () => ({}),
+        head: { appendChild: appendScript },
         addEventListener: jest.fn(addListener(documentListeners))
     };
     const window = {
@@ -63,9 +69,10 @@ function loadAnalytics({ analyticsConsent = null, search = '?utm_source=google&u
         mixpanel: { track: mixpanelTrack },
         analytics: { track: segmentTrack }
     };
+    window.requestIdleCallback = callback => idleCallbacks.push(callback);
     window.window = window;
 
-    vm.runInNewContext(analyticsSource, {
+    const context = vm.createContext({
         window,
         document,
         localStorage,
@@ -81,6 +88,8 @@ function loadAnalytics({ analyticsConsent = null, search = '?utm_source=google&u
         Set,
         console
     });
+    if (googleInit) vm.runInContext(analyticsInitSource, context);
+    vm.runInContext(analyticsSource, context);
 
     return {
         window,
@@ -89,7 +98,9 @@ function loadAnalytics({ analyticsConsent = null, search = '?utm_source=google&u
         fetch,
         gtag,
         mixpanelTrack,
-        segmentTrack
+        segmentTrack,
+        idleCallbacks,
+        appendScript
     };
 }
 
@@ -247,6 +258,52 @@ describe('consent-gated analytics queue', () => {
         }
         expect(harness.window.MH_ANALYTICS.trackPurchaseCompleted('pruvodce', 0, 'CZK', { verified: true, transaction_id: 'trial' })).toBe(false);
         expect(harness.window.MH_ANALYTICS_QUEUE.filter(event => event.name === 'purchase')).toHaveLength(0);
+    });
+
+    test('buffers one consented verified purchase in the init stub before the delayed Google library loads', async () => {
+        const harness = loadAnalytics({ googleInit: true });
+        const purchaseCommands = () => harness.window.dataLayer.filter(command => command[0] === 'event' && command[1] === 'purchase');
+        expect(typeof harness.window.gtag).toBe('function');
+        const purchase = { verified: true, transaction_id: 'checkout-delayed-ga', source: 'profile_verified_payment' };
+        expect(harness.window.MH_ANALYTICS.trackPurchaseCompleted('pruvodce', 199, 'CZK', purchase)).toBe(true);
+        await harness.window.MH_ANALYTICS.flushQueuedEvents();
+        expect(purchaseCommands()).toHaveLength(0);
+        expect(harness.fetch).not.toHaveBeenCalled();
+        expect(harness.mixpanelTrack).not.toHaveBeenCalled();
+        expect(harness.segmentTrack).not.toHaveBeenCalled();
+        expect(harness.appendScript).not.toHaveBeenCalled();
+        expect(harness.idleCallbacks).toHaveLength(0);
+
+        harness.fetch.mockResolvedValueOnce({ ok: true, json: async () => ({ success: true, accepted: 2 }) });
+        grantAnalyticsConsent(harness);
+        await harness.window.MH_ANALYTICS.flushQueuedEvents();
+        expect(harness.fetch).toHaveBeenCalledTimes(1);
+        const batch = JSON.parse(harness.fetch.mock.calls[0][1].body);
+        expect(batch.events.filter(event => event.eventName === 'purchase')).toEqual([expect.objectContaining({
+            eventName: 'purchase',
+            metadata: expect.objectContaining({ transaction_id: 'checkout-delayed-ga' })
+        })]);
+        expect(harness.window.MH_ANALYTICS_QUEUE).toHaveLength(0);
+        expect(harness.appendScript).not.toHaveBeenCalled();
+        expect(purchaseCommands()).toHaveLength(1);
+        expect(purchaseCommands()[0][2]).toMatchObject({
+            transaction_id: 'checkout-delayed-ga', value: 199, currency: 'CZK',
+            interaction_source: 'profile_verified_payment'
+        });
+
+        // Run only the local loader callback; no Google script is fetched or executed.
+        expect(harness.idleCallbacks).toHaveLength(1);
+        harness.idleCallbacks[0]();
+        expect(harness.appendScript).toHaveBeenCalledWith(expect.objectContaining({
+            src: expect.stringContaining('https://www.googletagmanager.com/gtag/js?id=')
+        }));
+        await harness.window.MH_ANALYTICS.flushQueuedEvents();
+        await harness.window.MH_ANALYTICS.flushQueuedEvents();
+        expect(harness.window.MH_ANALYTICS.trackPurchaseCompleted('pruvodce', 199, 'CZK', purchase)).toBe(false);
+        expect(purchaseCommands()).toHaveLength(1);
+        expect(harness.fetch).toHaveBeenCalledTimes(1);
+        expect(harness.mixpanelTrack.mock.calls.filter(call => call[0] === 'purchase')).toHaveLength(1);
+        expect(harness.segmentTrack.mock.calls.filter(call => call[0] === 'purchase')).toHaveLength(1);
     });
 
     test('retains the full batch when the server only accepts part of it', async () => {
