@@ -1580,7 +1580,7 @@ function renderDailyGuidance(user, readings, subscription) {
     }
 }
 
-function renderActivationChecklist(user, readings) {
+function renderActivationChecklist(user, readings, subscription) {
     const labelEl = document.getElementById('activation-progress-label');
     const barEl = document.getElementById('activation-progress-bar');
     const itemsEl = document.getElementById('activation-checklist-items');
@@ -1590,7 +1590,12 @@ function renderActivationChecklist(user, readings) {
     const sign = getProfileSign(user);
     const hasJournal = (getReadingSummary()?.types || []).includes('journal') || readings.some(reading => reading.type === 'journal');
     const signupIntentDestination = kinds.size ? null : getSignupIntentDestination(sign);
-    const firstReadingHref = signupIntentDestination?.href || (sign
+    const planType = normalizePlanType(subscription?.planType);
+    const premiumFirstAction = planType !== 'free' && ['active', 'trialing', 'cancel_pending'].includes(subscription?.status)
+        ? PREMIUM_ACTIONS[planType]?.[0] : null;
+    const firstReadingHref = signupIntentDestination?.href || (premiumFirstAction
+        ? buildAttributedRelativeHref(premiumFirstAction.href, { source: 'profile_activation' })
+        : sign
         ? buildDailyHoroscopeHref(sign, 'profile_activation')
         : buildTarotYesNoHref('profile_activation', 'first_reading'));
     const firstReadingDescription = kinds.size
@@ -1599,7 +1604,8 @@ function renderActivationChecklist(user, readings) {
             ? `Začni dnešním horoskopem pro ${sign.name}, ať první krok naváže na profil.`
             : 'Vyber si první nástroj podle své otázky.';
 
-    const effectiveFirstReadingDescription = signupIntentDestination?.description || firstReadingDescription;
+    const effectiveFirstReadingDescription = signupIntentDestination?.description
+        || (premiumFirstAction && !kinds.size ? `Členství je aktivní. ${premiumFirstAction.description}` : firstReadingDescription);
 
     const items = [
         {
@@ -1623,7 +1629,8 @@ function renderActivationChecklist(user, readings) {
             description: effectiveFirstReadingDescription,
             done: kinds.size > 0,
             href: kinds.size > 0 ? '#tab-history' : firstReadingHref,
-            action: kinds.size > 0 ? 'open_history' : signupIntentDestination ? 'start_signup_intent' : sign ? 'start_daily_horoscope' : 'start_tarot'
+            action: kinds.size > 0 ? 'open_history' : signupIntentDestination ? 'start_signup_intent'
+                : premiumFirstAction ? 'start_premium_reading' : sign ? 'start_daily_horoscope' : 'start_tarot'
         },
         {
             key: 'daily_reflection',

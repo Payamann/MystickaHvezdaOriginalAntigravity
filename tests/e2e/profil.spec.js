@@ -494,6 +494,23 @@ test.describe('Profil aktivace', () => {
         await expect(firstReading).toContainText('numerologick');
     });
 
+    test('aktivni clen bez historie dostane i pri dalsi navsteve vstup do placene funkce', async ({ page }) => {
+        await mockLoggedInProfile(page, {
+            user: { subscription_status: 'premium_monthly' },
+            subscription: { planType: 'premium_monthly', status: 'active', canCancel: true }
+        });
+
+        await page.goto('/profil.html');
+        await waitForPageReady(page);
+
+        const firstReading = page.locator('[data-activation-step="first_reading"]');
+        await expect(firstReading).toContainText('Členství je aktivní');
+        const href = await firstReading.getAttribute('href');
+        expect(href).toContain('mentor.html');
+        expect(href).toContain('source=profile_activation');
+        await expect(firstReading).toHaveAttribute('data-activation-action', 'start_premium_reading');
+    });
+
     test('prazdny profil pouzije growth-loop manifest jako primarni routing', async ({ page }) => {
         await mockLoggedInProfile(page);
         await page.route('**/api/growth-loop', async (route) => {
