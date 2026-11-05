@@ -68,6 +68,7 @@ describe('User readings route', () => {
             expectedUserId: userId,
             data: {
                 tool: 'tarot_yes_no',
+                spreadType: 'Tři karty',
                 question: 'Mám počkat do zítřka?',
                 answer: 'ANO: Dej rozhodnutí chvíli prostoru.'
             }
@@ -84,6 +85,18 @@ describe('User readings route', () => {
         expect(first.body.id).toBe(requestId);
         expect(retry.body.id).toBe(first.body.id);
         expect(retry.body.idempotent).toBe(true);
+
+        const { data: savedEvents } = await supabase
+            .from('funnel_events')
+            .select('*')
+            .eq('user_id', userId)
+            .eq('event_name', 'reading_saved');
+        expect(savedEvents).toHaveLength(1);
+        expect(savedEvents[0]).toMatchObject({
+            source: 'reading_save',
+            feature: 'tarot',
+            metadata: { reading_id: requestId, spread_type: 'Tři karty' }
+        });
     });
 
     test('rejects a pending reading bound to a different authenticated account', async () => {
@@ -241,6 +254,10 @@ describe('User readings route', () => {
 
         expect(events).toEqual(expect.arrayContaining([
             expect.objectContaining({
+                event_name: 'reading_saved',
+                feature: 'horoscope'
+            }),
+            expect.objectContaining({
                 event_name: 'first_value_completed',
                 feature: 'horoscope'
             }),
@@ -302,6 +319,7 @@ describe('User readings route', () => {
             .eq('user_id', userId);
 
         expect(events.filter(event => event.event_name === 'daily_ritual_completed')).toHaveLength(1);
+        expect(events.filter(event => event.event_name === 'reading_saved')).toHaveLength(2);
         expect(events.filter(event => event.event_name === 'first_value_completed')).toHaveLength(1);
         expect(events.filter(event => event.event_name === 'activation_completed')).toHaveLength(1);
         expect(events.find(event => event.event_name === 'first_value_completed')).toMatchObject({

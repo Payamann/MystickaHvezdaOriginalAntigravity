@@ -198,33 +198,6 @@ function trackConfirmedPurchase(product, value, currency, context, attemptsLeft 
     callProfileAnalytics('trackPurchaseCompleted', product, value, currency, context);
 }
 
-async function trackProfileFunnelEvent(eventName, { source = 'profile', feature = 'profile_history', planId = null, metadata = {} } = {}) {
-    try {
-        const body = {
-            eventName,
-            source,
-            feature,
-            metadata: {
-                path: window.location.pathname,
-                ...metadata
-            }
-        };
-        if (planId) {
-            body.planId = planId;
-        }
-
-        await fetch(`${apiUrl()}/payment/funnel-event`, {
-            method: 'POST',
-            credentials: 'include',
-            keepalive: true,
-            headers: await authHeadersWithCsrf(true),
-            body: JSON.stringify(body)
-        });
-    } catch (error) {
-        console.warn('[Profile funnel] Could not record event:', error?.message || error);
-    }
-}
-
 function readPendingProfileReading() {
     for (const storageName of ['localStorage', 'sessionStorage']) {
         let storage;
@@ -389,15 +362,6 @@ async function savePendingProfileReading(userId) {
             feature: pending.feature || pending.type,
             reading_type: pending.type,
             reading_id: savedReadingId
-        });
-        void trackProfileFunnelEvent('reading_saved', {
-            source: pending.source || 'pending_reading',
-            feature: pending.feature || pending.type,
-            metadata: {
-                reading_id: savedReadingId,
-                reading_type: pending.type,
-                restored_from: pending.source || 'pending_reading'
-            }
         });
         return true;
     } catch (error) {

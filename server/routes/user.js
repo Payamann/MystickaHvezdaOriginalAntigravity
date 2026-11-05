@@ -275,7 +275,21 @@ router.post('/readings', authenticateToken, async (req, res) => {
                     reading_id: data.id
                 }
             });
-        } else if (previousValueReadingCount === 0) {
+        } else {
+            await recordFunnelEvent('reading_saved', {
+                userId: req.user.id,
+                source: 'reading_save',
+                feature: cleanType,
+                metadata: {
+                    reading_id: data.id,
+                    ...(cleanType === 'tarot' && typeof validatedData?.spreadType === 'string'
+                        ? { spread_type: validatedData.spreadType.slice(0, 80) }
+                        : {})
+                }
+            });
+        }
+
+        if (cleanType !== 'journal' && previousValueReadingCount === 0) {
             await recordFunnelEvent('first_value_completed', {
                 userId: req.user.id,
                 source: 'reading_save',
