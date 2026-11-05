@@ -329,6 +329,30 @@ function assertPersonalMapSectionsMatchInput(sections, input = {}) {
     return sections;
 }
 
+function assertPersonalMapSectionsComplete(sections) {
+    const proseFields = ['strengths', 'mainTheme', 'innerMirror', 'love', 'communication', 'workMoney',
+        'bodyEnergy', 'growth', 'shadowGift', 'ritual', 'closing'];
+    const substantial = value => typeof value === 'string' && value.trim().length >= 40;
+    const titledText = value => value && typeof value.title === 'string' && value.title.trim()
+        && substantial(value.text);
+    const valid = substantial(sections.starSignature?.text)
+        && substantial(sections.yearMantra?.text)
+        && proseFields.every(field => substantial(sections[field]))
+        && sections.essence?.length === 4 && sections.essence.every(titledText)
+        && sections.months?.length === 5 && sections.months.every(item => item?.month && titledText(item))
+        && sections.actionPlan?.length === 5 && sections.actionPlan.every(titledText)
+        && sections.journalPrompts?.length >= 5
+        && sections.journalPrompts.every(item => typeof item === 'string' && item.trim().length >= 12)
+        && typeof sections.starSignature?.title === 'string' && sections.starSignature.title.trim()
+        && typeof sections.yearMantra?.sentence === 'string' && sections.yearMantra.sentence.trim();
+    if (!valid) {
+        const error = new Error('Incomplete personal map content');
+        error.code = 'PERSONAL_MAP_INCOMPLETE';
+        throw error;
+    }
+    return sections;
+}
+
 function normalizePersonalMapSections(value) {
     const source = value && typeof value === 'object' && !Array.isArray(value) ? value : {};
     return {
@@ -570,14 +594,20 @@ export async function generatePersonalMapContent(input = {}) {
     }
 
     const { system, user } = buildPersonalMapGenerationPrompt(input);
-    try {
-        const raw = await callClaude(system, user, null, {
-            feature: 'personal_map_pdf'
-        });
+    const generate = async instructions => {
+        const raw = await callClaude(instructions, user, null, { feature: 'personal_map_pdf' });
         const parsed = JSON.parse(extractJsonPayload(raw));
         const sections = parsed?.sections && typeof parsed.sections === 'object' ? parsed.sections : parsed;
         const normalized = normalizePersonalMapSections(sections);
-        return assertPersonalMapSectionsMatchInput(normalized, input);
+        return assertPersonalMapSectionsMatchInput(assertPersonalMapSectionsComplete(normalized), input);
+    };
+    try {
+        try {
+            return await generate(system);
+        } catch (error) {
+            if (error.code !== 'PERSONAL_MAP_INCOMPLETE') throw error;
+            return await generate(`${system}\nKaždá požadovaná kapitola a položka musí obsahovat vlastní konkrétní text. Nevynechávej části ani nenahrazuj obsah prázdnými řetězci. Zachovej údaje z objednávky.`);
+        }
     } catch (error) {
         console.error('[PERSONAL_MAP] AI generation failed; paid order remains pending');
         throw new Error('Personal map generation failed', { cause: error });
