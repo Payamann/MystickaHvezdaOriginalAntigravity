@@ -1592,7 +1592,11 @@ function renderActivationChecklist(user, readings, subscription) {
     const signupIntentDestination = kinds.size ? null : getSignupIntentDestination(sign);
     const planType = normalizePlanType(subscription?.planType);
     const premiumFirstAction = planType !== 'free' && ['active', 'trialing', 'cancel_pending'].includes(subscription?.status)
-        ? PREMIUM_ACTIONS[planType]?.[0] : null;
+        ? planType === 'premium_monthly'
+            ? { href: '/tarot.html?feature=tarot_multi_card&spread=three_cards',
+                description: 'Otevři tři karty k jedné otázce; výklad si pak najdeš v deníku.' }
+            : PREMIUM_ACTIONS[planType]?.[0]
+        : null;
     const firstReadingHref = signupIntentDestination?.href || (premiumFirstAction
         ? buildAttributedRelativeHref(premiumFirstAction.href, { source: 'profile_activation' })
         : sign

@@ -506,7 +506,8 @@ test.describe('Profil aktivace', () => {
         const firstReading = page.locator('[data-activation-step="first_reading"]');
         await expect(firstReading).toContainText('Členství je aktivní');
         const href = await firstReading.getAttribute('href');
-        expect(href).toContain('mentor.html');
+        expect(href).toContain('tarot.html');
+        expect(href).toContain('feature=tarot_multi_card');
         expect(href).toContain('source=profile_activation');
         await expect(firstReading).toHaveAttribute('data-activation-action', 'start_premium_reading');
     });
