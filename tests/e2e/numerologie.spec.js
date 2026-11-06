@@ -160,6 +160,58 @@ test.describe('Numerologie', () => {
         expect(page.url()).not.toContain('/cenik.html');
     });
 
+    test('výpadek měření neblokuje bezplatný výsledek ani pokračování', async ({ page }) => {
+        const pageErrors = [];
+        page.on('pageerror', error => pageErrors.push(error.message));
+        await page.evaluate(() => {
+            window.__checkoutCalls = [];
+            window.Auth = {
+                isLoggedIn: () => false,
+                isPremium: () => false,
+                sendServerFunnelEvent: () => Promise.reject(new Error('Funnel unavailable')),
+                startPlanCheckout: (...args) => window.__checkoutCalls.push(args)
+            };
+            window.MH_ANALYTICS = {
+                trackAction: () => { throw new Error('Analytics unavailable'); },
+                trackCTA: () => { throw new Error('Analytics unavailable'); }
+            };
+            window.Premium = { trackPaywallHit: () => { throw new Error('Analytics unavailable'); } };
+        });
+        await page.locator('#num-name').fill('Jana Nováková');
+        await page.locator('#num-date').fill('1990-06-15');
+        await page.locator('#numerology-form button[type="submit"]').click();
+        await expect(page.locator('#card-lifepath .number-value')).toHaveText(/\d+/);
+        await expect(page.locator('.numerology-premium-shell')).toBeVisible();
+        await page.locator('.numerology-upgrade-btn').click();
+        await expect.poll(() => page.evaluate(() => window.__checkoutCalls.length)).toBe(1);
+        const checkout = await page.evaluate(() => window.__checkoutCalls[0]);
+        expect(checkout[0]).toBe('pruvodce');
+        expect(checkout[1]).toMatchObject({ source: 'numerology_inline_gate', feature: 'numerologie_vyklad' });
+        expect(pageErrors.filter(message => /Analytics unavailable|Funnel unavailable/.test(message))).toEqual([]);
+    });
+
+    test('výpadek měření nezastaví členský výklad a uložení', async ({ page }) => {
+        await page.route('**/api/numerology', route => route.fulfill({ json: { response: 'Symbolický výklad je připraven.', fallback: false } }));
+        await page.evaluate(() => {
+            window.getCSRFToken = async () => 'e2e-csrf-token';
+            window.__numerologyReadingSaves = [];
+            window.Auth = {
+                isLoggedIn: () => true,
+                isPremium: () => true,
+                user: { id: 'analytics-test-owner' },
+                saveReading: async (...args) => { window.__numerologyReadingSaves.push(args); return { id: 'saved' }; },
+                sendServerFunnelEvent: () => { throw new Error('Funnel unavailable'); }
+            };
+            window.MH_ANALYTICS = { trackAction: () => { throw new Error('Analytics unavailable'); } };
+        });
+        await page.locator('#num-name').fill('Jana Nováková');
+        await page.locator('#num-date').fill('1990-06-15');
+        await page.locator('#numerology-form button[type="submit"]').click();
+        await expect(page.locator('#num-interpretation')).toContainText('Symbolický výklad je připraven.');
+        await expect.poll(() => page.evaluate(() => window.__numerologyReadingSaves.length)).toBe(1);
+        expect(await page.evaluate(() => window.__numerologyReadingSaves[0][2])).toBe('analytics-test-owner');
+    });
+
     test('premium výklad uloží výsledek pod účet aktivní při odeslání', async ({ page }) => {
         let releaseApiResponse;
         const apiResponseGate = new Promise(resolve => {

@@ -14,6 +14,14 @@ let resultGeneration = 0;
 let profileGeneration = 0;
 let activeOwner = getNumerologyOwner();
 
+function safelyTrackNumerology(callback) {
+    try {
+        void Promise.resolve(callback()).catch(() => {});
+    } catch {
+        // Measurement must not interrupt a reading or its continuation.
+    }
+}
+
 function getNumerologyOwner() {
     return window.Auth?.isLoggedIn?.() ? (window.Auth.user?.id || null) : null;
 }
@@ -108,17 +116,17 @@ function wirePersonalMapOffer(container) {
 
     if (!personalMapOfferViewed) {
         personalMapOfferViewed = true;
-        void window.Auth?.sendServerFunnelEvent?.({
+        safelyTrackNumerology(() => window.Auth?.sendServerFunnelEvent?.({
             eventName: 'one_time_product_viewed',
             ...context
-        });
+        }));
     }
 
     cta.addEventListener('click', () => {
-        void window.Auth?.sendServerFunnelEvent?.({
+        safelyTrackNumerology(() => window.Auth?.sendServerFunnelEvent?.({
             eventName: 'pricing_product_cta_clicked',
             ...context
-        });
+        }));
     });
 }
 
@@ -135,10 +143,10 @@ function buildNumerologyUpgradeUrl(source = 'numerology_inline_gate') {
 }
 
 function startNumerologyUpgradeFlow(source = 'numerology_inline_gate', authMode = 'register') {
-    window.MH_ANALYTICS?.trackCTA?.(source, {
+    safelyTrackNumerology(() => window.MH_ANALYTICS?.trackCTA?.(source, {
         plan_id: 'pruvodce',
         feature: 'numerologie_vyklad'
-    });
+    }));
 
     if (window.Auth?.startPlanCheckout) {
         window.Auth.startPlanCheckout('pruvodce', {
@@ -352,10 +360,10 @@ async function saveNumerologyResultImage() {
     link.href = canvas.toDataURL('image/png');
     link.click();
 
-    window.MH_ANALYTICS?.trackAction?.('numerology_result_image_saved', {
+    safelyTrackNumerology(() => window.MH_ANALYTICS?.trackAction?.('numerology_result_image_saved', {
         ...metadata,
         format: 'png'
-    });
+    }));
 }
 
 // === FORM HANDLING ===
@@ -480,7 +488,7 @@ async function handleFormSubmit(e) {
 
     // Display results
     displayResults(name, lifePath, destiny, soul, personality);
-    window.MH_ANALYTICS?.trackAction?.('numerology_result_viewed', {
+    safelyTrackNumerology(() => window.MH_ANALYTICS?.trackAction?.('numerology_result_viewed', {
         feature: 'numerologie_vyklad',
         source: new URLSearchParams(window.location.search).get('source') || NUMEROLOGY_RESULT_SOURCE,
         auth_state: window.Auth?.isLoggedIn?.() ? 'logged_in' : 'anonymous',
@@ -488,7 +496,7 @@ async function handleFormSubmit(e) {
         destiny: String(destiny),
         soul: String(soul),
         personality: String(personality)
-    });
+    }));
 
     // Show AI interpretation (with premium gate)
     await displayInterpretation(name, birthDate, birthTime, lifePath, destiny, soul, personality, owner);
@@ -622,7 +630,7 @@ async function displayInterpretation(name, birthDate, birthTime, lifePath, desti
         wirePersonalMapOffer(interpretationContainer);
 
         // The preview button opens the trial paywall; keep attribution on one segment.
-        if (window.Premium?.trackPaywallHit) window.Premium.trackPaywallHit('numerologie_vyklad', 'trial_paywall');
+        safelyTrackNumerology(() => window.Premium?.trackPaywallHit?.('numerologie_vyklad', 'trial_paywall'));
 
         // Wire up the upgrade button to trial paywall
         const upgradeBtn = interpretationContainer.querySelector('.numerology-upgrade-btn');
