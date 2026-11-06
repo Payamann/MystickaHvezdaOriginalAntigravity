@@ -337,6 +337,18 @@ test.describe('Křišťálová koule', () => {
         await expect(page.locator('#ask-btn')).toBeDisabled();
     });
 
+    test('výpadek analytiky neskryje hotovou odpověď koule', async ({ page }) => {
+        await page.route('**/api/crystal-ball', route => route.fulfill({
+            json: { success: true, response: 'Zvaž jednu konkrétní možnost.' }
+        }));
+        await page.evaluate(() => {
+            window.MH_ANALYTICS = { trackAction() { throw new Error('Analytics unavailable'); } };
+        });
+        await page.locator('#question-input').fill('Co si mám ujasnit?');
+        await page.locator('#ask-btn').click();
+        await expect(page.locator('#answer-text')).toHaveText('Zvaž jednu konkrétní možnost.', { timeout: 10000 });
+    });
+
     test('stranka vede dotaz na spravny typ vykladu', async ({ page }) => {
         const cluster = page.locator('.crystal-intent-section');
         await expect(cluster).toBeVisible();

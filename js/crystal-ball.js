@@ -94,6 +94,14 @@ function initCrystalBall() {
     let fallbackCooldownTimestamp = 0;
     let cooldownStorageReadFailed = false;
 
+    function trackCrystalAnalytics(method, event, metadata) {
+        try {
+            window.MH_ANALYTICS?.[method]?.(event, metadata);
+        } catch {
+            console.warn('Crystal ball analytics unavailable.');
+        }
+    }
+
     function buildCrystalCheckoutUrl(source) {
         const pricingUrl = new URL('/cenik.html', window.location.origin);
         pricingUrl.searchParams.set('plan', 'pruvodce');
@@ -105,7 +113,7 @@ function initCrystalBall() {
     }
 
     function startCrystalCheckout(source, authMode = 'register') {
-        window.MH_ANALYTICS?.trackCTA?.(source, {
+        trackCrystalAnalytics('trackCTA', source, {
             plan_id: 'pruvodce',
             feature: 'kristalova_koule'
         });
@@ -285,7 +293,7 @@ function initCrystalBall() {
                 const displayedAnswer = data.fallback === true ? `${copy.fallbackNotice}\n\n${data.response}` : data.response;
                 if (answerText) await typewriterEffect(answerText, displayedAnswer, isCurrent);
                 if (!isCurrent()) return;
-                window.MH_ANALYTICS?.trackAction?.('crystal_ball_answer_viewed', {
+                trackCrystalAnalytics('trackAction', 'crystal_ball_answer_viewed', {
                     feature: 'kristalova_koule',
                     source: new URLSearchParams(window.location.search).get('source') || 'crystal_ball_question',
                     auth_state: isLoggedIn ? 'logged_in' : 'anonymous',
@@ -331,7 +339,7 @@ function initCrystalBall() {
                     // Anonymní vyčerpal free otázku — pošli na registraci zdarma, ne do premium checkoutu.
                     if (answerContainer) answerContainer.classList.remove('visible');
                     window.Auth?.showToast?.(copy.registrationTitle, copy.registrationMessage, 'info');
-                    window.MH_ANALYTICS?.trackCTA?.('crystal_ball_register_gate', { feature: 'kristalova_koule' });
+                    trackCrystalAnalytics('trackCTA', 'crystal_ball_register_gate', { feature: 'kristalova_koule' });
                     const backTo = encodeURIComponent(window.location.pathname);
                     setTimeout(() => {
                         if (!isCurrent()) return;

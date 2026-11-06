@@ -13,7 +13,7 @@ function fixture(owner = 'a', { denyRead = false, denyWrite = false } = {}) {
         querySelectorAll() { return this.children; },
         appendChild(child) { this.children.push(child); }, remove() {}
     });
-    const nodes = Object.fromEntries(['crystal-ball', 'answer-container', 'answer-text', 'reset-btn', 'question-input', 'ask-btn', 'favorite-crystal-btn'].map(id => [id, node()]));
+    const nodes = Object.fromEntries(['crystal-ball', 'answer-container', 'answer-text', 'reset-btn', 'question-input', 'ask-btn', 'favorite-crystal-btn', 'crystal-banner-upgrade'].map(id => [id, node()]));
     const document = { documentElement: { lang: 'cs' }, getElementById: id => nodes[id], createElement: node,
         addEventListener(event, fn) { const list = listeners.get(event) || []; list.push(fn); listeners.set(event, list); }
     };
@@ -22,7 +22,7 @@ function fixture(owner = 'a', { denyRead = false, denyWrite = false } = {}) {
         getCSRFToken: jest.fn(async () => 'token'),
         Auth: { user: owner ? { id: owner } : null, isLoggedIn() { return Boolean(this.user); },
             saveReading: jest.fn(async () => ({ id: 'saved' })), showToast: jest.fn(), startPlanCheckout: jest.fn() },
-        MH_ANALYTICS: { trackAction: jest.fn() }
+        MH_ANALYTICS: { trackAction: jest.fn(), trackCTA: jest.fn() }
     };
     const fetch = jest.fn(async () => ({ json: async () => ({ success: true, response: 'Visible answer' }) }));
     const storage = new Map();
@@ -115,6 +115,31 @@ test('anonymous answer remains visible without saving', async () => {
     await app.ask(); await app.finishTyping();
     expect(app.nodes['answer-text'].textContent).toBe('Visible answer');
     expect(app.window.Auth.saveReading).not.toHaveBeenCalled();
+});
+
+test('analytics failure does not replace a completed answer or prevent saving', async () => {
+    const app = fixture();
+    app.window.MH_ANALYTICS.trackAction.mockImplementation(() => { throw new Error('Analytics unavailable'); });
+    await app.ask(); await app.finishTyping();
+    expect(app.nodes['answer-text'].textContent).toBe('Visible answer');
+    expect(app.window.Auth.saveReading).toHaveBeenCalledWith('crystal-ball', { question: 'Private question', answer: 'Visible answer' }, 'a');
+});
+
+test('analytics failure does not block the free registration redirect', async () => {
+    const app = fixture(null);
+    app.window.MH_ANALYTICS.trackCTA.mockImplementation(() => { throw new Error('Analytics unavailable'); });
+    app.fetch.mockResolvedValueOnce({ status: 402, json: async () => ({ success: false, code: 'REGISTRATION_REQUIRED' }) });
+    await app.ask();
+    app.runTimers(1600);
+    expect(app.window.location.href).toContain('/prihlaseni.html?mode=register');
+    expect(app.window.Auth.startPlanCheckout).not.toHaveBeenCalled();
+});
+
+test('analytics failure does not block the membership offer', () => {
+    const app = fixture();
+    app.window.MH_ANALYTICS.trackCTA.mockImplementation(() => { throw new Error('Analytics unavailable'); });
+    app.nodes['crystal-banner-upgrade'].click({ preventDefault() {} });
+    expect(app.window.Auth.startPlanCheckout).toHaveBeenCalledWith('pruvodce', expect.objectContaining({ source: 'crystal_ball_banner_upgrade' }));
 });
 
 test('fallback is labeled and stays identifiable in saved history', async () => {
