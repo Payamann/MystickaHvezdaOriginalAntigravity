@@ -120,6 +120,113 @@ test.describe('Tarot', () => {
         await expect(celtic).toHaveClass(/featured/);
     });
 
+    test('člen dostane a uloží souhrn tří karet při běžném vstupu', async ({ page }) => {
+        await page.evaluate(() => {
+            window.__summaryCalls = 0;
+            window.__savedTarot = null;
+            window.Auth = {
+                user: { id: 'member-test' },
+                isLoggedIn: () => true,
+                isPremium: () => true,
+                saveReading: async (type, data, owner) => {
+                    window.__savedTarot = { type, data, owner };
+                    return { id: 'saved-reading' };
+                }
+            };
+            document.dispatchEvent(new Event('auth:changed'));
+            window.getCSRFToken = async () => 'test';
+            const originalFetch = window.fetch.bind(window);
+            window.fetch = async (input, init) => {
+                const url = typeof input === 'string' ? input : input.url;
+                if (url.includes('/api/tarot-summary')) {
+                    window.__summaryCalls += 1;
+                    return new Response(JSON.stringify({ success: true, response: 'Souhrn tří karet pro zamyšlení.', fallback: false }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+                }
+                return originalFetch(input, init);
+            };
+        });
+        await page.locator('[data-spread-type="Tři karty"]').first().click();
+        await expect(page.locator('#ethereal-tarot-summary')).toContainText('Souhrn tří karet pro zamyšlení.', { timeout: 18000 });
+        await expect.poll(() => page.evaluate(() => window.__savedTarot)).toMatchObject({ type: 'tarot', owner: 'member-test' });
+        expect(await page.evaluate(() => window.__summaryCalls)).toBe(1);
+    });
+
+    test('změna účtu během souhrnu zruší starý výklad i při návratu na původní účet', async ({ page }) => {
+        await page.evaluate(() => {
+            window.__savedTarot = null;
+            window.Auth = {
+                user: { id: 'member-a' },
+                isLoggedIn: () => true,
+                isPremium: () => true,
+                saveReading: async (...args) => { window.__savedTarot = args; return { id: 'saved-reading' }; }
+            };
+            document.dispatchEvent(new Event('auth:changed'));
+            window.getCSRFToken = async () => 'test';
+            const originalFetch = window.fetch.bind(window);
+            window.fetch = async (input, init) => {
+                const url = typeof input === 'string' ? input : input.url;
+                if (url.includes('/api/tarot-summary')) {
+                    return new Promise(resolve => {
+                        window.__resolveTarot = () => resolve(new Response(JSON.stringify({ success: true, response: 'Starý výklad.', fallback: false }), { status: 200, headers: { 'Content-Type': 'application/json' } }));
+                    });
+                }
+                return originalFetch(input, init);
+            };
+        });
+        await page.locator('[data-spread-type="Tři karty"]').first().click();
+        await expect.poll(() => page.evaluate(() => typeof window.__resolveTarot), { timeout: 18000 }).toBe('function');
+        await page.evaluate(() => {
+            window.Auth.user = { id: 'member-b' };
+            document.dispatchEvent(new Event('auth:changed'));
+            window.Auth.user = { id: 'member-a' };
+            document.dispatchEvent(new Event('auth:changed'));
+            window.__resolveTarot();
+        });
+        await expect(page.locator('#tarot-results')).toBeHidden();
+        expect(await page.evaluate(() => window.__savedTarot)).toBeNull();
+    });
+
+    test('změna účtu během míchání nevykreslí ani neuloží původní výklad', async ({ page }) => {
+        await page.evaluate(() => {
+            window.__savedTarot = null;
+            window.Auth = {
+                user: { id: 'member-a' },
+                isLoggedIn: () => true,
+                isPremium: () => true,
+                saveReading: async (...args) => { window.__savedTarot = args; return { id: 'saved-reading' }; }
+            };
+            document.dispatchEvent(new Event('auth:changed'));
+        });
+        await page.locator('[data-spread-type="Jedna karta"]').first().click();
+        await expect(page.locator('.tarot-deck')).toHaveClass(/shaking/);
+        await page.evaluate(() => {
+            window.Auth.user = { id: 'member-b' };
+            document.dispatchEvent(new Event('auth:changed'));
+        });
+        await page.waitForTimeout(5000);
+        await expect(page.locator('#tarot-results')).toBeHidden();
+        expect(await page.evaluate(() => window.__savedTarot)).toBeNull();
+    });
+
+    test('opakované kliknutí při míchání nespotřebuje druhou bezplatnou ukázku', async ({ page }) => {
+        await page.evaluate(() => {
+            localStorage.removeItem('tarot_free_usage');
+            window.Auth = {
+                user: { id: 'free-user' },
+                isLoggedIn: () => true,
+                isPremium: () => false,
+                showToast: () => {},
+                saveReading: async () => ({ id: 'saved-reading' })
+            };
+            document.dispatchEvent(new Event('auth:changed'));
+            const button = document.querySelector('[data-spread-type="Tři karty"]');
+            button.click();
+            button.click();
+        });
+        await expect(page.locator('.tarot-soft-gate')).toBeVisible({ timeout: 10000 });
+        expect(await page.evaluate(() => JSON.parse(localStorage.getItem('tarot_free_usage')).count)).toBe(1);
+    });
+
     test('spread trigger tlačítka jsou klikatelná', async ({ page }) => {
         const triggers = page.locator('.spread-trigger');
         const count = await triggers.count();

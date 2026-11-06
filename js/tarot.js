@@ -521,6 +521,7 @@ function initTarot() {
         btn.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
+            if (tarotReadingInProgress) return;
 
             const spreadType = btn.dataset.spreadType;
 
@@ -631,7 +632,18 @@ function getTarotProfileSignupHtml(spreadType) {
 
 async function startReading(spreadType, isSoftGated = false) {
     const deckContainer = document.querySelector('.tarot-deck');
-    if (!deckContainer) return;
+    if (!deckContainer || tarotReadingInProgress) return;
+    tarotReadingInProgress = true;
+    const readingSession = captureTarotReadingSession();
+    const readingOwnerId = readingSession.userId;
+    const readingGeneration = ++tarotReadingGeneration;
+    tarotReadingOwnerId = readingOwnerId;
+    activeTarotReadingSession = readingSession;
+    displayedTarotReadingSession = readingSession;
+    tarotSummaryAbortController?.abort();
+    tarotSummaryAbortController = null;
+    window.currentTarotReadingId = null;
+    try {
     const tarotYesNoContext = spreadType === 'Tři karty'
         ? readTarotYesNoUpgradeContext()
         : null;
@@ -639,16 +651,19 @@ async function startReading(spreadType, isSoftGated = false) {
     // First scroll to deck so user can see the shuffle animation
     deckContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
     await new Promise(r => setTimeout(r, 300));
+    if (!isCurrentTarotReading(readingGeneration, readingSession)) return;
 
     // 1. Shuffle Animation - make it more visible
     deckContainer.classList.add('tarot-deck--shuffle-scale');
     deckContainer.classList.add('shaking');
     await new Promise(r => setTimeout(r, 1500)); // Longer shuffle
+    if (!isCurrentTarotReading(readingGeneration, readingSession)) return;
     deckContainer.classList.remove('shaking');
     deckContainer.classList.remove('tarot-deck--shuffle-scale');
 
     // Small pause after shuffle
     await new Promise(r => setTimeout(r, 300));
+    if (!isCurrentTarotReading(readingGeneration, readingSession)) return;
 
     // 2. Draw Cards - only from cards that have images
     const cardsWithImages = TAROT_CARDS_ARRAY.filter(name => TAROT_CARDS[name].image);
@@ -778,6 +793,7 @@ async function startReading(spreadType, isSoftGated = false) {
 
     // Now scroll to results
     await new Promise(r => setTimeout(r, 100));
+    if (!isCurrentTarotReading(readingGeneration, readingSession)) return;
     resultsContainer.scrollIntoView({ behavior: 'smooth' });
 
     // 4. Trigger flip animation for each card sequentially
@@ -785,6 +801,7 @@ async function startReading(spreadType, isSoftGated = false) {
 
     for (let i = 0; i < flipCards.length; i++) {
         await new Promise(r => setTimeout(r, 600)); // Delay between flips
+        if (!isCurrentTarotReading(readingGeneration, readingSession)) return;
         flipCards[i].classList.add('flipped');
 
         // Sound effect removed (invalid audio data)
@@ -792,6 +809,7 @@ async function startReading(spreadType, isSoftGated = false) {
 
     // 5. After all cards flipped, show interpretations
     await new Promise(r => setTimeout(r, 800));
+    if (!isCurrentTarotReading(readingGeneration, readingSession)) return;
 
     const interpretationsContainer = document.getElementById('interpretations-container');
 
@@ -855,7 +873,7 @@ async function startReading(spreadType, isSoftGated = false) {
 
     // Trigger spiritual summary after DOM is updated
     if (numCards > 1 && !isSoftGated) {
-        setTimeout(() => generateEtherealSummary(drawnCards, spreadType, tarotYesNoContext), 500);
+        setTimeout(() => generateEtherealSummary(drawnCards, spreadType, tarotYesNoContext, readingGeneration, readingOwnerId, readingSession), 500);
     } else {
         // For single-card readings OR gated readings (Card 1 only), save
         // Actually, for gated reading we might not want to save to DB as a "reading" or maybe yes but with incomplete data?
@@ -871,7 +889,8 @@ async function startReading(spreadType, isSoftGated = false) {
             const saveResult = await window.Auth.saveReading('tarot', {
                 spreadType: isSoftGated ? `${spreadType} (Ukázka)` : spreadType,
                 cards: cardsData
-            });
+            }, readingOwnerId);
+            if (!isCurrentTarotReading(readingGeneration, readingSession)) return;
 
             // Store reading ID and add favorite button
             if (saveResult && saveResult.id) {
@@ -893,6 +912,11 @@ async function startReading(spreadType, isSoftGated = false) {
                 });
             }
         }
+    }
+    } finally {
+        deckContainer.classList.remove('shaking', 'tarot-deck--shuffle-scale');
+        activeTarotReadingSession = null;
+        tarotReadingInProgress = false;
     }
 }
 
