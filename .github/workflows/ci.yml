@@ -112,7 +112,7 @@ jobs:
       - name: Run E2E section
         run: |
           if [ "${{ matrix.section }}" = "core" ]; then
-            npm run test:e2e:sections -- --project=${{ matrix.project }} --section=${{ matrix.section }} --reporter=dot,html
+            npm run test:e2e:sections -- --reporter=dot,html --project=${{ matrix.project }} --section=${{ matrix.section }}
           else
             npm run test:e2e:sections -- --project=${{ matrix.project }} --section=${{ matrix.section }} --workers=2 --reporter=dot,html
           fi
