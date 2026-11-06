@@ -120,7 +120,7 @@ test.describe('Tarot', () => {
         await expect(celtic).toHaveClass(/featured/);
     });
 
-    test('člen dostane a uloží souhrn tří karet při běžném vstupu', async ({ page }) => {
+    test('člen dostane a uloží souhrn tří karet při běžném vstupu', async ({ page }, testInfo) => {
         await page.evaluate(() => {
             window.__summaryCalls = 0;
             window.__savedTarot = null;
@@ -140,15 +140,22 @@ test.describe('Tarot', () => {
                 const url = typeof input === 'string' ? input : input.url;
                 if (url.includes('/api/tarot-summary')) {
                     window.__summaryCalls += 1;
+                    window.__summaryRequest = JSON.parse(init.body);
                     return new Response(JSON.stringify({ success: true, response: 'Souhrn tří karet pro zamyšlení.', fallback: false }), { status: 200, headers: { 'Content-Type': 'application/json' } });
                 }
                 return originalFetch(input, init);
             };
         });
+        await page.getByLabel('Tvoje otázka').fill('Jak si ujasnit další krok?');
+        await page.locator('#tarot-question-wrap').scrollIntoViewIfNeeded();
+        await page.screenshot({ path: testInfo.outputPath('tarot-question.png') });
+        expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1)).toBe(true);
         await page.locator('[data-spread-type="Tři karty"]').first().click();
         await expect(page.locator('#ethereal-tarot-summary')).toContainText('Souhrn tří karet pro zamyšlení.', { timeout: 18000 });
-        await expect.poll(() => page.evaluate(() => window.__savedTarot)).toMatchObject({ type: 'tarot', owner: 'member-test' });
+        await expect.poll(() => page.evaluate(() => window.__savedTarot)).toMatchObject({ type: 'tarot', owner: 'member-test', data: { question: 'Jak si ujasnit další krok?' } });
         expect(await page.evaluate(() => window.__summaryCalls)).toBe(1);
+        expect(await page.evaluate(() => window.__summaryRequest.question)).toBe('Jak si ujasnit další krok?');
+        expect(page.url()).not.toContain('Jak');
     });
 
     test('změna účtu během souhrnu zruší starý výklad i při návratu na původní účet', async ({ page }) => {
@@ -173,6 +180,7 @@ test.describe('Tarot', () => {
                 return originalFetch(input, init);
             };
         });
+        await page.getByLabel('Tvoje otázka').fill('Moje soukromá otázka');
         await page.locator('[data-spread-type="Tři karty"]').first().click();
         await expect.poll(() => page.evaluate(() => typeof window.__resolveTarot), { timeout: 18000 }).toBe('function');
         await page.evaluate(() => {
@@ -183,6 +191,7 @@ test.describe('Tarot', () => {
             window.__resolveTarot();
         });
         await expect(page.locator('#tarot-results')).toBeHidden();
+        await expect(page.locator('#tarot-question')).toHaveValue('');
         expect(await page.evaluate(() => window.__savedTarot)).toBeNull();
     });
 
@@ -281,11 +290,13 @@ test.describe('Tarot', () => {
         await page.evaluate(() => {
             localStorage.removeItem('tarot_free_usage');
             window.Auth = {
+                user: { id: 'free-user' },
                 isLoggedIn: () => true,
                 isPremium: () => false,
                 showToast: () => {},
                 saveReading: async () => ({ id: 'test-reading' })
             };
+            document.dispatchEvent(new Event('auth:changed'));
             window.getCSRFToken = async () => 'test-csrf-token';
             window.__tarotFunnelEvents = [];
 
@@ -304,6 +315,8 @@ test.describe('Tarot', () => {
             };
         });
 
+        await page.locator('#tarot-question-wrap summary').click();
+        await page.getByLabel('Tvoje otázka').fill('Soukromá otázka bezplatné ukázky');
         await page.locator('[data-spread-type="Tři karty"]').first().click();
 
         await expect(page.locator('#tarot-results')).toBeVisible({ timeout: 9000 });
@@ -324,6 +337,7 @@ test.describe('Tarot', () => {
 
         await expect.poll(() => page.evaluate(() => window.__tarotFunnelEvents.length)).toBeGreaterThan(0);
         const events = await page.evaluate(() => window.__tarotFunnelEvents);
+        expect(JSON.stringify(events)).not.toContain('Soukromá otázka bezplatné ukázky');
         expect(events).toContainEqual(expect.objectContaining({
             eventName: 'paywall_viewed',
             source: 'tarot_teaser_banner',
@@ -348,11 +362,13 @@ test.describe('Tarot', () => {
         await page.evaluate(() => {
             localStorage.removeItem('tarot_free_usage');
             window.Auth = {
+                user: { id: 'free-user' },
                 isLoggedIn: () => true,
                 isPremium: () => false,
                 showToast: () => {},
                 saveReading: async () => ({ id: 'test-reading' })
             };
+            document.dispatchEvent(new Event('auth:changed'));
             window.getCSRFToken = async () => 'test-csrf-token';
             window.__tarotFunnelEvents = [];
 

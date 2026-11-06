@@ -10,6 +10,14 @@ html body .mh-inline-58bc1f9d44 { max-width: 800px; margin: 0 auto; }
 html body .mh-inline-9e9a3fbfac { flex-wrap: wrap; gap: var(--space-md); }
 html body .mh-inline-79cc1ae746 { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
 
+.tarot-question { max-width: 620px; margin: 1.25rem auto 0; text-align: left; }
+.tarot-question summary { cursor: pointer; color: #f4ead8; font-weight: 600; }
+.tarot-question summary span { font-weight: 400; }
+.tarot-question label { display: block; margin-bottom: 0.45rem; font-weight: 600; color: #f4ead8; }
+.tarot-question[open] label { margin-top: 0.7rem; }
+.tarot-question textarea { display: block; width: 100%; min-height: 76px; padding: 0.8rem; resize: vertical; font: inherit; color: #fff; background: rgba(13, 11, 34, 0.9); border: 1px solid rgba(212, 175, 55, 0.4); border-radius: 10px; }
+.tarot-question p { margin: 0; color: #e0d9e6; font-size: 0.88rem; line-height: 1.45; }
+
 /* Migrated from tarot.html remaining static style attributes. */
 html body .tarot-sample__symbol { display: grid; place-items: center; color: var(--color-mystic-gold); }
 html body .tarot-sample__symbol .mh-symbol { width: 4rem; height: 4rem; }

@@ -54,6 +54,13 @@ function showTarotReadingSaveNotice(anchor) {
 
 function clearTarotSessionResult() {
     setTarotReadingStatus('');
+    const question = document.getElementById('tarot-question');
+    if (question) question.value = '';
+    const questionWrap = document.getElementById('tarot-question-wrap');
+    if (questionWrap) {
+        questionWrap.hidden = false;
+        questionWrap.open = Boolean(window.Auth?.isPremium?.());
+    }
     const results = document.getElementById('tarot-results');
     if (results) {
         results.classList.add('hidden');
@@ -456,6 +463,11 @@ function initTarot() {
     renderRequestedCardContext(requestedCardName);
     const tarotYesNoContext = readTarotYesNoUpgradeContext();
     renderTarotYesNoResumeContext(tarotYesNoContext);
+    const questionWrap = document.getElementById('tarot-question-wrap');
+    if (questionWrap) {
+        questionWrap.hidden = Boolean(tarotYesNoContext);
+        questionWrap.open = Boolean(window.Auth?.isPremium?.());
+    }
 
     // Create Results Container if not exists
     let resultsContainer = document.getElementById('tarot-results');
@@ -647,6 +659,8 @@ async function startReading(spreadType, isSoftGated = false) {
     const tarotYesNoContext = spreadType === 'Tři karty'
         ? readTarotYesNoUpgradeContext()
         : null;
+    const enteredQuestion = document.getElementById('tarot-question')?.value?.trim().slice(0, 500);
+    const readingContext = tarotYesNoContext || (enteredQuestion ? { question: enteredQuestion } : null);
 
     // First scroll to deck so user can see the shuffle animation
     deckContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -873,7 +887,7 @@ async function startReading(spreadType, isSoftGated = false) {
 
     // Trigger spiritual summary after DOM is updated
     if (numCards > 1 && !isSoftGated) {
-        setTimeout(() => generateEtherealSummary(drawnCards, spreadType, tarotYesNoContext, readingGeneration, readingOwnerId, readingSession), 500);
+        setTimeout(() => generateEtherealSummary(drawnCards, spreadType, readingContext, readingGeneration, readingOwnerId, readingSession), 500);
     } else {
         // For single-card readings OR gated readings (Card 1 only), save
         // Actually, for gated reading we might not want to save to DB as a "reading" or maybe yes but with incomplete data?
@@ -986,10 +1000,12 @@ async function generateEtherealSummary(cards, spreadType, continuationContext = 
                         cards: savedCards,
                         response: data.response,
                         fallback: !!data.fallback,
-                        ...(continuationContext ? {
+                        ...(continuationContext?.question ? {
                             question: continuationContext.question,
-                            previousAnswer: continuationContext.answerLabel,
-                            continuedFrom: 'tarot_yes_no'
+                            ...(continuationContext.answerLabel ? {
+                                previousAnswer: continuationContext.answerLabel,
+                                continuedFrom: 'tarot_yes_no'
+                            } : {})
                         } : {})
                     }, readingOwnerId);
                 } catch (error) {

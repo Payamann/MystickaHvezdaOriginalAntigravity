@@ -85,6 +85,19 @@ test('summary retry reuses the same cards and question, without a new draw', asy
     expect(h.container.innerHTML).toContain('Obnovený souhrn.');
 });
 
+test('a new optional question is saved without inventing an earlier yes/no answer', async () => {
+    const h = summaryHarness();
+    h.fetch.mockResolvedValue({ ok: true, json: async () => ({ success: true, response: 'Souhrn.', fallback: false }) });
+    h.context.testCards = cards;
+    await vm.runInContext("generateEtherealSummary(testCards, 'Tři karty', {question:'Co si potřebuji ujasnit?'})", h.context);
+    const sent = JSON.parse(h.fetch.mock.calls[0][1].body);
+    const saved = h.saveReading.mock.calls[0][1];
+    expect(sent.question).toBe('Co si potřebuji ujasnit?');
+    expect(saved.question).toBe(sent.question);
+    expect(saved).not.toHaveProperty('previousAnswer');
+    expect(saved).not.toHaveProperty('continuedFrom');
+});
+
 test('an abandoned result cannot overwrite the new result or save a misleading history entry', async () => {
     const h = summaryHarness();
     let finish;
