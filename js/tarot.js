@@ -20,7 +20,7 @@ let activeTarotReadingSession = null;
 let displayedTarotReadingSession = null;
 let observedTarotReadingSession = null;
 let tarotReadingSessionInitialized = Boolean(window.Auth);
-const TAROT_PAYMENT_REASSURANCE = 'Cena se zobraz\u00ed ve Stripe p\u0159ed potvrzen\u00edm. Zru\u0161en\u00ed najdete v profilu.';
+const TAROT_PAYMENT_REASSURANCE = '7 dní za 0 Kč, potom automaticky 199 Kč/měsíc, pokud nezrušíš. K aktivaci je potřeba karta. Zrušení v profilu.';
 const TAROT_YES_NO_UPGRADE_CONTEXT_KEY = 'mh_tarot_yes_no_upgrade_context';
 const TAROT_YES_NO_UPGRADE_CONTEXT_MAX_AGE_MS = 24 * 60 * 60 * 1000;
 

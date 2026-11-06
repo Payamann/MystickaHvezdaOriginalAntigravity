@@ -373,6 +373,7 @@ test.describe('Inline paywall checkout handoff', () => {
             localStorage.clear();
             sessionStorage.clear();
             Object.assign(window.Auth, {
+                user: { id: 'natal-teaser-user' },
                 isLoggedIn: () => true,
                 isPremium: () => true,
                 saveReading: async () => ({ id: 'natal-teaser-reading' }),

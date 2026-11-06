@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import { MOBILE_VIEWPORT, waitForPageReady } from './helpers.js';
 
 const DESKTOP_VIEWPORT = { width: 1280, height: 720 };
-const REASSURANCE_FRAGMENTS = ['Cena se zobraz', 'Stripe', 'Zru'];
+const REASSURANCE_FRAGMENTS = ['7 dní za 0 Kč', 'automaticky 199 Kč/měsíc', 'karta', 'Zrušení'];
 const MISLEADING_COPY = /7\s*dn[ií]\s*zdarma|trial|zku[sš]ebn[ií]\s*obdob[ií]/i;
 
 const VIEWPORTS = [
@@ -80,6 +80,7 @@ async function showTarotPaywall(page) {
     await page.evaluate(() => {
         localStorage.removeItem('tarot_free_usage');
         window.Auth = {
+            user: { id: 'smoke-tarot-user' },
             isLoggedIn: () => true,
             isPremium: () => false,
             showToast: () => {},
@@ -131,6 +132,7 @@ async function showNatalPaywall(page) {
     await waitForPageReady(page);
     await page.evaluate(() => {
         window.Auth = {
+            user: { id: 'smoke-natal-user' },
             isLoggedIn: () => true,
             isPremium: () => true,
             saveReading: async () => ({ id: 'smoke-natal-reading' })

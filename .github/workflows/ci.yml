@@ -112,12 +112,13 @@ jobs:
       - name: Run E2E section
         run: |
           if [ "${{ matrix.section }}" = "core" ]; then
-            npm run test:e2e:sections -- --project=${{ matrix.project }} --section=${{ matrix.section }}
+            npm run test:e2e:sections -- --project=${{ matrix.project }} --section=${{ matrix.section }} --reporter=dot,html
           else
-            npm run test:e2e:sections -- --project=${{ matrix.project }} --section=${{ matrix.section }} --workers=2
+            npm run test:e2e:sections -- --project=${{ matrix.project }} --section=${{ matrix.section }} --workers=2 --reporter=dot,html
           fi
         env:
           NODE_ENV: test
+          PLAYWRIGHT_HTML_OPEN: never
           DISABLE_SCHEDULED_JOBS: 'true'
           MOCK_AI: 'true'
           MOCK_SUPABASE: 'true'
