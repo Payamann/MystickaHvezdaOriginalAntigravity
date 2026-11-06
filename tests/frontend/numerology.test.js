@@ -15,6 +15,10 @@ describe('Numerology Logic', () => {
             expect(calculateLifePath('1990-03-15')).toBe(1);
             expect(calculateLifePath('2026-02-30')).toBe(0);
         });
+        it('reduces date components separately and preserves master numbers before the final sum', () => {
+            expect(calculateLifePath('1970-03-11')).toBe(22); // 11 + 3 + 8
+            expect(calculateLifePath('1990-01-02')).toBe(4); // 2 + 1 + 1
+        });
         it('should calculate correct life path for standard date', () => {
             // 1990-01-01 -> 1+9+9+0 + 1 + 1 = 21 -> 3? 
             // Logic: day(1) + month(1) + year(1990->19->10->1) = 3
