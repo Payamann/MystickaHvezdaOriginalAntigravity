@@ -5,7 +5,7 @@ import { jest } from '@jest/globals';
 const source = fs.readFileSync(new URL('../../js/crystal-ball.js', import.meta.url), 'utf8');
 const flush = () => new Promise(resolve => setImmediate(resolve));
 const deferred = () => { let resolve; const promise = new Promise(done => { resolve = done; }); return { promise, resolve }; };
-function fixture(owner = 'a') {
+function fixture(owner = 'a', { denyRead = false, denyWrite = false } = {}) {
     const listeners = new Map();
     const node = () => ({ value: '', textContent: '', children: [],
         classList: { add() {}, remove() {}, toggle() {} },
@@ -30,7 +30,10 @@ function fixture(owner = 'a') {
     const context = vm.createContext({ window, document, fetch, URLSearchParams, URL, navigator: {},
         console: { warn() {}, error() {} },
         setTimeout: (fn, delay) => { timers.push({ fn, delay }); return timers.length; }, clearTimeout() {},
-        localStorage: { getItem: key => storage.get(key), setItem: (key, value) => storage.set(key, value) }
+        localStorage: {
+            getItem: key => { if (denyRead) throw new Error('Storage blocked'); return storage.get(key); },
+            setItem: (key, value) => { if (denyWrite) throw new Error('Storage blocked'); storage.set(key, value); }
+        }
     });
     vm.runInContext(source, context);
     vm.runInContext('initCrystalBall()', context);
@@ -48,6 +51,20 @@ function fixture(owner = 'a') {
         history: () => Array.from(vm.runInContext('questionHistory', context))
     };
 }
+
+test.each([
+    ['read', { denyRead: true }],
+    ['write', { denyWrite: true }],
+    ['read and write', { denyRead: true, denyWrite: true }]
+])('storage %s failure still shows the answer and enforces the in-page cooldown', async (_name, options) => {
+    const app = fixture('a', options);
+    await app.ask(); await app.finishTyping();
+    expect(app.nodes['answer-text'].textContent).toBe('Visible answer');
+    expect(app.window.Auth.saveReading).toHaveBeenCalledWith('crystal-ball', { question: 'Private question', answer: 'Visible answer' }, 'a');
+    app.runTimers(500);
+    await app.ask();
+    expect(app.fetch).toHaveBeenCalledTimes(1);
+});
 
 test.each(['csrf', 'fetch', 'typing', 'save'])('A → B → A cancels pending %s effects', async stage => {
     const app = fixture();

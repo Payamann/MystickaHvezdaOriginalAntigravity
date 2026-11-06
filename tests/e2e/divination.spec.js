@@ -313,6 +313,30 @@ test.describe('Křišťálová koule', () => {
         expect(value).toContain('Co mě čeká');
     });
 
+    test('odpověď koule funguje i při nedostupném úložišti cooldownu', async ({ page }) => {
+        await page.addInitScript(() => {
+            const read = Storage.prototype.getItem;
+            const write = Storage.prototype.setItem;
+            Storage.prototype.getItem = function (key) {
+                if (key === 'crystalBall_lastUsage') throw new DOMException('Storage unavailable', 'SecurityError');
+                return read.call(this, key);
+            };
+            Storage.prototype.setItem = function (key, value) {
+                if (key === 'crystalBall_lastUsage') throw new DOMException('Storage unavailable', 'SecurityError');
+                return write.call(this, key, value);
+            };
+        });
+        await page.route('**/api/crystal-ball', route => route.fulfill({
+            json: { success: true, response: 'Zvaž jednu konkrétní možnost.' }
+        }));
+        await page.reload();
+        await waitForPageReady(page);
+        await page.locator('#question-input').fill('Co si mám ujasnit?');
+        await page.locator('#ask-btn').click();
+        await expect(page.locator('#answer-text')).toHaveText('Zvaž jednu konkrétní možnost.', { timeout: 10000 });
+        await expect(page.locator('#ask-btn')).toBeDisabled();
+    });
+
     test('stranka vede dotaz na spravny typ vykladu', async ({ page }) => {
         const cluster = page.locator('.crystal-intent-section');
         await expect(cluster).toBeVisible();

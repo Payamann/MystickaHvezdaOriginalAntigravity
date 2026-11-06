@@ -91,6 +91,8 @@ function initCrystalBall() {
 
     let isThinking = false;
     let cooldownTimer = null;
+    let fallbackCooldownTimestamp = 0;
+    let cooldownStorageReadFailed = false;
 
     function buildCrystalCheckoutUrl(source) {
         const pricingUrl = new URL('/cenik.html', window.location.origin);
@@ -139,11 +141,28 @@ function initCrystalBall() {
 
     // Check availability based on last usage
     function getRemainingCooldown() {
-        const lastUsage = localStorage.getItem('crystalBall_lastUsage');
+        let storedTimestamp = 0;
+        try {
+            storedTimestamp = Number(localStorage.getItem('crystalBall_lastUsage')) || 0;
+            cooldownStorageReadFailed = false;
+        } catch {
+            cooldownStorageReadFailed = true;
+        }
+        const lastUsage = Math.max(storedTimestamp, fallbackCooldownTimestamp);
         if (!lastUsage) return 0;
 
-        const elapsed = (Date.now() - parseInt(lastUsage)) / 1000;
+        const elapsed = (Date.now() - lastUsage) / 1000;
         return Math.max(0, Math.ceil(COOLDOWN_SECONDS - elapsed));
+    }
+
+    function recordCooldown() {
+        const timestamp = Date.now();
+        try {
+            localStorage.setItem('crystalBall_lastUsage', String(timestamp));
+            fallbackCooldownTimestamp = cooldownStorageReadFailed ? timestamp : 0;
+        } catch {
+            fallbackCooldownTimestamp = timestamp;
+        }
     }
 
     // Update UI based on cooldown
@@ -257,7 +276,7 @@ function initCrystalBall() {
             ballContainer.classList.remove('shaking');
 
             // Record usage time for cooldown
-            localStorage.setItem('crystalBall_lastUsage', Date.now().toString());
+            recordCooldown();
             updateCooldownUI();
 
             if (data.success) {
