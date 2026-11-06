@@ -399,6 +399,7 @@ test.describe('Inline paywall checkout handoff', () => {
         await page.evaluate(() => {
             window.Auth.isLoggedIn = () => false;
             window.Auth.isPremium = () => false;
+            window.MH_ANALYTICS = { trackCTA: () => { throw new Error('Analytics unavailable'); } };
         });
 
         await Promise.all([

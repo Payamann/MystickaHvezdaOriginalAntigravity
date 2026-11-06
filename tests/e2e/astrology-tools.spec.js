@@ -141,6 +141,24 @@ test.describe('Natální karta', () => {
         await expect(page.locator('[data-personal-map-next]')).toHaveAttribute('href', /source=natal_chart_result/);
     });
 
+    test('výpadek měření neskryje úspěšně vypočtenou natální kartu', async ({ page }) => {
+        await page.evaluate(() => {
+            window.MH_ANALYTICS = {
+                trackEvent(event) { if (event === 'natal_chart_calculated') throw new Error('Analytics unavailable'); }
+            };
+        });
+        await page.fill('#name', 'Test');
+        await page.fill('#birth-date', '1990-01-01');
+        await page.fill('#birth-time', '12:00');
+        await page.fill('#birth-place', 'Praha');
+        const responsePromise = page.waitForResponse(response => response.url().includes('/api/natal-chart/calculate') && response.status() === 200);
+        await page.locator('#natal-form button[type="submit"]').click();
+        await responsePromise;
+        await expect(page.locator('#chart-results')).toBeVisible();
+        await expect(page.locator('#res-sun')).toContainText('Kozoroh');
+        await expect(page.locator('#natal-planets-list li')).toHaveCount(10);
+    });
+
     test('premium teaser slibuje konkrétní výklad, ne úplný osud', async ({ page }) => {
         await page.evaluate(() => {
             window.Auth = {

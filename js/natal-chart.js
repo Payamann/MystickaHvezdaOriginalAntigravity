@@ -81,11 +81,19 @@ function buildNatalUpgradeUrl(source = 'natal_teaser_gate') {
     return `${authUrl.pathname}${authUrl.search}`;
 }
 
+function safelyTrackNatal(callback) {
+    try {
+        void Promise.resolve(callback()).catch(() => {});
+    } catch {
+        // Measurement must not block the chart or its continuation.
+    }
+}
+
 function startNatalUpgradeFlow(source = 'natal_teaser_gate') {
-    window.MH_ANALYTICS?.trackCTA?.(source, {
+    safelyTrackNatal(() => window.MH_ANALYTICS?.trackCTA?.(source, {
         plan_id: 'pruvodce',
         feature: 'natalni_interpretace'
-    });
+    }));
 
     if (window.Auth?.startPlanCheckout) {
         window.Auth.startPlanCheckout('pruvodce', {
@@ -687,7 +695,7 @@ function renderNatalEngineSummary(chart) {
 }
 
 function trackNatalCalculation(chart, input = {}) {
-    window.MH_ANALYTICS?.trackEvent?.('natal_chart_calculated', {
+    safelyTrackNatal(() => window.MH_ANALYTICS?.trackEvent?.('natal_chart_calculated', {
         engine_version: chart?.engine?.version || null,
         precision: chart?.engine?.precision || null,
         has_birth_time: Boolean(input.birthTime),
@@ -695,7 +703,7 @@ function trackNatalCalculation(chart, input = {}) {
         location_resolved: Boolean(chart?.location),
         ascendant_available: Boolean(chart?.houses?.available),
         dominant_element: chart?.elementBalance?.dominant?.key || null
-    });
+    }));
 }
 
 function applyComputedNatalChart(chart) {
