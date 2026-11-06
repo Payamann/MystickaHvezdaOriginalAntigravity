@@ -120,6 +120,19 @@ test.describe('Tarot', () => {
         await expect(celtic).toHaveClass(/featured/);
     });
 
+    test('otázka se zpřístupní po obnovení členského stavu účtu', async ({ page }) => {
+        await page.evaluate(() => {
+            window.Auth = { user: { id: 'member-test' }, isLoggedIn: () => true, isPremium: () => false };
+            document.dispatchEvent(new Event('auth:changed'));
+        });
+        await expect(page.locator('#tarot-question-wrap')).toBeHidden();
+        await page.evaluate(() => {
+            window.Auth.isPremium = () => true;
+            document.dispatchEvent(new Event('auth:refreshed'));
+        });
+        await expect(page.getByLabel('Tvoje otázka')).toBeVisible();
+    });
+
     test('člen dostane a uloží souhrn tří karet při běžném vstupu', async ({ page }, testInfo) => {
         await page.evaluate(() => {
             window.__summaryCalls = 0;
@@ -315,8 +328,8 @@ test.describe('Tarot', () => {
             };
         });
 
-        await page.locator('#tarot-question-wrap summary').click();
-        await page.getByLabel('Tvoje otázka').fill('Soukromá otázka bezplatné ukázky');
+        await expect(page.locator('#tarot-question-wrap')).toBeHidden();
+        await page.evaluate(() => { document.getElementById('tarot-question').value = 'Soukromá otázka bezplatné ukázky'; });
         await page.locator('[data-spread-type="Tři karty"]').first().click();
 
         await expect(page.locator('#tarot-results')).toBeVisible({ timeout: 9000 });

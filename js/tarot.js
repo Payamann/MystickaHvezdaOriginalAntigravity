@@ -41,6 +41,15 @@ function setTarotReadingStatus(message) {
     if (status) status.textContent = message;
 }
 
+function syncTarotQuestionVisibility() {
+    const wrap = document.getElementById('tarot-question-wrap');
+    if (!wrap) return;
+    const wasHidden = wrap.hidden;
+    const isMember = Boolean(window.Auth?.isLoggedIn?.() && window.Auth?.isPremium?.());
+    wrap.hidden = !isMember || Boolean(readTarotYesNoUpgradeContext());
+    if (wasHidden && !wrap.hidden) wrap.open = true;
+}
+
 function showTarotReadingSaveNotice(anchor) {
     if (!anchor?.parentElement) return;
     anchor.parentElement.querySelectorAll('[data-reading-save-error]').forEach((notice) => notice.remove());
@@ -56,11 +65,6 @@ function clearTarotSessionResult() {
     setTarotReadingStatus('');
     const question = document.getElementById('tarot-question');
     if (question) question.value = '';
-    const questionWrap = document.getElementById('tarot-question-wrap');
-    if (questionWrap) {
-        questionWrap.hidden = false;
-        questionWrap.open = Boolean(window.Auth?.isPremium?.());
-    }
     const results = document.getElementById('tarot-results');
     if (results) {
         results.classList.add('hidden');
@@ -77,6 +81,7 @@ function clearTarotSessionResult() {
     } catch {
         // Clearing visible reading content does not depend on optional storage.
     }
+    syncTarotQuestionVisibility();
 }
 
 function invalidateTarotSessionChange() {
@@ -107,6 +112,7 @@ function isCurrentTarotReading(generation, session) {
 }
 
 document.addEventListener('auth:changed', invalidateTarotSessionChange);
+document.addEventListener('auth:refreshed', syncTarotQuestionVisibility);
 window.addEventListener('storage', event => {
     if (event.key === 'auth_user') invalidateTarotSessionChange();
 });
@@ -463,11 +469,7 @@ function initTarot() {
     renderRequestedCardContext(requestedCardName);
     const tarotYesNoContext = readTarotYesNoUpgradeContext();
     renderTarotYesNoResumeContext(tarotYesNoContext);
-    const questionWrap = document.getElementById('tarot-question-wrap');
-    if (questionWrap) {
-        questionWrap.hidden = Boolean(tarotYesNoContext);
-        questionWrap.open = Boolean(window.Auth?.isPremium?.());
-    }
+    syncTarotQuestionVisibility();
 
     // Create Results Container if not exists
     let resultsContainer = document.getElementById('tarot-results');
