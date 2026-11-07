@@ -1579,7 +1579,7 @@ function renderActivationChecklist(user, readings, subscription) {
         && (signupIntentDestination || premiumFirstAction);
     setFirstValueAction(firstAction ? {
         href: firstReadingHref,
-        title: signupIntentDestination ? 'Navázat na registraci' : 'Otevřít členský výklad',
+        title: signupIntentDestination ? 'Navázat na registraci' : (premiumFirstAction.title || 'Otevřít členský výklad'),
         description: effectiveFirstReadingDescription,
         action: signupIntentDestination ? 'start_signup_intent' : 'start_premium_reading'
     } : null);

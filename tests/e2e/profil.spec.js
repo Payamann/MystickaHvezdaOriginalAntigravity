@@ -518,6 +518,19 @@ test.describe('Profil aktivace', () => {
         await expect(firstReading).toHaveAttribute('data-activation-action', 'start_premium_reading');
     });
 
+    test('prvni krok starsiho clenskeho planu popisuje skutecnou funkci', async ({ page }) => {
+        await mockLoggedInProfile(page, {
+            user: { subscription_status: 'exclusive_monthly' },
+            subscription: { planType: 'exclusive_monthly', status: 'active', canCancel: true }
+        });
+        await page.goto('/profil.html');
+        await waitForPageReady(page);
+        const firstStep = page.locator('#readings-list [data-profile-first-value]');
+        await expect(firstStep).toBeVisible();
+        await expect(firstStep).toContainText('Spustit astrokartografii');
+        await expect(firstStep).toHaveAttribute('href', /astro-mapa\.html/);
+    });
+
     test('prazdny profil pouzije growth-loop manifest jako primarni routing', async ({ page }) => {
         await mockLoggedInProfile(page);
         await page.route('**/api/growth-loop', async (route) => {
