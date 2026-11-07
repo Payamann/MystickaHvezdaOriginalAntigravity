@@ -2,8 +2,80 @@
     'use strict';
 
     var selectedGender = '';
+    var pastLifeSessionRevision = 0;
+    var pastLifeRequestRevision = 0;
+    var pastLifeStorageConflict = false;
     var PAST_LIFE_BANNER_SOURCE = 'past_life_banner_upgrade';
     var PAST_LIFE_REGISTER_SOURCE = 'past_life_register_gate';
+
+    function capturePastLifeSession() {
+        var isLoggedIn = Boolean(window.Auth?.isLoggedIn?.());
+        return { isLoggedIn: isLoggedIn, userId: isLoggedIn ? window.Auth?.user?.id || null : null };
+    }
+
+    var observedPastLifeSession = capturePastLifeSession();
+
+    function invalidatePastLifeSessionChange(force) {
+        var current = capturePastLifeSession();
+        if (!force && current.isLoggedIn === observedPastLifeSession.isLoggedIn && current.userId === observedPastLifeSession.userId) return;
+        var previous = observedPastLifeSession;
+        observedPastLifeSession = current;
+        pastLifeSessionRevision += 1;
+        pastLifeRequestRevision += 1;
+        if (!previous.isLoggedIn) return;
+
+        ['pl-name', 'pl-birth', 'pl-place', 'pl-gender'].forEach(function(id) {
+            var field = document.getElementById(id);
+            if (field) field.value = '';
+        });
+        selectedGender = '';
+        document.querySelectorAll('.gender-btn').forEach(function(button) { button.classList.remove('selected'); });
+        ['res-era', 'res-identity', 'res-karmic', 'res-gifts', 'res-patterns', 'res-mission', 'res-message'].forEach(function(id) {
+            var field = document.getElementById(id);
+            if (field) field.textContent = '';
+        });
+        document.getElementById('past-life-preview-gate')?.remove();
+        document.getElementById('favorite-past-life-action')?.remove();
+        document.getElementById('share-image')?.remove();
+        ['share-fb', 'share-x'].forEach(function(id) { document.getElementById(id)?.removeAttribute('href'); });
+        ['share-copy', 'share-native'].forEach(function(id) {
+            var button = document.getElementById(id);
+            if (button) button.onclick = null;
+        });
+        document.getElementById('pl-result')?.classList.remove('visible');
+        setBlockVisible(document.getElementById('pl-loading'), false);
+        setBlockVisible(document.getElementById('form-section'), true);
+        hideError();
+        try { sessionStorage.removeItem('pendingPastLifeContext'); } catch (_) { /* Storage is optional. */ }
+    }
+
+    function snapshotPastLifeSession() {
+        invalidatePastLifeSessionChange(false);
+        var session = capturePastLifeSession();
+        session.revision = pastLifeSessionRevision;
+        return session;
+    }
+
+    function isCurrentPastLifeSession(session) {
+        invalidatePastLifeSessionChange(false);
+        var current = capturePastLifeSession();
+        return Boolean(session?.isLoggedIn && typeof session.userId === 'string' && session.userId
+            && !pastLifeStorageConflict && current.isLoggedIn && current.userId === session.userId
+            && session.revision === pastLifeSessionRevision);
+    }
+
+    window.addEventListener('storage', function(event) {
+        if (event.key !== 'auth_user') return;
+        var storedOwner = null;
+        try { storedOwner = JSON.parse(event.newValue || 'null')?.id || null; } catch (_) { /* Unknown owner. */ }
+        if (storedOwner !== capturePastLifeSession().userId) {
+            pastLifeStorageConflict = true;
+            invalidatePastLifeSessionChange(true);
+        } else {
+            pastLifeStorageConflict = false;
+            invalidatePastLifeSessionChange(false);
+        }
+    });
 
     function apiBase() {
         return (window.API_CONFIG && window.API_CONFIG.BASE_URL) || '/api';
@@ -223,6 +295,8 @@
         // Submit
         document.getElementById('pl-submit').addEventListener('click', async function() {
             hideError();
+            var readingSession = snapshotPastLifeSession();
+            if (pastLifeStorageConflict) { showError('Přihlášení se změnilo. Obnov stránku a zkus to znovu.'); return; }
             var payload = buildPastLifePayload();
             var name = payload.name;
             var birth = payload.birthDate;
@@ -239,6 +313,15 @@
                 return;
             }
 
+            if (!isCurrentPastLifeSession(readingSession)) {
+                showError('Přihlášení se nepodařilo ověřit. Obnov stránku a zkus to znovu.');
+                return;
+            }
+            var requestRevision = ++pastLifeRequestRevision;
+            var isCurrentRequest = function() {
+                return requestRevision === pastLifeRequestRevision && isCurrentPastLifeSession(readingSession);
+            };
+
             // Show loading
             setBlockVisible(document.getElementById('form-section'), false);
             setBlockVisible(document.getElementById('pl-loading'), true);
@@ -247,7 +330,9 @@
             try {
                 // Get CSRF token
                 var csrfRes = await fetch(apiBase() + '/csrf-token', { credentials: 'include' });
+                if (!isCurrentRequest()) return;
                 var csrfData = await csrfRes.json();
+                if (!isCurrentRequest()) return;
 
                 var res = await fetch(apiBase() + '/past-life', {
                     method: 'POST',
@@ -259,7 +344,9 @@
                     body: JSON.stringify(payload)
                 });
 
+                if (!isCurrentRequest()) return;
                 var data = await res.json();
+                if (!isCurrentRequest()) return;
 
                 setBlockVisible(document.getElementById('pl-loading'), false);
 
@@ -279,7 +366,7 @@
                 document.getElementById('res-mission').textContent = r.mission || '';
                 document.getElementById('res-message').textContent = r.message || '';
 
-                setupShare(name, r);
+                setupShare(name, r, readingSession);
 
                 if (window.Auth?.saveReading) {
                     try {
@@ -290,12 +377,15 @@
                             place: place,
                             result: r,
                             fallback: !!data.fallback
-                        });
+                        }, readingSession.userId);
+
+                        if (!isCurrentRequest()) return;
 
                         if (saveResult?.id) {
                             appendPastLifeFavoriteAction(document.getElementById('pl-result'), saveResult.id);
                         }
                     } catch (saveError) {
+                        if (!isCurrentRequest()) return;
                         console.warn('Past life save failed:', saveError.message);
                     }
                 }
@@ -304,6 +394,7 @@
                 window.scrollTo({ top: document.getElementById('pl-result').offsetTop - 80, behavior: 'smooth' });
 
             } catch (e) {
+                if (!isCurrentRequest()) return;
                 setBlockVisible(document.getElementById('pl-loading'), false);
                 setBlockVisible(document.getElementById('form-section'), true);
                 showError('Chyba připojení. Zkuste to prosím znovu.');
@@ -312,13 +403,14 @@
 
         // Reset
         document.getElementById('pl-reset').addEventListener('click', function() {
+            pastLifeRequestRevision += 1;
             document.getElementById('pl-result').classList.remove('visible');
             setBlockVisible(document.getElementById('form-section'), true);
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
     }
 
-    function setupShare(name, r) {
+    function setupShare(name, r, readingSession) {
         var pageUrl = 'https://www.mystickahvezda.cz/minuly-zivot.html';
         var firstName = name.split(' ')[0];
         var shareText = '\uD83D\uDD2E ' + firstName + ' má symbolický vhled minulého života: ' +
@@ -366,7 +458,7 @@
             setInlineFlexVisible(nativeBtn, false);
         }
 
-        setupImageShare(firstName, r);
+        setupImageShare(firstName, r, readingSession);
     }
 
     async function drawPastLifeResultCard(firstName, r) {
@@ -414,7 +506,7 @@
         return canvas;
     }
 
-    function setupImageShare(firstName, r) {
+    function setupImageShare(firstName, r, readingSession) {
         if (!window.MH_SHARE_IMAGE || !window.MH_SHARE_IMAGE.shareOrDownload) return;
 
         var buttonsBar = document.querySelector('#share-bar .share-bar__buttons');
@@ -437,6 +529,7 @@
             Promise.resolve()
                 .then(async function () {
                     var canvas = await drawPastLifeResultCard(firstName, r);
+                    if (!isCurrentPastLifeSession(readingSession)) return;
                     return window.MH_SHARE_IMAGE.shareOrDownload({
                         canvas: canvas,
                         fileName: 'minuly-zivot.png',
@@ -496,7 +589,16 @@
         }
     }
 
-    document.addEventListener('auth:changed', checkAuth);
+    document.addEventListener('auth:changed', function() {
+        if (pastLifeStorageConflict) {
+            try {
+                var storedUser = JSON.parse(localStorage.getItem('auth_user') || 'null');
+                if ((storedUser?.id || null) === capturePastLifeSession().userId) pastLifeStorageConflict = false;
+            } catch (_) { /* Keep the action blocked until the account can be verified. */ }
+        }
+        invalidatePastLifeSessionChange(false);
+        checkAuth();
+    });
 
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', function() {
