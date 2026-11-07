@@ -503,6 +503,12 @@ test.describe('Profil aktivace', () => {
         await page.goto('/profil.html');
         await waitForPageReady(page);
 
+        const visibleFirstStep = page.locator('#readings-list [data-profile-first-value]');
+        await expect(visibleFirstStep).toBeVisible();
+        await expect(visibleFirstStep).toHaveAttribute('href', /tarot\.html.*feature=tarot_multi_card/);
+        await page.locator('#readings-filter').selectOption('journal');
+        await page.locator('#readings-filter').selectOption('all');
+        await expect(visibleFirstStep).toBeVisible();
         const firstReading = page.locator('[data-activation-step="first_reading"]');
         await expect(firstReading).toContainText('Členství je aktivní');
         const href = await firstReading.getAttribute('href');

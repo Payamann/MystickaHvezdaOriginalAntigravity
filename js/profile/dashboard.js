@@ -17,7 +17,7 @@ import {
     renderProfileAvatar,
     getProfileScrollBehavior
 } from './shared.js';
-import { loadReadings, showMoreReadings, handleFilterChange, getReadingSummary, initReadingFilters, resetReadingsState } from './readings.js';
+import { loadReadings, showMoreReadings, handleFilterChange, getReadingSummary, initReadingFilters, resetReadingsState, setFirstValueAction } from './readings.js';
 import { loadProfileContext, PROFILE_CONTEXT_LIMIT } from './context.js';
 import { readJournalDraft, writeJournalDraft } from './journal-draft.js';
 import { loadFavorites, resetFavoritesState } from './favorites.js';
@@ -1574,6 +1574,15 @@ function renderActivationChecklist(user, readings, subscription) {
 
     const effectiveFirstReadingDescription = signupIntentDestination?.description
         || (premiumFirstAction && !kinds.size ? `Členství je aktivní. ${premiumFirstAction.description}` : firstReadingDescription);
+
+    const firstAction = !kinds.size && profileState.context && !activePaymentReturnContext
+        && (signupIntentDestination || premiumFirstAction);
+    setFirstValueAction(firstAction ? {
+        href: firstReadingHref,
+        title: signupIntentDestination ? 'Navázat na registraci' : 'Otevřít členský výklad',
+        description: effectiveFirstReadingDescription,
+        action: signupIntentDestination ? 'start_signup_intent' : 'start_premium_reading'
+    } : null);
 
     const items = [
         {

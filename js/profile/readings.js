@@ -20,6 +20,31 @@ const PAGE_SIZE = 10;
 let emptyHistoryViewTracked = false;
 
 let activationHeroViewTracked = false;
+let firstValueAction = null;
+
+function syncFirstValueAction() {
+    const grid = document.querySelector('#readings-list .profile-activation-hero__grid');
+    if (!grid) return;
+    grid.querySelector('[data-profile-first-value]')?.remove();
+    if (!firstValueAction) return;
+
+    const link = document.createElement('a');
+    link.className = 'profile-activation-hero__card';
+    link.href = firstValueAction.href;
+    link.dataset.profileFirstValue = '';
+    link.dataset.profileHistoryNextStep = firstValueAction.action;
+    const title = document.createElement('strong');
+    title.textContent = firstValueAction.title;
+    const description = document.createElement('span');
+    description.textContent = firstValueAction.description;
+    link.append(title, description);
+    grid.prepend(link);
+}
+
+export function setFirstValueAction(action) {
+    firstValueAction = action;
+    syncFirstValueAction();
+}
 
 // Getter for allReadings (used by modal.js)
 export function getAllReadings() {
@@ -35,6 +60,7 @@ export function resetReadingsState() {
     allReadings = [];
     visibleReadings = [];
     readingSummary = null;
+    firstValueAction = null;
     currentFilter = 'all';
     displayedCount = serverPage = serverTotal = serverPages = 0;
     document.getElementById('readings-list')?.replaceChildren();
@@ -190,6 +216,7 @@ export function renderReadings() {
 
     if (currentFilter === 'all' && serverTotal === 0) {
         container.innerHTML = renderActivationHero();
+        syncFirstValueAction();
         updatePagination(0, 0);
         return;
     }

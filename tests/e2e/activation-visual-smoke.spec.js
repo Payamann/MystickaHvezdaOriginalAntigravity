@@ -114,7 +114,7 @@ async function mockLoggedInProfile(page, options = {}) {
             body: JSON.stringify({ success: true, plans: [], featurePlanMap: {} })
         });
     });
-    await page.route('**/api/user/readings', async (route) => {
+    await page.route('**/api/user/readings**', async (route) => {
         await route.fulfill({
             status: 200,
             contentType: 'application/json',
@@ -209,6 +209,10 @@ test.describe('Activation visual smoke', () => {
             await waitForPageReady(page);
 
             await expect(page.locator('#profile-dashboard')).toBeVisible();
+            const visibleFirstStep = page.locator('#readings-list [data-profile-first-value]');
+            await expect(visibleFirstStep).toBeVisible();
+            await expect(visibleFirstStep).toHaveAttribute('href', /numerologie\.html.*source=profile_signup_intent/);
+            await page.getByRole('tab', { name: 'Přehled' }).click();
             await expect(page.locator('#daily-guidance-card')).toBeVisible();
             await expect(page.locator('#activation-checklist-card')).toBeVisible();
 
@@ -221,6 +225,11 @@ test.describe('Activation visual smoke', () => {
             expect(firstReadingHref).toContain('entry_source=life_number_result');
             expect(firstReadingHref).toContain('entry_feature=numerologie_vyklad');
             await expectNoHorizontalOverflow(page);
+            await page.getByRole('tab', { name: 'Výklady' }).click();
+            await Promise.all([
+                page.waitForURL(url => url.pathname === '/numerologie.html'),
+                visibleFirstStep.click()
+            ]);
         });
 
         test(`payment return keeps one dominant next step on ${name}`, async ({ page }) => {
@@ -236,6 +245,7 @@ test.describe('Activation visual smoke', () => {
             const activation = page.locator('#premium-activation-card');
             await expectWithinViewport(page, activation);
             await expect(activation).toHaveAttribute('data-feature', 'partnerska_detail');
+            await expect(page.locator('#readings-list [data-profile-first-value]')).toHaveCount(0);
 
             const firstAction = activation.locator('[data-activation-target]').first();
             await expectWithinViewport(page, firstAction);
