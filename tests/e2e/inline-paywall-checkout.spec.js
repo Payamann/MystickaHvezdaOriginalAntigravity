@@ -776,10 +776,12 @@ test.describe('Inline paywall checkout handoff', () => {
             localStorage.clear();
             sessionStorage.clear();
             Object.assign(window.Auth, {
+                user: { id: 'medicine-wheel-user' },
                 isLoggedIn: () => true,
                 isPremium: () => false,
                 showToast: () => {}
             });
+            document.dispatchEvent(new Event('auth:changed'));
             window.MH_ANALYTICS = {
                 trackAction: () => {},
                 trackCTA: () => {},

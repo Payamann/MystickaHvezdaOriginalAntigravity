@@ -488,6 +488,24 @@ test.describe('Šamanské kolo', () => {
         expect(quote).not.toMatch(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u);
     });
 
+    test('formulář přijme Enter a zobrazí bezplatný výsledek', async ({ page }) => {
+        await page.route('**/api/csrf-token', route => route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify({ csrfToken: 'shaman-keyboard-test-token' })
+        }));
+        await page.route('**/api/medicine-wheel', route => route.fulfill({
+            status: 402,
+            contentType: 'application/json',
+            body: JSON.stringify({ error: 'Premium access required' })
+        }));
+        await page.locator('#mw-name').fill('Jana');
+        await page.locator('#mw-birth').fill('1988-09-21');
+        await page.locator('#mw-name').press('Enter');
+        await expect(page.locator('#mw-result')).toHaveClass(/visible/);
+        await expect(page.locator('#mw-premium-wall')).toBeVisible();
+    });
+
     test('premium gate nebo result container existuje v DOM', async ({ page }) => {
         // Premium wall nebo výsledkový kontejner — jeden z nich musí být přítomen
         const el = page.locator('#mw-premium-wall, .mw-premium-wall, #mw-result, .mw-result').first();
