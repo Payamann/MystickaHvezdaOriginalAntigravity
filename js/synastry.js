@@ -13,6 +13,14 @@ const SYNASTRY_RESULT_SOURCE = 'partner_match_result';
 const SYNASTRY_PAYMENT_REASSURANCE = 'Členství: 7 dní za 0 Kč, potom automaticky 199 Kč/měsíc, pokud ho nezrušíš. K aktivaci je potřeba karta. Zrušení v profilu.';
 const PERSONAL_MAP_PRODUCT_ID = 'osobni_mapa_2026';
 const PERSONAL_MAP_PRODUCT_TYPE = 'personal_map';
+
+function safelyTrackSynastry(callback) {
+    try {
+        void Promise.resolve(callback()).catch(() => {});
+    } catch {
+        // Measurement must not interrupt the result or its continuation.
+    }
+}
 let personalMapOfferViewed = false;
 let latestSynastryResultScores = null;
 let relationshipTarotOfferViewed = false;
@@ -224,23 +232,23 @@ function trackPersonalMapOfferView(scores) {
     if (disclosure && !disclosure.open) return;
     personalMapOfferViewed = true;
 
-    window.MH_ANALYTICS?.trackEvent?.('personal_map_offer_viewed', {
+    safelyTrackSynastry(() => window.MH_ANALYTICS?.trackEvent?.('personal_map_offer_viewed', {
         source: SYNASTRY_RESULT_SOURCE,
         feature: PERSONAL_MAP_PRODUCT_ID,
         placement: 'synastry_result_next_step',
         suggested_focus_area: 'relationships',
         total_score: scores?.totalScore ?? null
-    });
+    }));
     void trackPersonalMapOfferEvent('one_time_product_viewed', {
         total_score: scores?.totalScore ?? null
     });
 }
 
 function startSynastryUpgradeFlow(source) {
-    window.MH_ANALYTICS?.trackCTA?.(source, {
+    safelyTrackSynastry(() => window.MH_ANALYTICS?.trackCTA?.(source, {
         plan_id: SYNASTRY_PLAN_ID,
         feature: SYNASTRY_FEATURE
-    });
+    }));
     void trackSynastryFunnelEvent('paywall_cta_clicked', source, {
         destination: '/cenik.html'
     });
@@ -444,7 +452,7 @@ async function fetchCalculatedSynastry(person1, person2) {
 
 function trackSynastryCalculation(scores, synastry) {
     const attribution = getSynastryAttribution();
-    window.MH_ANALYTICS?.trackEvent?.('synastry_calculated', {
+    safelyTrackSynastry(() => window.MH_ANALYTICS?.trackEvent?.('synastry_calculated', {
         source: attribution.source,
         feature: attribution.feature,
         engine_version: synastry?.engine?.version || null,
@@ -459,7 +467,7 @@ function trackSynastryCalculation(scores, synastry) {
         passion_score: scores?.passionScore ?? null,
         stability_score: scores?.stabilityScore ?? null,
         cross_aspects_count: Array.isArray(synastry?.crossAspects) ? synastry.crossAspects.length : 0
-    });
+    }));
 }
 
 function revealSynastryNextStep(scores, synastry, isPremium) {
@@ -475,13 +483,13 @@ function revealSynastryNextStep(scores, synastry, isPremium) {
     observeRelationshipTarotOffer();
     trackPersonalMapOfferView(scores);
 
-    window.MH_ANALYTICS?.trackEvent?.('synastry_result_bridge_viewed', {
+    safelyTrackSynastry(() => window.MH_ANALYTICS?.trackEvent?.('synastry_result_bridge_viewed', {
         source: SYNASTRY_RESULT_SOURCE,
         feature: SYNASTRY_FEATURE,
         total_score: scores?.totalScore ?? null,
         precision: synastry?.engine?.precision || null,
         premium: Boolean(isPremium)
-    });
+    }));
 
     if (!isPremium) {
         void trackSynastryFunnelEvent('paywall_viewed', SYNASTRY_RESULT_SOURCE, {
@@ -617,12 +625,12 @@ function bindSynastryNextStepLinks() {
                     at: Date.now()
                 }));
             } catch { /* Navigation remains available when storage is disabled. */ }
-            window.MH_ANALYTICS?.trackCTA?.('partner_relationship_reading', {
+            safelyTrackSynastry(() => window.MH_ANALYTICS?.trackCTA?.('partner_relationship_reading', {
                 source: SYNASTRY_RESULT_SOURCE,
                 feature: 'relationship_tarot',
                 product_id: 'relationship_tarot',
                 destination: link.getAttribute('href') || null
-            });
+            }));
         });
     });
 
@@ -635,11 +643,11 @@ function bindSynastryNextStepLinks() {
 
     document.querySelectorAll('[data-synastry-intent]').forEach((link) => {
         link.addEventListener('click', () => {
-            window.MH_ANALYTICS?.trackEvent?.('synastry_result_intent_clicked', {
+            safelyTrackSynastry(() => window.MH_ANALYTICS?.trackEvent?.('synastry_result_intent_clicked', {
                 source: 'partner_match_intent',
                 feature: link.dataset.synastryIntent || null,
                 destination: link.getAttribute('href') || null
-            });
+            }));
         });
     });
 
@@ -652,13 +660,13 @@ function bindSynastryNextStepLinks() {
         });
         link.addEventListener('click', () => {
             const destination = link.getAttribute('href') || null;
-            window.MH_ANALYTICS?.trackCTA?.('partner_match_personal_map', {
+            safelyTrackSynastry(() => window.MH_ANALYTICS?.trackCTA?.('partner_match_personal_map', {
                 source: SYNASTRY_RESULT_SOURCE,
                 feature: PERSONAL_MAP_PRODUCT_ID,
                 product_id: PERSONAL_MAP_PRODUCT_ID,
                 product_type: PERSONAL_MAP_PRODUCT_TYPE,
                 destination
-            });
+            }));
             void trackPersonalMapOfferEvent('one_time_product_cta_clicked', { destination });
         });
     });

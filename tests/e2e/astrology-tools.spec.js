@@ -351,6 +351,29 @@ test.describe('Partnerská shoda', () => {
         expect(requests[1]).toEqual(requests[0]);
     });
 
+    test('výpadek měření nezastaví výsledek partnerské shody ani pokračování', async ({ page }) => {
+        await prepareCalculationTest(page);
+        await page.route('**/api/synastry/calculate', route => route.fulfill({ json: calculatedFixture }));
+        await page.evaluate(() => {
+            window.__synastryCheckoutCalls = [];
+            window.Auth.startPlanCheckout = (...args) => window.__synastryCheckoutCalls.push(args);
+            window.MH_ANALYTICS = {
+                trackEvent(event) { if (event === 'synastry_result_bridge_viewed') throw new Error('Analytics unavailable'); },
+                trackCTA() { throw new Error('Analytics unavailable'); }
+            };
+        });
+        await page.locator('#synastry-form button[type="submit"]').click();
+        await expect(page.locator('#total-score')).toHaveText('83%');
+        await expect(page.locator('#synastry-share-image-btn')).toBeVisible();
+        await expect(page.locator('#ai-synastry')).toBeVisible();
+        await expect(page.locator('#synastry-form button[type="submit"]')).toBeEnabled();
+        await page.locator('.synastry-upgrade-btn').first().click();
+        await expect.poll(() => page.evaluate(() => window.__synastryCheckoutCalls.length)).toBe(1);
+        const checkout = await page.evaluate(() => window.__synastryCheckoutCalls[0]);
+        expect(checkout[0]).toBe('pruvodce');
+        expect(checkout[1]).toMatchObject({ source: 'synastry_detail_lock', feature: 'partnerska_detail' });
+    });
+
     test('chybějící a neplatná skóre výpočtu nikdy nenahradí místní odhad', async ({ page }) => {
         const inputs = await prepareCalculationTest(page);
         const malformedResults = [
