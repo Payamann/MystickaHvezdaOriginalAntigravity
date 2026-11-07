@@ -7,8 +7,81 @@ import { getPragueDateKey } from './utils/prague-date.js';
 
 let runesData = [];
 let drawnRune = null;
+let runeSessionRevision = 0;
+let runeRequestRevision = 0;
+let runeStorageConflict = false;
 const RUNES_DEEP_FEATURE = 'runy_hluboky_vyklad';
 const RUNES_PAYMENT_REASSURANCE = '7 dní za 0 Kč, potom automaticky 199 Kč/měsíc, pokud nezrušíš. K aktivaci je potřeba karta. Zrušení v profilu.';
+
+function captureRuneSession() {
+    const isLoggedIn = Boolean(window.Auth?.isLoggedIn?.());
+    return { isLoggedIn, userId: isLoggedIn ? window.Auth?.user?.id || null : null };
+}
+
+let observedRuneSession = captureRuneSession();
+
+function invalidateRuneSessionChange(force = false) {
+    const current = captureRuneSession();
+    if (!force && current.isLoggedIn === observedRuneSession.isLoggedIn && current.userId === observedRuneSession.userId) return;
+    const previous = observedRuneSession;
+    observedRuneSession = current;
+    runeSessionRevision += 1;
+    runeRequestRevision += 1;
+
+    const response = document.getElementById('ai-response-container');
+    if (response) {
+        response.hidden = true;
+        response.innerHTML = '';
+        response.classList.remove('mh-block-visible', 'runes-upgrade-preview');
+    }
+    document.getElementById('favorite-rune-action')?.remove();
+    const upsell = document.getElementById('premium-upsell');
+    if (upsell) upsell.hidden = false;
+    const button = document.getElementById('btn-deep-reading');
+    if (button) {
+        button.disabled = false;
+        button.innerHTML = 'Získat šamanský výklad';
+    }
+    if (previous.isLoggedIn) {
+        const intention = document.getElementById('rune-intention');
+        if (intention) intention.value = '';
+        try { sessionStorage.removeItem('pendingRuneContext'); } catch { /* Storage is optional. */ }
+    }
+}
+
+function snapshotRuneSession() {
+    invalidateRuneSessionChange();
+    return { ...captureRuneSession(), revision: runeSessionRevision };
+}
+
+function isCurrentRuneSession(session) {
+    invalidateRuneSessionChange();
+    const current = captureRuneSession();
+    return Boolean(session?.isLoggedIn && typeof session.userId === 'string' && session.userId
+        && !runeStorageConflict && current.isLoggedIn && current.userId === session.userId && session.revision === runeSessionRevision);
+}
+
+document.addEventListener('auth:changed', () => {
+    if (runeStorageConflict) {
+        try {
+            const storedUser = JSON.parse(localStorage.getItem('auth_user') || 'null');
+            if ((storedUser?.id || null) === captureRuneSession().userId) runeStorageConflict = false;
+        } catch { /* Keep the action blocked until the account can be verified. */ }
+    }
+    invalidateRuneSessionChange();
+});
+window.addEventListener('storage', event => {
+    if (event.key !== 'auth_user') return;
+    let storedOwner = null;
+    try { storedOwner = JSON.parse(event.newValue || 'null')?.id || null; } catch { /* Treat malformed data as unknown. */ }
+    if (storedOwner !== captureRuneSession().userId) {
+        runeStorageConflict = true;
+        invalidateRuneSessionChange(true);
+    } else {
+        runeStorageConflict = false;
+        invalidateRuneSessionChange();
+    }
+});
 
 function apiBase() {
     return window.API_CONFIG?.BASE_URL || '/api';
@@ -131,8 +204,8 @@ function appendRuneFavoriteAction(container, readingId) {
     });
 }
 
-async function saveRuneReading({ response = null, intention = '', fallback = false } = {}) {
-    if (!drawnRune || !window.Auth?.saveReading) return null;
+async function saveRuneReading({ response = null, intention = '', fallback = false, rune = drawnRune, session = null } = {}) {
+    if (!rune || !window.Auth?.saveReading) return null;
 
     if (!window.Auth.isLoggedIn?.()) {
         window.Auth.showToast?.('Přihlášení vyžadováno', 'Pro uložení runy se prosím přihlaste.', 'info');
@@ -140,17 +213,21 @@ async function saveRuneReading({ response = null, intention = '', fallback = fal
         return null;
     }
 
+    const readingSession = session || snapshotRuneSession();
+    if (!isCurrentRuneSession(readingSession)) return null;
     const saveResult = await window.Auth.saveReading('runes', {
         rune: {
-            name: drawnRune.name,
-            symbol: drawnRune.symbol,
-            meaning: drawnRune.meaning,
-            element: drawnRune.element
+            name: rune.name,
+            symbol: rune.symbol,
+            meaning: rune.meaning,
+            element: rune.element
         },
         intention,
         response,
         fallback
-    });
+    }, readingSession.userId);
+
+    if (!isCurrentRuneSession(readingSession)) return null;
 
     if (saveResult?.id) {
         window.Auth.showToast?.('Uloženo', 'Runový výklad je uložený v profilu.', 'success');
@@ -461,6 +538,14 @@ async function requestDeepReading() {
         return;
     }
 
+    const readingSession = snapshotRuneSession();
+    if (!isCurrentRuneSession(readingSession)) {
+        window.Auth?.showToast?.('Přihlášení se nepodařilo ověřit', 'Obnov stránku a zkus to znovu.', 'error');
+        return;
+    }
+    const requestRevision = ++runeRequestRevision;
+    const isCurrentRequest = () => requestRevision === runeRequestRevision && isCurrentRuneSession(readingSession);
+    const rune = drawnRune ? { ...drawnRune } : null;
     const intentionInput = document.getElementById('rune-intention');
     const intention = intentionInput ? intentionInput.value.trim() : '';
     const btn = document.getElementById('btn-deep-reading');
@@ -471,17 +556,21 @@ async function requestDeepReading() {
     btn.innerHTML = 'Šaman přijímá vedení... <div class="loading__spinner loading__spinner--inline"></div>';
 
     try {
+        const headers = await buildJsonHeaders();
+        if (!isCurrentRequest()) return;
         const response = await fetch(`${apiBase()}/runes`, {
             method: 'POST',
             credentials: 'include',
-            headers: await buildJsonHeaders(),
+            headers,
             body: JSON.stringify({
-                rune: drawnRune,
+                rune,
                 intention
             }),
         });
 
+        if (!isCurrentRequest()) return;
         const data = await response.json();
+        if (!isCurrentRequest()) return;
 
         if (response.status === 401 || response.status === 402 || response.status === 403) {
             stashPendingRuneContext(intention);
@@ -509,8 +598,12 @@ async function requestDeepReading() {
         const saveResult = await saveRuneReading({
             response: data.response,
             intention,
-            fallback: !!data.fallback
+            fallback: !!data.fallback,
+            rune,
+            session: readingSession
         });
+
+        if (!isCurrentRequest()) return;
 
         if (saveResult?.id) {
             appendRuneFavoriteAction(aiContainer, saveResult.id);
@@ -519,12 +612,15 @@ async function requestDeepReading() {
         aiContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
     } catch (error) {
+        if (!isCurrentRequest()) return;
         console.error('Deep read failed:', error);
         alert('Nepodařilo se načíst hluboký výklad. Zkuste to prosím znovu.');
         btn.disabled = false;
         btn.innerHTML = 'Získat šamanský výklad (Zkusit znovu)';
     } finally {
-        btn.disabled = false;
-        btn.innerHTML = 'Získat šamanský výklad';
+        if (requestRevision === runeRequestRevision) {
+            btn.disabled = false;
+            btn.innerHTML = 'Získat šamanský výklad';
+        }
     }
 }

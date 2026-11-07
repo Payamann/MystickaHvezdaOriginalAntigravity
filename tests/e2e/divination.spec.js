@@ -627,6 +627,7 @@ test.describe('Runy', () => {
 
         await page.evaluate(() => {
             window.Auth = {
+                user: { id: 'runes-api-test-user' },
                 isLoggedIn: () => true,
                 showToast: () => {},
                 startPlanCheckout: () => {}
@@ -677,7 +678,7 @@ test.describe('Runy', () => {
 
         await expect(page.locator('.runes-upgrade-preview')).toBeVisible();
         await expect(page.locator('.runes-upgrade-preview')).toContainText('Odemknout');
-        await expect(page.locator('.runes-upgrade-preview__reassurance')).toContainText('Cena se zobraz\u00ed ve Stripe p\u0159ed potvrzen\u00edm. Zru\u0161en\u00ed najdete v profilu.');
+        await expect(page.locator('.runes-upgrade-preview__reassurance')).toContainText('7 dní za 0 Kč, potom automaticky 199 Kč/měsíc');
         expect(apiCalled).toBe(false);
         expect(page.url()).toContain('/runy.html');
         expect(await page.evaluate(() => window.__runesCheckoutPayloads.length)).toBe(0);
@@ -708,6 +709,7 @@ test.describe('Runy', () => {
         await page.evaluate(() => {
             window.__runesCheckoutPayloads = [];
             window.Auth = {
+                user: { id: 'runes-free-test-user' },
                 isLoggedIn: () => true,
                 isPremium: () => false,
                 showToast: () => {},
@@ -726,7 +728,7 @@ test.describe('Runy', () => {
         await page.locator('#btn-deep-reading').click();
 
         await expect(page.locator('.runes-upgrade-preview')).toBeVisible();
-        await expect(page.locator('.runes-upgrade-preview__reassurance')).toContainText('Cena se zobraz\u00ed ve Stripe p\u0159ed potvrzen\u00edm. Zru\u0161en\u00ed najdete v profilu.');
+        await expect(page.locator('.runes-upgrade-preview__reassurance')).toContainText('7 dní za 0 Kč, potom automaticky 199 Kč/měsíc');
         expect(await page.evaluate(() => window.__runesCheckoutPayloads.length)).toBe(0);
 
         await page.locator('.runes-upgrade-preview__cta').click();
