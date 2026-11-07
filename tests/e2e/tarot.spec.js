@@ -171,6 +171,129 @@ test.describe('Tarot', () => {
         expect(page.url()).not.toContain('Jak');
     });
 
+    test('synchronní chyba analytiky při použití kontextu karty nezastaví skutečný výklad', async ({ page }) => {
+        await page.goto('/tarot.html?card=Hvězda&source=e2e_analytics_failure');
+        await waitForPageReady(page);
+        await page.evaluate(() => {
+            const analytics = window.MH_ANALYTICS;
+            const originalTrackAction = analytics.trackAction.bind(analytics);
+            window.__thrownTarotAnalyticsEvents = [];
+            analytics.trackAction = (name, context) => {
+                if (name === 'tarot_card_context_used') {
+                    window.__thrownTarotAnalyticsEvents.push(name);
+                    throw new Error('synchronous analytics failure');
+                }
+                return originalTrackAction(name, context);
+            };
+        });
+
+        await page.locator('[data-spread-type="Jedna karta"]').first().click();
+
+        await expect(page.locator('#tarot-results')).toBeVisible({ timeout: 9000 });
+        await expect(page.locator('#tarot-results .tarot-flip-card')).toHaveCount(1);
+        await expect(page.locator('#tarot-results .tarot-card-image')).toHaveAttribute('alt', /Hvězda/, { timeout: 9000 });
+        await expect(page.locator('#interpretations-container')).toContainText('Hvězda', { timeout: 9000 });
+        await expect(page.locator('.tarot-practical-advice')).toBeVisible();
+        expect(await page.evaluate(() => window.__thrownTarotAnalyticsEvents)).toEqual(['tarot_card_context_used']);
+    });
+
+    test('synchronní chyba analytiky při zobrazení soft gate nezastaví bezplatnou ukázku', async ({ page }) => {
+        await page.evaluate(() => {
+            localStorage.removeItem('tarot_free_usage');
+            window.Auth = {
+                user: { id: 'free-user' },
+                isLoggedIn: () => true,
+                isPremium: () => false,
+                showToast: () => {},
+                saveReading: async () => ({ id: 'teaser-reading' }),
+                startPlanCheckout: (plan, options) => { window.__tarotCheckout = { plan, options }; }
+            };
+            document.dispatchEvent(new Event('auth:changed'));
+
+            const analytics = window.MH_ANALYTICS;
+            const originalTrackAction = analytics.trackAction.bind(analytics);
+            window.__thrownTarotAnalyticsEvents = [];
+            analytics.trackAction = (name, context) => {
+                if (name === 'tarot_soft_gate_viewed') {
+                    window.__thrownTarotAnalyticsEvents.push(name);
+                    throw new Error('synchronous analytics failure');
+                }
+                return originalTrackAction(name, context);
+            };
+        });
+
+        await page.locator('[data-spread-type="Tři karty"]').first().click();
+
+        await expect(page.locator('#tarot-results')).toBeVisible({ timeout: 9000 });
+        await expect(page.locator('#tarot-results .tarot-flip-card')).toHaveCount(3);
+        await expect(page.locator('#tarot-results .locked-card')).toHaveCount(2);
+        await expect(page.locator('.tarot-soft-gate')).toContainText('Odemkněte celý tříkartový výklad');
+        await expect(page.locator('#tarot-results .tarot-flip-card').first()).toHaveClass(/flipped/, { timeout: 12000 });
+        await expect(page.locator('#interpretations-container')).not.toBeEmpty({ timeout: 12000 });
+        await page.locator('.tarot-soft-gate .tarot-upgrade-btn').click();
+        await expect.poll(() => page.evaluate(() => window.__tarotCheckout)).toMatchObject({ plan: 'pruvodce', options: { source: 'tarot_teaser_banner' } });
+        expect(await page.evaluate(() => JSON.parse(localStorage.getItem('tarot_free_usage')).count)).toBe(1);
+        expect(await page.evaluate(() => window.__thrownTarotAnalyticsEvents)).toEqual(['tarot_soft_gate_viewed']);
+    });
+
+    test('synchronní chyba analytiky při dokončení pokračování ponechá členský souhrn a uložení', async ({ page }) => {
+        await page.goto('/tarot.html?source=e2e_resume&feature=tarot_multi_card&resume=tarot_yes_no');
+        await waitForPageReady(page);
+        await page.evaluate(() => {
+            window.__summaryCalls = 0;
+            window.__savedTarot = null;
+            window.Auth = {
+                user: { id: 'member-resume-test' },
+                isLoggedIn: () => true,
+                isPremium: () => true,
+                saveReading: async (type, data, owner) => {
+                    window.__savedTarot = { type, data, owner };
+                    return { id: 'saved-resumed-reading' };
+                }
+            };
+            document.dispatchEvent(new Event('auth:changed'));
+            localStorage.setItem('mh_tarot_yes_no_upgrade_context', JSON.stringify({ question: 'Mám dnes udělat první krok?', answerLabel: 'ANO', answerKey: 'ano', resultText: 'Směr je otevřený.', cardName: 'Hvězda', locale: 'cs', source: 'tarot_yes_no_result', createdAt: Date.now() }));
+            window.getCSRFToken = async () => 'test';
+            const originalFetch = window.fetch.bind(window);
+            window.fetch = async (input, init) => {
+                const url = typeof input === 'string' ? input : input.url;
+                if (url.includes('/api/tarot-summary')) {
+                    window.__summaryCalls += 1;
+                    window.__summaryRequest = JSON.parse(init.body);
+                    return new Response(JSON.stringify({ success: true, response: 'Souhrn navazujícího výkladu.', fallback: false }), {
+                        status: 200,
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                }
+                return originalFetch(input, init);
+            };
+
+            const analytics = window.MH_ANALYTICS;
+            const originalTrackAction = analytics.trackAction.bind(analytics);
+            window.__thrownTarotAnalyticsEvents = [];
+            analytics.trackAction = (name, context) => {
+                if (name === 'tarot_yes_no_continuation_completed') {
+                    window.__thrownTarotAnalyticsEvents.push(name);
+                    throw new Error('synchronous analytics failure');
+                }
+                return originalTrackAction(name, context);
+            };
+        });
+
+        await page.locator('[data-spread-type="Tři karty"]').first().click();
+
+        await expect(page.locator('#tarot-results')).toBeVisible({ timeout: 9000 });
+        await expect(page.locator('#ethereal-tarot-summary')).toContainText('Souhrn navazujícího výkladu.', { timeout: 18000 });
+        await expect.poll(() => page.evaluate(() => window.__savedTarot)).toMatchObject({
+            type: 'tarot',
+            owner: 'member-resume-test',
+            data: { question: 'Mám dnes udělat první krok?' }
+        });
+        expect(await page.evaluate(() => window.__summaryCalls)).toBe(1);
+        expect(await page.evaluate(() => window.__summaryRequest.question)).toBe('Mám dnes udělat první krok?');
+        expect(await page.evaluate(() => window.__thrownTarotAnalyticsEvents)).toEqual(['tarot_yes_no_continuation_completed']);
+    });
+
     test('změna účtu během souhrnu zruší starý výklad i při návratu na původní účet', async ({ page }) => {
         await page.evaluate(() => {
             window.__savedTarot = null;

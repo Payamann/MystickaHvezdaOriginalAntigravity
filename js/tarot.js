@@ -24,6 +24,14 @@ const TAROT_PAYMENT_REASSURANCE = '7 dní za 0 Kč, potom automaticky 199 Kč/m�
 const TAROT_YES_NO_UPGRADE_CONTEXT_KEY = 'mh_tarot_yes_no_upgrade_context';
 const TAROT_YES_NO_UPGRADE_CONTEXT_MAX_AGE_MS = 24 * 60 * 60 * 1000;
 
+function safelyTrackTarot(callback) {
+    try {
+        void Promise.resolve(callback()).catch(() => {});
+    } catch {
+        // Measurement must never interrupt a reading or its continuation.
+    }
+}
+
 function captureTarotReadingSession() {
     const isLoggedIn = Boolean(window.Auth?.isLoggedIn?.());
     return { isLoggedIn, userId: isLoggedIn ? window.Auth?.user?.id : null };
@@ -242,16 +250,12 @@ function startTarotUpgradeFlow(spreadType, source = 'tarot_inline_upsell') {
         entry_feature: entryContext.entry_feature || feature,
         ...entryContext
     };
-    try {
-        window.MH_ANALYTICS?.trackCTA?.(source, {
-            plan_id: planId,
-            spread_type: spreadType,
-            feature,
-            ...checkoutMetadata
-        });
-    } catch (error) {
-        console.warn('[Tarot] Upgrade analytics unavailable:', error?.message);
-    }
+    safelyTrackTarot(() => window.MH_ANALYTICS?.trackCTA?.(source, {
+        plan_id: planId,
+        spread_type: spreadType,
+        feature,
+        ...checkoutMetadata
+    }));
 
     void trackTarotFunnelEvent('paywall_cta_clicked', source, spreadType, {
         destination: '/cenik.html'
@@ -694,12 +698,12 @@ async function startReading(spreadType, isSoftGated = false) {
 
     if (spreadType === 'Jedna karta' && requestedCardName && cardsWithImages.includes(requestedCardName)) {
         drawnCardNames.push(requestedCardName);
-        window.MH_ANALYTICS?.trackAction?.('tarot_card_context_used', {
+        safelyTrackTarot(() => window.MH_ANALYTICS?.trackAction?.('tarot_card_context_used', {
             source: 'tarot_card_parameter',
             card: requestedCardName,
             spread_type: spreadType,
             ...getTarotEntryContext()
-        });
+        }));
     }
 
     while (drawnCardNames.length < numCards && drawnCardNames.length < cardsWithImages.length) {
@@ -784,7 +788,7 @@ async function startReading(spreadType, isSoftGated = false) {
     resultsContainer.classList.remove('hidden');
     bindTarotImageFallbacks(resultsContainer);
     if (isSoftGated) {
-        window.MH_ANALYTICS?.trackAction?.('tarot_soft_gate_viewed', {
+        safelyTrackTarot(() => window.MH_ANALYTICS?.trackAction?.('tarot_soft_gate_viewed', {
             source: 'tarot_teaser_banner',
             feature: getTarotFeatureForSpread(spreadType),
             plan_id: getTarotPlanForSpread(spreadType),
@@ -792,7 +796,7 @@ async function startReading(spreadType, isSoftGated = false) {
             ...getTarotEntryContext(),
             cards_total: numCards,
             cards_locked: Math.max(0, numCards - 1)
-        });
+        }));
         void trackTarotFunnelEvent('paywall_viewed', 'tarot_teaser_banner', spreadType, {
             gate_reason: 'teaser_after_free_card',
             cards_total: numCards,
@@ -878,13 +882,13 @@ async function startReading(spreadType, isSoftGated = false) {
         try {
             localStorage.removeItem(TAROT_YES_NO_UPGRADE_CONTEXT_KEY);
         } catch {}
-        window.MH_ANALYTICS?.trackAction?.('tarot_yes_no_continuation_completed', {
+        safelyTrackTarot(() => window.MH_ANALYTICS?.trackAction?.('tarot_yes_no_continuation_completed', {
             source: 'tarot_yes_no_resume',
             feature: 'tarot_multi_card',
             spread_type: spreadType,
             answer_label: tarotYesNoContext.answerLabel,
             locale: tarotYesNoContext.locale
-        });
+        }));
     }
 
     // Trigger spiritual summary after DOM is updated
