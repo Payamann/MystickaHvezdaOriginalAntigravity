@@ -189,6 +189,7 @@ test.describe('Andělské karty', () => {
             localStorage.removeItem('angelCardDaily');
             window.Auth = {
                 ...(window.Auth || {}),
+                user: { id: 'angel-test-user' },
                 isLoggedIn: () => true,
                 isPremium: () => true,
                 saveReading: async () => ({ id: 'test-angel-reading' })

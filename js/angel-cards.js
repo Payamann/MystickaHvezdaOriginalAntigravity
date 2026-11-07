@@ -6,10 +6,76 @@
 let angelCardsData = [];
 let drawnCard = null;
 let angelFirstValueTracked = false;
+let angelSessionRevision = 0;
+let angelRequestRevision = 0;
+let angelStorageConflict = false;
 
 const ANGEL_CARD_FEATURE = 'andelske_karty_hluboky_vhled';
 const ANGEL_CARD_PLAN_ID = 'pruvodce';
 const ANGEL_CARD_RESULT_SOURCE = 'angel_card_result';
+
+function captureAngelSession() {
+    const isLoggedIn = Boolean(window.Auth?.isLoggedIn?.());
+    return { isLoggedIn, userId: isLoggedIn ? window.Auth?.user?.id || null : null };
+}
+
+let observedAngelSession = captureAngelSession();
+
+function invalidateAngelSessionChange(force = false) {
+    const current = captureAngelSession();
+    if (!force && current.isLoggedIn === observedAngelSession.isLoggedIn && current.userId === observedAngelSession.userId) return;
+    observedAngelSession = current;
+    angelSessionRevision += 1;
+    angelRequestRevision += 1;
+
+    const response = document.getElementById('angel-ai-response');
+    if (response) {
+        response.hidden = true;
+        response.textContent = '';
+        response.classList.remove('mh-block-visible');
+    }
+    document.getElementById('favorite-angel-card-btn')?.closest('.favorite-reading-action')?.remove();
+    const button = document.getElementById('btn-deep-angel');
+    if (button) {
+        button.disabled = false;
+        button.textContent = 'Získat hluboký vhled';
+    }
+}
+
+function snapshotAngelSession() {
+    invalidateAngelSessionChange();
+    return { ...captureAngelSession(), revision: angelSessionRevision };
+}
+
+function isCurrentAngelSession(session) {
+    invalidateAngelSessionChange();
+    const current = captureAngelSession();
+    return Boolean(session?.isLoggedIn && typeof session.userId === 'string' && session.userId
+        && !angelStorageConflict && current.isLoggedIn && current.userId === session.userId
+        && session.revision === angelSessionRevision);
+}
+
+document.addEventListener('auth:changed', () => {
+    if (angelStorageConflict) {
+        try {
+            const storedUser = JSON.parse(localStorage.getItem('auth_user') || 'null');
+            if ((storedUser?.id || null) === captureAngelSession().userId) angelStorageConflict = false;
+        } catch { /* Keep the action blocked until the account can be verified. */ }
+    }
+    invalidateAngelSessionChange();
+});
+window.addEventListener('storage', event => {
+    if (event.key !== 'auth_user') return;
+    let storedOwner = null;
+    try { storedOwner = JSON.parse(event.newValue || 'null')?.id || null; } catch { /* Unknown owner. */ }
+    if (storedOwner !== captureAngelSession().userId) {
+        angelStorageConflict = true;
+        invalidateAngelSessionChange(true);
+    } else {
+        angelStorageConflict = false;
+        invalidateAngelSessionChange();
+    }
+});
 
 const DAILY_CARD_FALLBACKS = {
     'andele-ochranci': {
@@ -587,6 +653,11 @@ function appendFavoriteAction(container, readingId) {
 async function requestDeepInsight() {
     if (!drawnCard) return;
 
+    if (angelStorageConflict) {
+        window.Auth?.showToast?.('Přihlášení se změnilo', 'Obnov stránku a zkus to znovu.', 'error');
+        return;
+    }
+
     if (!window.Auth?.isLoggedIn?.()) {
         window.Auth?.showToast?.('Přihlášení vyžadováno', 'Hluboký vhled k andělské kartě je dostupný po přihlášení.', 'info');
         startAngelUpgradeFlow('angel_card_auth_gate', 'register');
@@ -598,6 +669,15 @@ async function requestDeepInsight() {
         startAngelUpgradeFlow('angel_card_premium_gate', 'login');
         return;
     }
+
+    const readingSession = snapshotAngelSession();
+    if (!isCurrentAngelSession(readingSession)) {
+        window.Auth?.showToast?.('Přihlášení se nepodařilo ověřit', 'Obnov stránku a zkus to znovu.', 'error');
+        return;
+    }
+    const requestRevision = ++angelRequestRevision;
+    const isCurrentRequest = () => requestRevision === angelRequestRevision && isCurrentAngelSession(readingSession);
+    const card = { ...drawnCard };
 
     const { response } = ensureDeepInsightElements();
     const button = document.getElementById('btn-deep-angel');
@@ -611,6 +691,7 @@ async function requestDeepInsight() {
 
     try {
         const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
+        if (!isCurrentRequest()) return;
         const res = await fetch(`${apiBase()}/angel-card`, {
             method: 'POST',
             credentials: 'include',
@@ -619,12 +700,14 @@ async function requestDeepInsight() {
                 ...(csrfToken && { 'X-CSRF-Token': csrfToken })
             },
             body: JSON.stringify({
-                card: drawnCard,
+                card,
                 intention: 'hluboký vhled k andělské kartě'
             })
         });
 
+        if (!isCurrentRequest()) return;
         const data = await res.json();
+        if (!isCurrentRequest()) return;
 
         if (res.status === 401 || res.status === 402 || res.status === 403 || data.isTeaser) {
             startAngelUpgradeFlow('angel_card_api_gate', 'login');
@@ -641,14 +724,16 @@ async function requestDeepInsight() {
         if (window.Auth?.saveReading) {
             const saveResult = await window.Auth.saveReading('angel-card', {
                 card: {
-                    name: drawnCard.name,
-                    theme: drawnCard.theme,
-                    message: drawnCard.message
+                    name: card.name,
+                    theme: card.theme,
+                    message: card.message
                 },
                 intention: 'hluboký vhled k andělské kartě',
                 response: data.response,
                 fallback: !!data.fallback
-            });
+            }, readingSession.userId);
+
+            if (!isCurrentRequest()) return;
 
             if (saveResult?.id) {
                 appendFavoriteAction(response, saveResult.id);
@@ -657,11 +742,14 @@ async function requestDeepInsight() {
 
         scrollAngelResultsIntoView();
     } catch (error) {
+        if (!isCurrentRequest()) return;
         console.error('Angel deep insight failed:', error);
         response.textContent = 'Hluboký vhled se teď nepodařilo načíst. Zkuste to prosím znovu.';
     } finally {
-        button.disabled = false;
-        button.textContent = originalText;
+        if (requestRevision === angelRequestRevision) {
+            button.disabled = false;
+            button.textContent = originalText;
+        }
     }
 }
 
