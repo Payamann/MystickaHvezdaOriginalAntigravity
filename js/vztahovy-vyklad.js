@@ -75,10 +75,18 @@
         document.querySelectorAll('[data-reading-cta-label]').forEach(label => { label.textContent = 'Chci svůj výklad'; });
     });
     function csrf() {
-        if (!csrfPromise) csrfPromise = fetch('/api/csrf-token', { credentials: 'same-origin' }).then(async response => {
-            if (!response.ok) throw new Error('csrf');
-            return (await response.json()).csrfToken;
-        }).catch(error => { csrfPromise = null; throw error; });
+        if (!csrfPromise) {
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), 20000);
+            csrfPromise = fetch('/api/csrf-token', { credentials: 'same-origin', signal: controller.signal }).then(async response => {
+                if (!response.ok) throw new Error('csrf');
+                return (await response.json()).csrfToken;
+            }).catch(error => {
+                csrfPromise = null;
+                if (error.name === 'AbortError') throw new Error('csrf_timeout');
+                throw error;
+            }).finally(() => clearTimeout(timer));
+        }
         return csrfPromise;
     }
     function consentedAcquisition() {
@@ -98,9 +106,10 @@
             return { acquisition_channel: channel };
         } catch { return {}; }
     }
-    function track(eventName, details = {}) {
+    function track(eventName, details = {}, { skipServer = false } = {}) {
         const metadata = { product_id: 'relationship_tarot', price: 149, currency: 'CZK', flow_id: flowId, ...details, ...consentedAcquisition() };
         try { window.MH_ANALYTICS?.trackEvent?.(eventName, { source, ...metadata }); } catch { /* non-blocking */ }
+        if (skipServer) return;
         void csrf().then(token => fetch('/api/payment/funnel-event', { method: 'POST', keepalive: true, credentials: 'same-origin', headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': token }, body: JSON.stringify({ eventName, source, feature: 'relationship_tarot', planType: 'relationship_tarot', metadata }) })).catch(() => {});
     }
     // Finish the entry-click receipt after navigation so the event cannot be lost on unload.
@@ -141,9 +150,16 @@
         error.textContent = '';
         try { sessionStorage.setItem(draftKey, JSON.stringify({ ...continuation, question: checkoutPayload.question, email: checkoutPayload.email, flowId, at: Date.now() })); } catch { /* Preserve in the DOM when storage is unavailable. */ }
         track('one_time_form_submitted', { funnel_step: 'form_submit' });
+        let checkoutTimer;
+        let checkoutTimedOut = false;
+        let csrfAcquired = false;
         try {
-            const response = await fetch('/api/vztahovy-vyklad/checkout', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': await csrf() },
-                body: JSON.stringify(checkoutPayload) });
+            const token = await csrf();
+            csrfAcquired = true;
+            const controller = new AbortController();
+            checkoutTimer = setTimeout(() => { checkoutTimedOut = true; controller.abort(); }, 20000);
+            const response = await fetch('/api/vztahovy-vyklad/checkout', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': token },
+                body: JSON.stringify(checkoutPayload), signal: controller.signal });
             if (response.status === 403) csrfPromise = null;
             const result = await response.json().catch(() => ({ error: 'Platbu se nepodařilo otevřít. Zkus to za chvíli.' }));
             if (!response.ok) {
@@ -155,7 +171,9 @@
             if (url.protocol !== 'https:' || url.hostname !== 'checkout.stripe.com') throw new Error('Platební odkaz se nepodařilo ověřit.');
             location.assign(url.href);
         } catch (failure) {
-            error.textContent = failure.message === 'csrf' ? 'Platbu se nepodařilo připravit. Zkus to znovu.' : failure.message;
+            error.textContent = checkoutTimedOut || failure.message === 'csrf_timeout'
+                ? 'Příprava platby trvá příliš dlouho. Zkus to znovu se stejnými údaji. Pokud už jsi zaplatil(a), neplať znovu a kontaktuj podporu.'
+                : failure.message === 'csrf' ? 'Platbu se nepodařilo připravit. Zkus to znovu.' : failure.message;
             controls.forEach((control, index) => { control.disabled = previousDisabledStates[index]; });
             if (failure.code === 'checkout_session_expired') {
                 flowId = createFlowId();
@@ -166,7 +184,9 @@
             } else if (['checkout_already_completed', 'checkout_payment_pending', 'checkout_session_unavailable', 'checkout_flow_conflict'].includes(failure.code)) {
                 button.disabled = true;
             }
-            track('one_time_checkout_failed', { funnel_step: 'checkout_create', flow_id: checkoutPayload.flowId });
+            track('one_time_checkout_failed', { funnel_step: 'checkout_create', flow_id: checkoutPayload.flowId }, { skipServer: !csrfAcquired });
+        } finally {
+            clearTimeout(checkoutTimer);
         }
     });
     let paymentTracked = false;
