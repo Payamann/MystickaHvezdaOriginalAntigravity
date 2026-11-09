@@ -15,6 +15,9 @@ const cleanSource = value => typeof value === 'string' && /^[a-z0-9_:-]{1,80}$/i
 const cleanFlowId = value => typeof value === 'string' && /^[a-z0-9_-]{16,80}$/i.test(value) ? value : null;
 const cleanOrderRef = value => typeof value === 'string' && /^[a-z0-9_-]{1,80}$/i.test(value) ? value : null;
 const DELIVERY_STATES = new Set(['preparing', 'provider_accepted', 'delivered', 'delivery_delayed', 'failed', 'unavailable']);
+// A delayed payment can settle days after checkout; keep the proof on the
+// original browser long enough to check it without exposing status by URL alone.
+const RETURN_PROOF_COOKIE_AGE_MS = 7 * 24 * 60 * 60 * 1000;
 
 function matchesRelationshipCheckoutSession(session, order, returnProof) {
     return session?.mode === 'payment'
@@ -144,7 +147,7 @@ export function createRelationshipTarotRouter(deps = {}) {
                 }
             }
             await track('checkout_session_created', orderSource, { stripeSessionId: session.id, metadata: { product_id: PRODUCT.id, amount: PRODUCT.amount, currency: PRODUCT.currency, funnel_step: 'checkout_created', flow_id: flowId } });
-            res.cookie(pdfProofCookie(session.id), returnProof, { httpOnly: true, secure: appUrl.startsWith('https://'), sameSite: 'lax', path: '/api/vztahovy-vyklad', maxAge: 7200000 });
+            res.cookie(pdfProofCookie(session.id), returnProof, { httpOnly: true, secure: appUrl.startsWith('https://'), sameSite: 'lax', path: '/api/vztahovy-vyklad', maxAge: RETURN_PROOF_COOKIE_AGE_MS });
             return res.json({ url: session.url });
         } catch (error) {
             if (error?.code === 'RELATIONSHIP_TAROT_FLOW_CONFLICT') {

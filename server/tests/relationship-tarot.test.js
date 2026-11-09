@@ -146,6 +146,23 @@ describe('Relationship tarot checkout', () => {
         expect(getDeliveryStatus).toHaveBeenCalledTimes(1);
         await request(app).get('/checkout-result?session_id=cs_test_relationship').set('Cookie', `${pdfProofCookie(paidSession.id)}=${'b'.repeat(64)}`).expect(403);
     });
+    test('the original browser can check a delayed payment after several days', async () => {
+        const { app, stripe, getDeliveryStatus } = setup();
+        const checkout = await request(app).post('/checkout').send(orderInput).expect(200);
+        const cookieHeader = checkout.headers['set-cookie'][0];
+        const maxAge = Number(cookieHeader.match(/(?:^|;\s*)Max-Age=(\d+)/i)?.[1]);
+        // Browsers discard an expired cookie; verify it survives a 72-hour return.
+        expect(maxAge).toBeGreaterThan(72 * 60 * 60);
+        expect(maxAge).toBeLessThanOrEqual(7 * 24 * 60 * 60);
+        expect(cookieHeader).toContain('HttpOnly');
+        expect(cookieHeader).toContain('SameSite=Lax');
+        const cookie = cookieHeader.split(';')[0];
+        const metadata = stripe.checkout.sessions.create.mock.calls[0][0].metadata;
+        stripe.checkout.sessions.retrieve.mockResolvedValueOnce({ ...paidSession, metadata });
+        const response = await request(app).get('/checkout-result?session_id=cs_test_relationship').set('Cookie', cookie).expect(200);
+        expect(response.body).toEqual({ status: 'paid', deliveryState: 'provider_accepted', orderRef: 'order-1' });
+        expect(getDeliveryStatus).toHaveBeenCalledWith({ orderId: 'order-1', sessionId: paidSession.id });
+    });
     test('a delivery lookup outage preserves paid status without exposing customer data', async () => {
         const getDeliveryStatus = jest.fn(async () => { throw new Error('database unavailable buyer@example.com'); });
         const { app } = setup({ getDeliveryStatus });
