@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import vm from 'vm';
 
 const ROOT_DIR = path.resolve(process.cwd());
 
@@ -35,5 +36,22 @@ describe('Daily card homepage assets', () => {
         expect(source).not.toContain('poviností');
         expect(source).not.toContain('Hrej si');
         expect(source).not.toContain('Ukotví se');
+    });
+
+    test('linked card details use the same current names, themes and messages as the homepage', () => {
+        const homepage = readDailyCardSource();
+        const detail = fs.readFileSync(path.join(ROOT_DIR, 'js', 'angel-cards.js'), 'utf8');
+        const cards = vm.runInNewContext(homepage.match(/const CARDS = (\[[\s\S]*?\n    \]);/)[1]);
+        const slugs = vm.runInNewContext(`(${homepage.match(/const CARD_IMAGES = (\{[\s\S]*?\n    \});/)[1]})`);
+        const fallbacks = vm.runInNewContext(`(${detail.match(/const DAILY_CARD_FALLBACKS = (\{[\s\S]*?\n\});/)[1]})`);
+
+        expect(Object.keys(fallbacks)).toHaveLength(cards.length);
+        for (const card of cards) {
+            const fallback = fallbacks[slugs[card.name]];
+            expect(fallback).toBeDefined();
+            expect(fallback.name).toBe(card.name);
+            expect(fallback.keyword).toBe(card.keyword);
+            expect(fallback.text).toBe(card.text);
+        }
     });
 });

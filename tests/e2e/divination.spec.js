@@ -259,7 +259,7 @@ test.describe('Andělské karty', () => {
         await expect(page.locator('.angel-return-message')).toContainText('Tvoje andělská karta: Intuice');
         await expect(page.locator('.angel-name')).toHaveText('Intuice');
         await expect(page.locator('.angel-theme')).toHaveText('Vhled');
-        await expect(page.locator('#angel-short-message')).toContainText('smysl');
+        await expect(page.locator('#angel-short-message')).toContainText('První dojem');
         await expect(page.locator('.angel-card-back')).toHaveClass(/angel-card-back--guidance/);
 
         const backgroundImage = await page.locator('.angel-card-back').evaluate(element => getComputedStyle(element).backgroundImage);
