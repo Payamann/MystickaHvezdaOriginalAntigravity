@@ -366,8 +366,8 @@
         });
     }
 
-    async function getCsrfToken() {
-        const response = await fetch('/api/csrf-token', { credentials: 'include' });
+    async function getCsrfToken(signal) {
+        const response = await fetch('/api/csrf-token', { credentials: 'include', ...(signal ? { signal } : {}) });
         if (!response.ok) {
             throw new Error('Nepodařilo se připravit bezpečnou platbu. Zkus to prosím znovu.');
         }
@@ -620,6 +620,12 @@
             const previousDisabledStates = formControls.map((control) => control.disabled);
             formControls.forEach((control) => { control.disabled = true; });
             setButtonLoading(submitButton, true);
+            const checkoutController = new AbortController();
+            let checkoutTimedOut = false;
+            const checkoutTimer = setTimeout(() => {
+                checkoutTimedOut = true;
+                checkoutController.abort();
+            }, 20000);
 
             try {
                 trackEvent('one_time_form_submitted', {
@@ -636,7 +642,7 @@
                     feature: PRODUCT.id
                 });
 
-                const csrfToken = await getCsrfToken();
+                const csrfToken = await getCsrfToken(checkoutController.signal);
                 const response = await fetch('/api/osobni-mapa/checkout', {
                     method: 'POST',
                     headers: {
@@ -644,7 +650,8 @@
                         'X-CSRF-Token': csrfToken
                     },
                     credentials: 'include',
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify(payload),
+                    signal: checkoutController.signal
                 });
                 const data = await response.json().catch(() => ({}));
 
@@ -661,13 +668,16 @@
                 }
                 window.location.href = checkoutUrl;
             } catch (error) {
+                const message = checkoutTimedOut
+                    ? 'Příprava platby trvá příliš dlouho. Zkus to znovu se stejnými údaji. Pokud už jsi zaplatil(a), neplať znovu a kontaktuj podporu.'
+                    : error.message;
                 trackEvent('one_time_checkout_failed', {
-                    error_message: error.message
+                    error_message: message
                 });
                 if (error.status === 409 && error.code === 'checkout_session_expired') {
                     clearOrderFlowId();
                 }
-                showError(errorBox, error.message);
+                showError(errorBox, message);
                 checkoutInProgress = false;
                 form.removeAttribute('aria-busy');
                 setButtonLoading(submitButton, false);
@@ -677,6 +687,8 @@
                 if (error.status === 409 && error.code === 'personal_map_flow_conflict') {
                     submitButton.disabled = true;
                 }
+            } finally {
+                clearTimeout(checkoutTimer);
             }
         });
     }
