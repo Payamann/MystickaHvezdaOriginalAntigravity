@@ -225,8 +225,10 @@
         document.getElementById('objednavka').hidden = true;
         if (!automatic) message.textContent = 'Ověřujeme platbu. Samotný návrat ze Stripe ji ještě nepotvrzuje.';
         retry.disabled = true;
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 15000);
         try {
-            const response = await fetch(`/api/vztahovy-vyklad/checkout-result?session_id=${encodeURIComponent(params.get('session_id') || '')}`, { credentials: 'same-origin', cache: 'no-store' });
+            const response = await fetch(`/api/vztahovy-vyklad/checkout-result?session_id=${encodeURIComponent(params.get('session_id') || '')}`, { credentials: 'same-origin', cache: 'no-store', signal: controller.signal });
             if (!response.ok) throw new Error('verify');
             const result = await response.json();
             if (result.status === 'paid' && !paymentTracked) {
@@ -268,7 +270,7 @@
                 retry.textContent = 'Ověřit platbu znovu';
             }
         }
-        finally { retry.disabled = false; }
+        finally { clearTimeout(timer); retry.disabled = false; }
     }
     document.getElementById('retry-payment').addEventListener('click', checkPayment);
     if (params.get('status') === 'success') {
