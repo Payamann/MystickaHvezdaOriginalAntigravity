@@ -1,3 +1,5 @@
+import { showFallbackNotice } from './utils/reading-display.js';
+
 /**
  * Angel Cards Logic
  * Handles card drawing, 3D animations, and API communication for deep readings.
@@ -720,6 +722,7 @@ async function requestDeepInsight() {
         }
 
         renderDeepInsightText(response, data.response);
+        showFallbackNotice(response, data.fallback);
 
         if (window.Auth?.saveReading) {
             const saveResult = await window.Auth.saveReading('angel-card', {
