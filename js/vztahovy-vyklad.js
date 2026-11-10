@@ -33,7 +33,7 @@
                 answerLabel: typeof draft.answerLabel === 'string' ? draft.answerLabel.slice(0, 40) : '',
                 cardImage: typeof draft.cardImage === 'string' && /^\/img\/(?:tarot|tarot-v2)\/[a-z0-9_]+\.webp$/i.test(draft.cardImage) ? draft.cardImage : ''
             };
-            sessionStorage.setItem(draftKey, JSON.stringify({ ...draft, flowId, at: Date.now() }));
+            sessionStorage.setItem(draftKey, JSON.stringify({ ...draft, flowId }));
         }
         const storedFlowId = sessionStorage.getItem(flowKey);
         if (!validFlowId(continuation?.flowId) && validFlowId(storedFlowId)) flowId = storedFlowId;
