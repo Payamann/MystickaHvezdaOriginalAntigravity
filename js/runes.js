@@ -1,4 +1,5 @@
 import { getPragueDateKey } from './utils/prague-date.js';
+import { showFallbackNotice } from './utils/reading-display.js';
 
 /**
  * Runes Logic
@@ -594,6 +595,7 @@ async function requestDeepReading() {
         div.textContent = data.response;
         let safeHTML = div.innerHTML.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
         aiContainer.innerHTML = typeof DOMPurify !== 'undefined' ? DOMPurify.sanitize(safeHTML) : safeHTML;
+        showFallbackNotice(aiContainer, data.fallback);
 
         const saveResult = await saveRuneReading({
             response: data.response,
