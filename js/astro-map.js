@@ -11,6 +11,72 @@ const form = document.getElementById('astro-form');
 const resultsContainer = document.getElementById('astro-results');
 const loadingIndicator = document.getElementById('astro-loading');
 const mapContainer = document.querySelector('.map-container');
+let astroSessionRevision = 0;
+let astroRequestRevision = 0;
+let astroStorageConflict = false;
+
+function captureAstroSession() {
+    const isLoggedIn = Boolean(window.Auth?.isLoggedIn?.());
+    return { isLoggedIn, userId: isLoggedIn ? window.Auth?.user?.id || null : null };
+}
+
+let observedAstroSession = captureAstroSession();
+
+function invalidateAstroSessionChange(force = false) {
+    const current = captureAstroSession();
+    if (!force && current.isLoggedIn === observedAstroSession.isLoggedIn && current.userId === observedAstroSession.userId) return;
+    const previous = observedAstroSession;
+    observedAstroSession = current;
+    astroSessionRevision += 1;
+    astroRequestRevision += 1;
+    hideLoading();
+    if (resultsContainer) {
+        resultsContainer.innerHTML = '';
+        setBlockVisible(resultsContainer, false);
+    }
+    clearAngularLines();
+    document.querySelectorAll('.city-marker').forEach(marker => marker.remove());
+    setMapTooltip('', false);
+    if (previous.isLoggedIn) {
+        form?.reset();
+        const profileCheckbox = document.getElementById('use-profile-astro');
+        if (profileCheckbox) profileCheckbox.checked = false;
+    }
+}
+
+function snapshotAstroSession() {
+    invalidateAstroSessionChange();
+    return { ...captureAstroSession(), revision: astroSessionRevision };
+}
+
+function isCurrentAstroSession(session) {
+    invalidateAstroSessionChange();
+    const current = captureAstroSession();
+    return Boolean(session?.isLoggedIn && typeof session.userId === 'string' && session.userId
+        && !astroStorageConflict && current.isLoggedIn && current.userId === session.userId && session.revision === astroSessionRevision);
+}
+
+document.addEventListener('auth:changed', () => {
+    if (astroStorageConflict) {
+        try {
+            const storedUser = JSON.parse(localStorage.getItem('auth_user') || 'null');
+            if ((storedUser?.id || null) === captureAstroSession().userId) astroStorageConflict = false;
+        } catch { /* Keep requests blocked until the account can be verified. */ }
+    }
+    invalidateAstroSessionChange();
+});
+window.addEventListener('storage', event => {
+    if (event.key !== 'auth_user') return;
+    let storedOwner = null;
+    try { storedOwner = JSON.parse(event.newValue || 'null')?.id || null; } catch { /* Unknown owner. */ }
+    if (storedOwner !== captureAstroSession().userId) {
+        astroStorageConflict = true;
+        invalidateAstroSessionChange(true);
+    } else {
+        astroStorageConflict = false;
+        invalidateAstroSessionChange();
+    }
+});
 
 function buildAstroMapPricingUrl(source) {
     const pricingUrl = new URL('/cenik.html', window.location.origin);
@@ -171,8 +237,14 @@ function init() {
                     return;
                 }
 
+                const profileSession = snapshotAstroSession();
+                if (!isCurrentAstroSession(profileSession)) {
+                    e.target.checked = false;
+                    return;
+                }
                 try {
                     const user = await window.Auth.getProfile();
+                    if (!isCurrentAstroSession(profileSession)) return;
 
                     if (!user) {
                         throw new Error('Nepodařilo se načíst profil.');
@@ -214,6 +286,7 @@ function init() {
                     }
 
                 } catch (error) {
+                    if (!isCurrentAstroSession(profileSession)) return;
                     console.error('Autofill Error:', error);
                     window.Auth?.showToast?.('Chyba', 'Nepodařilo se stáhnout data z profilu.', 'error');
                     e.target.checked = false;
@@ -258,6 +331,14 @@ async function handleFormSubmit(e) {
         return;
     }
 
+    const readingSession = snapshotAstroSession();
+    if (!isCurrentAstroSession(readingSession)) {
+        window.Auth?.showToast?.('Přihlášení se nepodařilo ověřit', 'Obnov stránku a zkus to znovu.', 'error');
+        return;
+    }
+    const requestRevision = ++astroRequestRevision;
+    const isCurrentRequest = () => requestRevision === astroRequestRevision && isCurrentAstroSession(readingSession);
+
     // Show loading state
     showLoading();
     clearAngularLines();
@@ -270,6 +351,8 @@ async function handleFormSubmit(e) {
             birthPlace,
             intention: INTENTIONS[intention] || intention
         });
+
+        if (!isCurrentRequest()) return;
 
         if (data.success) {
             displayResults(data.response, data.astrocartography, data.chart);
@@ -286,12 +369,15 @@ async function handleFormSubmit(e) {
                         chart: data.chart,
                         astrocartography: data.astrocartography,
                         fallback: !!data.fallback
-                    });
+                    }, readingSession.userId);
+
+                    if (!isCurrentRequest()) return;
 
                     if (saveResult?.id) {
                         appendAstroFavoriteAction(resultsContainer, saveResult.id);
                     }
                 } catch (saveError) {
+                    if (!isCurrentRequest()) return;
                     console.warn('Astrocartography save failed:', saveError.message);
                 }
             }
@@ -310,6 +396,7 @@ async function handleFormSubmit(e) {
             showError(data.error || 'Něco se pokazilo...');
         }
     } catch (error) {
+        if (!isCurrentRequest()) return;
         console.error('Astrocartography Error:', error);
         showError(error.message || 'Nepodařilo se spojit s hvězdným serverem. Zkuste to později.');
     }
