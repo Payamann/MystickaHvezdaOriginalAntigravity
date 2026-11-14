@@ -1,4 +1,5 @@
 import { showFallbackNotice } from './utils/reading-display.js';
+import { getPragueDateKey } from './utils/prague-date.js';
 
 /**
  * Angel Cards Logic
@@ -933,7 +934,7 @@ async function shareCard() {
  * Checks if the user has already drawn a card today and sets up the UI accordingly.
  */
 function checkDailyLock() {
-    const today = new Date().toISOString().split('T')[0];
+    const today = getPragueDateKey();
     const savedDataStr = localStorage.getItem('angelCardDaily');
 
     if (savedDataStr) {
@@ -1055,7 +1056,7 @@ function drawCard() {
         drawnCard = angelCardsData[randomIndex];
 
         // Save to Daily Lock
-        const today = new Date().toISOString().split('T')[0];
+        const today = getPragueDateKey();
         localStorage.setItem('angelCardDaily', JSON.stringify({
             date: today,
             cardData: drawnCard
