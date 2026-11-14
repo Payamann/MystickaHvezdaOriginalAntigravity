@@ -159,12 +159,17 @@ test.describe('Ceník — platební tlačítka', () => {
         await expect(page.locator('.plan-checkout-btn[data-plan$="-rocne"]')).toHaveCount(0);
     });
 
-    test('jednorazovou alternativou je vztahovy vyklad za 149 Kc', async ({ page }) => {
+    test('cenik nabizi vztahovy vyklad i ukazku Osobni mapy', async ({ page }) => {
         await expect(page.locator('.pricing-addon')).toBeVisible();
         await expect(page.locator('[data-product="relationship_tarot"]')).toBeVisible();
         await expect(page.locator('[data-product="relationship_tarot"]')).toContainText('149 Kč');
-        await expect(page.locator('[data-product="osobni_mapa_2026"]')).toHaveCount(0);
+        const map = page.locator('[data-product="osobni_mapa_2026"]');
+        await expect(map).toBeVisible();
+        await expect(map).toContainText('299 Kč');
         await expect(page.locator('[data-product="rocni_horoskop_2026"]')).toHaveCount(0);
+        await map.click();
+        await expect(page).toHaveURL(/osobni-mapa\.html\?source=pricing_addon#preview$/);
+        await expect(page.locator('#preview')).toBeVisible();
     });
 
     test('mobilni cenik zkracuje katalogovy footer na podstatne odkazy', async ({ page }) => {
