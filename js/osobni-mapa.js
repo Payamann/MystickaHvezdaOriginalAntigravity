@@ -192,7 +192,7 @@
     }
 
     function trackView() {
-        trackEvent('one_time_product_viewed');
+        trackEvent('one_time_product_viewed', { funnel_step: 'product_page' });
     }
 
     function initIcons() {

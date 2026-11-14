@@ -1141,6 +1141,7 @@ test.describe('Osobní mapa', () => {
 
     test('hero CTA komunikuje cenu a meri prvni placeny zamer', async ({ page }) => {
         let resolveProductIntent;
+        const productViews = [];
         const productIntent = new Promise((resolve) => {
             resolveProductIntent = resolve;
         });
@@ -1155,6 +1156,7 @@ test.describe('Osobní mapa', () => {
 
         await page.route('**/api/payment/funnel-event', async (route) => {
             const payload = route.request().postDataJSON();
+            if (payload?.eventName === 'one_time_product_viewed') productViews.push(payload);
             if (payload?.eventName === 'one_time_product_cta_clicked') {
                 resolveProductIntent(payload);
             }
@@ -1168,6 +1170,11 @@ test.describe('Osobní mapa', () => {
 
         await page.goto('/osobni-mapa.html?source=e2e_personal_map_hero');
         await waitForPageReady(page);
+        await expect.poll(() => productViews).toContainEqual(expect.objectContaining({
+            source: 'e2e_personal_map_hero',
+            feature: 'osobni_mapa_2026',
+            metadata: expect.objectContaining({ funnel_step: 'product_page', order_flow_id: expect.stringMatching(/^pm_/) })
+        }));
 
         const heroCta = page.locator('.pm-hero__actions [data-scroll-target="order"]').first();
         await expect(heroCta).toContainText('Chci svou mapu za 299 Kč');
