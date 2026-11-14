@@ -693,7 +693,7 @@ async function requestDeepInsight() {
     response.textContent = 'Naslouchám poselství karty...';
 
     try {
-        const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
+        const csrfToken = window.getCSRFToken ? await window.getCSRFToken({ bounded: true }) : null;
         if (!isCurrentRequest()) return;
         if (!csrfToken) throw new Error('CSRF_UNAVAILABLE');
         const res = await fetch(`${apiBase()}/angel-card`, {

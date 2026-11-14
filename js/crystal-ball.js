@@ -262,7 +262,7 @@ function initCrystalBall() {
         if (navigator.vibrate) navigator.vibrate(200);
 
         try {
-            const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
+            const csrfToken = window.getCSRFToken ? await window.getCSRFToken({ bounded: true }) : null;
             if (!isCurrent()) return;
             if (!csrfToken) throw new Error('CSRF_UNAVAILABLE');
             const response = await fetch(`${window.API_CONFIG?.BASE_URL || '/api'}/crystal-ball`, {

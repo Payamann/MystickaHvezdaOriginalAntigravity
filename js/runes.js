@@ -89,7 +89,7 @@ function apiBase() {
 }
 
 async function buildJsonHeaders() {
-    const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
+    const csrfToken = window.getCSRFToken ? await window.getCSRFToken({ bounded: true }) : null;
     if (!csrfToken) throw new Error('CSRF_UNAVAILABLE');
     return {
         'Content-Type': 'application/json',

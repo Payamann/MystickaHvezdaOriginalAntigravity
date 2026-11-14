@@ -123,8 +123,30 @@ window.initConfig = initConfig;
 let _csrfToken = null;
 let _csrfFetchPromise = null;
 
-async function getCSRFToken() {
+async function fetchBoundedCSRFToken() {
+    const controller = new AbortController();
+    let timer;
+    const deadline = new Promise(resolve => {
+        timer = setTimeout(() => {
+            controller.abort();
+            resolve(null);
+        }, 20_000);
+    });
+
+    try {
+        const request = fetch(API_CONFIG.BASE_URL + '/csrf-token', { signal: controller.signal })
+            .then(async response => response.ok ? (await response.json())?.csrfToken || null : null);
+        return await Promise.race([request, deadline]);
+    } catch {
+        return null;
+    } finally {
+        clearTimeout(timer);
+    }
+}
+
+async function getCSRFToken({ bounded = false } = {}) {
     if (_csrfToken) return _csrfToken;
+    if (bounded) return fetchBoundedCSRFToken();
     if (_csrfFetchPromise) return _csrfFetchPromise;
     _csrfFetchPromise = fetch(API_CONFIG.BASE_URL + '/csrf-token')
         .then(r => r.json())
