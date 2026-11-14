@@ -441,7 +441,7 @@ import { getDailyCardPractice } from './utils/daily-tarot.js';
             } catch (analyticsError) {
                 console.warn('[Tarot ANO/NE] Save-click analytics unavailable:', analyticsError.message);
             }
-            await trackTarotYesNoFunnelEvent('reading_save_clicked', 'tarot_yes_no_save_journal', metadata, TAROT_YES_NO_TOOL, null);
+            void trackTarotYesNoFunnelEvent('reading_save_clicked', 'tarot_yes_no_save_journal', metadata, TAROT_YES_NO_TOOL, null);
 
             const loggedInNow = Boolean(window.Auth?.isLoggedIn?.());
             const userIdNow = window.Auth?.user?.id || null;

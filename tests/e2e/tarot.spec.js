@@ -993,6 +993,7 @@ test.describe('Tarot Ano/Ne', () => {
         // Další bezplatná otázka je dostupná přímo, bez odbočení na jinou stránku.
         await expect(page.locator('#btn-reset')).toBeVisible();
 
+        await page.evaluate(() => { window.getCSRFToken = () => new Promise(() => {}); });
         await Promise.all([
             page.waitForURL(url => url.pathname === '/prihlaseni.html', { timeout: 10000, waitUntil: 'domcontentloaded' }),
             saveButton.click()
