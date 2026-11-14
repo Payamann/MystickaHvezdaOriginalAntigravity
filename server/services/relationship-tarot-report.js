@@ -1,6 +1,8 @@
 const RELATIONSHIP_TAROT = 'relationship_tarot';
 
 const EVENT_METRICS = Object.freeze({
+    relationship_invitation_viewed: 'invitationViewed',
+    relationship_invitation_clicked: 'invitationClicked',
     one_time_offer_viewed: 'offerViewed',
     one_time_product_viewed: 'productViewed',
     one_time_form_started: 'formStarted',
@@ -9,6 +11,8 @@ const EVENT_METRICS = Object.freeze({
 });
 
 const FLOW_METRIC_KEYS = Object.freeze([
+    'invitationViewed',
+    'invitationClicked',
     'offerViewed',
     'entryCtaClicked',
     'productViewed',
@@ -26,6 +30,8 @@ const CHECKOUT_FAILURE_EVENTS = new Set([
 ]);
 
 const SOURCE_METRIC_KEYS = Object.freeze([
+    'invitationViewed',
+    'invitationClicked',
     'offerViewed',
     'ctaClicked',
     'entryCtaClicked',
@@ -41,6 +47,8 @@ const SOURCE_METRIC_KEYS = Object.freeze([
 
 function emptyMetrics() {
     return {
+        invitationViewed: 0,
+        invitationClicked: 0,
         offerViewed: 0,
         ctaClicked: 0,
         entryCtaClicked: 0,
@@ -99,6 +107,8 @@ function sourceForPurchase(purchase, order) {
 function sourceRow(source) {
     return {
         source,
+        invitationViewed: 0,
+        invitationClicked: 0,
         offerViewed: 0,
         ctaClicked: 0,
         entryCtaClicked: 0,

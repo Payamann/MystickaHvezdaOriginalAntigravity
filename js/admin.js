@@ -955,6 +955,8 @@ async function loadRelationshipTarotReport() {
         const unique = report.uniqueFlows || {};
         const flowCount = (key, raw) => `${formatInteger(unique[key] || 0)} cest / ${formatInteger(raw)} událostí`;
         const cards = [
+            ['První pozvánka zobrazena', flowCount('invitationViewed', m.invitationViewed ?? 0), 'Tlačítko pod bezplatným výsledkem ano/ne'],
+            ['Klik na první pozvánku', flowCount('invitationClicked', m.invitationClicked ?? 0), 'Otevření navazující placené nabídky'],
             ['Nabídka zobrazena', flowCount('offerViewed', m.offerViewed), 'Unikátní anonymní cesty / všechny události'],
             ['Vstup z nabídky', flowCount('entryCtaClicked', m.entryCtaClicked), 'Klik z bezplatného tarotu na produkt'],
             ['Prodejní stránka', flowCount('productViewed', m.productViewed), 'Načtení stránky vztahového výkladu'],

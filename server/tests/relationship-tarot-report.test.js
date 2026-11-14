@@ -13,6 +13,8 @@ describe('Relationship tarot report aggregation', () => {
     test('deduplicates live paid sessions and exposes missing orders and receipts', () => {
         const report = buildRelationshipTarotReport({
             events: [
+                { event_name: 'relationship_invitation_viewed', source: 'tarot_yes_no_result', feature: 'relationship_tarot', metadata: { flow_id: 'flow_1234567890123456' } },
+                { event_name: 'relationship_invitation_clicked', source: 'tarot_yes_no_result', feature: 'relationship_tarot', metadata: { flow_id: 'flow_1234567890123456' } },
                 { event_name: 'one_time_offer_viewed', source: 'tarot_yes_no_result', feature: 'relationship_tarot', metadata: { flow_id: 'flow_1234567890123456' } },
                 { event_name: 'one_time_offer_viewed', source: 'tarot_yes_no_result', feature: 'relationship_tarot', metadata: { flow_id: 'flow_1234567890123456' } },
                 { event_name: 'one_time_product_cta_clicked', source: 'tarot_yes_no_result', feature: 'relationship_tarot', metadata: { flow_id: 'flow_1234567890123456', funnel_step: 'entry_offer' } },
@@ -60,6 +62,8 @@ describe('Relationship tarot report aggregation', () => {
             days: 12,
             partial: true,
             metrics: {
+                invitationViewed: 1,
+                invitationClicked: 1,
                 offerViewed: 2,
                 ctaClicked: 3,
                 entryCtaClicked: 1,
@@ -80,6 +84,8 @@ describe('Relationship tarot report aggregation', () => {
             }
         });
         expect(report.uniqueFlows).toEqual({
+            invitationViewed: 1,
+            invitationClicked: 1,
             offerViewed: 1,
             entryCtaClicked: 1,
             productViewed: 1,
