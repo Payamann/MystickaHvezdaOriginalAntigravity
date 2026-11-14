@@ -33,7 +33,6 @@
                 answerLabel: typeof draft.answerLabel === 'string' ? draft.answerLabel.slice(0, 40) : '',
                 cardImage: typeof draft.cardImage === 'string' && /^\/img\/(?:tarot|tarot-v2)\/[a-z0-9_]+\.webp$/i.test(draft.cardImage) ? draft.cardImage : ''
             };
-            sessionStorage.setItem(draftKey, JSON.stringify({ ...draft, flowId }));
         }
         const storedFlowId = sessionStorage.getItem(flowKey);
         if (!validFlowId(continuation?.flowId) && validFlowId(storedFlowId)) flowId = storedFlowId;
@@ -148,7 +147,6 @@
         button.disabled = true;
         controls.forEach(control => { control.disabled = true; });
         error.textContent = '';
-        try { sessionStorage.setItem(draftKey, JSON.stringify({ ...continuation, question: checkoutPayload.question, email: checkoutPayload.email, flowId, at: Date.now() })); } catch { /* Preserve in the DOM when storage is unavailable. */ }
         track('one_time_form_submitted', { funnel_step: 'form_submit' });
         let checkoutTimer;
         let checkoutTimedOut = false;
@@ -169,6 +167,15 @@
             }
             const url = new URL(result.url);
             if (url.protocol !== 'https:' || url.hostname !== 'checkout.stripe.com') throw new Error('Platební odkaz se nepodařilo ověřit.');
+            try {
+                sessionStorage.setItem(draftKey, JSON.stringify({
+                    ...continuation,
+                    question: checkoutPayload.question,
+                    email: checkoutPayload.email,
+                    flowId,
+                    at: Date.now()
+                }));
+            } catch { /* Checkout is still available without draft recovery. */ }
             location.assign(url.href);
         } catch (failure) {
             error.textContent = checkoutTimedOut || failure.message === 'csrf_timeout'
@@ -179,7 +186,7 @@
                 flowId = createFlowId();
                 try {
                     sessionStorage.setItem(flowKey, flowId);
-                    sessionStorage.setItem(draftKey, JSON.stringify({ ...continuation, question: checkoutPayload.question, email: checkoutPayload.email, flowId, at: Date.now() }));
+                    sessionStorage.removeItem(draftKey);
                 } catch { /* The visible form remains available for a fresh attempt. */ }
             } else if (['checkout_already_completed', 'checkout_payment_pending', 'checkout_session_unavailable', 'checkout_flow_conflict'].includes(failure.code)) {
                 button.disabled = true;

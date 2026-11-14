@@ -1475,6 +1475,8 @@ test.describe('Osobní mapa', () => {
         await expect(page.locator('#formError')).toContainText('platební stránku se nepodařilo ověřit');
         await expect(page.locator('#submitBtn')).toBeEnabled();
         await expect(page.locator('#name')).toHaveValue('Jana');
+        expect(await page.evaluate(() => sessionStorage.getItem('mh_personal_map_order_draft'))).toBeNull();
+        expect(await page.evaluate(() => sessionStorage.getItem('mh_personal_map_order_flow_id'))).toMatch(/^pm_/);
         expect(new URL(page.url()).hostname).toBe('localhost');
     });
 

@@ -632,7 +632,6 @@
                     focus_area: payload.focusArea,
                     grammatical_gender: payload.grammaticalGender
                 });
-                saveOrderDraft(payload);
 
                 trackAnalytics('trackCheckoutStarted', PRODUCT.id, {
                     product_type: PRODUCT.type,
@@ -666,6 +665,7 @@
                 if (!checkoutUrl) {
                     throw new Error('Bezpečnou platební stránku se nepodařilo ověřit. Zkus to prosím znovu.');
                 }
+                saveOrderDraft(payload);
                 window.location.href = checkoutUrl;
             } catch (error) {
                 const message = checkoutTimedOut

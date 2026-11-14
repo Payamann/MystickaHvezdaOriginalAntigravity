@@ -66,7 +66,9 @@ test('checkout sends only required fields and preserves input after a failure', 
     expect(Object.keys(body).sort()).toEqual(['consent', 'email', 'flowId', 'question', 'source']);
     expect(body.flowId).toMatch(/^[a-z0-9_-]{16,80}$/i);
     await page.reload();
-    await expect(page.locator('#question')).toHaveValue(body.question);
+    await expect(page.locator('#question')).toHaveValue('');
+    await expect(page.locator('#email')).toHaveValue('');
+    expect(await page.evaluate(() => sessionStorage.getItem('mh_relationship_flow_id'))).toBe(body.flowId);
     await expect(page.locator('#consent')).not.toBeChecked();
 });
 
