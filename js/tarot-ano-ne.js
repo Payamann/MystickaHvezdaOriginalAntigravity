@@ -837,15 +837,6 @@ import { getDailyCardPractice } from './utils/daily-tarot.js';
     }
 
     function revealTarotYesNoNextStep(answerKey, ans, question) {
-        const nextStep = document.getElementById('tarot-yes-no-next-step');
-        const answerBadge = document.getElementById('tarot-yes-no-next-answer');
-        if (!nextStep) return;
-
-        if (answerBadge) {
-            answerBadge.textContent = ans.label.toLowerCase();
-        }
-        nextStep.dataset.answerKey = answerKey;
-        setBlockVisible(nextStep, !window.Auth?.isLoggedIn?.());
         setBlockVisible(
             document.querySelector('[data-tarot-member-continuation]'),
             Boolean(window.Auth?.isLoggedIn?.() && window.Auth?.isPremium?.())
@@ -884,35 +875,6 @@ import { getDailyCardPractice } from './utils/daily-tarot.js';
             });
         });
 
-        document.querySelectorAll('[data-tarot-yes-no-register]').forEach((link) => {
-            if (link.dataset.tarotYesNoBound === 'true') return;
-            link.dataset.tarotYesNoBound = 'true';
-            link.addEventListener('click', () => {
-                const intent = link.dataset.tarotYesNoRegister;
-                const destination = link.getAttribute('href') || '';
-                const destinationUrl = new URL(destination, window.location.origin);
-                const destinationSource = destinationUrl.searchParams.get('source') || TAROT_YES_NO_RESULT_SOURCE;
-                const destinationFeature = destinationUrl.searchParams.get('feature') || TAROT_YES_NO_TOOL;
-                if (lastResult && (intent === 'save_reading' || intent === 'save_profile')) {
-                    storePendingTarotYesNoReading(lastResult, {
-                        source: destinationSource,
-                        feature: destinationFeature
-                    });
-                }
-                window.MH_ANALYTICS?.trackCTA?.('tarot_yes_no_save_profile', {
-                    intent,
-                    destination,
-                    source: TAROT_YES_NO_RESULT_SOURCE,
-                    feature: destinationFeature
-                });
-                // Funnel-level capture metric: how many turn a free yes/no answer
-                // into a free registration (email captured + activation sequence).
-                void trackTarotYesNoFunnelEvent('reading_save_clicked', TAROT_YES_NO_RESULT_SOURCE, {
-                    intent,
-                    destination
-                }, TAROT_YES_NO_TOOL, null);
-            });
-        });
     }
 
     function pickCard() {
@@ -1115,7 +1077,7 @@ import { getDailyCardPractice } from './utils/daily-tarot.js';
         const saveReadingButton = document.getElementById('btn-save-reading');
         if (saveReadingButton) {
             saveReadingButton.disabled = false;
-            saveReadingButton.textContent = 'Uložit odpověď do deníku';
+            saveReadingButton.textContent = 'Uložit do deníku zdarma';
         }
         document.getElementById('question-input').classList.remove('input--invalid');
         document.getElementById('question-input').removeAttribute('aria-invalid');
@@ -1133,7 +1095,6 @@ import { getDailyCardPractice } from './utils/daily-tarot.js';
         if (resultQuestion) resultQuestion.textContent = '';
         const resultStep = document.getElementById('result-next-step-text');
         if (resultStep) resultStep.textContent = '';
-        setBlockVisible(document.getElementById('tarot-yes-no-next-step'), false);
 
         document.querySelectorAll('.tarot-card').forEach(c => {
             c.classList.remove('flipped', 'tarot-card--locked');

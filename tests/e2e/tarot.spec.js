@@ -986,35 +986,26 @@ test.describe('Tarot Ano/Ne', () => {
         await page.locator('.tarot-card').first().click();
 
         await expect(page.locator('#result-panel')).toHaveClass(/show/, { timeout: 2500 });
-        await expect(page.locator('#tarot-yes-no-next-step')).toBeVisible();
-
-        // Bezplatný profil zůstává pod hlavní návazností jako podřízený krok.
-        await expect(page.locator('.tarot-yes-no-next-card')).toHaveCount(1);
-        await expect(page.locator('.tarot-yes-no-next-locked')).toHaveCount(0);
-
-        const saveLink = page.locator('#tarot-yes-no-next-step [data-tarot-yes-no-register]').first();
-        await expect(saveLink).toBeVisible();
-        await expect(saveLink.locator('.tarot-yes-no-next-cta')).toContainText('zdarma');
-        const href = await saveLink.getAttribute('href');
-        expect(href).toContain('mode=register');
-        expect(href).toContain('source=tarot_yes_no_result');
-        expect(href).toContain('feature=tarot_yes_no');
-        expect(href).toContain('redirect=/profil.html');
-        // Nesmí to vést do placeného checkoutu.
-        expect(href).not.toContain('cenik.html');
-        expect(href).not.toContain('plan=pruvodce');
+        const saveButton = page.getByRole('button', { name: 'Uložit do deníku zdarma', exact: true });
+        await expect(saveButton).toBeVisible();
+        await expect(page.locator('[data-tarot-yes-no-register]')).toHaveCount(0);
 
         // Další bezplatná otázka je dostupná přímo, bez odbočení na jinou stránku.
         await expect(page.locator('#btn-reset')).toBeVisible();
 
         await Promise.all([
             page.waitForURL(url => url.pathname === '/prihlaseni.html', { timeout: 10000, waitUntil: 'domcontentloaded' }),
-            saveLink.click()
+            saveButton.click()
         ]);
+        const authUrl = new URL(page.url());
+        expect(authUrl.searchParams.get('mode')).toBe('register');
+        expect(authUrl.searchParams.get('feature')).toBe('tarot_yes_no');
+        expect(authUrl.searchParams.get('redirect')).toBe('/profil.html');
+        expect(authUrl.searchParams.get('plan')).toBeNull();
         const pendingReading = await page.evaluate(() => JSON.parse(localStorage.getItem('mh_pending_reading') || 'null'));
         expect(pendingReading).toEqual(expect.objectContaining({
             type: 'tarot',
-            source: 'tarot_yes_no_result',
+            source: 'tarot_yes_no_save_journal',
             feature: 'tarot_yes_no'
         }));
         expect(pendingReading.data).toEqual(expect.objectContaining({
@@ -1333,7 +1324,7 @@ test.describe('Tarot Ano/Ne', () => {
         await page.fill('#question-input', 'Mám tomu dát ještě šanci?');
         await page.locator('.tarot-card').first().click();
 
-        await expect(page.locator('#tarot-yes-no-next-step')).toBeVisible({ timeout: 2500 });
+        await expect(page.locator('#btn-save-reading')).toBeVisible({ timeout: 2500 });
 
         const hasHorizontalScroll = await page.evaluate(() =>
             document.documentElement.scrollWidth > document.documentElement.clientWidth + 1
