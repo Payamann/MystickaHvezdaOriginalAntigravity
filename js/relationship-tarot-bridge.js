@@ -12,6 +12,8 @@
     let memoryFlowId = '';
     let productAvailable = false;
     let postResultOptIn = false;
+    let invitationViewed = false;
+    let invitationClicked = false;
     let csrfPromise;
     function hasRelationshipIntent() {
         const intent = new URLSearchParams(window.location.search).get('intent');
@@ -167,13 +169,32 @@
     }
     const intentChoice = document.getElementById('relationship-intent');
     if (intentChoice) {
+        const invitation = document.querySelector('[data-relationship-intent-followup-button]');
+        const trackInvitationView = () => {
+            if (invitationViewed) return;
+            invitationViewed = true;
+            void track('relationship_invitation_viewed', 'tarot_yes_no_result', 'result_invitation');
+        };
+        if (invitation && 'IntersectionObserver' in window) {
+            const observer = new IntersectionObserver(entries => {
+                if (!entries.some(entry => entry.isIntersecting && entry.intersectionRatio >= .5)) return;
+                trackInvitationView();
+                observer.disconnect();
+            }, { threshold: .5 });
+            observer.observe(invitation);
+        }
         intentChoice.checked = relationshipIntents.has(String(new URLSearchParams(window.location.search).get('intent') || '').trim().toLowerCase());
         intentChoice.addEventListener('change', () => {
             if (!intentChoice.checked) postResultOptIn = false;
             revealOffers();
         });
-        document.querySelector('[data-relationship-intent-followup-button]')?.addEventListener('click', () => {
+        invitation?.addEventListener('click', () => {
             postResultOptIn = true;
+            trackInvitationView();
+            if (!invitationClicked) {
+                invitationClicked = true;
+                void track('relationship_invitation_clicked', 'tarot_yes_no_result', 'result_invitation');
+            }
             intentChoice.checked = true;
             revealOffers();
             document.querySelector('[data-relationship-offer="tarot_yes_no_result"]')?.scrollIntoView({ block: 'nearest' });

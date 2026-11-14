@@ -269,7 +269,10 @@ test('generic yes/no keeps the free answer and lets a visitor opt into a relevan
     await expect(page.locator('[data-tarot-member-continuation]')).toBeHidden();
     const followup = page.locator('[data-relationship-intent-followup]');
     await expect(followup).toBeVisible();
+    await followup.locator('button').scrollIntoViewIfNeeded();
+    await expect.poll(() => funnelEvents.filter(event => event.eventName === 'relationship_invitation_viewed').length).toBe(1);
     await followup.locator('button').click();
+    await expect.poll(() => funnelEvents.filter(event => event.eventName === 'relationship_invitation_clicked').length).toBe(1);
     await expect(followup).toBeHidden();
     const offer = page.locator('[data-relationship-offer="tarot_yes_no_result"]');
     await expect(offer).toBeVisible();

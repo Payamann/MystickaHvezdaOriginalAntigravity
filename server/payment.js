@@ -476,6 +476,8 @@ const PUBLIC_FUNNEL_EVENTS = new Set([
     'return_ritual_completed',
     'one_time_product_viewed',
     'one_time_offer_viewed',
+    'relationship_invitation_viewed',
+    'relationship_invitation_clicked',
     'one_time_product_cta_clicked',
     'one_time_form_started',
     'one_time_form_submitted',
