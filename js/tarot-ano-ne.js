@@ -517,19 +517,19 @@ import { getDailyCardPractice } from './utils/daily-tarot.js';
         const metadata = {
             ...getResultMetadata(answerKey, ans, question),
             source: TAROT_YES_NO_RESULT_SOURCE,
-            feature: TAROT_YES_NO_FEATURE,
+            feature: TAROT_YES_NO_TOOL,
             first_value_type: 'tarot_yes_no_result',
             seo_cluster: 'tarot',
             seo_page_type: 'free_tool'
         };
 
         if (window.MH_ANALYTICS?.trackFirstValueCompleted) {
-            window.MH_ANALYTICS.trackFirstValueCompleted(TAROT_YES_NO_FEATURE, metadata);
+            window.MH_ANALYTICS.trackFirstValueCompleted(TAROT_YES_NO_TOOL, metadata);
         } else {
             window.MH_ANALYTICS?.trackEvent?.('first_value_completed', metadata);
         }
 
-        void trackTarotYesNoFunnelEvent('first_value_completed', TAROT_YES_NO_RESULT_SOURCE, metadata);
+        void trackTarotYesNoFunnelEvent('first_value_completed', TAROT_YES_NO_RESULT_SOURCE, metadata, TAROT_YES_NO_TOOL);
     }
 
     function wrapCanvasText(ctx, text, maxWidth) {

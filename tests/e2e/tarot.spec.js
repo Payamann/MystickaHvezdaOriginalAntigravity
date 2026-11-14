@@ -1243,7 +1243,7 @@ test.describe('Tarot Ano/Ne', () => {
 
         expect(events.firstValue).toEqual(expect.objectContaining({
             source: 'tarot_yes_no_result',
-            feature: 'tarot_multi_card',
+            feature: 'tarot_yes_no',
             first_value_type: 'tarot_yes_no_result',
             first_source: 'google',
             first_medium: 'organic',
@@ -1252,7 +1252,7 @@ test.describe('Tarot Ano/Ne', () => {
         expect(funnelEvents).toContainEqual(expect.objectContaining({
             eventName: 'first_value_completed',
             source: 'tarot_yes_no_result',
-            feature: 'tarot_multi_card'
+            feature: 'tarot_yes_no'
         }));
         expect(JSON.stringify(funnelEvents)).not.toContain('Mam dnes udelat prvni krok?');
 
