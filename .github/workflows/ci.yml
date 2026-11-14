@@ -83,7 +83,7 @@ jobs:
         run: npm run sitemap:check
 
   e2e:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: E2E (${{ matrix.project }} / ${{ matrix.section }})
     # Do not block Railway production deploys on the full browser suite.
     # E2E remains available for nightly and manual runs.
