@@ -264,12 +264,13 @@ function initCrystalBall() {
         try {
             const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
             if (!isCurrent()) return;
+            if (!csrfToken) throw new Error('CSRF_UNAVAILABLE');
             const response = await fetch(`${window.API_CONFIG?.BASE_URL || '/api'}/crystal-ball`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {
                     'Content-Type': 'application/json',
-                    ...(csrfToken && { 'X-CSRF-Token': csrfToken })
+                    'X-CSRF-Token': csrfToken
                 },
                 body: JSON.stringify({
                     question: question.trim(),

@@ -695,12 +695,13 @@ async function requestDeepInsight() {
     try {
         const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
         if (!isCurrentRequest()) return;
+        if (!csrfToken) throw new Error('CSRF_UNAVAILABLE');
         const res = await fetch(`${apiBase()}/angel-card`, {
             method: 'POST',
             credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
-                ...(csrfToken && { 'X-CSRF-Token': csrfToken })
+                'X-CSRF-Token': csrfToken
             },
             body: JSON.stringify({
                 card,
@@ -748,7 +749,9 @@ async function requestDeepInsight() {
     } catch (error) {
         if (!isCurrentRequest()) return;
         console.error('Angel deep insight failed:', error);
-        response.textContent = 'Hluboký vhled se teď nepodařilo načíst. Zkuste to prosím znovu.';
+        response.textContent = error.message === 'CSRF_UNAVAILABLE'
+            ? 'Nepodařilo se připravit zabezpečené spojení. Zkus to prosím znovu.'
+            : 'Hluboký vhled se teď nepodařilo načíst. Zkuste to prosím znovu.';
     } finally {
         if (requestRevision === angelRequestRevision) {
             button.disabled = false;

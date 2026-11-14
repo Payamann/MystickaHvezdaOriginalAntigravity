@@ -90,9 +90,10 @@ function apiBase() {
 
 async function buildJsonHeaders() {
     const csrfToken = window.getCSRFToken ? await window.getCSRFToken() : null;
+    if (!csrfToken) throw new Error('CSRF_UNAVAILABLE');
     return {
         'Content-Type': 'application/json',
-        ...(csrfToken && { 'X-CSRF-Token': csrfToken })
+        'X-CSRF-Token': csrfToken
     };
 }
 
@@ -616,7 +617,9 @@ async function requestDeepReading() {
     } catch (error) {
         if (!isCurrentRequest()) return;
         console.error('Deep read failed:', error);
-        alert('Nepodařilo se načíst hluboký výklad. Zkuste to prosím znovu.');
+        alert(error.message === 'CSRF_UNAVAILABLE'
+            ? 'Nepodařilo se připravit zabezpečené spojení. Zkus to prosím znovu.'
+            : 'Nepodařilo se načíst hluboký výklad. Zkuste to prosím znovu.');
         btn.disabled = false;
         btn.innerHTML = 'Získat šamanský výklad (Zkusit znovu)';
     } finally {
