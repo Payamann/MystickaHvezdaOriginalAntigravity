@@ -131,6 +131,22 @@ describe('API Endpoint Tests', () => {
             });
         });
 
+        test('offline fallback can be precached without appearing in search', async () => {
+            await withTemporaryEnv({
+                RAILWAY_ENVIRONMENT_NAME: 'production',
+            }, async () => {
+                const res = await request(app)
+                    .get('/offline.html')
+                    .set('Host', 'www.mystickahvezda.cz')
+                    .set('x-forwarded-proto', 'https')
+                    .expect(200);
+
+                expect(res.text).toContain('Jste offline');
+                expect(res.headers['cache-control']).toBe('public, max-age=0, must-revalidate');
+                expect(res.headers['x-robots-tag']).toBe('noindex, nofollow');
+            });
+        });
+
         test('production noindex static HTML remains private', async () => {
             await withTemporaryEnv({
                 RAILWAY_ENVIRONMENT_NAME: 'production',

@@ -905,7 +905,13 @@ function setStaticHeaders(res, filePath) {
     // so deployments are reflected immediately
     if (filePath.endsWith('.html')) {
         const shouldNoindex = shouldNoindexStaticHtml(filePath);
-        res.setHeader('Cache-Control', shouldNoindex ? HTML_PRIVATE_CACHE_CONTROL : getPublicHtmlCacheControl());
+        const offlineShell = filePath === path.join(rootDir, 'offline.html');
+        if (offlineShell) {
+            // This static shell must be cacheable by the worker even though it is excluded from search.
+            res.setHeader('Cache-Control', 'public, max-age=0, must-revalidate');
+        } else {
+            res.setHeader('Cache-Control', shouldNoindex ? HTML_PRIVATE_CACHE_CONTROL : getPublicHtmlCacheControl());
+        }
         if (shouldNoindex) {
             res.setHeader('X-Robots-Tag', 'noindex, nofollow');
         }
