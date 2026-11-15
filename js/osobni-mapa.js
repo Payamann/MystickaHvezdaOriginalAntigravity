@@ -425,14 +425,18 @@
         return sign;
     }
 
-    function clearOrderDraft() {
-        clearOrderFlowId();
+    function clearStoredOrderDraft() {
         try {
             window.sessionStorage?.removeItem?.(DRAFT_KEY);
             window.localStorage?.removeItem?.(LEGACY_DRAFT_KEY);
         } catch {
             // Storage can be unavailable in privacy modes; checkout must still work.
         }
+    }
+
+    function clearOrderDraft() {
+        clearOrderFlowId();
+        clearStoredOrderDraft();
     }
 
     function saveOrderDraft(payload) {
@@ -472,7 +476,7 @@
             if (restoredMessage) restoredMessage.hidden = false;
             return true;
         } catch {
-            clearOrderDraft();
+            clearStoredOrderDraft();
             return false;
         }
     }

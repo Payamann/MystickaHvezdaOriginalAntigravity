@@ -1487,6 +1487,23 @@ test.describe('Osobní mapa', () => {
         expect(new URL(page.url()).hostname).toBe('localhost');
     });
 
+    test('poskozeny draft Osobni mapy zachova identifikator platby', async ({ page }) => {
+        const flowId = 'pm_test_checkout_123456';
+        await page.addInitScript(id => {
+            sessionStorage.setItem('mh_personal_map_order_draft', '{');
+            sessionStorage.setItem('mh_personal_map_order_flow_id', id);
+            sessionStorage.setItem('mh_personal_map_order_flow_submitted', '1');
+            sessionStorage.setItem('mh_personal_map_order_flow_created_at', String(Date.now()));
+        }, flowId);
+        await page.goto('/osobni-mapa.html');
+        await waitForPageReady(page);
+        await expect.poll(() => page.evaluate(() => ({
+            draft: sessionStorage.getItem('mh_personal_map_order_draft'),
+            flow: sessionStorage.getItem('mh_personal_map_order_flow_id')
+        }))).toEqual({ draft: null, flow: flowId });
+        await expect(page.locator('#email')).toHaveValue('');
+    });
+
     test('analytics outage neblokuje personal map checkout', async ({ page }) => {
         let checkoutPayload = null;
 

@@ -104,6 +104,25 @@ test('an expired Stripe window starts a fresh idempotency flow on retry', async 
     expect(attempts[0].email).toBe(attempts[1].email);
 });
 
+test('a malformed relationship draft is discarded without losing its pending payment flow', async ({ page }) => {
+    const events = [];
+    await prepare(page, true, events);
+    const flowId = 'test_checkout_flow_123456';
+    await page.addInitScript(id => {
+        sessionStorage.setItem('mh_relationship_draft', '{');
+        sessionStorage.setItem('mh_relationship_flow_id', id);
+    }, flowId);
+    await page.goto('/vztahovy-vyklad.html');
+    await expect(page.locator('#checkout-button')).toBeEnabled();
+    expect(await page.evaluate(() => ({
+        draft: sessionStorage.getItem('mh_relationship_draft'),
+        flow: sessionStorage.getItem('mh_relationship_flow_id')
+    }))).toEqual({ draft: null, flow: flowId });
+    await expect(page.locator('#question')).toHaveValue('');
+    await expect.poll(() => events.find(event => event.eventName === 'one_time_product_viewed')?.metadata.flow_id)
+        .toBe(flowId);
+});
+
 test('only a verified payment shows success; errors offer retry without another payment', async ({ page }) => {
     await prepare(page);
     let paid = false;

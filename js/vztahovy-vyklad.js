@@ -8,6 +8,7 @@
     let enabled = false;
     let csrfPromise;
     const draftKey = 'mh_relationship_draft';
+    const handoffKey = 'mh_relationship_question';
     const flowKey = 'mh_relationship_flow_id';
     const validFlowId = value => typeof value === 'string' && /^[a-z0-9_-]{16,80}$/i.test(value);
     const createFlowId = () => {
@@ -20,8 +21,16 @@
     let flowId = createFlowId();
     let continuation = null;
     try {
-        const raw = sessionStorage.getItem('mh_relationship_question') || sessionStorage.getItem(draftKey);
-        const draft = raw ? JSON.parse(raw) : null;
+        const storedDraftKey = sessionStorage.getItem(handoffKey) ? handoffKey : draftKey;
+        const raw = sessionStorage.getItem(storedDraftKey);
+        let draft = null;
+        if (raw) {
+            try {
+                draft = JSON.parse(raw);
+            } catch {
+                sessionStorage.removeItem(storedDraftKey);
+            }
+        }
         if (draft && Date.now() - draft.at < 30 * 60 * 1000) {
             form.question.value = String(draft.question || '').slice(0, 1000);
             form.email.value = String(draft.email || '').slice(0, 254);
@@ -37,7 +46,7 @@
         const storedFlowId = sessionStorage.getItem(flowKey);
         if (!validFlowId(continuation?.flowId) && validFlowId(storedFlowId)) flowId = storedFlowId;
         sessionStorage.setItem(flowKey, flowId);
-        sessionStorage.removeItem('mh_relationship_question');
+        sessionStorage.removeItem(handoffKey);
         if (draft && Date.now() - draft.at >= 30 * 60 * 1000) sessionStorage.removeItem(draftKey);
     } catch { /* Storage may be unavailable. */ }
     function renderContinuation() {
