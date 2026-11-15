@@ -39,6 +39,13 @@ test('sample, images, legal links and mobile layout are usable before purchase',
     }
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     await page.screenshot({ path: testInfo.outputPath('relationship-page.png'), fullPage: true });
+    await page.locator('[data-reading-cta="hero"]').press('Enter');
+    await expect(page).toHaveURL(/#objednavka$/);
+    await expect(page.locator('#objednavka')).toBeFocused();
+    await page.keyboard.press('Tab');
+    await expect(page.locator('#objednavka a[href="/kontakt.html"]')).toBeFocused();
+    await page.keyboard.press('Tab');
+    await expect(page.locator('#question')).toBeFocused();
 });
 
 test('checkout sends only required fields and preserves input after a failure', async ({ page }) => {
