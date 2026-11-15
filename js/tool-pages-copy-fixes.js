@@ -22,7 +22,6 @@ document.addEventListener('DOMContentLoaded', () => {
         setMeta('meta[property="og:title"]', 'Hvězdný Průvodce | Mystická Hvězda');
         setMeta('meta[property="og:description"]', 'Navazující AI chat pro vztahy, rozhodování a osobní témata. Praktický rámec pro další krok, ne pevná předpověď.');
         setText('.hero__title', 'Hvězdný Průvodce');
-        setText('.hero__subtitle', 'Zeptejte se na to, co právě řešíte. Hvězdný Průvodce vám pomůže najít klid, směr a souvislosti.');
         setText('.chat-header h2, .chat-header h3', 'Hvězdný Průvodce');
     }
 
@@ -42,7 +41,6 @@ document.addEventListener('DOMContentLoaded', () => {
         setMeta('meta[property="og:description"]', 'Výpočet čísel pro sebereflexi a další krok, ne pevné určení osudu.');
         setHtml('.hero__title', '<span class="text-gradient">Numerologie</span>');
         setText('.hero__subtitle', 'Každé číslo berte jako symbolický rámec pro silné stránky, vztahy a opakující se vzorce. Výklad pomáhá pojmenovat další krok, ne určit váš osud.');
-        setText('.card__title', 'Vypočítejte svá čísla');
         const profileToggle = document.querySelector('label[title]');
         if (profileToggle) profileToggle.setAttribute('title', 'Použít údaje z mého profilu');
     }

@@ -346,13 +346,17 @@ function initCrystalBall() {
                         if (!isCurrent()) return;
                         window.location.href = `/prihlaseni.html?mode=register&source=crystal_ball_register_gate&feature=kristalova_koule&redirect=${backTo}`;
                     }, 1600);
-                } else if (response.status === 402 || response.status === 403 || (data.error && data.error.toLowerCase().includes('limit'))) {
+                } else if (response.status === 402 && data.code === 'LIMIT_REACHED') {
                     if (answerContainer) answerContainer.classList.remove('visible');
                     window.Auth?.showToast?.(copy.limitTitle, copy.memberLimit, 'info');
                     startCrystalCheckout('crystal_ball_limit_gate', 'register');
                 } else {
                     if (answerContainer) answerContainer.classList.add('visible');
-                    if (answerText) answerText.textContent = copy.silent;
+                    let message = response.status === 403 ? copy.disconnected : copy.silent;
+                    if (data.code === 'LIMIT_CHECK_UNAVAILABLE' && typeof data.error === 'string') {
+                        message = data.error;
+                    }
+                    if (answerText) answerText.textContent = message;
                 }
             }
 

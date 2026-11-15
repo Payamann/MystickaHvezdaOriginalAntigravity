@@ -588,7 +588,7 @@ async function displayInterpretation(name, birthDate, birthTime, lifePath, desti
         // FREE: Show numbers only + paywall for AI interpretation
         interpretationContainer.innerHTML = `
             <div class="interpretation-section">
-                <h3>✨ Vaše Čísla</h3>
+                <h3>✨ Tvoje čísla</h3>
                 <div class="numerology-summary-grid">
                     <div class="number-card number-card--summary number-card--summary-life">
                       <div class="number-card__summary-label">Životní Cesta</div>
@@ -611,7 +611,7 @@ async function displayInterpretation(name, birthDate, birthTime, lifePath, desti
                 <div class="numerology-premium-shell">
                     <div class="premium-locked numerology-premium-preview">
                         <h4>Plný numerologický rozbor</h4>
-                        <p>Základní čísla už máte. Plný rozbor propojí životní cestu, osud, duši a osobnost do jednoho doporučení pro aktuální období.</p>
+                        <p>Základní čísla už máš. Plný rozbor propojí životní cestu, osud, duši a osobnost a nabídne podnět pro aktuální období.</p>
                         <p class="numerology-premium-preview__muted">Pro životní cestu ${lifePath} by se odemkl konkrétní další krok, osobní cyklus a doporučení pro načasování.</p>
                         <p class="numerology-premium-preview__muted">Základní výpočet proběhl v prohlížeči. Plný AI výklad se odemyká až po pokračování.</p>
                     </div>

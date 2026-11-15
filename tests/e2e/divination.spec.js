@@ -414,47 +414,48 @@ test.describe('Křišťálová koule', () => {
         expect(page.url()).not.toContain('/cenik.html');
     });
 
-    test('odhlaseny limit po trech odpovedich smeruje do upgrade flow bez API volani', async ({ page }) => {
-        let apiCalled = false;
-        await page.route('**/api/crystal-ball', async route => {
-            apiCalled = true;
-            await route.fulfill({
-                status: 200,
-                contentType: 'application/json',
-                body: JSON.stringify({ success: true, response: 'Nemelo by se volat.' })
+    for (const { status, code, expectedMessage } of [
+        { status: 402, code: 'LIMIT_REACHED' },
+        { status: 403, code: 'CSRF_INVALID', expectedMessage: /spojení|připojení/i },
+        { status: 503, code: 'LIMIT_CHECK_UNAVAILABLE', expectedMessage: 'Denní limit se teď nepodařilo ověřit.' }
+    ]) {
+        test(`koule rozliší skutečný denní limit od chyby ${status} ${code}`, async ({ page }) => {
+            await page.route('**/api/crystal-ball', route => route.fulfill({
+                status,
+                json: { success: false, code, error: 'Denní limit se teď nepodařilo ověřit.' }
+            }));
+
+            await page.goto('/kristalova-koule.html');
+            await waitForPageReady(page);
+            await page.evaluate(() => {
+                window.__crystalCheckoutPayloads = [];
+                window.getCSRFToken = async () => 'mock-crystal-token';
+                window.Auth = {
+                    user: { id: 'synthetic-crystal-user' },
+                    isLoggedIn: () => true,
+                    isPremium: () => false,
+                    showToast: () => {},
+                    startPlanCheckout: (planId, context) => window.__crystalCheckoutPayloads.push({ planId, context })
+                };
             });
-        });
+            await page.locator('#question-input').fill('Jaký další krok mám zvážit?');
+            await page.locator('#ask-btn').click();
 
-        await page.addInitScript(() => {
-            localStorage.setItem(`mh_daily_crystal_${new Date().toDateString()}`, '3');
-            localStorage.removeItem('crystalBall_lastUsage');
+            const readCheckout = () => page.evaluate(() => window.__crystalCheckoutPayloads);
+            if (expectedMessage) {
+                await expect(page.locator('#answer-text')).toHaveText(expectedMessage);
+                expect(await readCheckout()).toEqual([]);
+            } else {
+                await expect.poll(readCheckout).toEqual([expect.objectContaining({
+                    planId: 'pruvodce',
+                    context: expect.objectContaining({
+                        source: 'crystal_ball_limit_gate',
+                        feature: 'kristalova_koule'
+                    })
+                })]);
+            }
         });
-
-        await page.goto('/kristalova-koule.html?source=e2e_crystal_limit&feature=kristalova_koule');
-        await waitForPageReady(page);
-        await page.evaluate(() => {
-            window.__crystalCheckoutPayloads = [];
-            window.Auth = {
-                isLoggedIn: () => false,
-                isPremium: () => false,
-                showToast: () => {},
-                startPlanCheckout: (planId, context) => window.__crystalCheckoutPayloads.push({ planId, context })
-            };
-        });
-        await page.locator('#question-input').fill('Můžu se zeptat počtvrté?');
-        await page.locator('#ask-btn').click();
-
-        await expect.poll(() => page.evaluate(() => window.__crystalCheckoutPayloads.length)).toBe(1);
-        expect(apiCalled).toBe(false);
-        const payload = await page.evaluate(() => window.__crystalCheckoutPayloads[0]);
-        expect(payload).toEqual(expect.objectContaining({
-            planId: 'pruvodce',
-            context: expect.objectContaining({
-                source: 'crystal_ball_limit_gate',
-                feature: 'kristalova_koule'
-            })
-        }));
-    });
+    }
 
     // API test — bez AI klíče vrátí chybu, ale CSRF musí být vyžadováno
     test('POST /api/crystal-ball bez CSRF vrátí 403', async ({ page }) => {

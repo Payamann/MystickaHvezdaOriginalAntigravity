@@ -340,7 +340,8 @@ test.describe('Homepage', () => {
         await expect(spotlight.locator('a.btn--primary')).toHaveAttribute('href', /osobni-mapa\.html\?source=homepage_spotlight/);
         await expect(spotlight.locator('a.btn--primary')).toHaveAttribute('data-analytics-product', 'osobni_mapa_2026');
         await expect(spotlight.locator('a[href*="rocni-horoskop.html"]')).toHaveCount(0);
-        await expect(page.locator('.nav__dropdown-link[href*="osobni-mapa.html"]').first()).toContainText('Osobní mapa');
+        const mapNavigation = page.locator('.nav__dropdown-link[href="/osobni-mapa.html?source=homepage_nav"]');
+        await expect(mapNavigation).toHaveText('Mapa na 12 měsíců · jednorázově');
         await expect(page.locator('.nav__dropdown-link[href*="rocni-horoskop.html"]')).toHaveCount(0);
     });
 
