@@ -28,12 +28,13 @@
             try {
                 draft = JSON.parse(raw);
             } catch {
-                sessionStorage.removeItem(storedDraftKey);
+                // Discard unreadable data below, while retaining the independent payment flow.
             }
         }
-        if (draft && Date.now() - draft.at < 30 * 60 * 1000) {
-            form.question.value = String(draft.question || '').slice(0, 1000);
-            form.email.value = String(draft.email || '').slice(0, 254);
+        const draftAge = Number.isFinite(draft?.at) ? Date.now() - draft.at : null;
+        if (draftAge !== null && draftAge >= 0 && draftAge < 30 * 60 * 1000) {
+            form.question.value = typeof draft.question === 'string' ? draft.question.slice(0, 1000) : '';
+            form.email.value = typeof draft.email === 'string' ? draft.email.slice(0, 254) : '';
             flowId = validFlowId(draft.flowId) ? draft.flowId : flowId;
             continuation = {
                 flowId,
@@ -42,12 +43,13 @@
                 answerLabel: typeof draft.answerLabel === 'string' ? draft.answerLabel.slice(0, 40) : '',
                 cardImage: typeof draft.cardImage === 'string' && /^\/img\/(?:tarot|tarot-v2)\/[a-z0-9_]+\.webp$/i.test(draft.cardImage) ? draft.cardImage : ''
             };
+        } else if (raw) {
+            sessionStorage.removeItem(storedDraftKey);
         }
         const storedFlowId = sessionStorage.getItem(flowKey);
         if (!validFlowId(continuation?.flowId) && validFlowId(storedFlowId)) flowId = storedFlowId;
         sessionStorage.setItem(flowKey, flowId);
         sessionStorage.removeItem(handoffKey);
-        if (draft && Date.now() - draft.at >= 30 * 60 * 1000) sessionStorage.removeItem(draftKey);
     } catch { /* Storage may be unavailable. */ }
     function renderContinuation() {
         if (!continuation?.question || source !== 'tarot_yes_no_result') return;
