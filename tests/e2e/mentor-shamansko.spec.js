@@ -452,14 +452,14 @@ test.describe('Šamanské kolo', () => {
     });
 
     test('neaktivní kompas používá sdílené SVG místo platformního emoji', async ({ page }) => {
-        await expect(page.locator('#mw-center-compass use')).toHaveAttribute('href', '/img/icons/mh-symbols.svg#compass');
-        await expect(page.locator('#mw-center-emoji')).toHaveAttribute('display', 'none');
+        await expect(page.locator('#mw-center-compass use')).toHaveAttribute('href', /mh-symbols\.svg\?v=[^#]+#compass$/);
+        await expect(page.locator('#mw-center-emoji')).toHaveCount(0);
     });
 
     test('ovládací ikony sdílení používají společný SVG sprite', async ({ page }) => {
-        await expect(page.locator('#share-native use')).toHaveAttribute('href', '/img/icons/mh-symbols.svg#share');
-        await expect(page.locator('#share-fb use')).toHaveAttribute('href', '/img/icons/mh-symbols.svg#facebook');
-        await expect(page.locator('#share-copy use')).toHaveAttribute('href', '/img/icons/mh-symbols.svg#copy');
+        await expect(page.locator('#share-native use')).toHaveAttribute('href', /mh-symbols\.svg\?v=[^#]+#share$/);
+        await expect(page.locator('#share-fb use')).toHaveAttribute('href', /mh-symbols\.svg\?v=[^#]+#facebook$/);
+        await expect(page.locator('#share-copy use')).toHaveAttribute('href', /mh-symbols\.svg\?v=[^#]+#copy$/);
     });
 
     test('sdílení totemu nepoužívá systémové emoji ani jméno z formuláře', async ({ page }) => {
@@ -504,6 +504,12 @@ test.describe('Šamanské kolo', () => {
         await page.locator('#mw-name').press('Enter');
         await expect(page.locator('#mw-result')).toHaveClass(/visible/);
         await expect(page.locator('#mw-premium-wall')).toBeVisible();
+        const symbol = page.locator('#mw-center-compass use');
+        await expect(symbol).toHaveAttribute('href', /mh-symbols\.svg\?v=[^#]+#bear$/);
+        const spriteUrl = (await symbol.getAttribute('href')).split('#')[0];
+        const sprite = await page.request.get(spriteUrl);
+        expect(sprite.ok()).toBe(true);
+        expect(await sprite.text()).toContain('<symbol id="bear"');
     });
 
     test('premium gate nebo result container existuje v DOM', async ({ page }) => {

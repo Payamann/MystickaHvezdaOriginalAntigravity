@@ -14,7 +14,7 @@ import { getPragueDateKey } from './utils/prague-date.js';
     let displayedMedicineWheelSession = null;
     let observedMedicineWheelSession = null;
     let shareCopyFeedbackTimer = null;
-    const ICON_SPRITE_URL = '/img/icons/mh-symbols.svg?v=20261019-shaman-totems';
+    const ICON_SPRITE_URL = '/img/icons/mh-symbols.svg?v=20261115-shaman-totems';
 
     function captureMedicineWheelSession() {
         const isLoggedIn = Boolean(window.Auth?.isLoggedIn?.());
