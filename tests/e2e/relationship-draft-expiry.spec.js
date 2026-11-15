@@ -1,4 +1,3 @@
-// Návrh pro tests/e2e/relationship-draft-expiry.spec.js v release worktree.
 import { test, expect } from '@playwright/test';
 
 test('obnovení neprodlužuje životnost draftu a odeslání zachová flow', async ({ page }) => {
@@ -33,7 +32,12 @@ test('obnovení neprodlužuje životnost draftu a odeslání zachová flow', asy
     const flow = requests[0].flowId;
     expect(flow).toMatch(/^[a-z0-9_-]{16,80}$/i);
     const draft = () => page.evaluate(() => JSON.parse(sessionStorage.getItem('mh_relationship_draft') || 'null'));
-    expect(await draft()).toMatchObject({ at: start, flowId: flow, question, email });
+    expect(await draft()).toBeNull();
+
+    // Only a verified Stripe handoff creates a draft in the current checkout flow.
+    await page.evaluate(saved => {
+        sessionStorage.setItem('mh_relationship_draft', JSON.stringify(saved));
+    }, { at: start, flowId: flow, question, email });
 
     for (const minutes of [10, 20]) {
         await page.evaluate(now => localStorage.setItem('e2e_relationship_now', String(now)), start + minutes * 60_000);
@@ -59,5 +63,5 @@ test('obnovení neprodlužuje životnost draftu a odeslání zachová flow', asy
     await expect(page.locator('#form-error')).toHaveText('Syntetická chyba checkoutu.');
     expect(requests).toHaveLength(2);
     expect(requests[1]).toEqual(requests[0]);
-    expect(await draft()).toMatchObject({ at: retryTime, flowId: flow, question, email });
+    expect(await draft()).toBeNull();
 });

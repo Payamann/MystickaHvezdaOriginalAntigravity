@@ -10,15 +10,16 @@ test('datovaný horoskop drží změnu znamení sbalenou a zachová stejné datu
     expect(response?.status()).toBe(200);
     await waitForPageReady(page);
 
-    const picker = page.locator('.horoscope-day-sign-picker');
-    await expect(picker.locator('summary')).toHaveText('Změnit znamení');
+    const picker = page.locator('.horoscope-day-sign-switcher');
+    await expect(picker.locator('summary')).toHaveText(/^Změnit znamení · /);
     await expect(picker).not.toHaveAttribute('open', '');
 
     const signLinks = picker.locator('a.zodiac-card');
-    await expect(signLinks).toHaveCount(11);
+    await expect(signLinks).toHaveCount(12);
     const hrefs = await signLinks.evaluateAll(links => links.map(link => link.getAttribute('href')));
     expect(hrefs).toContain('/horoskop/blizenci/2026-10-01');
-    expect(hrefs).not.toContain('/horoskop/beran/2026-10-01');
+    await expect(picker.locator('a[aria-current="page"]'))
+        .toHaveAttribute('href', '/horoskop/beran/2026-10-01');
     expect(hrefs.every(href => /^\/horoskop\/[a-z-]+\/2026-10-01$/.test(href))).toBe(true);
 
     await expect(page.locator('.horoscope-day-nav__link').filter({ hasText: 'Předchozí den' }))
@@ -47,7 +48,7 @@ test('všech 12 datovaných horoskopů používá atlasový hero bez staré mlho
         await expect(page.locator('.horoscope-day-hero.atlas-art-hero.atlas-art-astrolab'), sign.slug).toHaveCount(1);
         await expect(page.locator('.horoscope-day-breadcrumb'), sign.slug).toContainText(sign.cs);
         await expect(page.locator('.stars'), sign.slug).toHaveCount(0);
-        await expect(page.locator('.horoscope-day-sign-picker a.zodiac-card'), sign.slug).toHaveCount(11);
+        await expect(page.locator('.horoscope-day-sign-switcher a.zodiac-card'), sign.slug).toHaveCount(12);
         await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), sign.slug).toBe(true);
     }
 

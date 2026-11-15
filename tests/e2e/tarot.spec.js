@@ -1121,6 +1121,27 @@ test.describe('Tarot Ano/Ne', () => {
         )).toBe(true);
     });
 
+    test('slovenské uložení výkladu otevře registraci i při čekání na měření', async ({ page }) => {
+        const question = 'Mám dnes urobiť prvý krok?';
+        await page.goto('/sk/tarot-ano-nie.html');
+        await waitForPageReady(page);
+        await page.evaluate(() => {
+            window.Auth.isLoggedIn = () => false;
+            window.getCSRFToken = () => new Promise(() => {});
+        });
+
+        await page.fill('#question-input', question);
+        await page.locator('.tarot-card').first().click();
+        await page.locator('#btn-save-reading').click();
+
+        await expect(page).toHaveURL(/prihlaseni\.html\?mode=register&source=tarot_yes_no_save_journal_sk/, { timeout: 4000 });
+        const savedQuestion = await page.evaluate(() => {
+            const pending = JSON.parse(localStorage.getItem('mh_pending_reading') || 'null');
+            return pending?.data?.question;
+        });
+        expect(savedQuestion).toBe(question);
+    });
+
     test('výsledek ukazuje skutečnou taženou kartu, otázku a další krok', async ({ page }) => {
         const missingResponsiveCardImages = [];
         page.on('response', response => {

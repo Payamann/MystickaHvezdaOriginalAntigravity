@@ -343,8 +343,12 @@
             save_target: 'profile_journal'
         };
 
-        trackTarotYesNoEvent('save_click', metadata);
-        await trackTarotYesNoFunnelEvent('reading_save_clicked', 'tarot_yes_no_save_journal_sk', metadata, TAROT_YES_NO_TOOL, null);
+        try {
+            trackTarotYesNoEvent('save_click', metadata);
+        } catch (error) {
+            console.warn('[Tarot ANO/NIE SK] Save-click analytics unavailable:', error.message);
+        }
+        void trackTarotYesNoFunnelEvent('reading_save_clicked', 'tarot_yes_no_save_journal_sk', metadata, TAROT_YES_NO_TOOL, null);
 
         if (savedReadingId) {
             window.Auth?.showToast?.('Už uložené', 'Tento výklad už je v denníku.', 'success');
