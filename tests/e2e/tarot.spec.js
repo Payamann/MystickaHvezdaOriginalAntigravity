@@ -372,6 +372,29 @@ test.describe('Tarot', () => {
         expect(await page.evaluate(() => JSON.parse(localStorage.getItem('tarot_free_usage')).count)).toBe(1);
     });
 
+    test('denní ukázka je znovu dostupná po pražské půlnoci', async ({ page }) => {
+        await page.clock.setFixedTime(new Date('2026-11-15T23:05:00Z'));
+        await page.evaluate(() => {
+            localStorage.setItem('tarot_free_usage', JSON.stringify({ date: '2026-11-15', count: 1 }));
+            window.__tarotPreviewUpgrades = 0;
+            window.Auth = {
+                user: { id: 'mock-free-preview-user' },
+                isLoggedIn: () => true,
+                isPremium: () => false,
+                showToast: () => {},
+                saveReading: async () => ({ id: 'simulated-reading' }),
+                startPlanCheckout: () => { window.__tarotPreviewUpgrades++; }
+            };
+            document.dispatchEvent(new Event('auth:changed'));
+        });
+
+        await page.locator('[data-spread-type="Tři karty"]').click();
+        await expect(page.locator('.tarot-soft-gate')).toBeVisible({ timeout: 10000 });
+        expect(await page.evaluate(() => JSON.parse(localStorage.getItem('tarot_free_usage'))))
+            .toEqual({ date: '2026-11-16', count: 1 });
+        expect(await page.evaluate(() => window.__tarotPreviewUpgrades)).toBe(0);
+    });
+
     test('spread trigger tlačítka jsou klikatelná', async ({ page }) => {
         const triggers = page.locator('.spread-trigger');
         const count = await triggers.count();

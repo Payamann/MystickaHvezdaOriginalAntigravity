@@ -561,7 +561,7 @@ function initTarot() {
                     isSoftGated = true;
 
                     // Check daily limit for free teaser
-                    const today = new Date().toISOString().split('T')[0];
+                    const today = getPragueDateKey();
                     let usage = {};
                     try { usage = JSON.parse(localStorage.getItem('tarot_free_usage') || '{}'); }
                     catch { localStorage.removeItem('tarot_free_usage'); }
