@@ -1,19 +1,21 @@
 import { test, expect } from '@playwright/test';
+import { mockLoggedInProfile } from './helpers.js';
 
-async function openAdminWithStripeAudit(page, audit, funnelReport = null) {
+async function mockAdminSession(page) {
+    const user = { id: 'admin-e2e', email: 'admin@example.com', role: 'admin' };
     await page.context().addCookies([{
         name: 'logged_in',
         value: '1',
-        url: process.env.PLAYWRIGHT_BASE_URL,
+        url: process.env.PLAYWRIGHT_BASE_URL
     }]);
-    await page.route('**/api/auth/profile', route => route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-            success: true,
-            user: { id: 'admin-e2e', email: 'admin@example.com', role: 'admin' },
-        }),
-    }));
+    await page.addInitScript(profile => {
+        localStorage.setItem('auth_user', JSON.stringify(profile));
+    }, user);
+    await mockLoggedInProfile(page, user);
+}
+
+async function openAdminWithStripeAudit(page, audit, funnelReport = null) {
+    await mockAdminSession(page);
     await page.route('**/api/admin/**', route => {
         if (funnelReport && route.request().url().includes('/funnel?')) {
             return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ success: true, report: funnelReport }) });
@@ -44,7 +46,7 @@ test.describe('Admin Stripe webhook health', () => {
                 failures: { recoveredInvoices: 1, withoutObservedPayment: 0 }
             } }, topSources: [], topFeatures: [], topPlans: [], daily: [], recentEvents: []
         });
-        await expect(page.locator('h1 use')).toHaveAttribute('href', '/img/icons/mh-symbols.svg#settings');
+        await expect(page.getByRole('heading', { level: 1 })).toContainText('Admin Dashboard');
         const summary = page.locator('#funnel-summary');
         await expect(summary).toContainText('Zaznamenané platby CZK');
         await expect(summary).toContainText('bez úplné historie nerozlišeno');
@@ -71,14 +73,7 @@ test.describe('Admin Stripe webhook health', () => {
 
     test('names missing Stripe events and refreshes on demand', async ({ page }) => {
         const requests = [];
-        await page.context().addCookies([{
-            name: 'logged_in', value: '1', url: process.env.PLAYWRIGHT_BASE_URL,
-        }]);
-        await page.route('**/api/auth/profile', route => route.fulfill({
-            status: 200,
-            contentType: 'application/json',
-            body: JSON.stringify({ success: true, user: { email: 'admin@example.com', role: 'admin' } }),
-        }));
+        await mockAdminSession(page);
         await page.route('**/api/admin/**', route => {
             if (route.request().url().includes('/stripe-webhook-health')) {
                 requests.push(route.request().url());

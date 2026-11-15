@@ -1,6 +1,5 @@
 import { test, expect } from '@playwright/test';
-import fs from 'node:fs/promises';
-import { fileURLToPath } from 'node:url';
+import { chooseSiteLanguage } from './helpers.js';
 
 const variants = [
     ['sk', '/sk/ako-to-funguje.html', 'Ako to funguje', '/sk/horoskopy.html'],
@@ -25,15 +24,14 @@ for (const [locale, route, heading, horoscope] of variants) {
     });
 }
 
-test('generated routes are available from Czech and fit English desktop/mobile', async ({ page }) => {
+test('generated routes are available from Czech and fit English desktop/mobile', async ({ page }, testInfo) => {
     await page.goto('/jak-to-funguje.html');
-    await page.locator('[data-language-select]').selectOption('en');
+    await chooseSiteLanguage(page, 'en');
     await expect(page).toHaveURL(/\/en\/how-it-works\.html$/);
-    const directory = new URL('../../../../docs/translation-system-2026-10-26/', import.meta.url);
-    await fs.mkdir(directory, { recursive: true });
+    await page.setViewportSize({ width: 1280, height: 800 });
     await expect(page.locator('header.header')).toBeVisible();
-    await page.screenshot({ path: fileURLToPath(new URL('en-how-it-works-desktop.png', directory)) });
+    await page.screenshot({ path: testInfo.outputPath('en-how-it-works-desktop.png') });
     await page.setViewportSize({ width: 390, height: 844 });
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(391);
-    await page.screenshot({ path: fileURLToPath(new URL('en-how-it-works-mobile.png', directory)) });
+    await page.screenshot({ path: testInfo.outputPath('en-how-it-works-mobile.png') });
 });

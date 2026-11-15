@@ -44,6 +44,14 @@ export async function waitForPageReady(page) {
     await expect(page.locator('body')).toBeVisible();
 }
 
+export async function chooseSiteLanguage(page, locale) {
+    const toggle = page.locator('.nav__toggle');
+    if (await toggle.isVisible() && await toggle.getAttribute('aria-expanded') !== 'true') {
+        await toggle.click();
+    }
+    await page.locator('[data-language-select]').selectOption(locale);
+}
+
 /**
  * Namockuje GET /api/auth/profile na validního (free) uživatele.
  *

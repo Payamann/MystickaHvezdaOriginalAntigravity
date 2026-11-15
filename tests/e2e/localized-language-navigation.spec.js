@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { chooseSiteLanguage } from './helpers.js';
 import fs from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 
@@ -7,19 +8,19 @@ test('language choice follows the equivalent page in both directions', async ({ 
     const choice = page.locator('[data-language-select]');
     await expect(choice).toHaveValue('cs');
     await expect(page.locator('.footer__languages a[lang="sk"]')).toHaveAttribute('href', '/sk/natalni-karta.html');
-    await choice.selectOption('sk');
+    await chooseSiteLanguage(page, 'sk');
     await expect(page).toHaveURL(/\/sk\/natalni-karta\.html$/);
     await expect(page.locator('html')).toHaveAttribute('lang', 'sk');
     await expect(page.locator('[data-language-select]')).toHaveValue('sk');
-    await page.locator('[data-language-select]').selectOption('pl');
+    await chooseSiteLanguage(page, 'pl');
     await expect(page).toHaveURL(/\/pl\/natalni-karta\.html$/);
     await expect(page.locator('html')).toHaveAttribute('lang', 'pl');
     await expect(page.locator('.footer__languages a[lang="cs"]')).toHaveAttribute('href', '/natalni-karta.html');
-    await page.locator('[data-language-select]').selectOption('en');
+    await chooseSiteLanguage(page, 'en');
     await expect(page).toHaveURL(/\/en\/birth-chart\.html$/);
     await expect(page.locator('html')).toHaveAttribute('lang', 'en');
     await expect(page.locator('.footer__languages a[lang="sk"]')).toHaveAttribute('href', '/sk/natalni-karta.html');
-    await page.locator('[data-language-select]').selectOption('cs');
+    await chooseSiteLanguage(page, 'cs');
     await expect.poll(() => new URL(page.url()).pathname).toBe('/natalni-karta.html');
 });
 
@@ -32,7 +33,7 @@ test('locale homes and an untranslated tool use real, clearly labelled destinati
     await expect(fallback).toHaveAttribute('href', '/sk/');
     await expect(fallback).toHaveAttribute('title', /úvod/);
     await expect(fallback).toContainText('úvod');
-    await page.locator('[data-language-select]').selectOption('sk');
+    await chooseSiteLanguage(page, 'sk');
     await expect(page).toHaveURL(/\/sk\/$/);
 });
 
