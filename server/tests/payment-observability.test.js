@@ -357,7 +357,7 @@ describe('Checkout observability', () => {
         expect(res.body.error).toBe('Platbu předplatného je potřeba dokončit. Aktualizuj platební metodu v zákaznickém portálu.');
         expect(portalParams[0]).toMatchObject({
             customer: customerId,
-            return_url: expect.stringMatching(/\/profil\.html\?source=payment_recovery$/),
+            return_url: expect.stringMatching(/\/profil\.html\?source=payment_recovery#tab-settings$/),
             flow_data: { type: 'payment_method_update' }
         });
         expect(portalParams[0].return_url).not.toContain('payment=cancel');

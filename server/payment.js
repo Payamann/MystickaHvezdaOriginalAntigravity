@@ -428,11 +428,14 @@ export function buildBillingPortalSessionParams({
     const params = { customer: customerId, return_url: returnUrl };
 
     if (flow === 'payment_method_update') {
+        const settingsUrl = new URL(returnUrl);
+        settingsUrl.hash = 'tab-settings';
+        params.return_url = settingsUrl.toString();
         params.flow_data = {
             type: 'payment_method_update',
             after_completion: {
                 type: 'redirect',
-                redirect: { return_url: returnUrl }
+                redirect: { return_url: params.return_url }
             }
         };
     } else if (flow === 'subscription_cancel' && stripeSubscriptionId) {

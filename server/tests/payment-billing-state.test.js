@@ -257,16 +257,16 @@ describe('billing state transitions', () => {
     test('builds the Stripe payment-method-update portal deep link', () => {
         expect(buildBillingPortalSessionParams({
             customerId: 'cus_recovery',
-            returnUrl: 'https://mystickahvezda.cz/profil.html',
+            returnUrl: 'https://mystickahvezda.cz/profil.html?source=payment_recovery',
             flow: 'payment_method_update'
         })).toEqual({
             customer: 'cus_recovery',
-            return_url: 'https://mystickahvezda.cz/profil.html',
+            return_url: 'https://mystickahvezda.cz/profil.html?source=payment_recovery#tab-settings',
             flow_data: {
                 type: 'payment_method_update',
                 after_completion: {
                     type: 'redirect',
-                    redirect: { return_url: 'https://mystickahvezda.cz/profil.html' }
+                    redirect: { return_url: 'https://mystickahvezda.cz/profil.html?source=payment_recovery#tab-settings' }
                 }
             }
         });

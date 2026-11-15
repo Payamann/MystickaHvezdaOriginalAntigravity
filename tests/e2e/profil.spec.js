@@ -751,7 +751,7 @@ test.describe('Profil aktivace', () => {
                 status: 200,
                 contentType: 'application/json',
                 body: JSON.stringify({
-                    url: `${BASE_URL}/profil.html?portal=payment_method_update`,
+                    url: `${BASE_URL}/profil.html?portal=payment_method_update#tab-settings`,
                     flow: 'payment_method_update'
                 })
             });
@@ -772,6 +772,8 @@ test.describe('Profil aktivace', () => {
         ]);
 
         expect(portalPayload).toEqual({ flow: 'payment_method_update', expectedUserId: 'profile-user-1' });
+        await expect(page.locator('#tab-btn-settings')).toHaveAttribute('aria-selected', 'true');
+        await expect(page.locator('#subscription-details')).toContainText('Členství čeká na opravu platby');
     });
 
     test('historicky premium pristup neslibuje obnovu ani Stripe spravu plateb', async ({ page }) => {
