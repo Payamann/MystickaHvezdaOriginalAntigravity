@@ -8,6 +8,13 @@ test.describe('Partnerská numerologie', () => {
     });
 
     test('spočítá modelovou dvojici 11 a 4 a odkáže na oba významy', async ({ page }, testInfo) => {
+        await page.evaluate(() => {
+            window.partnerCalculationEvents = [];
+            window.MH_ANALYTICS.trackFirstValueCompleted = (...args) => {
+                window.partnerCalculationEvents.push(args);
+                throw new Error('synthetic analytics outage');
+            };
+        });
         await page.locator('#partner-date-a').fill('1990-05-14');
         await page.locator('#partner-date-b').fill('1992-02-08');
         await page.getByRole('button', { name: 'Spočítat životní čísla' }).click();
@@ -16,6 +23,7 @@ test.describe('Partnerská numerologie', () => {
         const cards = result.locator('.partner-result-card');
         await expect(result).toBeVisible();
         await expect(result).toBeFocused();
+        await expect(result).toContainText('Na týden si domluvte jednu změnu');
         await expect(cards.nth(0).locator('.partner-result-card__number')).toHaveText('11');
         await expect(cards.nth(1).locator('.partner-result-card__number')).toHaveText('4');
         await expect(cards.nth(0).getByRole('link')).toHaveAttribute('href', '/numerologie/zivotni-cislo-11.html');
@@ -28,6 +36,10 @@ test.describe('Partnerská numerologie', () => {
         const storedValues = await page.evaluate(() => Object.values(localStorage));
         expect(storedValues.join(' ')).not.toContain('1990-05-14');
         expect(storedValues.join(' ')).not.toContain('1992-02-08');
+        await page.getByRole('button', { name: 'Spočítat životní čísla' }).click();
+        expect(await page.evaluate(() => window.partnerCalculationEvents)).toEqual([
+            ['partner_numerology', { source: 'partner_numerology_page', first_value_type: 'partner_numerology_result' }]
+        ]);
     });
 
     test('zachová mistrovská čísla 22 a 33 podle sdíleného výpočtu', async ({ page }) => {

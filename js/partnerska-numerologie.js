@@ -28,6 +28,7 @@ const dateInputs = [
 const errorBox = document.getElementById('partner-form-error');
 const result = document.getElementById('partner-numerology-result');
 const resultCards = document.getElementById('partner-result-cards');
+let firstResultTracked = false;
 
 function clearError() {
     if (!errorBox) return;
@@ -110,6 +111,15 @@ function renderResult(numbers) {
     result.focus({ preventScroll: true });
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     result.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+    if (!firstResultTracked) {
+        firstResultTracked = true;
+        try {
+            window.MH_ANALYTICS?.trackFirstValueCompleted?.('partner_numerology', {
+                source: 'partner_numerology_page',
+                first_value_type: 'partner_numerology_result'
+            });
+        } catch { /* Optional analytics cannot interrupt the calculation. */ }
+    }
 }
 
 if (form && dateInputs.length === 2) {
