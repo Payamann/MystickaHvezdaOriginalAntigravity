@@ -6,34 +6,40 @@ function harness() {
     const listeners = {};
     const old = { status: 200, body: 'old' };
     const fresh = { status: 200, type: 'basic', body: 'fresh', headers: new Headers(), clone() { return this; } };
-    const cache = { match: jest.fn(async () => old), put: jest.fn(async () => {}), keys: async () => [] };
+    const cache = { match: jest.fn(async () => old), put: jest.fn(async () => {}), keys: async () => [], delete: jest.fn() };
+    const runtimeCache = { match: jest.fn(async () => old), put: jest.fn(async () => {}), keys: async () => [], delete: jest.fn() };
     const fetch = jest.fn(async () => fresh);
     const context = vm.createContext({ URL, Request, console, fetch,
-        caches: { open: async () => cache },
+        caches: { open: async name => name.endsWith('-runtime') ? runtimeCache : cache },
         self: { location: { origin: 'https://example.com' }, addEventListener: (name, fn) => { listeners[name] = fn; } }
     });
     vm.runInContext(fs.readFileSync('service-worker.js', 'utf8'), context);
-    return { listeners, cache, fresh, fetch, context };
+    return { listeners, cache, runtimeCache, fresh, fetch, context };
 }
 test('returning clients receive network JS instead of a stale cached copy', async () => {
     const h = harness();
     let response;
-    h.listeners.fetch({ request: new Request('https://example.com/js/dist/core.js?v=new'), respondWith: p => { response = p; } });
+    h.listeners.fetch({ request: new Request('https://example.com/js/dist/core.js?v=new'), respondWith: p => { response = p; }, waitUntil: () => {} });
     expect(await response).toBe(h.fresh);
     expect(h.fetch).toHaveBeenCalledWith(expect.any(Request), { cache: 'no-cache' });
 });
 test('query variants cannot fall back to a different precache version', async () => {
     const h = harness();
     h.cache.match.mockResolvedValue(undefined);
-    await vm.runInContext("matchCachedRequest(new Request('https://example.com/js/dist/core.js?v=new'))", h.context);
+    h.runtimeCache.match.mockResolvedValue(undefined);
+    const request = new Request('https://example.com/js/dist/core.js?v=new');
+    h.context.request = request;
+    await vm.runInContext('matchCachedRequest(request)', h.context);
     expect(h.cache.match).toHaveBeenCalledTimes(1);
+    expect(h.cache.match).toHaveBeenCalledWith(request);
+    expect(h.runtimeCache.match).toHaveBeenCalledTimes(1);
 });
 
 // Artwork data must follow the same release as newly versioned browser code.
 test('returning clients receive fresh tarot artwork metadata instead of stale cache', async () => {
     const h = harness();
     let response;
-    h.listeners.fetch({ request: new Request('https://example.com/data/tarot-cards.json?v=20261007-deck-v2'), respondWith: p => { response = p; } });
+    h.listeners.fetch({ request: new Request('https://example.com/data/tarot-cards.json?v=20261007-deck-v2'), respondWith: p => { response = p; }, waitUntil: () => {} });
     expect(await response).toBe(h.fresh);
     expect(h.fetch).toHaveBeenCalledWith(expect.any(Request), { cache: 'no-cache' });
 });
@@ -58,4 +64,30 @@ test('offline fallback precaches its exact production-hashed stylesheets', async
     for (const href of versionedOfflineStyles) {
         expect(h.cache.put).toHaveBeenCalledWith(`https://example.com${href}`, h.fresh);
     }
+});
+
+test('runtime overflow removes only old runtime entries and keeps the offline shell', async () => {
+    const h = harness();
+    const runtimeKeys = Array.from({ length: 153 }, (_, index) => `https://example.com/img/item-${index}.webp`);
+    h.runtimeCache.keys = async () => runtimeKeys;
+    let update;
+    let response;
+    h.listeners.fetch({
+        request: new Request('https://example.com/img/new.webp'),
+        waitUntil: operation => { update = operation; },
+        respondWith: operation => { response = operation; }
+    });
+    await response;
+    await update;
+    expect(h.runtimeCache.delete.mock.calls.flat()).toEqual(runtimeKeys.slice(0, 3));
+    expect(h.cache.delete).not.toHaveBeenCalled();
+
+    h.fetch.mockRejectedValueOnce(new Error('offline'));
+    h.listeners.fetch({
+        request: new Request('https://example.com/tarot-ano-ne.html'),
+        respondWith: operation => { response = operation; }
+    });
+    expect(await response).toEqual({ status: 200, body: 'old' });
+    expect(h.cache.match).toHaveBeenLastCalledWith('/offline.html');
+    expect(h.runtimeCache.match).not.toHaveBeenCalledWith('/offline.html');
 });

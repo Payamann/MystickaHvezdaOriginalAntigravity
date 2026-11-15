@@ -4,6 +4,8 @@
  */
 
 const CACHE_NAME = 'mysticka-hvezda-d0b7c08b5366';
+const PRECACHE_NAME = `${CACHE_NAME}-precache`;
+const RUNTIME_CACHE_NAME = `${CACHE_NAME}-runtime`;
 const MAX_RUNTIME_CACHE_SIZE = 150;
 const STATIC_ASSETS = [
     '/img/icons/mh-favicon.svg',
@@ -147,14 +149,17 @@ async function precacheVersionedOfflineAssets(cache, offlineResponse) {
 }
 
 async function matchCachedRequest(request) {
-    const cache = await caches.open(CACHE_NAME);
-    const exactMatch = await cache.match(request);
-    if (exactMatch) return exactMatch;
+    const runtimeCache = await caches.open(RUNTIME_CACHE_NAME);
+    const runtimeMatch = await runtimeCache.match(request);
+    if (runtimeMatch) return runtimeMatch;
 
-    // Match only this release; never borrow entries from an older cache.
+    const precache = await caches.open(PRECACHE_NAME);
+    const precacheMatch = await precache.match(request);
+    if (precacheMatch) return precacheMatch;
+
     // A query version is not interchangeable with an unversioned precache entry.
     const precachedKey = new URL(request.url).search ? null : getPrecachedAssetKey(request);
-    return precachedKey ? cache.match(precachedKey) : null;
+    return precachedKey ? precache.match(precachedKey) : null;
 }
 
 async function precacheFreshAssets(cache) {
@@ -176,7 +181,7 @@ async function precacheFreshAssets(cache) {
 self.addEventListener('install', (event) => {
     console.log('[SW] Installing Service Worker...');
     event.waitUntil(
-        caches.open(CACHE_NAME)
+        caches.open(PRECACHE_NAME)
             .then((cache) => {
                 console.log('[SW] Caching static assets');
                 return precacheFreshAssets(cache);
@@ -193,7 +198,7 @@ self.addEventListener('activate', (event) => {
             .then((cacheNames) => {
                 return Promise.all(
                     cacheNames
-                        .filter((name) => name.startsWith('mysticka-hvezda-') && name !== CACHE_NAME)
+                        .filter((name) => name.startsWith('mysticka-hvezda-') && name !== PRECACHE_NAME && name !== RUNTIME_CACHE_NAME)
                         .map((name) => {
                             console.log('[SW] Deleting old cache:', name);
                             return caches.delete(name);
@@ -204,75 +209,36 @@ self.addEventListener('activate', (event) => {
     );
 });
 
-// Trim cache to max size
-async function trimCache(cacheName, maxItems) {
-    const cache = await caches.open(cacheName);
+async function updateRuntimeCache(request, response) {
+    if (!isCacheableResponse(response)) return;
+    const copy = response.clone();
+    const cache = await caches.open(RUNTIME_CACHE_NAME);
+    await cache.put(request, copy);
     const keys = await cache.keys();
-    if (keys.length > maxItems) {
-        // Delete oldest entries (first in, first out)
-        const toDelete = keys.slice(0, keys.length - maxItems);
-        await Promise.all(toDelete.map(key => cache.delete(key)));
-    }
+    await Promise.all(keys.slice(0, Math.max(0, keys.length - MAX_RUNTIME_CACHE_SIZE)).map(key => cache.delete(key)));
 }
 
-// Fetch - stale-while-revalidate for cached content
 self.addEventListener('fetch', (event) => {
-    // Skip non-GET requests, API calls, and external domains (analytics, GTM, Stripe...)
-    if (
-        event.request.method !== 'GET' ||
-        event.request.url.includes('/api/') ||
-        new URL(event.request.url).origin !== self.location.origin
-    ) {
-        return;
-    }
+    const request = event.request;
+    const url = new URL(request.url);
+    if (request.method !== 'GET' || url.pathname.includes('/api/') || url.origin !== self.location.origin) return;
 
-    if (isHtmlNavigation(event.request)) {
+    if (isHtmlNavigation(request)) {
         event.respondWith(
-            fetch(event.request).catch(() => caches.match('/offline.html'))
+            fetch(request).catch(async () => (await caches.open(PRECACHE_NAME)).match('/offline.html'))
         );
         return;
     }
 
-    event.respondWith(
-        matchCachedRequest(event.request)
-            .then((cachedResponse) => {
-                // Start network fetch regardless (for revalidation)
-                const pathname = new URL(event.request.url).pathname;
-                // Editorial index must agree with the freshly rendered article art.
-                const shouldRevalidateStaticCode = /\.(?:css|js)$/i.test(pathname) || pathname === '/data/blog-index.json' || pathname === '/data/tarot-cards.json';
-                const networkFetch = fetch(event.request, shouldRevalidateStaticCode ? { cache: 'no-cache' } : undefined)
-                    .then((response) => {
-                        // Don't cache non-successful, non-basic or explicitly private responses
-                        if (!isCacheableResponse(response)) {
-                            return response;
-                        }
-
-                        // Update cache in background
-                        const responseToCache = response.clone();
-                        caches.open(CACHE_NAME)
-                            .then((cache) => {
-                                cache.put(event.request, responseToCache);
-                                trimCache(CACHE_NAME, MAX_RUNTIME_CACHE_SIZE);
-                            });
-
-                        return response;
-                    })
-                    .catch(() => {
-                        // Network failed - serve offline fallback for HTML
-                        if (!cachedResponse) {
-                            const accept = event.request.headers.get('accept');
-                            if (accept && accept.includes('text/html')) {
-                                return caches.match('/offline.html');
-                            }
-                        }
-                        return cachedResponse;
-                    });
-
-                // Return cached version immediately if available (stale-while-revalidate)
-                // Otherwise wait for network
-                return shouldRevalidateStaticCode ? networkFetch : (cachedResponse || networkFetch);
-            })
-    );
+    // Code and artwork metadata must follow the currently deployed version.
+    const shouldRevalidate = /\.(?:css|js)$/i.test(url.pathname)
+        || url.pathname === '/data/blog-index.json' || url.pathname === '/data/tarot-cards.json';
+    const network = fetch(request, shouldRevalidate ? { cache: 'no-cache' } : undefined);
+    const cached = matchCachedRequest(request).catch(() => null);
+    event.waitUntil(network.then(response => updateRuntimeCache(request, response)).catch(() => {}));
+    event.respondWith(shouldRevalidate
+        ? network.catch(() => cached)
+        : cached.then(response => response || network));
 });
 
 // Push notification handler

@@ -122,6 +122,6 @@ describe('Service worker cache manifest', () => {
         expect(swSource).toContain("new Request(new URL(asset, self.location.origin), { cache: 'reload' })");
         expect(swSource).toContain("{ cache: 'no-cache' }");
         expect(swSource).toContain('getPrecachedAssetKey(request)');
-        expect(swSource).toContain('matchCachedRequest(event.request)');
+        expect(swSource).toContain('matchCachedRequest(request)');
     });
 });
