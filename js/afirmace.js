@@ -1,4 +1,5 @@
 import { getLunarState } from './utils/lunar-state.js';
+import { getPragueDateKey } from './utils/prague-date.js';
 
 /**
  * afirmace.js — Denní afirmace generované AI (konzistentní s horoskopem)
@@ -94,7 +95,7 @@ window.showAffirmation = async function (sign) {
     card.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'nearest' });
 
     // Session cache — vyhne se opakovaným API voláním
-    const cacheKey = `mh_aff_${sign}_${new Date().toDateString()}`;
+    const cacheKey = `mh_aff_${sign}_${getPragueDateKey()}`;
     try {
         const cached = sessionStorage.getItem(cacheKey);
         if (cached) {
@@ -116,19 +117,24 @@ window.showAffirmation = async function (sign) {
 
         // Cache the completed answer, but never let an older request replace the
         // result for a sign selected more recently.
-        try { sessionStorage.setItem(cacheKey, JSON.stringify({ text: affirmation })); } catch (e) { }
+        const isFallback = data.fallback === true;
+        if (!isFallback) {
+            try { sessionStorage.setItem(cacheKey, JSON.stringify({ text: affirmation })); } catch (e) { }
+        }
         if (requestId !== affirmationRequestId) return;
 
         document.getElementById('affirmation-text').textContent = `"${affirmation}"`;
-        document.getElementById('affirmation-sub').textContent = moon.name;
-        setAffirmationStatus(`Afirmace pro znamení ${signData.name} je připravená.`);
+        document.getElementById('affirmation-sub').textContent = isFallback ? `Náhradní afirmace · ${moon.name}` : moon.name;
+        setAffirmationStatus(isFallback
+            ? `Služba je teď nedostupná. Zobrazuji připravenou náhradní afirmaci pro znamení ${signData.name}.`
+            : `Afirmace pro znamení ${signData.name} je připravená.`);
 
     } catch (err) {
         if (requestId !== affirmationRequestId) return;
         console.warn('[Afirmace] API fallback:', err.message);
         const text = fallbackAffirmations[sign] || 'Jsem v souladu se svou nejhlubší pravdou.';
         document.getElementById('affirmation-text').textContent = `"${text}"`;
-        document.getElementById('affirmation-sub').textContent = moon.name;
+        document.getElementById('affirmation-sub').textContent = `Náhradní afirmace · ${moon.name}`;
         setAffirmationStatus(`Služba je teď nedostupná. Zobrazuji připravenou náhradní afirmaci pro znamení ${signData.name}.`);
     }
 

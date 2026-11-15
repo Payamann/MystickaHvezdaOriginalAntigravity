@@ -999,6 +999,66 @@ test.describe('Jak to funguje', () => {
     });
 });
 
+test.describe('Denní afirmace', () => {
+    test.use({ timezoneId: 'UTC' });
+
+    test.beforeEach(async ({ page }) => {
+        await page.route('**/api/csrf-token', route => route.fulfill({ json: { csrfToken: 'local-affirmation-token' } }));
+    });
+
+    test('obnoví afirmaci po pražské půlnoci i v prohlížeči v UTC', async ({ page }) => {
+        let requests = 0;
+        await page.route('**/api/horoscope', route => route.fulfill({
+            json: {
+                success: true,
+                response: { affirmation: ++requests === 1 ? 'Afirmace prvního dne.' : 'Afirmace druhého dne.' }
+            }
+        }));
+        await page.clock.setFixedTime(new Date('2026-11-15T22:55:00Z'));
+        await page.goto('/afirmace.html');
+
+        const sign = page.locator('[data-sign="beran"].zodiac-btn');
+        const reading = page.locator('#affirmation-text');
+        await sign.click();
+        await expect(reading).toHaveText('"Afirmace prvního dne."');
+        await sign.click();
+        await expect(reading).toHaveText('"Afirmace prvního dne."');
+        expect(requests).toBe(1);
+
+        await page.clock.setFixedTime(new Date('2026-11-15T23:05:00Z'));
+        await sign.click();
+        await expect(reading).toHaveText('"Afirmace druhého dne."');
+        expect(requests).toBe(2);
+    });
+
+    test('náhradní afirmaci označí a při dalším pokusu načte skutečný výsledek', async ({ page }) => {
+        let requests = 0;
+        await page.route('**/api/horoscope', route => {
+            const fallback = ++requests === 1;
+            return route.fulfill({ json: {
+                success: true,
+                fallback,
+                response: { affirmation: fallback ? 'Připravený náhradní text.' : 'Dnešní afirmace ze serveru.' }
+            } });
+        });
+        await page.goto('/afirmace.html');
+
+        const sign = page.locator('[data-sign="beran"].zodiac-btn');
+        const reading = page.locator('#affirmation-text');
+        const description = page.locator('#affirmation-sub');
+        await sign.click();
+        await expect(reading).toHaveText('"Připravený náhradní text."');
+        await expect(description).toContainText('Náhradní afirmace');
+        await expect(page.locator('#affirmation-status')).toContainText('Služba je teď nedostupná');
+
+        await sign.click();
+        await expect(reading).toHaveText('"Dnešní afirmace ze serveru."');
+        await expect(description).not.toContainText('Náhradní afirmace');
+        await expect(page.locator('#affirmation-status')).toContainText('je připravená');
+        expect(requests).toBe(2);
+    });
+});
+
 test.describe('Ostatní stránky — smoke testy (200 + h1)', () => {
 
     const PAGES = [
