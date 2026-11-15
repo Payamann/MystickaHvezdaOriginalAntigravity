@@ -668,7 +668,8 @@ test.describe('Inline paywall checkout handoff', () => {
                 contentType: 'application/json',
                 body: JSON.stringify({
                     success: false,
-                    error: 'Premium required'
+                    error: 'Daily limit reached',
+                    code: 'LIMIT_REACHED'
                 })
             });
         });
