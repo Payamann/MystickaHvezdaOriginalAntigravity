@@ -1,7 +1,7 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import rateLimit from 'express-rate-limit';
-import { supabase } from './db-supabase.js';
+import { signInWithPassword, supabase } from './db-supabase.js';
 import { JWT_SECRET, JWT_EXPIRY, COOKIE_OPTIONS, INDICATOR_COOKIE_OPTIONS, CLEAR_COOKIE_OPTIONS, CLEAR_INDICATOR_COOKIE_OPTIONS } from './config/jwt.js';
 import { authenticateToken } from './middleware.js';
 import {
@@ -317,7 +317,7 @@ async function recoverExistingRegistration(email, password, req, res, context) {
         });
     }
 
-    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({ email, password });
+    const { data: authData, error: authError } = await signInWithPassword({ email, password });
     if (authError || !authData?.user?.id) {
         const failedAttempt = await recordFailedAttempt(
             email,
@@ -563,7 +563,7 @@ router.post('/login', loginLimiter, async (req, res) => {
         }
 
         // 1. Sign In via Supabase Auth
-        const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+        const { data: authData, error: authError } = await signInWithPassword({
             email: validatedEmail,
             password: validatedPassword,
         });

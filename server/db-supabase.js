@@ -421,11 +421,21 @@ if (!USE_MOCK_SUPABASE && (!projectUrl || !serviceKey)) {
     console.log('Supabase initialized.');
 }
 
-export const supabase = USE_MOCK_SUPABASE
-    ? createMockSupabaseClient()
-    : createClient(projectUrl, serviceKey, {
+function createServerClient() {
+    return createClient(projectUrl, serviceKey, {
         auth: {
             autoRefreshToken: false,
             persistSession: false
         }
     });
+}
+
+export const supabase = USE_MOCK_SUPABASE
+    ? createMockSupabaseClient()
+    : createServerClient();
+
+export function signInWithPassword(credentials) {
+    // Password sign-in stores a user session on its client, even with persistence disabled.
+    const client = USE_MOCK_SUPABASE ? supabase : createServerClient();
+    return client.auth.signInWithPassword(credentials);
+}

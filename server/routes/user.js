@@ -7,7 +7,7 @@
 import express from 'express';
 import { authenticateToken } from '../middleware.js';
 import { generateToken } from '../auth.js';
-import { supabase } from '../db-supabase.js';
+import { signInWithPassword, supabase } from '../db-supabase.js';
 import rateLimit from 'express-rate-limit';
 import { validatePassword } from '../utils/validation.js';
 import { blacklistToken, blacklistAllUserTokens } from '../utils/token-blacklist.js';
@@ -501,7 +501,7 @@ router.put('/password', sensitiveOpLimiter, authenticateToken, async (req, res) 
             return res.status(400).json({ success: false, error: validationError.message });
         }
 
-        const { error: authError } = await supabase.auth.signInWithPassword({
+        const { error: authError } = await signInWithPassword({
             email: req.user.email,
             password: currentPassword
         });
